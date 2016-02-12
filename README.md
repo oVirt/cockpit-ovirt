@@ -36,15 +36,28 @@ The oVirt deals with
   
 
 ## How to Install
-TBD
+### Prerequisites 
+* Install [VDSM](http://www.ovirt.org/Installing_VDSM_from_rpm)
+* Optional: Install [oVirt Engine](http://www.ovirt.org/Quick_Start_Guide)
+* Install [Cockpit](http://cockpit-project.org/running.html)
+    * make sure cockpit is started/enabled
+        * systemctl enable cockpit.socket
+        * systemctl start cockpit
 
-### Before
-### Install
+### Install Plugin
+* copy/git-clone sources to /root/.local/share/cockpit/ovirt/
+
+* **Alternative:**
+    * copy sources to /usr/share/cockpit/ovirt
+    * change VDSM variable in ovirt.js to new location of vdsm/vdsm shell script
+    
 ### Verify
+* Follow: https://<YOUR_HOST>:9090/ovirt/ovirt
 
+## TODO 
+Please note, the plugin is in early development state.
 
-## TODO: The plugin is in early development state.
-
+To Be Done:
 * VMs list
     * sorting
 * VM Detail
@@ -58,6 +71,9 @@ TBD
         * layout?
     * i18n
     * JS project build infrastructure
+    * plugin config outside the main ovirt.js script
+    * packaging
+    * testing for non-root users
 * Engine VMs tab
     * link to VM detail to remote cockpit
     * VM list limited to a single cluster 
