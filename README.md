@@ -52,7 +52,7 @@ The oVirt deals with
     * change VDSM variable in ovirt.js to new location of vdsm/vdsm shell script
     
 ### Verify
-* Follow: https://<YOUR_HOST>:9090/ovirt/ovirt
+* Follow: https://YOUR_HOST:9090/ovirt/ovirt
 
 ## TODO 
 Please note, the plugin is in early development state.
