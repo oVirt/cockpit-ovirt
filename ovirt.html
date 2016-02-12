@@ -1,0 +1,275 @@
+<head>
+    <title>oVirt</title>
+    <meta charset="utf-8">
+    <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
+    <script src="../base1/jquery.js"></script>
+    <script src="../base1/jquery.storage.js"></script>
+    <script src="../base1/cockpit.js"></script>
+    <script src="../base1/mustache.js"></script>
+    <script src="external/Chart.min.js"></script>
+    <script src="external/FileSaver.min.js"></script>
+    <script src="helpers.js"></script>
+    <script src="vmdetail.js"></script>
+    <script src="hostvms.js"></script>
+    <script src="enginevms.js"></script>
+    <script src="engineLogin.js"></script>
+    <script src="ovirt.js"></script>
+</head>
+<body>
+<div class="content-header-extra">
+    <table width="100%">
+        <tr>
+            <td align="left" valign="top">
+                <div class="btn-group" id="main-btn-menu">
+                    <button class="btn btn-default" data-pattern="/vms" translatable="yes">Running VMs</button>
+                    <button id="main-btn-menu-allvms" class="btn btn-default" data-pattern="/allVms" translatable="yes">Available VMs</button>
+                    <!-- with engine only-->
+                    <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
+                    <button class="btn btn-default" data-pattern="refresh" translatable="yes">Refresh</button>
+                </div>
+            </td>
+            <td align="right">
+                <div id="engine-login">
+                    <div id="engine-login-title" onclick="toggleEngineLoginVisibility()">Login to Engine</div>
+                    <div id="engine-login-content" hidden></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="container-fluid" style="margin-top: 5em">
+    <div id="vms-screen">
+        <div id="virtual-machines" class="panel panel-default">
+            <div class="panel-heading">Virtual Machines</div>
+            <div id="virtual-machines-list"></div>
+            <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is running</div>
+        </div>
+    </div>
+    <div id="vm-detail-screen">
+        <div id="vm-detail-content"></div>
+        <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>VM detail not available</div>
+    </div>
+    <div id="engine-vms-screen">
+        <div id="engine-virtual-machines" class="panel panel-default">
+            <div class="panel-heading">VMs available on the engine</div>
+            <div id="engine-virtual-machines-list"></div>
+            <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is available</div>
+        </div>
+    </div>
+    <div id="vdsm-screen">
+        <div onclick="jump('/system/services')">VDSM Service Management<!-- #/vdsmd.service') --> </div>
+        <br/><a href="../system/services#/vdsmd.service">VDSM Service Management</a>a>
+        <br/>TODO: Add editor of vdsm.conf
+    </div>
+</div>
+
+<br/>
+<hr/>
+<p>
+<!--<div id="message"></div>-->
+<div id="error-msg"></div>
+
+<script id="vm-detail-templ" type="x-template/mustache">
+    <div class="panel-heading">Detail of {{name}}</div>
+    <table width="100%">
+        <tr>
+            <td width="33%"> <!-- left -->
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td>{{name}}</td>
+                    </tr>
+                    <tr>
+                        <td>ID:</td>
+                        <td id="vm-detail-id" data-pattern="{{id}}">{{id}}</td>
+                    </tr>
+                    <tr>
+                        <td>Status:</td>
+                        <td>{{status}}</td>
+                    </tr>
+                    <tr>
+                        <td>Username:</td>
+                        <td>{{username}}</td>
+                    </tr>
+                    <tr>
+                        <td>Display type:</td>
+                        <td>{{displayType}}</td>
+                    </tr>
+                </table>
+            </td>
+
+            <td width="33%"> <!-- center -->
+                <table>
+                    <tr>
+                        <td>VM Type:</td>
+                        <td>{{vmType}}</td>
+                    </tr>
+                    <tr>
+                        <td>KVM Enabled:</td>
+                        <td>{{kvmEnable}}</td>
+                    </tr>
+                    <tr>
+                        <td>ACPI Enabled:</td>
+                        <td>{{acpiEnable}}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>{{}}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>{{}}</td>
+                    </tr>
+                </table>
+            </td>
+
+            <td> <!-- right -->
+                <table>
+                    <tr>
+                        <td>Apps list:</td>
+                        <td>{{appsList}}</td>
+                    </tr>
+                    <tr>
+                        <td>Guest CPU Count:</td>
+                        <td>{{guestCPUCount}}</td>
+                    </tr>
+                    <tr>
+                        <td>Uptime:</td>
+                        <td>{{elapsedTime}} s</td>
+                    </tr>
+                    <tr>
+                        <td>Guest FQDN:</td>
+                        <td>{{guestFQDN}}</td>
+                    </tr>
+                    <tr>
+                        <td>Guest IPs:</td>
+                        <td>{{guestIPs}}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script id="engine-vms-list-templ" type="x-template/mustache">
+<table class="table table-hover">
+    <thead>
+    <th>Name</th>
+    <th>Status</th>
+    <th>Type</th>
+    <th>Memory</th>
+    <th>vCPUs</th>
+    <th>OS Type</th>
+    <th>Origin</th>
+    <th>Actions</th>
+    </thead>
+    <tbody>
+    {{#units}}
+    <tr>
+        <td onclick="onEngineVmClick('{{id}}')">{{name}}</td>
+        <td>{{status}}</td>
+        <td>{{type}}</td>
+        <td>{{memory}}</td>
+        <td>{{vCPUs}}</td>
+        <td>{{osType}}</td>
+        <td>{{origin}}</td>
+        <td></td>
+    </tr>
+    {{/units}}
+    </tbody>
+    </table>
+</script>
+
+<script id="vms-list-templ" type="x-template/mustache">
+    <table class="table table-hover">
+        <thead>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Guest IPs</th>
+        <th>CPU</th>
+        <th>Memory</th>
+        <th>Disk I/O</th>
+        <th>Network I/O</th>
+        <th>Actions</th>
+        </thead>
+
+        <tbody>
+        {{#units}}
+        <tr>
+            <td onclick="onVmClick('{{id}}')">{{name}}</td>
+            <td>{{status}} </td>
+            <td>{{guestIPs}}</td>
+            <td>
+                <canvas id="cpuUsageChart-{{id}}" width="40" height="40"/>
+            </td>
+            <td>
+                <canvas id="memUsageChart-{{id}}" width="40" height="40"/>
+            </td>
+            <td>
+                <canvas id="diskioUsageChart-{{id}}" width="40" height="40"/>
+            </td>
+            <td>
+                <canvas id="networkioUsageChart-{{id}}" width="40" height="40"/>
+            </td>
+            <!--<td>
+                <div id="screenshot-{{id}}"/>
+            </td>
+            -->
+            <td>
+                <button class="btn btn-default" id="btn-console-{{id}}" onClick="downloadConsole('{{id}}')">Console
+                </button>
+                <button class="btn btn-default" id="btn-shutdown-{{id}}" onClick="shutdown('{{id}}')">Shutdown</button>
+                <button class="btn btn-default" id="btn-forceoff-{{id}}" onClick="forceoff('{{id}}')">Force Off</button>
+                <!-- Add Change CD -->
+            </td>
+        </tr>
+        {{/units}}
+        </tbody>
+    </table>
+</script>
+
+<script id="engine-login-form-templ" type="x-template/mustache">
+    <table class="cockpit-form-table">
+        <tr>
+            <td>
+                <label class="control-label" translatable="yes">User:</label>
+            </td>
+            <td>
+                <input id="engine-login-user" class="form-control" type="text" value="{{user}}"></input>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="control-label" translatable="yes">Password:</label>
+            </td>
+            <td>
+                <input id="engine-login-pwd" class="form-control" type="password" value="{{pwd}}"></input>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="control-label" translatable="yes">URL:</label>
+            </td>
+            <td>
+                <input id="engine-login-url" class="form-control" type="text" value="{{url}}"></input>
+            </td>
+        </tr>
+        <tr id="engine-login-error-msg" hidden>
+            <td>
+                <label class="control-label" translatable="yes">Error:</label>
+            </td>
+            <td id="engine-login-error-msg-text">
+            </td>
+        </tr>
+    </table>
+    <button id="engine-login-button-login" class="btn btn-default" translatable="yes" onclick="engineLogin()">Login</button>
+    <button id="engine-login-button-logout" class="btn btn-default" translatable="yes" onclick="engineLogout()">Logout</button>
+</script>
+
+<script id="message-one-param-temp" type="x-template/mustache">
+    {{message}} {{param1}}
+</script>
+
+</body>
+

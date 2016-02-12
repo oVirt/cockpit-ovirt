@@ -1,0 +1,10 @@
+{
+    "version": 0,
+
+    "tools": {
+        "mytest": {
+            "label": "oVirt",
+            "path": "ovirt.html"
+        }
+    }
+}

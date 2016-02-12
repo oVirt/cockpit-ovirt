@@ -1,0 +1,11 @@
+#!/bin/sh
+
+#INSTALL_PATH="/usr/share/cockpit/ovirt"
+
+INSTALL_PATH=~/.local/share/cockpit/ovirt/vdsm
+
+CLIENT=$INSTALL_PATH/"vdsmJsonRPCCli.py"
+[ -e "$CLIENT" ] || CLIENT="$CLIENT"c
+
+[ -n "$PYTHONPATH" ] && PYTHON_FORMATTED_PATH=":$PYTHONPATH"
+PYTHONPATH="/usr/share/vdsm$PYTHON_FORMATTED_PATH" python "$CLIENT" "$@" <&0
