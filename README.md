@@ -1,7 +1,7 @@
 # Cockpit-oVirt plugin
-The plugin for Cockpit is a host-based management tool for Virtual Machines.
+Virtual Machine Management plugin for Cockpit based on oVirt. 
 
-Recent release features:
+Features in recent release:
 
 * list of VMs running on a host
 * single VM detail
