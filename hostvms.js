@@ -108,105 +108,95 @@ function getUsageChart(device, vmId) {
     return myChart;
 }
 
+function refreshCpuChart(myChart, usageRecord, options) {
+    if (myChart != null) {
+        var user = normalizePercentage(usageRecord.cpuUser);
+        var sys = normalizePercentage(usageRecord.cpuSys);
+        var idle = 1.0 - Math.min(user + sys, 1.0);
+        myChart.Doughnut([
+            {
+                value: user,
+                color: "#46BFBD",
+                highlight: "#5AD3D1"
+            },
+            {
+                value: sys,
+                color: "#F7464A",
+                highlight: "#FF5A5E"
+            },
+            {
+                value: idle,
+                color: "#33FF33",
+                highlight: "#33FF99"
+            }
+        ], options);
+    }
+}
+
+function refreshMemoryChart(myChart, usageRecord, options) {
+    if (myChart != null) {
+        var used = normalizePercentage(usageRecord.memory);
+        var free = 1.0 - used;
+        myChart.Doughnut([
+            {
+                value: used,
+                color: "#46BFBD",
+                highlight: "#5AD3D1"
+            },
+            {
+                value: free,
+                color: "#33FF33",
+                highlight: "#33FF99"
+            }
+        ], options);
+    }
+}
+
+function refreshBarChart(myChart, r, w, options) {
+    myChart.Bar({
+        labels: ['R,W'],
+        datasets: [
+            {label: "Read",
+                fillColor: "#46BFBD",
+                strokeColor: "#5AD3D1",
+                highlightFill: "#46BFBD",
+                highlightStroke: "#5AD3D1",
+                data: [r]},
+            {label: "Write",
+                fillColor: "#F7464A",
+                strokeColor: "#FF5A5E",
+                highlightFill: "#F7464A",
+                highlightStroke: "#FF5A5E",
+                data: [w]}
+        ]}, options);
+}
+
+function refreshDiskIOChart(myChart, usageRecord, options) {
+    if (myChart != null) {
+        var r = usageRecord.diskRead;
+        var w = usageRecord.diskWrite;
+        refreshBarChart(myChart, r, w, options);
+    }
+}
+
+function refreshNetworkIOChart(myChart, usageRecord, options) {
+    if (myChart != null) {
+        var r = usageRecord.netRx;
+        var w = usageRecord.netTx;
+        refreshBarChart(myChart, r, w, options);
+    }
+}
+
 function refreshUsageCharts() {
-    var chartOptions = {
+    var doughnutOptions = {
         animateRotate:false,
         animateScale: false
     };
     $.each(vmUsage, function (key, usageRecord) {
-        // CPU
-        var myChart = getUsageChart("cpu", key);
-        if (myChart != null) {
-            var user = normalizePercentage(usageRecord.cpuUser);
-            var sys = normalizePercentage(usageRecord.cpuSys);
-            var idle = 1.0 - Math.min(user + sys, 1.0);
-            myChart.Doughnut([
-                {
-                    value: user,
-                    color: "#46BFBD",
-                    highlight: "#5AD3D1"
-                },
-                {
-                    value: sys,
-                    color: "#F7464A",
-                    highlight: "#FF5A5E"
-                },
-                {
-                    value: idle,
-                    color: "#33FF33",
-                    highlight: "#33FF99"
-                }
-            ], chartOptions);
-        }
-
-        // Memory
-        var myChart = getUsageChart("mem", key);
-        if (myChart != null) {
-            var used = normalizePercentage(usageRecord.memory);
-            var free = 1.0 - used;
-            myChart.Doughnut([
-                {
-                    value: used,
-                    color: "#46BFBD",
-                    highlight: "#5AD3D1"
-                },
-                {
-                    value: free,
-                    color: "#33FF33",
-                    highlight: "#33FF99"
-                }
-            ], chartOptions);
-        }
-
-        // Disk IO
-        var myChart = getUsageChart("diskio", key);
-        if (myChart != null) {
-            var r = normalizePercentage(usageRecord.diskRead);
-            var w = normalizePercentage(usageRecord.diskWrite);
-            var idle = 1.0 - Math.min(r + w, 1.0);
-            myChart.Doughnut([
-                {
-                    value: r,
-                    color: "#46BFBD",
-                    highlight: "#5AD3D1"
-                },
-                {
-                    value: w,
-                    color: "#F7464A",
-                    highlight: "#FF5A5E"
-                },
-                {
-                    value: idle,
-                    color: "#33FF33",
-                    highlight: "#33FF99"
-                }
-            ], chartOptions);
-        }
-
-        // Network IO
-        var myChart = getUsageChart("networkio", key);
-        if (myChart != null) {
-            var r = normalizePercentage(usageRecord.netRx);
-            var w = normalizePercentage(usageRecord.netTx);
-            var idle = 1.0 - Math.min(r + w, 1.0);
-            myChart.Doughnut([
-                {
-                    value: r,
-                    color: "#46BFBD",
-                    highlight: "#5AD3D1"
-                },
-                {
-                    value: w,
-                    color: "#F7464A",
-                    highlight: "#FF5A5E"
-                },
-                {
-                    value: idle,
-                    color: "#33FF33",
-                    highlight: "#33FF99"
-                }
-            ], chartOptions);
-        }
+        refreshCpuChart(getUsageChart("cpu", key), usageRecord, doughnutOptions);
+        refreshMemoryChart(getUsageChart("mem", key), usageRecord, doughnutOptions);
+        refreshDiskIOChart(getUsageChart("diskio", key), usageRecord, doughnutOptions);
+        refreshNetworkIOChart(getUsageChart("networkio", key), usageRecord, doughnutOptions);
     });
 }
 

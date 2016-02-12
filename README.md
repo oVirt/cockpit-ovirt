@@ -63,6 +63,9 @@ To Be Done:
 * VM Detail
     * refine displayed VM data relevant for the user
 * General
+    * move this list to Trello
+    * check instalation correctness during plugin setup (is connection to VDSM working?)
+    * extend ensureJsonrpcvdscliCompatibility() to 3.6's vdsm
     * autorefresh (5-10 seconds interval)
     * event driven (continuous) data refresh? Based on DBus
     * patternfly to unify look&feel
