@@ -38,7 +38,20 @@ The oVirt deals with
 ## How to Install
 ### Prerequisites 
 * Install [VDSM](http://www.ovirt.org/Installing_VDSM_from_rpm)
+    * recently only **master** oVirt release is supported
+    * Centos 7 (minimal):
+        * have FQDN, DNS, DHCP set and working
+        * yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release-master.rpm
+        * yum install vdsm
+
 * Optional: Install [oVirt Engine](http://www.ovirt.org/Quick_Start_Guide)
+    * recently only **master** oVirt release is supported
+    * Centos 7 (minimal):
+        * have FQDN, DNS, DHCP set and working
+        * yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release-master.rpm
+        * yum install ovirt-engine
+        * engine-setup
+
 * Install [Cockpit](http://cockpit-project.org/running.html)
     * make sure cockpit is started/enabled
         * systemctl enable cockpit.socket
@@ -51,41 +64,21 @@ The oVirt deals with
     * copy sources to /usr/share/cockpit/ovirt
     * change VDSM variable in ovirt.js to new location of vdsm/vdsm shell script
     
+* Troubleshooting tips:
+    * Installation instructions stated above should lead to successful setup on Centos 7. If not, following tips might help:
+        * If VDSM is properly configured, following command should return without any error: 
+        
+            \# /root/.local/share/cockpit/ovirt/vdsm/vdsm getAllVmStats
+    
+    * As the plugin is in early development state, **PLEASE let author know about all issues you encounter during installation/use**, it will help in making the product better. 
+    
 ### Verify
 * Follow: https://YOUR_HOST:9090/ovirt/ovirt
 
 ## TODO 
 Please note, the plugin is in early development state.
 
-To Be Done:
-* VMs list
-    * sorting
-* VM Detail
-    * refine displayed VM data relevant for the user
-* General
-    * move this list to Trello
-    * check instalation correctness during plugin setup (is connection to VDSM working?)
-    * extend ensureJsonrpcvdscliCompatibility() to 3.6's vdsm
-    * autorefresh (5-10 seconds interval)
-    * event driven (continuous) data refresh? Based on DBus
-    * patternfly to unify look&feel
-        * widgets
-        * icons
-        * layout?
-    * i18n
-    * JS project build infrastructure
-    * plugin config outside the main ovirt.js script
-    * packaging
-    * testing for non-root users
-* Engine VMs tab
-    * link to VM detail to remote cockpit
-    * VM list limited to a single cluster 
-* Engine integration
-    * SSO to log in Engine 
-* VDSM tab
-    * link to VDSM service in cockpit (for restart, status, log, etc.)
-    * editor for vdsm.conf
-
+See TODO.txt for list of planed changes.
 
 ## More Info
 * About [oVirt](http://www.ovirt.org/Home)
