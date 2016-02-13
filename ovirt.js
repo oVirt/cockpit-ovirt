@@ -2,8 +2,6 @@
 var VDSM = "/root/.local/share/cockpit/ovirt/vdsm/vdsm";
 var DELAY_BEFORE_RELOAD_AFTER_VDSM_ACTION = 1000;// one second
 
-var vmUsage = {}; // historical usage statistics, see addVmUsage()
-
 var isDebug = true;// print debug messages to console
 
 // ----------------------------------------------------------------------

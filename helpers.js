@@ -57,3 +57,12 @@ function disableButton(name) {
     var button = $("#" + name);
     button.attr("disabled", true);
 }
+
+function normalizePercentage(value) {
+    return Math.min(Math.max(parseFloat(value), 0.0), 1.0);
+}
+
+function getActualTimeStamp() {
+    var dt = new Date();
+    return dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+}

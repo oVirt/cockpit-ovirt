@@ -46,7 +46,7 @@
             <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is running</div>
         </div>
     </div>
-    <div id="vm-detail-screen">
+    <div id="vm-detail-screen" class="panel panel-default">
         <div id="vm-detail-content"></div>
         <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>VM detail not available</div>
     </div>
@@ -72,6 +72,16 @@
 
 <script id="vm-detail-templ" type="x-template/mustache">
     <div class="panel-heading">Detail of {{name}}</div>
+    <table width="100%">
+        <tr>
+            <td width="50%"><canvas id="cpuUsageChartDetail-{{id}}" height="120"/></td>
+            <td width="50%"><canvas id="memUsageChartDetail-{{id}}" height="120"/></td>
+            </tr>
+        <tr>
+            <td><canvas id="diskioUsageChartDetail-{{id}}" height="120"/></td>
+            <td><canvas id="networkioUsageChartDetail-{{id}}" height="120"/></td>
+        </tr>
+    </table>
     <table width="100%">
         <tr>
             <td width="33%"> <!-- left -->

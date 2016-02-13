@@ -1,6 +1,6 @@
 // --- vms-screen -------------------------------------------------------
-// latest parsed&successful VDSM's getAllVmStats() result
-var latestHostVMSList = "";
+var latestHostVMSList = "";// latest parsed&successful VDSM's getAllVmStats() result
+var vmUsage = {}; // historical usage statistics, see addVmUsage()
 
 var vdsmDataVmsList = ""; // might be partial output from the VDSM process
 function vdsmOutput(data) {
@@ -28,10 +28,10 @@ function getAllVmStatsSuccess() {
 function renderHostVms(vmsFull) {
     // the 'vmsFull' is parsed json result of getAllVmStats()
     if (vmsFull.hasOwnProperty('items') && vmsFull.items.length > 0) {
-        vmUsage = {};// using pie chart, no history needed
         var vms = [];
 
         // prepare data
+        var timestamp = getActualTimeStamp();
         vmsFull.items.forEach(function translate(srcVm) {
             var vm = _getVmDetails(srcVm);
             vms.push(vm);
@@ -40,7 +40,7 @@ function renderHostVms(vmsFull) {
             var diskWrite = getVmDeviceRate(vm, 'disks', 'writeRate');
             var netRx = getVmDeviceRate(vm, 'network', 'rxRate');
             var netTx = getVmDeviceRate(vm, 'network', 'txRate');
-            addVmUsage(vm.id, parseFloat(vm.cpuUser), parseFloat(vm.cpuSys), parseFloat(vm.memUsage),
+            addVmUsage(vm.id, timestamp, parseFloat(vm.cpuUser), parseFloat(vm.cpuSys), parseFloat(vm.memUsage),
                 diskRead, diskWrite, netRx, netTx);
         });
 
@@ -79,8 +79,9 @@ function onVmClick(vmId) {// show vm detail
 }
 
 // --- vms-screen usage charts ------------------------------------------
-function addVmUsage(vmId, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netTx) {
+function addVmUsage(vmId, timestamp, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netTx) {
     var record = {
+        timestamp: timestamp,
         cpuUser: cpuUser,
         cpuSys: cpuSys,
         memory: mem,
@@ -90,11 +91,12 @@ function addVmUsage(vmId, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netT
         netTx: netTx
     };
 
-    vmUsage[vmId] = record; // for pie chart do not keep history
-}
+    if (!vmUsage[vmId]) {
+        vmUsage[vmId] = [];
+    }
 
-function normalizePercentage(value) {
-    return Math.min(Math.max(parseFloat(value), 0.0), 1.0);
+    // TODO: limit length of historical data
+    vmUsage[vmId].push(record); // keep history
 }
 
 function getUsageChart(device, vmId) {
@@ -192,11 +194,15 @@ function refreshUsageCharts() {
         animateRotate:false,
         animateScale: false
     };
-    $.each(vmUsage, function (key, usageRecord) {
-        refreshCpuChart(getUsageChart("cpu", key), usageRecord, doughnutOptions);
-        refreshMemoryChart(getUsageChart("mem", key), usageRecord, doughnutOptions);
-        refreshDiskIOChart(getUsageChart("diskio", key), usageRecord, doughnutOptions);
-        refreshNetworkIOChart(getUsageChart("networkio", key), usageRecord, doughnutOptions);
+    var barOptions = {};
+    $.each(vmUsage, function (key, usageRecords) {
+        if (usageRecords.length > 0) {
+            var last = usageRecords[usageRecords.length - 1];
+            refreshCpuChart(getUsageChart("cpu", key), last, doughnutOptions);
+            refreshMemoryChart(getUsageChart("mem", key), last, doughnutOptions);
+            refreshDiskIOChart(getUsageChart("diskio", key), last, barOptions);
+            refreshNetworkIOChart(getUsageChart("networkio", key), last, barOptions);
+        }
     });
 }
 
