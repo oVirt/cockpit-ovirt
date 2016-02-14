@@ -74,17 +74,7 @@
     <div class="panel-heading">Detail of {{name}}</div>
     <table width="100%">
         <tr>
-            <td width="50%"><canvas id="cpuUsageChartDetail-{{id}}" height="120"/></td>
-            <td width="50%"><canvas id="memUsageChartDetail-{{id}}" height="120"/></td>
-            </tr>
-        <tr>
-            <td><canvas id="diskioUsageChartDetail-{{id}}" height="120"/></td>
-            <td><canvas id="networkioUsageChartDetail-{{id}}" height="120"/></td>
-        </tr>
-    </table>
-    <table width="100%">
-        <tr>
-            <td width="33%"> <!-- left -->
+            <td> <!-- left -->
                 <table>
                     <tr>
                         <td>Name:</td>
@@ -109,7 +99,7 @@
                 </table>
             </td>
 
-            <td width="33%"> <!-- center -->
+            <td> <!-- center -->
                 <table>
                     <tr>
                         <td>VM Type:</td>
@@ -155,6 +145,19 @@
                     <tr>
                         <td>Guest IPs:</td>
                         <td>{{guestIPs}}</td>
+                    </tr>
+                </table>
+            </td>
+
+            <td width=30%"><!-- Usage graphs -->
+                <table width="100%">
+                    <tr>
+                        <td width="50%"><canvas id="cpuUsageChartDetail-{{id}}" height="120"/></td>
+                        <td width="50%"><canvas id="memUsageChartDetail-{{id}}" height="120"/></td>
+                    </tr>
+                    <tr>
+                        <td><canvas id="diskioUsageChartDetail-{{id}}" height="120"/></td>
+                        <td><canvas id="networkioUsageChartDetail-{{id}}" height="120"/></td>
                     </tr>
                 </table>
             </td>
