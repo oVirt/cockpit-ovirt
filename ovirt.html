@@ -23,12 +23,12 @@
                 <div class="btn-group" id="main-btn-menu">
                     <button class="btn btn-default" data-pattern="/vms" translatable="yes">Running VMs</button>
                     <button id="main-btn-menu-allvms" class="btn btn-default" data-pattern="/allVms" translatable="yes">Available VMs</button>
-                    <!-- with engine only-->
                     <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
-                    <button class="btn btn-default" data-pattern="refresh" translatable="yes">Refresh</button>
+<!--                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes" onclick="refreshButtonClicked()">Auto Refresh Off</button>-->
                 </div>
+                <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes" onclick="refreshButtonClicked()">Auto Refresh Off</button>
             </td>
-            <td align="right">
+            <td align="right" valign="top" width="20%">
                 <div id="engine-login">
                     <div id="engine-login-title" onclick="toggleEngineLoginVisibility()">Login to Engine</div>
                     <div id="engine-login-content" hidden></div>

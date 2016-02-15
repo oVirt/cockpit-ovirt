@@ -2,9 +2,9 @@
 function printError(text) {
     console.log("Error: " + text);
 
-    var message = $("#error-msg");
-    message.append("<p>" + text + "</p>");
-    message.css("color", "red");
+//    var message = $("#error-msg");
+//   message.append("<p>" + text + "</p>");
+//    message.css("color", "red");
 }
 
 function debugMsg(text) {

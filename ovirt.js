@@ -1,7 +1,7 @@
 // --- global -----------------------------------------------------------
 var VDSM = "/root/.local/share/cockpit/ovirt/vdsm/vdsm";
 var DELAY_BEFORE_RELOAD_AFTER_VDSM_ACTION = 1000;// one second
-
+var AUTO_REFRESH_INTERVAL = 5000;// in ms
 var isDebug = true;// print debug messages to console
 
 // ----------------------------------------------------------------------
@@ -94,8 +94,26 @@ function jump(component) {
     cockpit.jump(component);// TODO: specify host
 }
 
+var autoRefresher;
+function refreshButtonClicked() {
+    var buttonRefresh = $("#button-refresh");
+    if (buttonRefresh.attr("data-pattern") == "off") {
+        autoRefresher = setInterval(refresh, AUTO_REFRESH_INTERVAL);
+
+        buttonRefresh.text("Auto Refresh On");
+        buttonRefresh.attr("data-pattern", "on");
+    } else {
+        clearInterval(autoRefresher);
+        autoRefresher = null;
+
+        buttonRefresh.text("Auto Refresh Off");
+        buttonRefresh.attr("data-pattern", "off");
+    }
+}
+
 function refresh() {
     // TODO: refresh selectively depending on the locationPath
+    debugMsg("refresh() called");
     readVmsList();
     refreshEngineVmsList();
 }
@@ -103,12 +121,7 @@ function refresh() {
 function initNavigation() {
     $("#main-btn-menu button").on("click", function () {
         var dataPattern = $(this).attr("data-pattern");
-
-        if (dataPattern == 'refresh') {
-            refresh();
-        } else {
-            goTo(dataPattern);
-        }
+        goTo(dataPattern);
     });
 }
 
@@ -125,6 +138,7 @@ function initialize() {
 
     $(cockpit).on("locationchanged", onLocationChanged);
     onLocationChanged();
+    refreshButtonClicked();// start auto-refresher
 }
 
 $(document).ready(initialize);
