@@ -112,8 +112,6 @@ function getUsageChartDetail(device, vmId) {
     return myChart;
 }
 
-var USAGE_CHART_MAX_POINTS = 23;
-var USAGE_CHART_TIMESTAMP_DENSITY = 3;
 function getUsageDataset(usageRecords, attr1, attr2, inclSum=false) {
     var ds1 = [];
     var ds2 = [];

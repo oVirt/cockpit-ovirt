@@ -1,7 +1,10 @@
 // --- global -----------------------------------------------------------
 var VDSM = "/root/.local/share/cockpit/ovirt/vdsm/vdsm";
 var DELAY_BEFORE_RELOAD_AFTER_VDSM_ACTION = 1000;// one second
-var AUTO_REFRESH_INTERVAL = 3000;// in ms  TODO: 5000
+var AUTO_REFRESH_INTERVAL = 5000;// in ms
+var USAGE_CHART_MAX_POINTS = 17;
+var USAGE_CHART_TIMESTAMP_DENSITY = 3;
+
 var isDebug = true;// print debug messages to console
 
 // ----------------------------------------------------------------------
