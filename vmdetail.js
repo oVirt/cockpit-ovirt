@@ -59,7 +59,38 @@ function renderVmDetail(vmId) {
 }
 
 function renderUsageChartsDetail(vmId) {
-    var lineOptions = {};
+    var lineOptions = {
+        ///Boolean - Whether grid lines are shown across the chart
+        scaleShowGridLines: true,
+        //String - Colour of the grid lines
+        scaleGridLineColor: "rgba(0,0,0,.05)",
+        //Number - Width of the grid lines
+        scaleGridLineWidth: 1,
+        //Boolean - Whether to show horizontal lines (except X axis)
+        scaleShowHorizontalLines: true,
+        //Boolean - Whether to show vertical lines (except Y axis)
+        scaleShowVerticalLines: true,
+        //Boolean - Whether the line is curved between points
+        bezierCurve: true,
+        //Number - Tension of the bezier curve between points
+        bezierCurveTension: 0.2,//0.4
+        //Boolean - Whether to show a dot for each point
+        pointDot: true,
+        //Number - Radius of each point dot in pixels
+        pointDotRadius: 1,
+        //Number - Pixel width of point dot stroke
+        pointDotStrokeWidth: 1,
+        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        pointHitDetectionRadius: 10,
+        //Boolean - Whether to show a stroke for datasets
+        datasetStroke: true,
+        //Number - Pixel width of dataset stroke
+        datasetStrokeWidth: 1,//2
+        //Boolean - Whether to fill the dataset with a colour
+        datasetFill: false,
+        //String - A legend template
+        legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+    };
 
     var usageRecords = vmUsage[vmId];
     if (usageRecords) {// TODO: optimization: call chart.addData instead of full rendering
@@ -81,26 +112,52 @@ function getUsageChartDetail(device, vmId) {
     return myChart;
 }
 
-function renderCpuChartDetail(myChart, usageRecords, options) {
-    if (myChart != null) {
-        var system = [];
-        var user = [];
-        var total = [];
-        var timestamps = [];
-        var tsCounter = 0;
-        usageRecords.forEach(function _(ur){
-            var s = parseFloat(ur.cpuSys);//normalizePercentage(ur.cpuSys);
-            var u = parseFloat(ur.cpuUser);//normalizePercentage(ur.cpuUser);
-            system.push(s);
-            user.push(u);
-            total.push(s+u);
+var USAGE_CHART_MAX_POINTS = 23;
+var USAGE_CHART_TIMESTAMP_DENSITY = 3;
+function getUsageDataset(usageRecords, attr1, attr2, inclSum=false) {
+    var ds1 = [];
+    var ds2 = [];
+    var total = [];
+    var timestamps = [];
 
-            if (usageRecords.length < 5 || (tsCounter++) % 4 == 0) {
+    var pruneFactor = Math.floor(usageRecords.length / USAGE_CHART_MAX_POINTS);
+    pruneFactor = (pruneFactor == 0) ? 1 : pruneFactor;
+    for (var index = 0; index < usageRecords.length; index++) {
+        if (index == 0 || index == (usageRecords.length - 1) || (index % pruneFactor) == 0) {
+            var ur = usageRecords[index];
+
+            var a = parseFloat(ur[attr1]);
+            ds1.push(a);
+
+            if (attr2) {
+                var b = parseFloat(ur[attr2]);
+                ds2.push(b);
+
+                if (inclSum) {
+                    total.push(a + b);
+                }
+            }
+
+            if (index == 0 || index == (usageRecords.length - 1) || (index % USAGE_CHART_TIMESTAMP_DENSITY) == 0) {
                 timestamps.push(ur.timestamp);
             } else {
                 timestamps.push("");
             }
-        });
+        }
+    }
+
+    return {
+        ds1: ds1,
+        ds2: ds2,
+        timestamps: timestamps,
+        total: total
+    }
+}
+
+function renderCpuChartDetail(myChart, usageRecords, options) {
+    if (myChart != null) {
+        var ds = getUsageDataset(usageRecords, 'cpuSys', 'cpuUser', true);
+
         var cpuSysFillColor = "rgba(255,255,255,0.1)";
         var cpuSysPointColor = "rgba(255,0,0,1)";
         var cpuSysStrokeColor = "rgba(255,255,255,0.5)";
@@ -111,8 +168,8 @@ function renderCpuChartDetail(myChart, usageRecords, options) {
         var cpuTotalPointColor = "rgba(0,0,255,1)";
         var cpuTotalStrokeColor = "rgba(0,0,255,1)";
         myChart.Line({
-            labels: timestamps,
-            datasets:[
+            labels: ds.timestamps,
+            datasets: [
                 {
                     label: "System",
                     fillColor: cpuSysFillColor,
@@ -121,7 +178,7 @@ function renderCpuChartDetail(myChart, usageRecords, options) {
                     pointStrokeColor: cpuSysStrokeColor,
                     pointHighlightFill: cpuSysPointColor,
                     pointHighlightStroke: cpuSysPointColor,
-                    data: system
+                    data: ds.ds1
                 },
                 {
                     label: "User",
@@ -131,7 +188,7 @@ function renderCpuChartDetail(myChart, usageRecords, options) {
                     pointStrokeColor: cpuUserStrokeColor,
                     pointHighlightFill: cpuUserPointColor,
                     pointHighlightStroke: cpuUserPointColor,
-                    data: user
+                    data: ds.ds2
                 },
                 {
                     label: "Total",
@@ -141,7 +198,7 @@ function renderCpuChartDetail(myChart, usageRecords, options) {
                     pointStrokeColor: cpuTotalStrokeColor,
                     pointHighlightFill: cpuTotalPointColor,
                     pointHighlightStroke: cpuTotalPointColor,
-                    data: total
+                    data: ds.total
                 }
             ]
         }, options);
@@ -150,25 +207,14 @@ function renderCpuChartDetail(myChart, usageRecords, options) {
 
 function renderMemoryChartDetail(myChart, usageRecords, options) {
     if (myChart != null) {
-        var memory = [];
-        var timestamps = [];
-        var tsCounter = 0;
-        usageRecords.forEach(function _(ur){
-            var m = parseFloat(ur.memory);//normalizePercentage(ur.cpuSys);
-            memory.push(m);
+        var ds = getUsageDataset(usageRecords, 'memory', null);
 
-            if (usageRecords.length < 5 || (tsCounter++) % 4 == 0) {
-                timestamps.push(ur.timestamp);
-            } else {
-                timestamps.push("");
-            }
-        });
         var memoryFillColor = "rgba(255,255,255,0.1)";
         var memoryPointColor = "rgba(0,255,0,1)";
         var memoryStrokeColor = "rgba(0,255,0,1)";
         myChart.Line({
-            labels: timestamps,
-            datasets:[
+            labels: ds.timestamps,
+            datasets: [
                 {
                     label: "Used Memory",
                     fillColor: memoryFillColor,
@@ -177,30 +223,17 @@ function renderMemoryChartDetail(myChart, usageRecords, options) {
                     pointStrokeColor: memoryStrokeColor,
                     pointHighlightFill: memoryPointColor,
                     pointHighlightStroke: memoryPointColor,
-                    data: memory
+                    data: ds.ds1
                 }
             ]
         }, options);
-    }}
+    }
+}
 
 function renderDiskIOChartDetail(myChart, usageRecords, options) {
     if (myChart != null) {
-        var read = [];
-        var write = [];
-        var timestamps = [];
-        var tsCounter = 0;
-        usageRecords.forEach(function _(ur){
-            var r = parseFloat(ur.diskRead);
-            var w = parseFloat(ur.diskWrite);
-            read.push(r);
-            write.push(w);
+        var ds = getUsageDataset(usageRecords, 'diskRead', 'diskWrite');
 
-            if (usageRecords.length < 5 || (tsCounter++) % 4 == 0) {
-                timestamps.push(ur.timestamp);
-            } else {
-                timestamps.push("");
-            }
-        });
         var writeFillColor = "rgba(255,255,255,0.1)";
         var writePointColor = "rgba(255,0,0,1)";
         var writeStrokeColor = "rgba(255,255,255,0.5)";
@@ -209,8 +242,8 @@ function renderDiskIOChartDetail(myChart, usageRecords, options) {
         var readStrokeColor = "rgba(0,255,0,1)";
 
         myChart.Line({
-            labels: timestamps,
-            datasets:[
+            labels: ds.timestamps,
+            datasets: [
                 {
                     label: "Write",
                     fillColor: writeFillColor,
@@ -219,7 +252,7 @@ function renderDiskIOChartDetail(myChart, usageRecords, options) {
                     pointStrokeColor: writeStrokeColor,
                     pointHighlightFill: writePointColor,
                     pointHighlightStroke: writePointColor,
-                    data: write
+                    data: ds.ds2
                 },
                 {
                     label: "Read",
@@ -229,7 +262,7 @@ function renderDiskIOChartDetail(myChart, usageRecords, options) {
                     pointStrokeColor: readStrokeColor,
                     pointHighlightFill: readPointColor,
                     pointHighlightStroke: readPointColor,
-                    data: read
+                    data: ds.ds1
                 }
             ]
         }, options);
@@ -238,22 +271,8 @@ function renderDiskIOChartDetail(myChart, usageRecords, options) {
 
 function renderNetworkIOChartDetail(myChart, usageRecords, options) {
     if (myChart != null) {
-        var read = [];
-        var write = [];
-        var timestamps = [];
-        var tsCounter = 0;
-        usageRecords.forEach(function _(ur){
-            var r = parseFloat(ur.netRx);
-            var w = parseFloat(ur.netTx);
-            read.push(r);
-            write.push(w);
+        var ds = getUsageDataset(usageRecords, 'netRx', 'netTx');
 
-            if (usageRecords.length < 5 || (tsCounter++) % 4 == 0) {
-                timestamps.push(ur.timestamp);
-            } else {
-                timestamps.push("");
-            }
-        });
         var writeFillColor = "rgba(255,255,255,0.1)";
         var writePointColor = "rgba(255,0,0,1)";
         var writeStrokeColor = "rgba(255,255,255,0.5)";
@@ -262,31 +281,32 @@ function renderNetworkIOChartDetail(myChart, usageRecords, options) {
         var readStrokeColor = "rgba(0,255,0,1)";
 
         myChart.Line({
-            labels: timestamps,
-            datasets:[
+            labels: ds.timestamps,
+            datasets: [
                 {
-                    label: "Write",
+                    label: "Tx",
                     fillColor: writeFillColor,
                     strokeColor: writeStrokeColor,
                     pointColor: writePointColor,
                     pointStrokeColor: writeStrokeColor,
                     pointHighlightFill: writePointColor,
                     pointHighlightStroke: writePointColor,
-                    data: write
+                    data: ds.ds2
                 },
                 {
-                    label: "Read",
+                    label: "Rx",
                     fillColor: writeFillColor,
                     strokeColor: readStrokeColor,
                     pointColor: readPointColor,
                     pointStrokeColor: readStrokeColor,
                     pointHighlightFill: readPointColor,
                     pointHighlightStroke: readPointColor,
-                    data: read
+                    data: ds.ds1
                 }
             ]
         }, options);
-    }}
+    }
+}
 
 // ----------------------------------------------------------------------
 function getVmDetails_vdsmToInternal(vmId, parsedVdsmGetAllVMs) {// lookup cached VM detail

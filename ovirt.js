@@ -1,7 +1,7 @@
 // --- global -----------------------------------------------------------
 var VDSM = "/root/.local/share/cockpit/ovirt/vdsm/vdsm";
 var DELAY_BEFORE_RELOAD_AFTER_VDSM_ACTION = 1000;// one second
-var AUTO_REFRESH_INTERVAL = 5000;// in ms
+var AUTO_REFRESH_INTERVAL = 3000;// in ms  TODO: 5000
 var isDebug = true;// print debug messages to console
 
 // ----------------------------------------------------------------------
@@ -100,13 +100,13 @@ function refreshButtonClicked() {
     if (buttonRefresh.attr("data-pattern") == "off") {
         autoRefresher = setInterval(refresh, AUTO_REFRESH_INTERVAL);
 
-        buttonRefresh.text("Auto Refresh On");
+        buttonRefresh.text("Refresh: auto");
         buttonRefresh.attr("data-pattern", "on");
     } else {
         clearInterval(autoRefresher);
         autoRefresher = null;
 
-        buttonRefresh.text("Auto Refresh Off");
+        buttonRefresh.text("Refresh: off");
         buttonRefresh.attr("data-pattern", "off");
     }
 }
