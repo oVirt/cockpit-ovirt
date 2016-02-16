@@ -53,12 +53,14 @@ The oVirt deals with
         * engine-setup
 
 * Install [Cockpit](http://cockpit-project.org/running.html)
-    * make sure cockpit is started/enabled
+    * yum install cockpit
+    * make sure cockpit is started/enabled:
         * systemctl enable cockpit.socket
         * systemctl start cockpit
 
 ### Install Plugin
 * copy/git-clone sources to /root/.local/share/cockpit/ovirt/
+    *  git clone https://github.com/mareklibra/cockpit-ovirt.git /root/.local/share/cockpit/ovirt/
 
 * **Alternative:**
     * copy sources to /usr/share/cockpit/ovirt

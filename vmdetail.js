@@ -112,7 +112,7 @@ function getUsageChartDetail(device, vmId) {
     return myChart;
 }
 
-function getUsageDataset(usageRecords, attr1, attr2, inclSum=false) {
+function getUsageDataset(usageRecords, attr1, attr2, inclSum) {
     var ds1 = [];
     var ds2 = [];
     var total = [];

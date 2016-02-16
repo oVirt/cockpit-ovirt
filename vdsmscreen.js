@@ -1,6 +1,6 @@
 // --- vdsm-screen -------------------------------------------------------
 
-function loadVdsmConf(inform=false) {
+function loadVdsmConf(inform) {
     var editor = $("#editor-vdsm-conf");
 
     cockpit.file(VDSM_CONF_FILENAME).read().done(function (content, tag) {
@@ -34,7 +34,7 @@ function saveVdsmConf() {
     }
 }
 
-function writeVdsmConfMsg(text, autoclear=false) {
+function writeVdsmConfMsg(text, autoclear) {
     var msg = $("#editor-vds-conf-msg");
     msg.html(text);
     debugMsg("writeVdsmConfMsg: " + text);
