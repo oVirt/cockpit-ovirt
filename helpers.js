@@ -41,7 +41,7 @@ function parseVdsmJson(json) {
             return resp;
         }
     } catch (err) {
-
+        printError("parseVdsmJson() exception: " + err);
     }
 
     printError("Malformed data format received (missing status code): " + json);

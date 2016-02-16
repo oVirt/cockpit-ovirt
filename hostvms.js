@@ -2,7 +2,7 @@
 var latestHostVMSList = "";// latest parsed&successful VDSM's getAllVmStats() result
 var vmUsage = {}; // historical usage statistics, see addVmUsage()
 
-var vdsmDataVmsList = ""; // might be partial output from the VDSM process
+var vdsmDataVmsList = ""; // might be partial output from the VDSM process; TODO: risk of data overlapping
 function vdsmOutput(data) {
     vdsmDataVmsList += data;
     debugMsg("vdsmOutput: <code>" + vdsmDataVmsList + "</code>");
