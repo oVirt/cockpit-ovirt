@@ -13,6 +13,7 @@
     <script src="hostvms.js"></script>
     <script src="enginevms.js"></script>
     <script src="engineLogin.js"></script>
+    <script src="vdsmscreen.js"></script>
     <script src="ovirt.js"></script>
 </head>
 <body>
@@ -22,11 +23,14 @@
             <td align="left" valign="top">
                 <div class="btn-group" id="main-btn-menu">
                     <button class="btn btn-default" data-pattern="/vms" translatable="yes">Running VMs</button>
-                    <button id="main-btn-menu-allvms" class="btn btn-default" data-pattern="/allVms" translatable="yes">Available VMs</button>
+                    <button id="main-btn-menu-allvms" class="btn btn-default" data-pattern="/allVms" translatable="yes">
+                        Available VMs
+                    </button>
                     <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
-<!--                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes" onclick="refreshButtonClicked()">Auto Refresh Off</button>-->
                 </div>
-                <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes" onclick="refreshButtonClicked()">Refresh: off</button>
+                <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes"
+                        onclick="refreshButtonClicked()">Refresh: off
+                </button>
             </td>
             <td align="right" valign="top" width="20%">
                 <div id="engine-login">
@@ -59,14 +63,26 @@
     </div>
     <div id="vdsm-screen">
         <a onclick="jump('/system/services#/vdsmd.service')">VDSM Service Management</a>
-        <br/>TODO: Add editor of vdsm.conf
+        <hr/>
+        <div id="engine-virtual-machines" class="panel panel-default">
+            <div class="panel-heading">Edit vdsm.conf
+                <div style="float:right;">
+                    <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
+                    <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
+                        <button class="btn btn-default" translatable="yes" onclick="saveVdsmConf()">Save</button>
+                        <button class="btn btn-default" translatable="yes" onclick="reloadVdsmConf()">Reload</button>
+                    </div>
+                </div>
+            </div>
+            <textarea id="editor-vdsm-conf" style="width:100%;height:50%;">Loading data ...</textarea>
+        </div>
     </div>
 </div>
 
 <br/>
 <hr/>
 <p>
-<!--<div id="message"></div>-->
+    <!--<div id="message"></div>-->
 <div id="error-msg"></div>
 
 <script id="vm-detail-templ" type="x-template/mustache">
@@ -151,12 +167,20 @@
             <td width=30%"><!-- Usage graphs -->
                 <table width="100%">
                     <tr>
-                        <td width="50%"><canvas id="cpuUsageChartDetail-{{id}}" height="120"/></td>
-                        <td width="50%"><canvas id="memUsageChartDetail-{{id}}" height="120"/></td>
+                        <td width="50%">
+                            <canvas id="cpuUsageChartDetail-{{id}}" height="120"/>
+                        </td>
+                        <td width="50%">
+                            <canvas id="memUsageChartDetail-{{id}}" height="120"/>
+                        </td>
                     </tr>
                     <tr>
-                        <td><canvas id="diskioUsageChartDetail-{{id}}" height="120"/></td>
-                        <td><canvas id="networkioUsageChartDetail-{{id}}" height="120"/></td>
+                        <td>
+                            <canvas id="diskioUsageChartDetail-{{id}}" height="120"/>
+                        </td>
+                        <td>
+                            <canvas id="networkioUsageChartDetail-{{id}}" height="120"/>
+                        </td>
                     </tr>
                 </table>
             </td>
@@ -165,31 +189,31 @@
 </script>
 
 <script id="engine-vms-list-templ" type="x-template/mustache">
-<table class="table table-hover">
-    <thead>
-    <th>Name</th>
-    <th>Status</th>
-    <th>Type</th>
-    <th>Memory</th>
-    <th>vCPUs</th>
-    <th>OS Type</th>
-    <th>Origin</th>
-    <th>Actions</th>
-    </thead>
-    <tbody>
-    {{#units}}
-    <tr>
-        <td onclick="onEngineVmClick('{{id}}')">{{name}}</td>
-        <td>{{status}}</td>
-        <td>{{type}}</td>
-        <td>{{memory}}</td>
-        <td>{{vCPUs}}</td>
-        <td>{{osType}}</td>
-        <td>{{origin}}</td>
-        <td></td>
-    </tr>
-    {{/units}}
-    </tbody>
+    <table class="table table-hover">
+        <thead>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Memory</th>
+        <th>vCPUs</th>
+        <th>OS Type</th>
+        <th>Origin</th>
+        <th>Actions</th>
+        </thead>
+        <tbody>
+        {{#units}}
+        <tr>
+            <td onclick="onEngineVmClick('{{id}}')">{{name}}</td>
+            <td>{{status}}</td>
+            <td>{{type}}</td>
+            <td>{{memory}}</td>
+            <td>{{vCPUs}}</td>
+            <td>{{osType}}</td>
+            <td>{{origin}}</td>
+            <td></td>
+        </tr>
+        {{/units}}
+        </tbody>
     </table>
 </script>
 
@@ -210,7 +234,7 @@
         {{#units}}
         <tr>
             <td onclick="onVmClick('{{id}}')">{{name}}</td>
-            <td>{{status}} </td>
+            <td>{{status}}</td>
             <td>{{guestIPs}}</td>
             <td>
                 <canvas id="cpuUsageChart-{{id}}" width="40" height="40"/>
@@ -275,8 +299,10 @@
             </td>
         </tr>
     </table>
-    <button id="engine-login-button-login" class="btn btn-default" translatable="yes" onclick="engineLogin()">Login</button>
-    <button id="engine-login-button-logout" class="btn btn-default" translatable="yes" onclick="engineLogout()">Logout</button>
+    <button id="engine-login-button-login" class="btn btn-default" translatable="yes" onclick="engineLogin()">Login
+    </button>
+    <button id="engine-login-button-logout" class="btn btn-default" translatable="yes" onclick="engineLogout()">Logout
+    </button>
 </script>
 
 <script id="message-one-param-temp" type="x-template/mustache">
