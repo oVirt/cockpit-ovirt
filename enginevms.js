@@ -2,8 +2,12 @@
 
 var vdsmEngineAllVms = ""; // might be partial output from the VDSM process
 function readEngineVmsList() { // invoke VDSM (engineBridge) to get fresh VMS List from Engine (via Rest API)
-    spawnVdsm("engineBridge", JSON.stringify(getEngineCredentialsTokenOnly()), getAllVmsStdout, getAllVmsListSuccess, vdsmFail(), 'getAllVms');
+    spawnVdsm("engineBridge", JSON.stringify(getEngineCredentialsTokenOnly()), getAllVmsStdout, getAllVmsListSuccess, engineBridgeFail, 'getAllVms');
     vdsmEngineAllVms = "";
+}
+
+function engineBridgeFail(msg) {
+    printError("engineBridge call failed: " + msg);
 }
 
 function refreshEngineVmsList() {

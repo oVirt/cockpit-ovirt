@@ -12,20 +12,32 @@ function engineLogin() {// get Engine token via host
     var userName = $("#engine-login-user").val();
     var pwd = $("#engine-login-pwd").val();
     var url = $("#engine-login-url").val();
+    debugMsg("Engine login for: " + userName);
     storeEngineCredentials(userName, pwd, url);
 
     var credentials = getEngineCredentials();
     var jsonCredentials = JSON.stringify(credentials);
     spawnVdsm("engineBridge", jsonCredentials,  engineLoginStdout, engineLoginSuccessful, vdsmFail, 'getToken');
     engineLoginStdout = "";
+
+    onEngineLoginStart();
+}
+
+function onEngineLoginStart() {
+    setEngineLoginErrorMsg("");
+}
+
+function onEngineLoginEnd() {
 }
 
 function engineLogout() {
+    debugMsg("Engine logout");
     removeEngineToken();
 
     setEngineLoginTitle("Login to Engine");
     setEngineLoginButtonVisibility();
     setEngineFunctionalityVisibility();
+    toggleEngineLoginVisibility();
 }
 
 function toggleEngineLoginVisibility() {
@@ -90,10 +102,13 @@ function getEngineCredentials() {
 
 function engineLoginSuccessful() {
     var resp = parseVdsmJson(vdsmLoginOut);
+    debugMsg("engineLoginSuccessful() called");
+    onEngineLoginEnd();
     if (resp != null) {
         if (resp.status.code == 0) {
             if (resp.hasOwnProperty('content') && resp.content.hasOwnProperty('access_token')) {
                 // TODO: make the title green
+                debugMsg("Login successful, token received");
                 setEngineLoginTitle("Logged to Engine");
                 toggleEngineLoginVisibility();
 
@@ -111,6 +126,9 @@ function engineLoginSuccessful() {
 }
 
 function engineLoginFailed(msg, statusCode) {
+    debugMsg("Login error: " + msg);
+    onEngineLoginEnd();
+    
     // TODO: make the title red
     setEngineLoginTitle("Engine login failed");
 
