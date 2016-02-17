@@ -5,8 +5,9 @@ Features in recent release:
 
 * list of VMs running on a host
 * single VM detail
-* VM statistics (monitoring)
+* VM monitoring (statistics and usage charts)
 * basic VM operations
+* edit of vdsm.conf 
 * plugin's components are embeddable to other tools/dashboard, like VM detail
 
 * With optional Engine login available
@@ -79,10 +80,10 @@ The oVirt deals with
     * https://YOUR_HOST:9090/ovirt/ovirt
     * or https://YOUR_HOST:9090/ovirt/ovirt#/ping 
 
-## TODO 
+## TODO: 
 Please note, the plugin is in early development state.
 
-See TODO.txt for list of planed changes.
+See the issue tracker for list of planed changes.
 
 ## More Info
 * About [oVirt](http://www.ovirt.org/Home)
