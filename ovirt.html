@@ -14,75 +14,84 @@
     <script src="enginevms.js"></script>
     <script src="engineLogin.js"></script>
     <script src="vdsmscreen.js"></script>
+    <script src="ping.js"></script>
     <script src="ovirt.js"></script>
 </head>
 <body>
-<div class="content-header-extra">
-    <table width="100%">
-        <tr>
-            <td align="left" valign="top">
-                <div class="btn-group" id="main-btn-menu">
-                    <button class="btn btn-default" data-pattern="/vms" translatable="yes">Running VMs</button>
-                    <button id="main-btn-menu-allvms" class="btn btn-default" data-pattern="/allVms" translatable="yes">
-                        Available VMs
-                    </button>
-                    <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
-                </div>
-                <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes"
-                        onclick="refreshButtonClicked()">Refresh: off
-                </button>
-            </td>
-            <td align="right" valign="top" width="20%">
-                <div id="engine-login">
-                    <div id="engine-login-title" onclick="toggleEngineLoginVisibility()">Login to Engine</div>
-                    <div id="engine-login-content" hidden></div>
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
+<div id="ping-content" hidden></div>
 
-<div class="container-fluid" style="margin-top: 5em">
-    <div id="vms-screen">
-        <div id="virtual-machines" class="panel panel-default">
-            <div class="panel-heading">Virtual Machines</div>
-            <div id="virtual-machines-list"></div>
-            <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is running</div>
-        </div>
-    </div>
-    <div id="vm-detail-screen">
-        <div id="vm-detail-content" class="panel panel-default"></div>
-        <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>VM detail not available</div>
-    </div>
-    <div id="engine-vms-screen">
-        <div id="engine-virtual-machines" class="panel panel-default">
-            <div class="panel-heading">VMs available on the engine</div>
-            <div id="engine-virtual-machines-list"></div>
-            <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is available</div>
-        </div>
-    </div>
-    <div id="vdsm-screen">
-        <div id="engine-virtual-machines" class="panel panel-default">
-            <div class="panel-heading">Edit vdsm.conf (or go to <a onclick="jump('/system/services#/vdsmd.service')">VDSM Service Management</a>)
-                <div style="float:right;">
-                    <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
-                    <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
-                        <button class="btn btn-default" translatable="yes" onclick="saveVdsmConf()">Save</button>
-                        <button class="btn btn-default" translatable="yes" onclick="reloadVdsmConf()">Reload</button>
+<div id="ovirt-content">
+    <div class="content-header-extra">
+        <table width="100%">
+            <tr>
+                <td align="left" valign="top">
+                    <div class="btn-group" id="main-btn-menu">
+                        <button class="btn btn-default" data-pattern="/vms" translatable="yes">Running VMs</button>
+                        <button id="main-btn-menu-allvms" class="btn btn-default" data-pattern="/allVms"
+                                translatable="yes">
+                            Available VMs
+                        </button>
+                        <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
                     </div>
+                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes"
+                            onclick="refreshButtonClicked()">Refresh: off
+                    </button>
+                </td>
+                <td align="right" valign="top" width="20%">
+                    <div id="engine-login">
+                        <div id="engine-login-title" onclick="toggleEngineLoginVisibility()">Login to Engine</div>
+                        <div id="engine-login-content" hidden></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="container-fluid" style="margin-top: 5em">
+        <div id="vms-screen">
+            <div id="virtual-machines" class="panel panel-default">
+                <div class="panel-heading">Virtual Machines</div>
+                <div id="virtual-machines-list"></div>
+                <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is running</div>
+            </div>
+        </div>
+        <div id="vm-detail-screen">
+            <div id="vm-detail-content" class="panel panel-default"></div>
+            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>VM detail not available</div>
+        </div>
+        <div id="engine-vms-screen">
+            <div id="engine-virtual-machines" class="panel panel-default">
+                <div class="panel-heading">VMs available on the engine</div>
+                <div id="engine-virtual-machines-list"></div>
+                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is available
                 </div>
             </div>
-            <textarea id="editor-vdsm-conf" style="width:100%;height:50%;">Loading data ...</textarea>
+        </div>
+        <div id="vdsm-screen">
+            <div id="engine-virtual-machines" class="panel panel-default">
+                <div class="panel-heading">Edit vdsm.conf (or go to <a
+                        onclick="jump('/system/services#/vdsmd.service')">VDSM Service Management</a>)
+                    <div style="float:right;">
+                        <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
+                        <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
+                            <button class="btn btn-default" translatable="yes" onclick="saveVdsmConf()">Save</button>
+                            <button class="btn btn-default" translatable="yes" onclick="reloadVdsmConf()">Reload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <textarea id="editor-vdsm-conf" style="width:100%;height:50%;">Loading data ...</textarea>
+            </div>
         </div>
     </div>
+
+    <br/>
+    <hr/>
+    <p>
+    <div id="error-msg"></div>
 </div>
 
-<br/>
-<hr/>
-<p>
-    <!--<div id="message"></div>-->
-<div id="error-msg"></div>
-
+<!-- --------------------------------------------------------------------------- -->
 <script id="vm-detail-templ" type="x-template/mustache">
     <div class="panel-heading">Detail of {{name}}</div>
     <table width="100%">

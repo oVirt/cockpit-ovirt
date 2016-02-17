@@ -19,7 +19,11 @@ function nullToEmpty(obj) {
     return obj == null ? "" : obj;
 }
 
-function spawnVdsm(commandName, stdin, stdoutCallback, successCallback, arg1) {
+function spawnVdsm(commandName, stdin, stdoutCallback, successCallback, failCallback, arg1) {
+    if (!failCallback) {
+        failCallback = vdsmFail;
+    }
+
     var spawnArgs = [];
     if (typeof(arg1) !== 'undefined') {
         spawnArgs = [VDSM, commandName, arg1];
@@ -31,7 +35,7 @@ function spawnVdsm(commandName, stdin, stdoutCallback, successCallback, arg1) {
     proc.input(stdin);
     proc.done(successCallback);
     proc.stream(stdoutCallback);
-    proc.fail(vdsmFail);
+    proc.fail(failCallback);
 }
 
 function parseVdsmJson(json) {
@@ -50,7 +54,6 @@ function parseVdsmJson(json) {
 
 function vdsmFail() {
     printError("Vdsm execution failed!");
-    alert("vdsmFail");
 }
 
 function disableButton(name) {

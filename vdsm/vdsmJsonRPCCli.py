@@ -106,7 +106,6 @@ def getAllVms():
         # TODO: prune data before transfer
         # TODO: should related sub-data be loaded now?
         return buildResult(0, 'Done', content)
-        #return buildResult(0, 'Done', resp.text)
     else:
         return buildResult(resp.status_code, resp.text)
 
@@ -114,7 +113,7 @@ def getAllVms():
 def parseArgs(service):
     parser = argparse.ArgumentParser(description='Support utility for Cockpit oVirt plugin to invoke VDSM JSON RPC or Engine REST API.\n')
     parser.add_argument('vdsmCommand', help='VDSM command to be invoked',
-                        choices=['getAllVmStats', 'shutdown', 'destroy', 'engineBridge'])
+                        choices=['getAllVmStats', 'shutdown', 'destroy', 'ping', 'engineBridge'])
     parser.add_argument('vdsmCommandArgs', help='VDSM command arguments', nargs='*')
     return parser.parse_args()
 
@@ -130,7 +129,8 @@ def main():
     COMMANDS = {
         'getAllVmStats' : service.getAllVmStats,
         'shutdown' : service.shutdown,
-        'destroy' : service.destroy
+        'destroy' : service.destroy,
+        'ping' : service.ping
     }
 
     args = parseArgs(service)
@@ -152,29 +152,3 @@ def main():
 if __name__ == "__main__":
     logger=_set_logger()
     sys.exit(main())
-
-
-##############################################################################################
-# myMap = {
-#     'key1' : 'val1',
-#     'key2' : 'val2'
-# }
-#
-# myList = [1, 2, 3, 4]
-#
-# res = myList
-# if isinstance(res, dict):
-#     print 'it is Dictionary!'
-#     pprint(res);
-# else:
-#     print 'It is something different: '
-#     pprint(res)
-
-#pprint(service.fullList())
-#pprint(service.ping())
-#pprint(service.getVdsCapabilities())
-#pprint(service.getVmStats('0000'))
-
-#print json.dumps(service.getVdsCapabilities())
-#print json.dumps(service.getAllVmStats())
-#print json.dumps(service.fullList())

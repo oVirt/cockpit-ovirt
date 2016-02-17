@@ -41,10 +41,14 @@ function showVmDetailScreen(vmId) {
 
 function showVdsmScreen() {
     hideAllScreens();
-
     loadVdsmConf();
-
     $("#vdsm-screen").show();
+}
+
+function showPing() {
+    $("#ovirt-content").hide();
+    renderPing();
+    $("#ping-content").show();
 }
 
 function hideAllScreens() {
@@ -52,6 +56,8 @@ function hideAllScreens() {
     $("#engine-vms-screen").hide();
     $("#vm-detail-screen").hide();
     $("#vdsm-screen").hide();
+
+    $("#ovirt-content").show();
 }
 
 function getVmIdFromPath() {
@@ -78,6 +84,8 @@ function onLocationChanged() {
         showEngineVmsScreen();
     } else if (path[0] == 'vdsm') {
         showVdsmScreen();
+    } else if (path[0] == 'ping') {
+        showPing();
     } else {
         defaultScreen('Unknown location path: ' + path[0]);
     }

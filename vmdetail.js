@@ -21,7 +21,7 @@ function downloadConsole(vmId) {
 }
 
 function shutdown(vmId) {
-    spawnVdsm("shutdown", null, null, shutdownSuccess, vmId);
+    spawnVdsm("shutdown", null, null, shutdownSuccess, vdsmFail, vmId);
     disableButton('btn-shutdown-' + vmId);
 }
 
@@ -30,7 +30,7 @@ function shutdownSuccess() {
 }
 
 function forceoff(vmId) {
-    spawnVdsm("destroy", null, null, shutdownSuccess, vmId);
+    spawnVdsm("destroy", null, null, shutdownSuccess, vdsmFail, vmId);
     disableButton('btn-forceoff-' + vmId);
 }
 

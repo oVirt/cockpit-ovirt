@@ -15,9 +15,8 @@ function engineLogin() {// get Engine token via host
     storeEngineCredentials(userName, pwd, url);
 
     var credentials = getEngineCredentials();
-    // as {"user": "admin@internal","pwd": "admin","url": "https://engine.local/ovirt-engine"}
     var jsonCredentials = JSON.stringify(credentials);
-    spawnVdsm("engineBridge", jsonCredentials,  engineLoginStdout, engineLoginSuccessful, 'getToken');
+    spawnVdsm("engineBridge", jsonCredentials,  engineLoginStdout, engineLoginSuccessful, vdsmFail, 'getToken');
     engineLoginStdout = "";
 }
 
