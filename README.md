@@ -75,7 +75,9 @@ The oVirt deals with
     * As the plugin is in early development state, **PLEASE let author know about all issues you encounter during installation/use**, it will help in making the product better. 
     
 ### Verify
-* Follow: https://YOUR_HOST:9090/ovirt/ovirt
+* Follow: 
+    * https://YOUR_HOST:9090/ovirt/ovirt
+    * or https://YOUR_HOST:9090/ovirt/ovirt#/ping 
 
 ## TODO 
 Please note, the plugin is in early development state.
