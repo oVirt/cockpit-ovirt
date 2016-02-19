@@ -67,3 +67,15 @@ function getActualTimeStamp() {
     var dt = new Date();
     return dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 }
+
+function registerBtnOnClickListener(elementIdStartsWith, handler) {
+    $("[id^='"+elementIdStartsWith+"']").on("click", function () {
+        var dataPattern = $(this).attr("data-pattern");
+
+        if (dataPattern) {
+            handler(dataPattern);
+        } else {
+            handler();
+        }
+    });
+}

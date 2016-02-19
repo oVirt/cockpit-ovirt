@@ -50,6 +50,9 @@ function toggleEngineLoginVisibility() {
         var html = Mustache.to_html(template, credentials);
         loginFormElement.html(html);
         loginFormElement.show();
+
+        registerBtnOnClickListener('engine-login-button-login', engineLogin);
+        registerBtnOnClickListener('engine-login-button-logout', engineLogout);
     } else {
         loginFormElement.hide();
     }

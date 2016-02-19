@@ -17,7 +17,7 @@ function downloadConsole(vmId) {
 
     saveAs(consoleFileContent(vm), "console.vv");
 
-    printError("TODO: finish generating of console file");
+    printError("TODO: finish generating of console.vv file");
 }
 
 function shutdown(vmId) {

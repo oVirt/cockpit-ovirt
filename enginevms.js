@@ -47,6 +47,8 @@ function renderEngineVmsList(vmsFull) {
         var html = Mustache.to_html(template, data);
         $("#engine-virtual-machines-list").html(html);
         $("#engine-virtual-machines-novm-message").hide();
+
+        registerBtnOnClickListener('engine-vms-list-item-', onEngineVmClick);
     } else {
         $("#engine-virtual-machines-list").html("");
         $("#engine-virtual-machines-novm-message").show();

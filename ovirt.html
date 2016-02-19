@@ -33,13 +33,11 @@
                         </button>
                         <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
                     </div>
-                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes"
-                            onclick="refreshButtonClicked()">Refresh: off
-                    </button>
+                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes">Refresh: off</button>
                 </td>
                 <td align="right" valign="top" width="25%">
                     <div id="engine-login">
-                        <div id="engine-login-title" onclick="toggleEngineLoginVisibility()">Login to Engine</div>
+                        <div id="engine-login-title">Login to Engine</div>
                         <div id="engine-login-content" hidden></div>
                     </div>
                 </td>
@@ -68,15 +66,13 @@
             </div>
         </div>
         <div id="vdsm-screen">
-            <div id="engine-virtual-machines" class="panel panel-default">
-                <div class="panel-heading">Edit vdsm.conf (or go to <a
-                        onclick="jump('/system/services#/vdsmd.service')">VDSM Service Management</a>)
+            <div class="panel panel-default">
+                <div class="panel-heading">Edit vdsm.conf (or go to <a id="a-jump-vdsm-service-mngmt" data-pattern="/system/services#/vdsmd.service">VDSM Service Management</a>)
                     <div style="float:right;">
                         <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
                         <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
-                            <button class="btn btn-default" translatable="yes" onclick="saveVdsmConf()">Save</button>
-                            <button class="btn btn-default" translatable="yes" onclick="reloadVdsmConf()">Reload
-                            </button>
+                            <button class="btn btn-default" id="editor-vdsm-btn-save" translatable="yes">Save</button>
+                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translatable="yes">Reload</button>
                         </div>
                     </div>
                 </div>
@@ -210,7 +206,7 @@
         <tbody>
         {{#units}}
         <tr>
-            <td onclick="onEngineVmClick('{{id}}')">{{name}}</td>
+            <td id="engine-vms-list-item-name-{{id}}" data-pattern="{{id}}">{{name}}</td>
             <td>{{status}}</td>
             <td>{{type}}</td>
             <td>{{memory}}</td>
@@ -240,7 +236,7 @@
         <tbody>
         {{#units}}
         <tr>
-            <td onclick="onVmClick('{{id}}')">{{name}}</td>
+            <td id="host-vms-list-item-" data-pattern="{{id}}">{{name}}</td>
             <td>{{status}}</td>
             <td>{{guestIPs}}</td>
             <td>
@@ -260,10 +256,9 @@
             </td>
             -->
             <td>
-                <button class="btn btn-default" id="btn-console-{{id}}" onClick="downloadConsole('{{id}}')">Console
-                </button>
-                <button class="btn btn-default" id="btn-shutdown-{{id}}" onClick="shutdown('{{id}}')">Shutdown</button>
-                <button class="btn btn-default" id="btn-forceoff-{{id}}" onClick="forceoff('{{id}}')">Force Off</button>
+                <button class="btn btn-default" id="btn-download-console-{{id}}" data-pattern="{{id}}">Console</button>
+                <button class="btn btn-default" id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}">Shutdown</button>
+                <button class="btn btn-default" id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}">Force Off</button>
                 <!-- Add Change CD -->
             </td>
         </tr>
@@ -306,10 +301,8 @@
             </td>
         </tr>
     </table>
-    <button id="engine-login-button-login" class="btn btn-default" translatable="yes" onclick="engineLogin()">Login
-    </button>
-    <button id="engine-login-button-logout" class="btn btn-default" translatable="yes" onclick="engineLogout()">Logout
-    </button>
+    <button id="engine-login-button-login" class="btn btn-default" translatable="yes">Login</button>
+    <button id="engine-login-button-logout" class="btn btn-default" translatable="yes">Logout</button>
 </script>
 
 <script id="message-one-param-temp" type="x-template/mustache">

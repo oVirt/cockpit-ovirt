@@ -51,7 +51,11 @@ function renderHostVms(vmsFull) {
         $("#virtual-machines-list").html(html);
         $("#virtual-machines-novm-message").hide();
 
-
+        // register button event listeners
+        registerBtnOnClickListener('btn-download-console-', downloadConsole);
+        registerBtnOnClickListener('btn-forceoff-vm-', forceoff);
+        registerBtnOnClickListener('btn-shutdown-vm-', shutdown);
+        registerBtnOnClickListener('host-vms-list-item-', onVmClick);
         refreshUsageCharts();
         renderVmDetailActual();
     } else {

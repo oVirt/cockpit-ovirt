@@ -110,7 +110,7 @@ function jump(component) {
 }
 
 var autoRefresher;
-function refreshButtonClicked() {
+function refreshButtonClicked(ignore) {
     var buttonRefresh = $("#button-refresh");
     if (buttonRefresh.attr("data-pattern") == "off") {
         autoRefresher = setInterval(refresh, AUTO_REFRESH_INTERVAL);
@@ -138,6 +138,14 @@ function initNavigation() {
         var dataPattern = $(this).attr("data-pattern");
         goTo(dataPattern);
     });
+
+    registerBtnOnClickListener('button-refresh', refreshButtonClicked);
+
+    registerBtnOnClickListener('a-jump-vdsm-service-mngmt', jump);
+    registerBtnOnClickListener('editor-vdsm-btn-save', saveVdsmConf);
+    registerBtnOnClickListener('editor-vdsm-btn-reload', reloadVdsmConf);
+
+    registerBtnOnClickListener('engine-login-title', toggleEngineLoginVisibility);
 }
 
 function initEngineLogin() {
