@@ -128,7 +128,7 @@ function engineLoginSuccessful() {
 function engineLoginFailed(msg, statusCode) {
     debugMsg("Login error: " + msg);
     onEngineLoginEnd();
-    
+
     // TODO: make the title red
     setEngineLoginTitle("Engine login failed");
 

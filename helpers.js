@@ -11,8 +11,6 @@ function debugMsg(text) {
     if (isDebug) {
         console.log("Debug: " + text);
     }
-    //var message = $("#message");
-    //message.html("<p>DEBUG:<br/>" + text + "</p>");
 }
 
 function nullToEmpty(obj) {

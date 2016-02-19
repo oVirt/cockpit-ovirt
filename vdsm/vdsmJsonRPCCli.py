@@ -73,7 +73,7 @@ def httpCall(url, method, headers = {'Accept': 'application/json'}, user=None, p
         return requests.get(url,auth=auth, headers=headers, verify=verify)
 
     logger.info('Unsupported method: {0}'.format(method));
-    return null;
+    return None
 
 def getEngineToken():
     logger.debug('getEngineToken, reading credenatials from stdin')
