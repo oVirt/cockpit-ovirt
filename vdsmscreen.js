@@ -5,7 +5,7 @@ function loadVdsmConf(inform) {
 
     cockpit.file(VDSM_CONF_FILENAME).read().done(function (content, tag) {
         editor.val(content);
-        debugMsg("Content of vdsm.conf loaded: " + content);
+//        debugMsg("Content of vdsm.conf loaded: " + content);
         if (inform) {
             writeVdsmConfMsg("Loaded", true);
         }
