@@ -43,7 +43,6 @@ function downloadConsole(vmId) {
 
 function shutdown(vmId) {
     spawnVdsm("shutdown", null, null, shutdownSuccess, vdsmFail, vmId);
-    //disableButton('btn-shutdown-' + vmId);
 }
 
 function shutdownSuccess() {
@@ -52,7 +51,6 @@ function shutdownSuccess() {
 
 function forceoff(vmId) {
     spawnVdsm("destroy", null, null, shutdownSuccess, vdsmFail, vmId);
-    //disableButton('btn-forceoff-' + vmId);
 }
 
 function renderVmDetailActual() {// called after successful readVmsList() to refresh rendered VM Detail
@@ -80,6 +78,7 @@ function renderVmDetail(vmId) {
 }
 
 function renderUsageChartsDetail(vmId) {
+    /*
     var lineOptions = {
         ///Boolean - Whether grid lines are shown across the chart
         scaleShowGridLines: true,
@@ -112,18 +111,23 @@ function renderUsageChartsDetail(vmId) {
         //String - A legend template
         legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
     };
-
+*/
     var usageRecords = vmUsage[vmId];
-    if (usageRecords) {// TODO: optimization: call chart.addData instead of full rendering
-        renderCpuChartDetail(getUsageChartDetail("cpu", vmId), usageRecords, lineOptions);
-        renderMemoryChartDetail(getUsageChartDetail("mem", vmId), usageRecords, lineOptions);
-        renderDiskIOChartDetail(getUsageChartDetail("diskio", vmId), usageRecords, lineOptions);
-        renderNetworkIOChartDetail(getUsageChartDetail("networkio", vmId), usageRecords, lineOptions);
+    if (usageRecords) {// TODO: optimization: add data to existing chart instead of full rendering
+        renderCpuChartDetail(getUsageDetailElementId("cpu", vmId), usageRecords);
+        renderMemoryChartDetail(getUsageDetailElementId("mem", vmId), usageRecords);
+        renderDiskIOChartDetail(getUsageDetailElementId("diskio", vmId), usageRecords);
+        renderNetworkIOChartDetail(getUsageDetailElementId("networkio", vmId), usageRecords);
     }
 }
 
+function getUsageDetailElementId(device, vmId) {
+    var divId = "#" + device + "UsageChartDetail-" + vmId;
+    return divId;
+}
+/*
 function getUsageChartDetail(device, vmId) {
-    var deviceId = "#" + device + "UsageChartDetail-" + vmId;
+    var deviceId = getUsageDetailElementId(device, vmId);
     if ($(deviceId) == null || $(deviceId).get(0) == null) {
         return null;
     }
@@ -132,7 +136,7 @@ function getUsageChartDetail(device, vmId) {
     var myChart = new Chart(ctx);
     return myChart;
 }
-
+*/
 function getUsageDataset(usageRecords, attr1, attr2, inclSum) {
     var ds1 = [];
     var ds2 = [];
@@ -145,23 +149,23 @@ function getUsageDataset(usageRecords, attr1, attr2, inclSum) {
         if (index == 0 || index == (usageRecords.length - 1) || (index % pruneFactor) == 0) {
             var ur = usageRecords[index];
 
-            var a = parseFloat(ur[attr1]);
+            var a = parseFloat(ur[attr1]).toFixed(1);
             ds1.push(a);
 
             if (attr2) {
-                var b = parseFloat(ur[attr2]);
+                var b = parseFloat(ur[attr2]).toFixed(1);
                 ds2.push(b);
 
                 if (inclSum) {
-                    total.push(a + b);
+                    total.push( (parseFloat(a) + parseFloat(b)).toFixed(1) );
                 }
             }
 
-            if (index == 0 || index == (usageRecords.length - 1) || (index % USAGE_CHART_TIMESTAMP_DENSITY) == 0) {
+//            if (index == 0 || index == (usageRecords.length - 1) || (index % USAGE_CHART_TIMESTAMP_DENSITY) == 0) {
                 timestamps.push(ur.timestamp);
-            } else {
+/*            } else {
                 timestamps.push("");
-            }
+            }*/
         }
     }
 
@@ -172,159 +176,105 @@ function getUsageDataset(usageRecords, attr1, attr2, inclSum) {
         total: total
     }
 }
-
-function renderCpuChartDetail(myChart, usageRecords, options) {
-    if (myChart != null) {
-        var ds = getUsageDataset(usageRecords, 'cpuSys', 'cpuUser', true);
-
-        var cpuSysFillColor = "rgba(255,255,255,0.1)";
-        var cpuSysPointColor = "rgba(255,0,0,1)";
-        var cpuSysStrokeColor = "rgba(255,255,255,0.5)";
-
-        var cpuUserPointColor = "rgba(0,255,0,1)";
-        var cpuUserStrokeColor = "rgba(0,255,0,1)";
-
-        var cpuTotalPointColor = "rgba(0,0,255,1)";
-        var cpuTotalStrokeColor = "rgba(0,0,255,1)";
-        myChart.Line({
-            labels: ds.timestamps,
-            datasets: [
-                {
-                    label: "System",
-                    fillColor: cpuSysFillColor,
-                    strokeColor: cpuSysStrokeColor,
-                    pointColor: cpuSysPointColor,
-                    pointStrokeColor: cpuSysStrokeColor,
-                    pointHighlightFill: cpuSysPointColor,
-                    pointHighlightStroke: cpuSysPointColor,
-                    data: ds.ds1
-                },
-                {
-                    label: "User",
-                    fillColor: cpuSysFillColor,
-                    strokeColor: cpuUserStrokeColor,
-                    pointColor: cpuUserPointColor,
-                    pointStrokeColor: cpuUserStrokeColor,
-                    pointHighlightFill: cpuUserPointColor,
-                    pointHighlightStroke: cpuUserPointColor,
-                    data: ds.ds2
-                },
-                {
-                    label: "Total",
-                    fillColor: cpuSysFillColor,
-                    strokeColor: cpuTotalStrokeColor,
-                    pointColor: cpuTotalPointColor,
-                    pointStrokeColor: cpuTotalStrokeColor,
-                    pointHighlightFill: cpuTotalPointColor,
-                    pointHighlightStroke: cpuTotalPointColor,
-                    data: ds.total
-                }
-            ]
-        }, options);
+function prefillDs(ds) {
+    if (ds) {
+        while (ds.length < 10) {
+            ds.splice(1, 0, 0);
+        }
     }
 }
 
-function renderMemoryChartDetail(myChart, usageRecords, options) {
-    if (myChart != null) {
-        var ds = getUsageDataset(usageRecords, 'memory', null);
-
-        var memoryFillColor = "rgba(255,255,255,0.1)";
-        var memoryPointColor = "rgba(0,255,0,1)";
-        var memoryStrokeColor = "rgba(0,255,0,1)";
-        myChart.Line({
-            labels: ds.timestamps,
-            datasets: [
-                {
-                    label: "Used Memory",
-                    fillColor: memoryFillColor,
-                    strokeColor: memoryStrokeColor,
-                    pointColor: memoryPointColor,
-                    pointStrokeColor: memoryStrokeColor,
-                    pointHighlightFill: memoryPointColor,
-                    pointHighlightStroke: memoryPointColor,
-                    data: ds.ds1
-                }
-            ]
-        }, options);
-    }
+function renderUsageDetailChart(chartDivId, timestamps, dsArray1, dsArray2) {
+    prefillDs(dsArray1);
+    prefillDs(dsArray2);
+    renderSparklineChart(chartDivId, timestamps, dsArray1, dsArray2);
 }
 
-function renderDiskIOChartDetail(myChart, usageRecords, options) {
-    if (myChart != null) {
-        var ds = getUsageDataset(usageRecords, 'diskRead', 'diskWrite');
-
-        var writeFillColor = "rgba(255,255,255,0.1)";
-        var writePointColor = "rgba(255,0,0,1)";
-        var writeStrokeColor = "rgba(255,255,255,0.5)";
-
-        var readPointColor = "rgba(0,255,0,1)";
-        var readStrokeColor = "rgba(0,255,0,1)";
-
-        myChart.Line({
-            labels: ds.timestamps,
-            datasets: [
-                {
-                    label: "Write",
-                    fillColor: writeFillColor,
-                    strokeColor: writeStrokeColor,
-                    pointColor: writePointColor,
-                    pointStrokeColor: writeStrokeColor,
-                    pointHighlightFill: writePointColor,
-                    pointHighlightStroke: writePointColor,
-                    data: ds.ds2
-                },
-                {
-                    label: "Read",
-                    fillColor: writeFillColor,
-                    strokeColor: readStrokeColor,
-                    pointColor: readPointColor,
-                    pointStrokeColor: readStrokeColor,
-                    pointHighlightFill: readPointColor,
-                    pointHighlightStroke: readPointColor,
-                    data: ds.ds1
-                }
-            ]
-        }, options);
-    }
+function renderSpinner(chartDivId) {
+    $(chartDivId).html('<div class="spinner spinner-sm"></div>');
 }
 
-function renderNetworkIOChartDetail(myChart, usageRecords, options) {
-    if (myChart != null) {
-        var ds = getUsageDataset(usageRecords, 'netRx', 'netTx');
+// TODO: add timestamps
+function renderSparklineChart(chartDivId, timestamps, dataArray1, dataArray2) {
+    var chartConfig = jQuery().c3ChartDefaults().getDefaultSparklineConfig();
+    chartConfig.bindto = chartDivId;
+    chartConfig.data = {
+        columns: [dataArray1],
+        axis: {
+            x: {
+                show: true
+            },
+            y: {
+                show: true
+            }
+        },
+        legend: {
+            show: true,
+            position: 'right'
+        },
+        type: 'area'
+    };
 
-        var writeFillColor = "rgba(255,255,255,0.1)";
-        var writePointColor = "rgba(255,0,0,1)";
-        var writeStrokeColor = "rgba(255,255,255,0.5)";
-
-        var readPointColor = "rgba(0,255,0,1)";
-        var readStrokeColor = "rgba(0,255,0,1)";
-
-        myChart.Line({
-            labels: ds.timestamps,
-            datasets: [
-                {
-                    label: "Tx",
-                    fillColor: writeFillColor,
-                    strokeColor: writeStrokeColor,
-                    pointColor: writePointColor,
-                    pointStrokeColor: writeStrokeColor,
-                    pointHighlightFill: writePointColor,
-                    pointHighlightStroke: writePointColor,
-                    data: ds.ds2
-                },
-                {
-                    label: "Rx",
-                    fillColor: writeFillColor,
-                    strokeColor: readStrokeColor,
-                    pointColor: readPointColor,
-                    pointStrokeColor: readStrokeColor,
-                    pointHighlightFill: readPointColor,
-                    pointHighlightStroke: readPointColor,
-                    data: ds.ds1
-                }
-            ]
-        }, options);
+    if (dataArray2) {
+        chartConfig.data.columns.push(dataArray2);
     }
+    c3.generate(chartConfig);
+}
+
+
+// TODO: add timestamps
+function renderLineChart(chartDivId, timestamps, dataArray1, dataArray2) {
+    var chartConfig = {
+        bindto : chartDivId,
+        data: {
+            columns: [
+                dataArray1
+            ]
+        },
+        axis: {
+            x: {
+                show: false
+            }
+        },
+        size: {
+            height: 120
+        },
+    };
+
+    if (dataArray2) {
+        chartConfig.data.columns.push(dataArray2);
+    }
+    c3.generate(chartConfig);
+}
+
+function renderCpuChartDetail(chartDivId, usageRecords) {
+    var ds = getUsageDataset(usageRecords, 'cpuSys', 'cpuUser', true);
+    ds.total.unshift('CPU %');
+    ds.timestamps.unshift('timestamps');
+    renderUsageDetailChart(chartDivId, ds.timestamps, ds.total);
+}
+
+function renderMemoryChartDetail(chartDivId, usageRecords) {
+    var ds = getUsageDataset(usageRecords, 'memory', null);
+    ds.ds1.unshift('Memory %');
+    ds.timestamps.unshift('timestamps');
+    renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1);
+}
+
+function renderDiskIOChartDetail(chartDivId, usageRecords) {
+    var ds = getUsageDataset(usageRecords, 'diskRead', 'diskWrite');
+    ds.ds1.unshift('Read');
+    ds.ds2.unshift('Write');
+    ds.timestamps.unshift('timestamps');
+    renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1, ds.ds2);
+}
+
+function renderNetworkIOChartDetail(chartDivId, usageRecords) {
+    var ds = getUsageDataset(usageRecords, 'netRx', 'netTx');
+    ds.ds1.unshift('Rx');
+    ds.ds2.unshift('Tx');
+    ds.timestamps.unshift('timestamps');
+    renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1, ds.ds2);
 }
 
 // ----------------------------------------------------------------------

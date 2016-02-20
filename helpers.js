@@ -60,7 +60,7 @@ function disableButton(name) {
 }
 
 function normalizePercentage(value) {
-    return Math.min(Math.max(parseFloat(value), 0.0), 1.0);
+    return new Number(Math.max(parseFloat(value), 0.0).toFixed(2));
 }
 
 function getActualTimeStamp() {

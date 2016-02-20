@@ -2,12 +2,19 @@
     <title>oVirt</title>
     <meta charset="utf-8">
     <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
+
     <script src="../base1/jquery.js"></script>
     <script src="../base1/jquery.storage.js"></script>
     <script src="../base1/cockpit.js"></script>
     <script src="../base1/mustache.js"></script>
-    <script src="external/Chart.min.js"></script>
-    <script src="external/FileSaver.min.js"></script>
+
+    <script src="external/js/Chart.min.js"></script>
+    <script src="external/js/FileSaver.min.js"></script>
+    <script src="external/js/bootstrap.min.js"></script>
+    <script src="external/js/d3.js"></script>
+    <script src="external/js/c3.js"></script>
+    <script src="external/js/patternfly.min.js"></script>
+
     <script src="helpers.js"></script>
     <script src="vmdetail.js"></script>
     <script src="hostvms.js"></script>
@@ -144,20 +151,12 @@
             <td width=40%"><!-- Usage graphs -->
                 <table width="100%">
                     <tr>
-                        <td width="50%">CPU:
-                            <canvas id="cpuUsageChartDetail-{{id}}" height="120"/>
-                        </td>
-                        <td width="50%">Memory:
-                            <canvas id="memUsageChartDetail-{{id}}" height="120"/>
-                        </td>
+                        <td width="50%">CPU:<div id="cpuUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
+                        <td width="50%">Memory:<div id="memUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
                     </tr>
                     <tr>
-                        <td>Disk:
-                            <canvas id="diskioUsageChartDetail-{{id}}" height="120"/>
-                        </td>
-                        <td>Network:
-                            <canvas id="networkioUsageChartDetail-{{id}}" height="120"/>
-                        </td>
+                        <td>Disk:<div id="diskioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
+                        <td>Network:<div id="networkioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
                     </tr>
                 </table>
             </td>
@@ -195,7 +194,7 @@
 </script>
 
 <script id="vms-list-templ" type="x-template/mustache">
-    <table class="table table-hover">
+    <table class="table table-striped table-responsive table-hover table-condensed">
         <thead>
         <th>Name</th>
         <th>Status</th>
@@ -210,32 +209,22 @@
         <tbody>
         {{#units}}
         <tr>
-            <td id="host-vms-list-item-" data-pattern="{{id}}">{{name}}</td>
-            <td>{{{statusHtml}}}</td>
+            <td id="host-vms-list-item-" data-pattern="{{id}}" style="vertical-align: middle;">{{name}}</td>
+            <td style="vertical-align: middle;">{{{statusHtml}}}</td>
+
             <td>{{guestIPs}}</td>
-            <td>
-                <canvas id="cpuUsageChart-{{id}}" width="40" height="40"/>
-            </td>
-            <td>
-                <canvas id="memUsageChart-{{id}}" width="40" height="40"/>
-            </td>
-            <td>
-                <canvas id="diskioUsageChart-{{id}}" width="100" height="70"/>
-            </td>
-            <td>
-                <canvas id="networkioUsageChart-{{id}}" width="100" height="70"/>
-            </td>
+            <td style="vertical-align: middle;width: 10%;"><div id="cpuUsageChart-{{id}}" height="130"></div></td>
+            <td style="vertical-align: middle;width: 10%;"><div id="memUsageChart-{{id}}" height="130"></div></td>
+            <td style="width: 7%;" height="130"><div id="diskioUsageChart-{{id}}"></div></td>
+            <td style="width: 7%;" height="130"><div id="networkioUsageChart-{{id}}"></div></td>
             <!--<td>
                 <div id="screenshot-{{id}}"/>
             </td>
             -->
-            <td>
-                <img width="30" src="external/images/vm_remote_console.png" title="Get remote console"
-                     id="btn-download-console-{{id}}" data-pattern="{{id}}">
-                <img width="30" src="external/images/shutdown.png" title="Shutdown politely" id="btn-shutdown-vm-{{id}}"
-                     data-pattern="{{id}}">
-                <img width="30" src="external/images/power_off.png" title="Force off" id="btn-forceoff-vm-{{id}}"
-                     data-pattern="{{id}}">
+            <td style="vertical-align: middle;">
+                <img width="30" src="external/images/vm_remote_console.png" title="Get remote console" id="btn-download-console-{{id}}" data-pattern="{{id}}">
+                <img width="30" src="external/images/shutdown.png" title="Shutdown politely" id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}">
+                <img width="30" src="external/images/power_off.png" title="Force off" id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}">
                 <!-- Add Change CD -->
             </td>
         </tr>

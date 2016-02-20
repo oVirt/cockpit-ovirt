@@ -40,7 +40,7 @@ function renderHostVms(vmsFull) {
             var diskWrite = getVmDeviceRate(srcVm, 'disks', 'writeRate');
             var netRx = getVmDeviceRate(srcVm, 'network', 'rxRate');
             var netTx = getVmDeviceRate(srcVm, 'network', 'txRate');
-            addVmUsage(vm.id, timestamp, parseFloat(vm.cpuUser), parseFloat(vm.cpuSys), parseFloat(vm.memUsage),
+            addVmUsage(vm.id, vm.vcpuCount, timestamp, parseFloat(vm.cpuUser), parseFloat(vm.cpuSys), parseFloat(vm.memUsage),
                 diskRead, diskWrite, netRx, netTx);
         });
 
@@ -83,9 +83,10 @@ function onVmClick(vmId) {// show vm detail
 }
 
 // --- vms-screen usage charts ------------------------------------------
-function addVmUsage(vmId, timestamp, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netTx) {
+function addVmUsage(vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netTx) {
     var record = {
         timestamp: timestamp,
+        vcpuCount : vcpuCount,
         cpuUser: cpuUser,
         cpuSys: cpuSys,
         memory: mem,
@@ -103,114 +104,142 @@ function addVmUsage(vmId, timestamp, cpuUser, cpuSys, mem, diskRead, diskWrite, 
     vmUsage[vmId].push(record); // keep history
 }
 
-function getUsageChart(device, vmId) {
-    var deviceId = "#" + device + "UsageChart-" + vmId;
-    if ($(deviceId) == null || $(deviceId).get(0) == null) {
-        return null;
-    }
-
-    var ctx = $(deviceId).get(0).getContext("2d");
-    var myChart = new Chart(ctx);
-    return myChart;
+function getUsageElementId(device, vmId) {
+    var divId = "#" + device + "UsageChart-" + vmId;
+    return divId;
 }
 
-function refreshCpuChart(myChart, usageRecord, options) {
-    if (myChart != null) {
-        var user = normalizePercentage(usageRecord.cpuUser);
-        var sys = normalizePercentage(usageRecord.cpuSys);
-        var idle = 1.0 - Math.min(user + sys, 1.0);
-        myChart.Doughnut([
-            {
-                value: user,
-                color: "#46BFBD",
-                highlight: "#5AD3D1"
+function refreshCpuChart(chartDivId, usageRecord) {
+    var maximum = usageRecord.vcpuCount * 100.0;
+
+    var user = normalizePercentage(usageRecord.cpuUser);// TODO: VDSM reports chaotically, the retrieved numbers need to be reviewed
+    var sys = normalizePercentage(usageRecord.cpuSys);
+    var used = (user + sys).toFixed(1);
+    var idle = (maximum - used).toFixed(1);
+
+    debugMsg('user: ' + user + ', sys: ' + sys + ', used: ' + used);
+    var vCPUText = usageRecord.vcpuCount > 1 ? ' vCPUs' : ' vCPU';
+    var labels = [used + '%', 'of ' + usageRecord.vcpuCount + vCPUText];
+    refreshDonutChart(chartDivId, labels, [["User", user], ["Sys", sys], ["Idle", idle]], [["user", "sys", "idle"]]);
+}
+
+function refreshMemoryChart(chartDivId, usageRecord) {
+    var maximum = 1.0;// TODO: check this assumption for correctness
+
+    var used = normalizePercentage(usageRecord.memory);
+    var free = maximum - used;
+
+    var labels = [used + '%'];
+    refreshDonutChart(chartDivId, labels, [["Free", free], ["Used", used]], [["available", "used"]]);
+}
+
+function refreshDiskIOChart(chartDivId, usageRecord) {
+    var r = usageRecord.diskRead;
+    var w = usageRecord.diskWrite;
+
+    refreshDoubleBarChart(chartDivId, 'Disk MB/s', 'R', r, 'W', w);
+
+}
+
+function refreshNetworkIOChart(chartDivId, usageRecord) {
+    var r = usageRecord.netRx;
+    var w = usageRecord.netTx;
+
+    refreshDoubleBarChart(chartDivId, 'Net MB/s', 'Rx', r, 'Tx', w);
+}
+
+function refreshDonutChart(chartDivId, labels, columns, groups) {
+    var height = $(chartDivId).attr("height");
+    height = (height === undefined) ? 150 : height;
+
+    var chartConfig = jQuery().c3ChartDefaults().getDefaultDonutConfig();
+    chartConfig.bindto = chartDivId;
+
+    chartConfig.data = {
+        type: "donut",
+        columns: columns,
+        groups: groups,
+        order: null
+    };
+    chartConfig.size.height = height;
+    chartConfig.color = {
+        pattern: ["#3f9c35", "#cc0000", "#D1D1D1"]
+    };
+    chartConfig.tooltip = {
+        contents: function (d) {
+            return '<span class="donut-tooltip-pf" style="white-space: nowrap;">' + Math.round(d[0].ratio * 100) + '% ' + d[0].name + '</span>';
+        }
+    };
+    c3.generate(chartConfig);
+
+    // add labels
+    var donutChartTitle = d3.select(chartDivId).select('text.c3-chart-arcs-title');
+    donutChartTitle.text("");
+    donutChartTitle.insert('tspan').text(labels[0]).classed('donut-title-big-pf', true).attr('dy', 0).attr('x', 0);
+    if (labels.length > 1) {
+        donutChartTitle.insert('tspan').text(labels[1]).classed('donut-title-small-pf', true).attr('dy', 20).attr('x', 0);
+    }
+}
+
+function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rightDescr, rightVal) {
+    var height = $(chartDivId).attr("height");
+    height = (height === undefined) ? 150 : height;
+
+    var chartConfig = jQuery().c3ChartDefaults();
+    chartConfig.bindto = chartDivId;
+
+    chartConfig.axis = {
+        x: {
+            categories: [categoryName],
+            tick: {
+                outer: true
             },
-            {
-                value: sys,
-                color: "#F7464A",
-                highlight: "#FF5A5E"
-            },
-            {
-                value: idle,
-                color: "#33FF33",
-                highlight: "#33FF99"
+            type: 'category'
+        },
+        y: {
+            tick: {
+                outer: false
             }
-        ], options);
-    }
-}
+        }
+    };
 
-function refreshMemoryChart(myChart, usageRecord, options) {
-    if (myChart != null) {
-        var used = normalizePercentage(usageRecord.memory);
-        var free = 1.0 - used;
-        myChart.Doughnut([
-            {
-                value: used,
-                color: "#46BFBD",
-                highlight: "#5AD3D1"
-            },
-            {
-                value: free,
-                color: "#33FF33",
-                highlight: "#33FF99"
-            }
-        ], options);
-    }
-}
+    chartConfig.bar = {
+        width: {
+            ratio: 0.7
+        }
+    };
+    chartConfig.color = {
+        pattern: ["#46BFBD", "#cc0000"]
+    };
+    chartConfig.grid = {
+        y: {
+            show: true
+        }
+    };
 
-function refreshBarChart(myChart, r, w, options) {
-    myChart.Bar({
-        labels: ['R,W'],
-        datasets: [
-            {
-                label: "Read",
-                fillColor: "#46BFBD",
-                strokeColor: "#5AD3D1",
-                highlightFill: "#46BFBD",
-                highlightStroke: "#5AD3D1",
-                data: [r]
-            },
-            {
-                label: "Write",
-                fillColor: "#F7464A",
-                strokeColor: "#FF5A5E",
-                highlightFill: "#F7464A",
-                highlightStroke: "#FF5A5E",
-                data: [w]
-            }
-        ]
-    }, options);
-}
+    chartConfig.size = {
+        height: height
+    };
 
-function refreshDiskIOChart(myChart, usageRecord, options) {
-    if (myChart != null) {
-        var r = usageRecord.diskRead;
-        var w = usageRecord.diskWrite;
-        refreshBarChart(myChart, r, w, options);
-    }
-}
+    chartConfig.data = {
+        columns: [
+            [leftDescr, leftVal],
+            [rightDescr, rightVal]
+        ],
+        type: 'bar'
+    };
 
-function refreshNetworkIOChart(myChart, usageRecord, options) {
-    if (myChart != null) {
-        var r = usageRecord.netRx;
-        var w = usageRecord.netTx;
-        refreshBarChart(myChart, r, w, options);
-    }
+    c3.generate(chartConfig);
 }
 
 function refreshUsageCharts() {
-    var doughnutOptions = {
-        animateRotate: false,
-        animateScale: false
-    };
-    var barOptions = {};
     $.each(vmUsage, function (key, usageRecords) {
         if (usageRecords.length > 0) {
             var last = usageRecords[usageRecords.length - 1];
-            refreshCpuChart(getUsageChart("cpu", key), last, doughnutOptions);
-            refreshMemoryChart(getUsageChart("mem", key), last, doughnutOptions);
-            refreshDiskIOChart(getUsageChart("diskio", key), last, barOptions);
-            refreshNetworkIOChart(getUsageChart("networkio", key), last, barOptions);
+            refreshCpuChart(getUsageElementId("cpu", key), last);
+            refreshMemoryChart(getUsageElementId("mem", key), last);
+            refreshDiskIOChart(getUsageElementId("diskio", key), last);
+            refreshNetworkIOChart(getUsageElementId("networkio", key), last);
         }
     });
 }
@@ -240,6 +269,7 @@ function _getVmDetails(src) { // src is one item from parsed getAllVmStats
         vcpuPeriod: src.vcpuPeriod,
         vcpuQuota: src.vcpuQuota,
         guestCPUCount: src.guestCPUCount,
+        vcpuCount: src.vcpuCount,
 
         vmType: src.vmType,
         kvmEnable: src.kvmEnable,
