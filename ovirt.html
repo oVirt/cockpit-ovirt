@@ -89,85 +89,54 @@
 
 <!-- --------------------------------------------------------------------------- -->
 <script id="vm-detail-templ" type="x-template/mustache">
-    <div class="panel-heading">Detail of {{name}}</div>
+    <div class="panel-heading">{{{statusHtml}}} Detail of {{name}}</div>
     <table width="100%">
         <tr>
             <td> <!-- left -->
-                <table>
+                <table width="100%">
                     <tr>
-                        <td>Name:</td>
+                        <td width="15%">Name:</td>
                         <td>{{name}}</td>
+
+                        <td width="15%">Guest IPs:</td>
+                        <td>{{guestIPs}}</td>
                     </tr>
                     <tr>
                         <td>ID:</td>
                         <td id="vm-detail-id" data-pattern="{{id}}">{{id}}</td>
-                    </tr>
-                    <tr>
-                        <td>Status:</td>
-                        <td>{{status}}</td>
-                    </tr>
-                    <tr>
-                        <td>Username:</td>
-                        <td>{{username}}</td>
-                    </tr>
-                    <tr>
-                        <td>Display type:</td>
-                        <td>{{displayType}}</td>
-                    </tr>
-                </table>
-            </td>
 
-            <td> <!-- center -->
-                <table>
-                    <tr>
-                        <td>VM Type:</td>
-                        <td>{{vmType}}</td>
-                    </tr>
-                    <tr>
-                        <td>KVM Enabled:</td>
-                        <td>{{kvmEnable}}</td>
-                    </tr>
-                    <tr>
-                        <td>ACPI Enabled:</td>
-                        <td>{{acpiEnable}}</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>{{}}</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>{{}}</td>
-                    </tr>
-                </table>
-            </td>
-
-            <td> <!-- right -->
-                <table>
-                    <tr>
-                        <td>Guest IPs:</td>
-                        <td>{{guestIPs}}</td>
-                    </tr>
-                    <tr>
                         <td>Guest CPU Count:</td>
                         <td>{{guestCPUCount}}</td>
                     </tr>
                     <tr>
+                        <td>Username:</td>
+                        <td>{{username}}</td>
+
                         <td>Uptime:</td>
                         <td>{{elapsedTime}} s</td>
                     </tr>
                     <tr>
+                        <td>Display type:</td>
+                        <td>{{displayType}}</td>
+
                         <td>Guest FQDN:</td>
                         <td>{{guestFQDN}}</td>
                     </tr>
                     <tr>
+                        <td></td>
+                        <td></td>
+
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
                         <td>Apps list:</td>
-                        <td>{{appsList}}</td>
+                        <td colspan="3">{{appsList}}</td>
                     </tr>
                 </table>
             </td>
 
-            <td width=30%"><!-- Usage graphs -->
+            <td width=40%"><!-- Usage graphs -->
                 <table width="100%">
                     <tr>
                         <td width="50%">CPU:
@@ -237,7 +206,7 @@
         {{#units}}
         <tr>
             <td id="host-vms-list-item-" data-pattern="{{id}}">{{name}}</td>
-            <td>{{status}}</td>
+            <td>{{{statusHtml}}}</td>
             <td>{{guestIPs}}</td>
             <td>
                 <canvas id="cpuUsageChart-{{id}}" width="40" height="40"/>
@@ -256,9 +225,9 @@
             </td>
             -->
             <td>
-                <button class="btn btn-default" id="btn-download-console-{{id}}" data-pattern="{{id}}">Console</button>
-                <button class="btn btn-default" id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}">Shutdown</button>
-                <button class="btn btn-default" id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}">Force Off</button>
+                <img width="30" src="external/images/vm_remote_console.png" title="Get remote console" id="btn-download-console-{{id}}" data-pattern="{{id}}">
+                <img width="30" src="external/images/shutdown.png" title="Shutdown politely" id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}">
+                <img width="30" src="external/images/power_off.png" title="Force off" id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}">
                 <!-- Add Change CD -->
             </td>
         </tr>

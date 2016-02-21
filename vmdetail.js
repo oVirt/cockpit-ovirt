@@ -2,6 +2,28 @@
 
 // depends on hostvms.js::latestHostVMSList
 
+var VM_STATUS_ICONS_PATH_PREFIX = "external/images/";
+var VM_STATUS_ICONS = {
+//    "Default": "",
+    "Down": "off.png",
+    "Up": "on.png",
+    "Powering up":"powering_up.png",
+    "Powering down": "powering_down.png"
+    //"Paused":""
+/*    MigratingFrom = 5,
+    MigratingTo = 6,
+    Unknown = 7,
+    NotResponding = 8,
+    WaitForLaunch = 9,
+    RebootInProgress = 10,
+    SavingState = 11,
+    RestoringState = 12,
+    Suspended = 13,
+    ImageIllegal = 14,
+    ImageLocked = 15,
+    PoweringDown = 16*/
+};
+
 function consoleFileContent(vm) {
 // TODO: content of .vv file
     var blob = new Blob([
@@ -14,15 +36,14 @@ function consoleFileContent(vm) {
 
 function downloadConsole(vmId) {
     var vm = getVmDetails_vdsmToInternal(vmId, latestHostVMSList);
-
     saveAs(consoleFileContent(vm), "console.vv");
 
-    printError("TODO: finish generating of console.vv file");
+    printError("TODO: finish generating of console.vv file. " + url);
 }
 
 function shutdown(vmId) {
     spawnVdsm("shutdown", null, null, shutdownSuccess, vdsmFail, vmId);
-    disableButton('btn-shutdown-' + vmId);
+    //disableButton('btn-shutdown-' + vmId);
 }
 
 function shutdownSuccess() {
@@ -31,7 +52,7 @@ function shutdownSuccess() {
 
 function forceoff(vmId) {
     spawnVdsm("destroy", null, null, shutdownSuccess, vdsmFail, vmId);
-    disableButton('btn-forceoff-' + vmId);
+    //disableButton('btn-forceoff-' + vmId);
 }
 
 function renderVmDetailActual() {// called after successful readVmsList() to refresh rendered VM Detail

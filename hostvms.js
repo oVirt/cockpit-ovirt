@@ -217,6 +217,7 @@ function _getVmDetails(src) { // src is one item from parsed getAllVmStats
         name: src.vmName,
         guestIPs: src.guestIPs,
         status: src.status,
+        statusHtml: vmStatusToHtml(src.status),
         guestFQDN: src.guestFQDN,
         username: src.username,
 
@@ -240,4 +241,17 @@ function _getVmDetails(src) { // src is one item from parsed getAllVmStats
         acpiEnable: src.acpiEnable,
     };
     return vm;
+}
+
+function vmStatusToHtml(status) {
+    var html = "";
+    var iconFile = VM_STATUS_ICONS[status];
+    if (iconFile) {
+        html = "<img src=\"" + VM_STATUS_ICONS_PATH_PREFIX + iconFile + "\" title=\"" + status + "\" width=\"30\" height=\"30\">";
+    } else {
+        html = status;// use text as default
+    }
+
+    //debugMsg("vmStatusToHtml(" + status + "): " + html);
+    return html;
 }
