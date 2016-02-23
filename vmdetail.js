@@ -36,9 +36,9 @@ function consoleFileContent(vm) {
 
 function downloadConsole(vmId) {
     var vm = getVmDetails_vdsmToInternal(vmId, latestHostVMSList);
-    saveAs(consoleFileContent(vm), "console.vv");
+    saveAs(consoleFileContent(vm), "console.vv"); // TODO: resolve content-security-policy error
 
-    printError("TODO: finish generating of console.vv file. " + url);
+    printError("TODO: finish generating of console.vv file. ");
 }
 
 function shutdown(vmId) {
