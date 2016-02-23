@@ -5,10 +5,10 @@
 var VM_STATUS_ICONS_PATH_PREFIX = "external/images/";
 var VM_STATUS_ICONS = {
 //    "Default": "",
-    "Down": "off.png",
-    "Up": "on.png",
-    "Powering up":"powering_up.png",
-    "Powering down": "powering_down.png"
+    "down": "off.png",
+    "up": "on.png",
+    "powering up":"powering_up.png",
+    "powering down": "powering_down.png"
     //"Paused":""
 /*    MigratingFrom = 5,
     MigratingTo = 6,
@@ -339,4 +339,17 @@ function getVmDetails_vdsmToInternal(vmId, parsedVdsmGetAllVMs) {// lookup cache
     }
 
     return null;
+}
+
+function vmStatusToHtml(status) {
+    var html = "";
+    var iconFile = VM_STATUS_ICONS[status.toLowerCase()];
+    if (iconFile) {
+        html = "<img src=\"" + VM_STATUS_ICONS_PATH_PREFIX + iconFile + "\" title=\"" + status + "\" width=\"30\" height=\"30\">";
+    } else {
+        html = status;// use text as default
+    }
+
+    //debugMsg("vmStatusToHtml(" + status + "): " + html);
+    return html;
 }

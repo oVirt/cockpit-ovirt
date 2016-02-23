@@ -74,9 +74,11 @@ function _getEngineVmDetails(src) { // src is one item from parsed engine's vms 
         name: src.name,
         origin: src.origin,
         memory: src.memory,
+        memoryHuman : formatHumanReadableBytes(src.memory, 0),
         vCPUs : totalCpus,
         type: src.type,
         status: src.status.state,
+        statusHtml : vmStatusToHtml(src.status.state),
         osType: src.os.type
         // small icon
         // memory guaranteed
