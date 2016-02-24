@@ -33,7 +33,9 @@
                         </button>
                         <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
                     </div>
-                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes">Refresh: off</button>
+                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes">Refresh:
+                        off
+                    </button>
                 </td>
                 <td align="right" valign="top" width="25%">
                     <div id="engine-login">
@@ -67,12 +69,15 @@
         </div>
         <div id="vdsm-screen">
             <div class="panel panel-default">
-                <div class="panel-heading">Edit vdsm.conf (or go to <a id="a-jump-vdsm-service-mngmt" data-pattern="/system/services#/vdsmd.service">VDSM Service Management</a>)
+                <div class="panel-heading">Edit vdsm.conf (or go to <a id="a-jump-vdsm-service-mngmt"
+                                                                       data-pattern="/system/services#/vdsmd.service">VDSM
+                    Service Management</a>)
                     <div style="float:right;">
                         <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
                         <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
                             <button class="btn btn-default" id="editor-vdsm-btn-save" translatable="yes">Save</button>
-                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translatable="yes">Reload</button>
+                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translatable="yes">Reload
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -105,8 +110,8 @@
                         <td>ID:</td>
                         <td id="vm-detail-id" data-pattern="{{id}}">{{id}}</td>
 
-                        <td>Guest CPU Count:</td>
-                        <td>{{guestCPUCount}}</td>
+                        <td>vCPUs:</td>
+                        <td>{{vcpuCount}}</td>
                     </tr>
                     <tr>
                         <td>Username:</td>
@@ -225,9 +230,12 @@
             </td>
             -->
             <td>
-                <img width="30" src="external/images/vm_remote_console.png" title="Get remote console" id="btn-download-console-{{id}}" data-pattern="{{id}}">
-                <img width="30" src="external/images/shutdown.png" title="Shutdown politely" id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}">
-                <img width="30" src="external/images/power_off.png" title="Force off" id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}">
+                <img width="30" src="external/images/vm_remote_console.png" title="Get remote console"
+                     id="btn-download-console-{{id}}" data-pattern="{{id}}">
+                <img width="30" src="external/images/shutdown.png" title="Shutdown politely" id="btn-shutdown-vm-{{id}}"
+                     data-pattern="{{id}}">
+                <img width="30" src="external/images/power_off.png" title="Force off" id="btn-forceoff-vm-{{id}}"
+                     data-pattern="{{id}}">
                 <!-- Add Change CD -->
             </td>
         </tr>

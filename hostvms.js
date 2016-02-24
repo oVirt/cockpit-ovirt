@@ -36,10 +36,10 @@ function renderHostVms(vmsFull) {
             var vm = _getVmDetails(srcVm);
             vms.push(vm);
 
-            var diskRead = getVmDeviceRate(vm, 'disks', 'readRate');
-            var diskWrite = getVmDeviceRate(vm, 'disks', 'writeRate');
-            var netRx = getVmDeviceRate(vm, 'network', 'rxRate');
-            var netTx = getVmDeviceRate(vm, 'network', 'txRate');
+            var diskRead = getVmDeviceRate(srcVm, 'disks', 'readRate');
+            var diskWrite = getVmDeviceRate(srcVm, 'disks', 'writeRate');
+            var netRx = getVmDeviceRate(srcVm, 'network', 'rxRate');
+            var netTx = getVmDeviceRate(srcVm, 'network', 'txRate');
             addVmUsage(vm.id, timestamp, parseFloat(vm.cpuUser), parseFloat(vm.cpuSys), parseFloat(vm.memUsage),
                 diskRead, diskWrite, netRx, netTx);
         });
@@ -67,15 +67,15 @@ function renderHostVms(vmsFull) {
 function getVmDeviceRate(vm, device, rateName) {
     var total = 0.0;
     if (vm.hasOwnProperty(device)) {
-        vm[device].forEach(function (d) {
+//        debugMsg('getVmDeviceRate(): name=' + vm.vmName + ', device=' + device + ', rateName=' + rateName + ',vm[device]=' + JSON.stringify(vm[device]));
+        $.each(vm[device], function (i, d) {
             if (d.hasOwnProperty(rateName)) {
                 var rate = parseFloat(d[rateName]);
                 total += rate;
             }
         });
-
     }
-    return total;
+    return (total / (1024 * 1024)).toFixed(1); // to MB/s
 }
 
 function onVmClick(vmId) {// show vm detail
@@ -162,19 +162,24 @@ function refreshBarChart(myChart, r, w, options) {
     myChart.Bar({
         labels: ['R,W'],
         datasets: [
-            {label: "Read",
+            {
+                label: "Read",
                 fillColor: "#46BFBD",
                 strokeColor: "#5AD3D1",
                 highlightFill: "#46BFBD",
                 highlightStroke: "#5AD3D1",
-                data: [r]},
-            {label: "Write",
+                data: [r]
+            },
+            {
+                label: "Write",
                 fillColor: "#F7464A",
                 strokeColor: "#FF5A5E",
                 highlightFill: "#F7464A",
                 highlightStroke: "#FF5A5E",
-                data: [w]}
-        ]}, options);
+                data: [w]
+            }
+        ]
+    }, options);
 }
 
 function refreshDiskIOChart(myChart, usageRecord, options) {
@@ -195,7 +200,7 @@ function refreshNetworkIOChart(myChart, usageRecord, options) {
 
 function refreshUsageCharts() {
     var doughnutOptions = {
-        animateRotate:false,
+        animateRotate: false,
         animateScale: false
     };
     var barOptions = {};
