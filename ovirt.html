@@ -32,22 +32,19 @@
     <div class="content-header-extra">
         <table width="100%">
             <tr>
-                <td align="left" valign="top">
-                    <div class="btn-group" id="main-btn-menu">
-                        <button class="btn btn-default" data-pattern="/vms" translatable="yes">Running VMs</button>
-                        <button id="main-btn-menu-allvms" class="btn btn-default" data-pattern="/allVms"
-                                translatable="yes">
-                            Available VMs
-                        </button>
-                        <button class="btn btn-default" data-pattern="/vdsm" translatable="yes">VDSM</button>
-                    </div>
-                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes">Refresh:
-                        off
-                    </button>
+                <td valign="top">
+                    <ul class="nav nav-tabs" id="main-btn-menu">
+                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a href="#/vms">Running VMs</a></li>
+                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a href="#/allVms">VMs in Cluster</a></li>
+                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a href="#/vdsm">VDSM</a></li>
+                    </ul>
                 </td>
-                <td align="right" valign="top" width="25%">
+                <td align="right" valign="top">
+                    <button id="button-refresh" class="btn btn-default" data-pattern="off" translatable="yes">Refresh: off</button>
+                </td>
+                <td width="25%" align="right">
                     <div id="engine-login">
-                        <div id="engine-login-title">Login to Engine</div>
+                        <div style="white-space: nowrap;"><div id="engine-login-title">Login to Engine</div></div>
                         <div id="engine-login-content" hidden></div>
                     </div>
                 </td>

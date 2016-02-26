@@ -169,11 +169,11 @@ function setEngineFunctionalityVisibility() {
     var enabled = isLoggedInEngine();
     ENGINE_RELATED_IDS.forEach(function(id){
         var element = $("#"+id);
-        if (enabled) {
-            element.show();
+/*        if (enabled) {
+            element.enable();
         } else {
-            element.hide();
-        }
+            element.disabled();
+        }*/
     });
 
     if (isAllVmsPath()) {

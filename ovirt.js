@@ -5,6 +5,7 @@ function showVmsScreen() {
     hideAllScreens();
     readVmsList();
     $("#vms-screen").show();
+    $("#main-btn-menu-hostvms").addClass("active");
 }
 
 function showEngineVmsScreen() {
@@ -16,6 +17,8 @@ function showEngineVmsScreen() {
         printError('showEngineVmsScreen() called but no engine login is available');
         goTo('/vms');
     }
+
+    $("#main-btn-menu-allvms").addClass("active");
 }
 
 function showVmDetailScreen(vmId) {
@@ -34,6 +37,7 @@ function showVdsmScreen() {
     hideAllScreens();
     loadVdsmConf();
     $("#vdsm-screen").show();
+    $("#main-btn-menu-vdsm").addClass("active");
 }
 
 function showPing() {
@@ -49,6 +53,8 @@ function hideAllScreens() {
     $("#vdsm-screen").hide();
 
     $("#ovirt-content").show();
+
+    $("#main-btn-menu li").removeClass("active");
 }
 
 function getVmIdFromPath() {
@@ -125,7 +131,7 @@ function refresh() {
 }
 
 function initNavigation() {
-    $("#main-btn-menu button").on("click", function () {
+    $("#main-btn-menu li").on("click", function () {
         var dataPattern = $(this).attr("data-pattern");
         goTo(dataPattern);
     });
