@@ -3,7 +3,7 @@
 function loadVdsmConf(inform) {
     var editor = $("#editor-vdsm-conf");
 
-    cockpit.file(VDSM_CONF_FILENAME).read().done(function (content, tag) {
+    cockpit.file(CONFIG.vdsm.conf_file_name).read().done(function (content, tag) {
         editor.val(content);
 //        debugMsg("Content of vdsm.conf loaded: " + content);
         if (inform) {
@@ -25,7 +25,7 @@ function saveVdsmConf() {
         var editor = $("#editor-vdsm-conf");
         var content = editor.val();
 
-        cockpit.file(VDSM_CONF_FILENAME).replace(content).done(function (tag) {
+        cockpit.file(CONFIG.vdsm.conf_file_name).replace(content).done(function (tag) {
             debugMsg("Content of vdsm.conf replaced.");
             writeVdsmConfMsg("Saved", true);
         }).fail(function (error) {
@@ -39,7 +39,7 @@ function writeVdsmConfMsg(text, autoclear) {
     msg.html(text);
     debugMsg("writeVdsmConfMsg: " + text);
     if (autoclear) {
-        setTimeout(clearVdsmConfMsg, AUTO_CLEAR_MSG_DELAY)
+        setTimeout(clearVdsmConfMsg, CONFIG.reload.auto_clear_msg_delay)
     }
 }
 

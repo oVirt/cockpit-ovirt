@@ -1,12 +1,3 @@
-// --- global -----------------------------------------------------------
-var VDSM = "/root/.local/share/cockpit/ovirt/vdsm/vdsm";
-var VDSM_CONF_FILENAME = "/etc/vdsm/vdsm.conf";
-var DELAY_BEFORE_RELOAD_AFTER_VDSM_ACTION = 1000;// one second
-var AUTO_REFRESH_INTERVAL = 3000;// in ms
-var AUTO_CLEAR_MSG_DELAY = 5000;
-var USAGE_CHART_MAX_POINTS = 17;
-var USAGE_CHART_TIMESTAMP_DENSITY = 3;
-
 var isDebug = true;// print debug messages to console
 
 // ----------------------------------------------------------------------
@@ -113,7 +104,7 @@ var autoRefresher;
 function refreshButtonClicked(ignore) {
     var buttonRefresh = $("#button-refresh");
     if (buttonRefresh.attr("data-pattern") == "off") {
-        autoRefresher = setInterval(refresh, AUTO_REFRESH_INTERVAL);
+        autoRefresher = setInterval(refresh, CONFIG.reload.auto_refresh_interval);
 
         buttonRefresh.text("Refresh: auto");
         buttonRefresh.attr("data-pattern", "on");

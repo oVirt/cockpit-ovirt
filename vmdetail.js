@@ -46,7 +46,7 @@ function shutdown(vmId) {
 }
 
 function shutdownSuccess() {
-    setTimeout(readVmsList, DELAY_BEFORE_RELOAD_AFTER_VDSM_ACTION);
+    setTimeout(readVmsList, CONFIG.reload.delay_after_vdsm_action);
 }
 
 function forceoff(vmId) {
@@ -143,7 +143,7 @@ function getUsageDataset(usageRecords, attr1, attr2, inclSum) {
     var total = [];
     var timestamps = [];
 
-    var pruneFactor = Math.floor(usageRecords.length / USAGE_CHART_MAX_POINTS);
+    var pruneFactor = Math.floor(usageRecords.length / CONFIG.charts.usage_chart_max_points);
     pruneFactor = (pruneFactor == 0) ? 1 : pruneFactor;
     for (var index = 0; index < usageRecords.length; index++) {
         if (index == 0 || index == (usageRecords.length - 1) || (index % pruneFactor) == 0) {

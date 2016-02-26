@@ -1,14 +1,10 @@
 // --- helpers ----------------------------------------------------------
 function printError(text) {
     console.log("Error: " + text);
-
-//    var message = $("#error-msg");
-//   message.append("<p>" + text + "</p>");
-//    message.css("color", "red");
 }
 
 function debugMsg(text) {
-    if (isDebug) {
+    if (CONFIG.isDebug) {
         console.log("Debug: " + text);
     }
 }
@@ -22,11 +18,9 @@ function spawnVdsm(commandName, stdin, stdoutCallback, successCallback, failCall
         failCallback = vdsmFail;
     }
 
-    var spawnArgs = [];
+    var spawnArgs = [CONFIG.vdsm.client_path, commandName];
     if (typeof(arg1) !== 'undefined') {
-        spawnArgs = [VDSM, commandName, arg1];
-    } else {
-        spawnArgs = [VDSM, commandName];
+        spawnArgs.push(arg1);
     }
 
     var proc = cockpit.spawn(spawnArgs);
