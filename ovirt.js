@@ -107,19 +107,21 @@ function jump(component) {
 }
 
 var autoRefresher;
-function refreshButtonClicked(ignore) {
-    var buttonRefresh = $("#button-refresh");
-    if (buttonRefresh.attr("data-pattern") == "off") {
+function refreshActionClicked(ignore) {
+    var spanRefresh = $("#action-refresh");
+    var spanRefreshA = $("#action-refresh a");
+
+    if (spanRefresh.attr("data-pattern") == "off") {
         autoRefresher = setInterval(refresh, CONFIG.reload.auto_refresh_interval);
 
-        buttonRefresh.text("Refresh: auto");
-        buttonRefresh.attr("data-pattern", "on");
+        spanRefreshA.text("Refresh: auto");
+        spanRefresh.attr("data-pattern", "on");
     } else {
         clearInterval(autoRefresher);
         autoRefresher = null;
 
-        buttonRefresh.text("Refresh: off");
-        buttonRefresh.attr("data-pattern", "off");
+        spanRefreshA.text("Refresh: off");
+        spanRefresh.attr("data-pattern", "off");
     }
 }
 
@@ -136,7 +138,7 @@ function initNavigation() {
         goTo(dataPattern);
     });
 
-    registerBtnOnClickListener('button-refresh', refreshButtonClicked);
+    registerBtnOnClickListener('action-refresh', refreshActionClicked);
 
     registerBtnOnClickListener('a-jump-vdsm-service-mngmt', jump);
     registerBtnOnClickListener('editor-vdsm-btn-save', saveVdsmConf);
@@ -158,7 +160,7 @@ function initialize() {
 
     $(cockpit).on("locationchanged", onLocationChanged);
     onLocationChanged();
-    refreshButtonClicked();// start auto-refresher
+    refreshActionClicked();// start auto-refresher
 }
 
 $(document).ready(initialize);
