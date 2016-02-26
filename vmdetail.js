@@ -291,6 +291,10 @@ function getVmDetails_vdsmToInternal(vmId, parsedVdsmGetAllVMs) {// lookup cache
     return null;
 }
 
+function guestIPsToHtml(guestIPs) {
+    return "Guest IPs: " + guestIPs;
+}
+
 function vmStatusToHtml(status) {
     var html = "";
     var iconFile = VM_STATUS_ICONS[status.toLowerCase()];

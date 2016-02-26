@@ -119,7 +119,10 @@ function refreshCpuChart(chartDivId, usageRecord) {
 
     debugMsg('user: ' + user + ', sys: ' + sys + ', used: ' + used);
     var vCPUText = usageRecord.vcpuCount > 1 ? ' vCPUs' : ' vCPU';
-    var labels = [used + '%', 'of ' + usageRecord.vcpuCount + vCPUText];
+    var labels = [used + '%'];
+    if (usageRecord.vcpuCount) {
+        labels.push('of ' + usageRecord.vcpuCount + vCPUText);
+    }
     refreshDonutChart(chartDivId, labels, [["User", user], ["Sys", sys], ["Idle", idle]], [["user", "sys", "idle"]]);
 }
 
@@ -138,7 +141,6 @@ function refreshDiskIOChart(chartDivId, usageRecord) {
     var w = usageRecord.diskWrite;
 
     refreshDoubleBarChart(chartDivId, 'Disk MB/s', 'R', r, 'W', w);
-
 }
 
 function refreshNetworkIOChart(chartDivId, usageRecord) {
@@ -149,9 +151,6 @@ function refreshNetworkIOChart(chartDivId, usageRecord) {
 }
 
 function refreshDonutChart(chartDivId, labels, columns, groups) {
-    var height = $(chartDivId).attr("height");
-    height = (height === undefined) ? 150 : height;
-
     var chartConfig = jQuery().c3ChartDefaults().getDefaultDonutConfig();
     chartConfig.bindto = chartDivId;
 
@@ -161,30 +160,24 @@ function refreshDonutChart(chartDivId, labels, columns, groups) {
         groups: groups,
         order: null
     };
-    chartConfig.size.height = height;
+    chartConfig.donut.width = 5;
+
     chartConfig.color = {
         pattern: ["#3f9c35", "#cc0000", "#D1D1D1"]
     };
-    chartConfig.tooltip = {
-        contents: function (d) {
-            return '<span class="donut-tooltip-pf" style="white-space: nowrap;">' + Math.round(d[0].ratio * 100) + '% ' + d[0].name + '</span>';
-        }
-    };
+
     c3.generate(chartConfig);
 
     // add labels
     var donutChartTitle = d3.select(chartDivId).select('text.c3-chart-arcs-title');
     donutChartTitle.text("");
-    donutChartTitle.insert('tspan').text(labels[0]).classed('donut-title-big-pf', true).attr('dy', 0).attr('x', 0);
+    donutChartTitle.insert('tspan').text(labels[0]).classed('donut-title-small-pf', true).attr('dy', 0).attr('x', 0);
     if (labels.length > 1) {
         donutChartTitle.insert('tspan').text(labels[1]).classed('donut-title-small-pf', true).attr('dy', 20).attr('x', 0);
     }
 }
 
 function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rightDescr, rightVal) {
-    var height = $(chartDivId).attr("height");
-    height = (height === undefined) ? 150 : height;
-
     var chartConfig = jQuery().c3ChartDefaults();
     chartConfig.bindto = chartDivId;
 
@@ -202,10 +195,9 @@ function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rig
             }
         }
     };
-
     chartConfig.bar = {
         width: {
-            ratio: 0.7
+            ratio: 0.5
         }
     };
     chartConfig.color = {
@@ -216,11 +208,9 @@ function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rig
             show: true
         }
     };
-
     chartConfig.size = {
-        height: height
+        height: 100
     };
-
     chartConfig.data = {
         columns: [
             [leftDescr, leftVal],
@@ -250,6 +240,7 @@ function _getVmDetails(src) { // src is one item from parsed getAllVmStats
         id: src.vmId,
         name: src.vmName,
         guestIPs: src.guestIPs,
+        guestIPsHtml: guestIPsToHtml(src.guestIPs),
         status: src.status,
         statusHtml: vmStatusToHtml(src.status),
         guestFQDN: src.guestFQDN,
@@ -265,6 +256,7 @@ function _getVmDetails(src) { // src is one item from parsed getAllVmStats
         memUsage: src.memUsage,
         cpuUser: src.cpuUser,
         elapsedTime: src.elapsedTime,
+        elapsedTimeHuman : formatHumanReadableSecsToTime(src.elapsedTime),
         cpuSys: src.cpuSys,
         vcpuPeriod: src.vcpuPeriod,
         vcpuQuota: src.vcpuQuota,
