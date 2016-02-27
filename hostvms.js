@@ -67,10 +67,10 @@ function renderHostVms(vmsFull) {
 function getVmDeviceRate(vm, device, rateName) {
     var total = 0.0;
     if (vm.hasOwnProperty(device)) {
-//        debugMsg('getVmDeviceRate(): name=' + vm.vmName + ', device=' + device + ', rateName=' + rateName + ',vm[device]=' + JSON.stringify(vm[device]));
         $.each(vm[device], function (i, d) {
             if (d.hasOwnProperty(rateName)) {
                 var rate = parseFloat(d[rateName]);
+                rate = (rate < 0.0) ? 0.0 : rate;
                 total += rate;
             }
         });
@@ -136,18 +136,18 @@ function refreshMemoryChart(chartDivId, usageRecord) {
     refreshDonutChart(chartDivId, labels, [["Free", free], ["Used", used]], [["available", "used"]]);
 }
 
-function refreshDiskIOChart(chartDivId, usageRecord) {
+function refreshDiskIOChart(chartDivId, usageRecord, diskMax) {
     var r = usageRecord.diskRead;
     var w = usageRecord.diskWrite;
 
-    refreshDoubleBarChart(chartDivId, 'Disk MB/s', 'R', r, 'W', w);
+    refreshDoubleBarChart(chartDivId, 'Disk MB/s', 'R', r, 'W', w, diskMax);
 }
 
-function refreshNetworkIOChart(chartDivId, usageRecord) {
+function refreshNetworkIOChart(chartDivId, usageRecord, netMax) {
     var r = usageRecord.netRx;
     var w = usageRecord.netTx;
 
-    refreshDoubleBarChart(chartDivId, 'Net MB/s', 'Rx', r, 'Tx', w);
+    refreshDoubleBarChart(chartDivId, 'Net MB/s', 'Rx', r, 'Tx', w, netMax);
 }
 
 function refreshDonutChart(chartDivId, labels, columns, groups) {
@@ -177,27 +177,27 @@ function refreshDonutChart(chartDivId, labels, columns, groups) {
     }
 }
 
-function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rightDescr, rightVal) {
+function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rightDescr, rightVal, maximum) {
     var chartConfig = jQuery().c3ChartDefaults();
     chartConfig.bindto = chartDivId;
 
     chartConfig.axis = {
+        rotated: true,
         x: {
             categories: [categoryName],
-            tick: {
-                outer: true
-            },
             type: 'category'
         },
         y: {
+            max: maximum.toFixed(1),
+            min: 0,
             tick: {
-                outer: false
+                count: 2
             }
         }
     };
     chartConfig.bar = {
         width: {
-            ratio: 0.5
+            ratio: 0.8
         }
     };
     chartConfig.color = {
@@ -205,11 +205,11 @@ function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rig
     };
     chartConfig.grid = {
         y: {
-            show: true
+            show: false
         }
     };
     chartConfig.size = {
-        height: 100
+        height: 110
     };
     chartConfig.data = {
         columns: [
@@ -222,14 +222,23 @@ function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rig
     c3.generate(chartConfig);
 }
 
+var diskMax = 0;
+var netMax = 0;
 function refreshUsageCharts() {
+    $.each(vmUsage, function (key, usageRecords) {
+        var last = usageRecords[usageRecords.length - 1];
+        diskMax = Math.max(last.diskRead, last.diskWrite, diskMax);
+        netMax = Math.max(last.netRx, last.netTx, netMax);
+    });
+    debugMsg("Max diskMax=" + diskMax + ", netMax="+ netMax);
+
     $.each(vmUsage, function (key, usageRecords) {
         if (usageRecords.length > 0) {
             var last = usageRecords[usageRecords.length - 1];
             refreshCpuChart(getUsageElementId("cpu", key), last);
             refreshMemoryChart(getUsageElementId("mem", key), last);
-            refreshDiskIOChart(getUsageElementId("diskio", key), last);
-            refreshNetworkIOChart(getUsageElementId("networkio", key), last);
+            refreshDiskIOChart(getUsageElementId("diskio", key), last, diskMax);
+            refreshNetworkIOChart(getUsageElementId("networkio", key), last, netMax);
         }
     });
 }
