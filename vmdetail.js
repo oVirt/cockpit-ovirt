@@ -1,7 +1,6 @@
 // --- vm-detail-screen & vm manipulation methods -----------------------
 
 // depends on hostvms.js::latestHostVMSList
-
 function consoleFileContent(vm) {
 // TODO: content of .vv file
     var blob = new Blob([
@@ -13,7 +12,7 @@ function consoleFileContent(vm) {
 }
 
 function downloadConsole(vmId) {
-    var vm = getVmDetails_vdsmToInternal(vmId, latestHostVMSList);
+    var vm = getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList);
     saveAs(consoleFileContent(vm), "console.vv"); // TODO: resolve content-security-policy error
 
     printError("TODO: finish generating of console.vv file. ");
@@ -40,7 +39,7 @@ function renderVmDetailActual() {// called after successful readVmsList() to ref
 
 function renderVmDetail(vmId) {
     // populate VM detail data
-    var vm = getVmDetails_vdsmToInternal(vmId, latestHostVMSList);
+    var vm = getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList);
 
     if (!vm) {
         $("#vm-detail-not-available").show();
@@ -57,41 +56,7 @@ function renderVmDetail(vmId) {
 }
 
 function renderUsageChartsDetail(vmId) {
-    /*
-    var lineOptions = {
-        ///Boolean - Whether grid lines are shown across the chart
-        scaleShowGridLines: true,
-        //String - Colour of the grid lines
-        scaleGridLineColor: "rgba(0,0,0,.05)",
-        //Number - Width of the grid lines
-        scaleGridLineWidth: 1,
-        //Boolean - Whether to show horizontal lines (except X axis)
-        scaleShowHorizontalLines: true,
-        //Boolean - Whether to show vertical lines (except Y axis)
-        scaleShowVerticalLines: true,
-        //Boolean - Whether the line is curved between points
-        bezierCurve: true,
-        //Number - Tension of the bezier curve between points
-        bezierCurveTension: 0.2,//0.4
-        //Boolean - Whether to show a dot for each point
-        pointDot: true,
-        //Number - Radius of each point dot in pixels
-        pointDotRadius: 1,
-        //Number - Pixel width of point dot stroke
-        pointDotStrokeWidth: 1,
-        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-        pointHitDetectionRadius: 10,
-        //Boolean - Whether to show a stroke for datasets
-        datasetStroke: true,
-        //Number - Pixel width of dataset stroke
-        datasetStrokeWidth: 1,//2
-        //Boolean - Whether to fill the dataset with a colour
-        datasetFill: false,
-        //String - A legend template
-        legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-    };
-*/
-    var usageRecords = vmUsage[vmId];
+    var usageRecords = GLOBAL.vmUsage[vmId];
     if (usageRecords) {// TODO: optimization: add data to existing chart instead of full rendering
         renderCpuChartDetail(getUsageDetailElementId("cpu", vmId), usageRecords);
         renderMemoryChartDetail(getUsageDetailElementId("mem", vmId), usageRecords);
@@ -104,18 +69,7 @@ function getUsageDetailElementId(device, vmId) {
     var divId = "#" + device + "UsageChartDetail-" + vmId;
     return divId;
 }
-/*
-function getUsageChartDetail(device, vmId) {
-    var deviceId = getUsageDetailElementId(device, vmId);
-    if ($(deviceId) == null || $(deviceId).get(0) == null) {
-        return null;
-    }
 
-    var ctx = $(deviceId).get(0).getContext("2d");
-    var myChart = new Chart(ctx);
-    return myChart;
-}
-*/
 function getUsageDataset(usageRecords, attr1, attr2, inclSum) {
     var ds1 = [];
     var ds2 = [];
@@ -140,11 +94,7 @@ function getUsageDataset(usageRecords, attr1, attr2, inclSum) {
                 }
             }
 
-//            if (index == 0 || index == (usageRecords.length - 1) || (index % USAGE_CHART_TIMESTAMP_DENSITY) == 0) {
-                timestamps.push(ur.timestamp);
-/*            } else {
-                timestamps.push("");
-            }*/
+            timestamps.push(ur.timestamp);
         }
     }
 
@@ -167,10 +117,6 @@ function renderUsageDetailChart(chartDivId, timestamps, dsArray1, dsArray2) {
     prefillDs(dsArray1);
     prefillDs(dsArray2);
     renderSparklineChart(chartDivId, timestamps, dsArray1, dsArray2);
-}
-
-function renderSpinner(chartDivId) {
-    $(chartDivId).html('<div class="spinner spinner-sm"></div>');
 }
 
 // TODO: add timestamps
@@ -200,7 +146,7 @@ function renderSparklineChart(chartDivId, timestamps, dataArray1, dataArray2) {
     c3.generate(chartConfig);
 }
 
-
+/*
 // TODO: add timestamps
 function renderLineChart(chartDivId, timestamps, dataArray1, dataArray2) {
     var chartConfig = {
@@ -225,7 +171,7 @@ function renderLineChart(chartDivId, timestamps, dataArray1, dataArray2) {
     }
     c3.generate(chartConfig);
 }
-
+*/
 function renderCpuChartDetail(chartDivId, usageRecords) {
     var ds = getUsageDataset(usageRecords, 'cpuSys', 'cpuUser', true);
     ds.total.unshift('CPU %');
@@ -283,6 +229,5 @@ function vmStatusToHtml(status) {
         html = status;// use text as default
     }
 
-    //debugMsg("vmStatusToHtml(" + status + "): " + html);
     return html;
 }

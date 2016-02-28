@@ -14,7 +14,7 @@ function getAllVmStatsSuccess() {
     var vms = parseVdsmJson(vdsmDataVmsList);
     if (vms != null) {
         if (vms.status.code == 0) {
-            latestHostVMSList = vms; // cache for reuse i.e. in displayVMDetail()
+            GLOBAL.latestHostVMSList = vms; // cache for reuse i.e. in displayVMDetail()
             renderHostVms(vms);
         } else {
             printError("getAllVmStats() error (" + vms.status.code + "): " + vms.status.message);
@@ -93,12 +93,12 @@ function addVmUsage(vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead, 
         netTx: netTx
     };
 
-    if (!vmUsage[vmId]) {
-        vmUsage[vmId] = [];
+    if (!GLOBAL.vmUsage[vmId]) {
+        GLOBAL.vmUsage[vmId] = [];
     }
 
     // TODO: limit length of historical data
-    vmUsage[vmId].push(record); // keep history
+    GLOBAL.vmUsage[vmId].push(record); // keep history
 }
 
 function getUsageElementId(device, vmId) {
@@ -222,14 +222,14 @@ function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rig
 var diskMax = 0;
 var netMax = 0;
 function refreshUsageCharts() {
-    $.each(vmUsage, function (key, usageRecords) {
+    $.each(GLOBAL.vmUsage, function (key, usageRecords) {
         var last = usageRecords[usageRecords.length - 1];
         diskMax = Math.max(last.diskRead, last.diskWrite, diskMax);
         netMax = Math.max(last.netRx, last.netTx, netMax);
     });
     debugMsg("Max diskMax=" + diskMax + ", netMax="+ netMax);
 
-    $.each(vmUsage, function (key, usageRecords) {
+    $.each(GLOBAL.vmUsage, function (key, usageRecords) {
         if (usageRecords.length > 0) {
             var last = usageRecords[usageRecords.length - 1];
             refreshCpuChart(getUsageElementId("cpu", key), last);

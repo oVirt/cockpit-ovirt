@@ -27,7 +27,7 @@ function getAllVmsListSuccess() {
     var vms = parseVdsmJson(vdsmEngineAllVms);
     if (vms != null) {
         if (vms.status.code == 0) {
-            latestEngineVmsList = vms;
+            GLOBAL.latestEngineVmsList = vms;
             renderEngineVmsList(vms);
         } else {
             printError("getAllVmsList error (" + vms.status.code + "): " + vms.status.message);
@@ -61,14 +61,13 @@ function renderEngineVmsList(vmsFull) {
 }
 
 function onEngineVmClick(vmId) {
-    if (getVmDetails_vdsmToInternal(vmId, latestHostVMSList)) {// the VM is running on this host
+    if (getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)) {// the VM is running on this host
         onVmClick(vmId);
     } else {// remote cockpit
         // get VM's host
-        var vm = getVmDetails_engineToInternal(vmId, latestEngineVmsList.content.vm);
+        var vm = getVmDetails_engineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm);
         if (!vm) {
             printError("Data for engine VM '" + vmId + "' not found");
-            debugMsg("latestEngineVmsList.content.vm: " + JSON.stringify(latestEngineVmsList.content.vm));
             return;
         }
 

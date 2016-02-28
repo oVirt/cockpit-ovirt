@@ -22,7 +22,7 @@ function showEngineVmsScreen() {
 function showVmDetailScreen(vmId) {
     hideAllScreens();
 
-    if (!latestHostVMSList) {// ensure vms list is read
+    if (!GLOBAL.latestHostVMSList) {// ensure vms list is read
         readVmsList();
     } else {
         renderVmDetail(vmId);
@@ -109,17 +109,25 @@ function refreshActionClicked(ignore) {
     var spanRefreshA = $("#action-refresh a");
 
     if (spanRefresh.attr("data-pattern") == "off") {
-        autoRefresher = setInterval(refresh, CONFIG.reload.auto_refresh_interval);
+        startAutorefresher();
 
         spanRefreshA.text("Refresh: auto");
         spanRefresh.attr("data-pattern", "on");
     } else {
-        clearInterval(autoRefresher);
-        autoRefresher = null;
+        stopAutorefresher();
 
         spanRefreshA.text("Refresh: off");
         spanRefresh.attr("data-pattern", "off");
     }
+}
+
+function startAutorefresher() {
+    GLOBAL.autoRefresher = setInterval(refresh, CONFIG.reload.auto_refresh_interval);
+}
+
+function stopAutorefresher() {
+    clearInterval(GLOBAL.autoRefresher);
+    GLOBAL.autoRefresher = null;
 }
 
 function refresh() {
