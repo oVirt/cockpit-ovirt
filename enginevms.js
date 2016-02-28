@@ -67,7 +67,7 @@ function onEngineVmClick(vmId) {
         // get VM's host
         var vm = getVmDetails_engineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm);
         if (!vm) {
-            printError("Data for engine VM '" + vmId + "' not found");
+            printError("Host data for engine VM '" + vmId + "' not found");
             return;
         }
 
@@ -78,7 +78,7 @@ function onEngineVmClick(vmId) {
         }
 
         var url = "https://" + host.address + ":" + CONFIG.cockpit.port + CONFIG.cockpit.ovirtComponent + "#/vm/" + vmId;
-        debugMsg("URL of VM detail: " + url);
+        debugMsg("URL of engine VM detail: " + url);
 
         // open the detail
         var win = window.open(url, '_blank');
@@ -179,7 +179,7 @@ function getEngineHostSuccess(hostId) {
 
 function getVmDetails_engineToInternal(vmId, parsedEngineVms) {// lookup cached VM detail
     var s = parsedEngineVms.find(function (src){return src.id == vmId;});
-    if (!s) {
+    if (!s || !s.host || !s.host.id) {
         return undefined;
     }
 
