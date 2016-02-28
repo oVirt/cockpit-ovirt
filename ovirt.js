@@ -1,6 +1,3 @@
-var isDebug = true;// print debug messages to console
-
-// ----------------------------------------------------------------------
 function showVmsScreen() {
     hideAllScreens();
     readVmsList();
@@ -9,6 +6,7 @@ function showVmsScreen() {
 }
 
 function showEngineVmsScreen() {
+    debugMsg("showEngineVmsScreen() called");
     if (isLoggedInEngine()) {
         hideAllScreens();
         readEngineVmsList();
@@ -106,7 +104,6 @@ function jump(component) {
     cockpit.jump(component);// TODO: specify host
 }
 
-var autoRefresher;
 function refreshActionClicked(ignore) {
     var spanRefresh = $("#action-refresh");
     var spanRefreshA = $("#action-refresh a");

@@ -76,9 +76,8 @@ def httpCall(url, method, headers = {'Accept': 'application/json'}, user=None, p
     return None
 
 def getEngineToken():
-    logger.debug('getEngineToken, reading credenatials from stdin')
-    credentials = json.loads(readStdin())
-    logger.debug(credentials)
+    logger.debug('getEngineToken() called')
+    credentials = readCredentials()
 
     url = "{0}/sso/oauth/token?grant_type=urn:ovirt:params:oauth:grant-type:http&scope=ovirt-app-api".format(credentials['url'])
     resp = httpCall(url=url, method='GET', user=credentials['user'], pwd=credentials['pwd'])
@@ -91,16 +90,24 @@ def getEngineToken():
     else:
         return buildResult(resp.status_code, resp.text)
 
-def getAllVms():
-    logger.debug('getAllVms, reading token data from stdin')
+def readCredentials():
+    logger.debug('Reading token data from stdin');
     si=readStdin()
     logger.debug("stdin:{0}".format(si));
     credentials = json.loads(si)
     logger.debug(credentials)
+    return credentials
+
+def getDefaultHeaders(credentials):
+    headers = {'Accept': 'application/json', 'Authorization': "Bearer {0}".format(credentials['token'])}
+    return headers
+
+def getAllVms():
+    logger.debug('getAllVms() called')
+    credentials = readCredentials()
 
     url = "{0}/api/{1}".format(credentials['url'], 'vms')
-    headers = {'Accept': 'application/json', 'Authorization': "Bearer {0}".format(credentials['token'])}
-    resp = httpCall(url=url, method='GET', headers=headers)
+    resp = httpCall(url=url, method='GET', headers=getDefaultHeaders(credentials))
     if resp.status_code == 200:
         content = json.loads(resp.text)
         # TODO: prune data before transfer
@@ -109,6 +116,18 @@ def getAllVms():
     else:
         return buildResult(resp.status_code, resp.text)
 
+def getHost(hostId):
+    logger.debug('getHost() called')
+    credentials = readCredentials()
+
+    url = "{0}/api/{1}/{2}".format(credentials['url'], 'hosts', hostId)
+#    url = "{0}/api/{1}".format(credentials['url'], 'hosts')
+    resp = httpCall(url=url, method='GET', headers=getDefaultHeaders(credentials))
+    if resp.status_code == 200:
+        content = json.loads(resp.text)
+        return buildResult(0, 'Done', content)
+    else:
+        return buildResult(resp.status_code, resp.text)
 
 def parseArgs(service):
     parser = argparse.ArgumentParser(description='Support utility for Cockpit oVirt plugin to invoke VDSM JSON RPC or Engine REST API.\n')
@@ -123,7 +142,8 @@ def main():
 
     ENGINE_COMMANDS = {
         'getToken': getEngineToken,
-        'getAllVms' : getAllVms
+        'getAllVms' : getAllVms,
+        'getHost' : getHost
     }
 
     COMMANDS = {

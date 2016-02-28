@@ -13,7 +13,7 @@ function nullToEmpty(obj) {
     return obj == null ? "" : obj;
 }
 
-function spawnVdsm(commandName, stdin, stdoutCallback, successCallback, failCallback, arg1) {
+function spawnVdsm(commandName, stdin, stdoutCallback, successCallback, failCallback, arg1, arg2) {
     if (!failCallback) {
         failCallback = vdsmFail;
     }
@@ -21,6 +21,9 @@ function spawnVdsm(commandName, stdin, stdoutCallback, successCallback, failCall
     var spawnArgs = [CONFIG.vdsm.client_path, commandName];
     if (typeof(arg1) !== 'undefined') {
         spawnArgs.push(arg1);
+        if (typeof(arg2) !== 'undefined') {
+            spawnArgs.push(arg2);
+        }
     }
 
     var proc = cockpit.spawn(spawnArgs);
@@ -34,6 +37,7 @@ function parseVdsmJson(json) {
     try {
         var resp = jQuery.parseJSON(json);
         if (resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message')) {
+            debugMsg("vdsm json successfully parsed");
             return resp;
         }
     } catch (err) {

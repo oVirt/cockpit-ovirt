@@ -2,28 +2,6 @@
 
 // depends on hostvms.js::latestHostVMSList
 
-var VM_STATUS_ICONS_PATH_PREFIX = "external/images/";
-var VM_STATUS_ICONS = {
-//    "Default": "",
-    "down": "off.png",
-    "up": "on.png",
-    "powering up":"powering_up.png",
-    "powering down": "powering_down.png"
-    //"Paused":""
-/*    MigratingFrom = 5,
-    MigratingTo = 6,
-    Unknown = 7,
-    NotResponding = 8,
-    WaitForLaunch = 9,
-    RebootInProgress = 10,
-    SavingState = 11,
-    RestoringState = 12,
-    Suspended = 13,
-    ImageIllegal = 14,
-    ImageLocked = 15,
-    PoweringDown = 16*/
-};
-
 function consoleFileContent(vm) {
 // TODO: content of .vv file
     var blob = new Blob([
@@ -64,17 +42,18 @@ function renderVmDetail(vmId) {
     // populate VM detail data
     var vm = getVmDetails_vdsmToInternal(vmId, latestHostVMSList);
 
-    if (vm != null) {
-        var template = $("#vm-detail-templ").html();
-        var html = Mustache.to_html(template, vm);
-        $("#vm-detail-content").html(html);
-
-        $("#vm-detail-not-available").hide();
-
-        renderUsageChartsDetail(vmId);
-    } else {
+    if (!vm) {
         $("#vm-detail-not-available").show();
+        return ;
     }
+
+    var template = $("#vm-detail-templ").html();
+    var html = Mustache.to_html(template, vm);
+    $("#vm-detail-content").html(html);
+
+    $("#vm-detail-not-available").hide();
+
+    renderUsageChartsDetail(vmId);
 }
 
 function renderUsageChartsDetail(vmId) {
@@ -288,7 +267,7 @@ function getVmDetails_vdsmToInternal(vmId, parsedVdsmGetAllVMs) {// lookup cache
         }
     }
 
-    return null;
+    return undefined;
 }
 
 function guestIPsToHtml(guestIPs) {

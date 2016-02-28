@@ -18,6 +18,7 @@
     <script src="external/js/patternfly.min.js"></script>
 
     <script src="constants.js"></script>
+    <script src="globaldata.js"></script>
     <script src="helpers.js"></script>
     <script src="vmdetail.js"></script>
     <script src="hostvms.js"></script>
@@ -36,9 +37,9 @@
             <tr>
                 <td valign="top">
                     <ul class="nav nav-tabs" id="main-btn-menu">
-                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a href="#/vms">Running VMs</a></li>
-                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a href="#/allVms">VMs in Cluster</a></li>
-                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a href="#/vdsm">VDSM</a></li>
+                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a>Running VMs</a></li>
+                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a>VMs in Cluster</a></li>
+                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a>VDSM</a></li>
                     </ul>
                 </td>
                 <td align="right" valign="top">
@@ -64,7 +65,7 @@
         </div>
         <div id="vm-detail-screen">
             <div id="vm-detail-content" class="panel panel-default"></div>
-            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>VM detail not available</div>
+            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>VM detail not available or being loaded</div>
         </div>
         <div id="engine-vms-screen">
             <div id="engine-virtual-machines" class="panel panel-default">
@@ -163,15 +164,12 @@
     </table>
 </script>
 
-
-
-
 <!------------------------------------------------------------------------------------->
 <script id="engine-vms-list-templ" type="x-template/mustache">
     <table class="table table-hover">
         <thead>
         <th>Name</th>
-        <th>Status</th>
+        <th>Running on</th>
         <th>Type</th>
         <th>Memory</th>
         <th>vCPUs</th>
@@ -182,8 +180,8 @@
         <tbody>
         {{#units}}
         <tr>
-            <td id="engine-vms-list-item-name-{{id}}" data-pattern="{{id}}">{{name}}</td>
-            <td>{{{statusHtml}}}</td>
+            <td id="engine-vms-list-item-name-{{id}}" data-pattern="{{id}}">{{{statusHtml}}} {{name}}</td>
+            <td>{{host.name}}</td>
             <td>{{type}}</td>
             <td>{{memoryHuman}}</td>
             <td>{{vCPUs}}</td>
