@@ -99,12 +99,8 @@ function formatHumanReadableSecsToTime(seconds) {
     return time;
 }
 
-function pruneArray(ar, maxRecords) {
-    if (ar.length < maxRecords) {
-        return ar;
-    }
-
-    var result = ar;
-    // TODO: implement prune
+function pruneArray(ar) {
+    var result = ar.filter( function (e, i) {return !(i % 2);} );
+    debugMsg("pruneArray(): starting length: " + ar.length + ", resulting length: " + result.length);
     return result;
 }

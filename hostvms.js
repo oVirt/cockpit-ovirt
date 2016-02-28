@@ -83,7 +83,7 @@ function onVmClick(vmId) {// show vm detail
 function addVmUsage(vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netTx) {
     var record = {
         timestamp: timestamp,
-        vcpuCount : vcpuCount,
+        vcpuCount: vcpuCount,
         cpuUser: cpuUser,
         cpuSys: cpuSys,
         memory: mem,
@@ -97,8 +97,10 @@ function addVmUsage(vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead, 
         GLOBAL.vmUsage[vmId] = [];
     }
 
-    GLOBAL.vmUsage[vmId] = pruneArray(GLOBAL.vmUsage[vmId], CONFIG.threshold.maxLengthVmUsage);
-    GLOBAL.vmUsage[vmId].push(record); // keep history
+    if (GLOBAL.vmUsage[vmId].length > CONFIG.threshold.maxLengthVmUsage) {
+        GLOBAL.vmUsage[vmId] = pruneArray(GLOBAL.vmUsage[vmId]);
+    }
+    GLOBAL.vmUsage[vmId].push(record);
 }
 
 function getUsageElementId(device, vmId) {
