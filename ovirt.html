@@ -60,19 +60,18 @@
             <div id="virtual-machines" class="panel panel-default">
                 <div class="panel-heading">Virtual Machines</div>
                 <div id="virtual-machines-list"></div>
-                <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is running</div>
+                <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden><div class="spinner spinner-lg"></div>No VM is running, let's keep hoping or start one (i.e. via oVirt's webadmin)</div>
             </div>
         </div>
         <div id="vm-detail-screen">
             <div id="vm-detail-content" class="panel panel-default"></div>
-            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>VM detail not available or being loaded</div>
+            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden><div class="spinner spinner-lg"></div> VM detail not available or being loaded</div>
         </div>
         <div id="engine-vms-screen">
             <div id="engine-virtual-machines" class="panel panel-default">
                 <div class="panel-heading">VMs available on the engine</div>
                 <div id="engine-virtual-machines-list"></div>
-                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is available
-                </div>
+                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is available</div>
             </div>
         </div>
         <div id="vdsm-screen">
