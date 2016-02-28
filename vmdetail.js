@@ -205,12 +205,13 @@ function renderNetworkIOChartDetail(chartDivId, usageRecords) {
 // ----------------------------------------------------------------------
 function getVmDetails_vdsmToInternal(vmId, parsedVdsmGetAllVMs) {// lookup cached VM detail
     if (parsedVdsmGetAllVMs.hasOwnProperty('items')) {
-        for (var i = 0; i < parsedVdsmGetAllVMs.items.length; i++) {
+        return _getVmDetails(parsedVdsmGetAllVMs.items.find(function(src){return src.vmId == vmId;}));
+/*        for (var i = 0; i < parsedVdsmGetAllVMs.items.length; i++) {
             var src = parsedVdsmGetAllVMs.items[i];
             if (src.vmId == vmId) {
                 return _getVmDetails(src);
             }
-        }
+        }*/
     }
 
     return undefined;

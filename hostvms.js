@@ -97,7 +97,7 @@ function addVmUsage(vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead, 
         GLOBAL.vmUsage[vmId] = [];
     }
 
-    // TODO: limit length of historical data
+    GLOBAL.vmUsage[vmId] = pruneArray(GLOBAL.vmUsage[vmId], CONFIG.threshold.maxLengthVmUsage);
     GLOBAL.vmUsage[vmId].push(record); // keep history
 }
 
@@ -242,6 +242,10 @@ function refreshUsageCharts() {
 
 // ----------------------------------------------------------------------
 function _getVmDetails(src) { // src is one item from parsed getAllVmStats
+    if (!src) {
+        return undefined;
+    }
+
     var vm = {
         id: src.vmId,
         name: src.vmName,

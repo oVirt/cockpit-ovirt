@@ -178,13 +178,11 @@ function getEngineHostSuccess(hostId) {
 }
 
 function getVmDetails_engineToInternal(vmId, parsedEngineVms) {// lookup cached VM detail
-    for (var i = 0; i < parsedEngineVms.length; i++) {
-        var src = parsedEngineVms[i];
-        if (src.id == vmId) {
-            var hostId = src.host.id;
-            return _getEngineVmDetails(src, getHostById(hostId));
-        }
+    var s = parsedEngineVms.find(function (src){return src.id == vmId;});
+    if (!s) {
+        return undefined;
     }
 
-    return undefined;
+    var hostId = s.host.id;
+    return _getEngineVmDetails(s, getHostById(hostId));
 }

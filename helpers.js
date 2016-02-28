@@ -88,7 +88,6 @@ function formatHumanReadableBytes(bytes,decimals) {
 }
 
 function formatHumanReadableSecsToTime(seconds) {
-//    var sec_num = parseInt(this, 10); // don't forget the second param
     var hours   = Math.floor(seconds / 3600);
     var minutes = Math.floor((seconds - (hours * 3600)) / 60);
     var seconds = seconds - (hours * 3600) - (minutes * 60);
@@ -98,4 +97,14 @@ function formatHumanReadableSecsToTime(seconds) {
     if (seconds < 10) {seconds = "0"+seconds;}
     var time    = hours+':'+minutes+':'+seconds;
     return time;
+}
+
+function pruneArray(ar, maxRecords) {
+    if (ar.length < maxRecords) {
+        return ar;
+    }
+
+    var result = ar;
+    // TODO: implement prune
+    return result;
 }
