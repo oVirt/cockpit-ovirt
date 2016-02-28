@@ -16,7 +16,7 @@ var CONFIG = {
         auto_clear_msg_delay: 5000
     },
     threshold: {
-       maxLengthVmUsage: 5 // maximal number of historical usage records
+       maxLengthVmUsage: 20 // maximal number of historical usage records
     },
     charts: {
         usage_chart_max_points: 17

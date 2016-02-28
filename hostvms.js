@@ -176,9 +176,12 @@ function refreshDonutChart(chartDivId, labels, columns, groups) {
     }
 }
 
-function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rightDescr, rightVal, maximum) {
+function refreshDoubleBarChart(chartElemId, categoryName, leftDescr, leftVal, rightDescr, rightVal, maximum) {
+    var height = $(chartElemId).attr("chartHeight")
+    height = (height) ? height : 100;
+
     var chartConfig = jQuery().c3ChartDefaults();
-    chartConfig.bindto = chartDivId;
+    chartConfig.bindto = chartElemId;
 
     chartConfig.axis = {
         rotated: true,
@@ -208,7 +211,7 @@ function refreshDoubleBarChart(chartDivId, categoryName, leftDescr, leftVal, rig
         }
     };
     chartConfig.size = {
-        height: 110
+        height: height
     };
     chartConfig.data = {
         columns: [
