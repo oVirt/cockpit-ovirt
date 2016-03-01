@@ -1,0 +1,40 @@
+{
+  "name": "cockpit-ovirt",
+  "version": "0.0.1",
+  "description": "Virtual Machine Management plugin for Cockpit based on oVirt.",
+  "main": "src/ovirt.js",
+  "scripts": {
+    "test": "eslint src --ext js,jsx",
+    "fix": "eslint src --fix --ext js,jsx",
+    "build": "npm test && NODE_ENV=production webpack -p --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mareklibra/cockpit-ovirt.git"
+  },
+  "keywords": [
+    "Cockpit",
+    "oVirt",
+    "VM",
+    "Management",
+    "VDSM"
+  ],
+  "author": "ovirt.org",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/mareklibra/cockpit-ovirt/issues"
+  },
+  "homepage": "https://github.com/mareklibra/cockpit-ovirt#readme",
+  "devDependencies": {
+    "babel-core": "^6.6.0",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.6.0",
+    "clean-webpack-plugin": "^0.1.8",
+    "copy-webpack-plugin": "^1.1.1",
+    "eslint": "^2.2.0",
+    "eslint-config-standard": "^5.1.0",
+    "eslint-plugin-promise": "^1.0.8",
+    "eslint-plugin-standard": "^1.3.2",
+    "webpack": "^1.12.14"
+  }
+}
