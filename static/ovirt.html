@@ -221,12 +221,48 @@
                         <div class="list-view-pf-additional-info-item" style="width: 100px;">
                             <span id="memUsageChart-{{id}}"></span>
                         </div>
+
+                        <div style="width: 200px;margin-right: 20px;">
+                            <div class="progress-description">
+                                <strong>Disk:</strong>
+                            </div>
+                            <div class="progress progress-label-top-right">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Read}}" aria-valuemin="0" aria-valuemax="{{diskUsage.ReadMax}}" style="width: {{diskUsage.ReadPercent}}%;">
+                                    <span>Read <small>({{diskUsage.Read}} / {{diskUsage.ReadMax}})</small></span>
+                                </div>
+                            </div>
+                            <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Write}}" aria-valuemin="0" aria-valuemax="{{diskUsage.WriteMax}}" style="width: {{diskUsage.WritePercent}}%;line-height:40px;">
+                                    <span>Write <small>({{diskUsage.Write}} / {{diskUsage.WriteMax}})</small></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="width: 200px;margin-right: 20px;">
+                            <div class="progress-description">
+                                <strong>Network:</strong>
+                            </div>
+                            <div class="progress progress-label-top-right">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}" aria-valuemin="0" aria-valuemax="{{netUsage.RxMax}}" style="width: {{netUsage.RxPercent}}%;">
+                                    <span>Rx <small>({{netUsage.Rx}} / {{netUsage.RxMax}})</small></span>
+                                </div>
+                            </div>
+                            <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Tx}}" aria-valuemin="0" aria-valuemax="{{netUsage.TxMax}}" style="width: {{netUsage.TxPercent}}%;line-height:40px;">
+                                    <span>Tx <small>({{netUsage.Tx}} / {{netUsage.TxMax}})</small></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--
                         <div class="list-view-pf-additional-info-item" style="width: 220px;">
                             <span id="diskioUsageChart-{{id}}" chartHeight="100"></span>
                         </div>
-                        <div class="list-view-pf-additional-info-item" style="width: 220px;">
+                        -->
+<!--                        <div class="list-view-pf-additional-info-item" style="width: 220px;">
                             <span id="networkioUsageChart-{{id}}" chartHeight="100"></span>
                         </div>
+                        -->
                     </div>
                 </div>
             </div>

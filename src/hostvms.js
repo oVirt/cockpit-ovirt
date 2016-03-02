@@ -8,7 +8,7 @@ import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {downloadConsole, forceoff, shutdown, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
-import {debugMsg, normalizePercentage, spawnVdsm, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime} from './helpers'
+import {debugMsg, normalizePercentage, spawnVdsm, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent} from './helpers'
 
 var vdsmDataVmsList = '' // might be partial output from the VDSM process TODO: risk of data overlapping
 function vdsmOutput (data) {
@@ -34,11 +34,11 @@ function getAllVmStatsSuccess () {
 }
 
 function renderHostVms (vmsFull) {
-    // the 'vmsFull' is parsed json result of getAllVmStats()
+  // the 'vmsFull' is parsed json result of getAllVmStats()
   if (vmsFull.hasOwnProperty('items') && vmsFull.items.length > 0) {
     var vms = []
 
-        // prepare data
+    // prepare data
     var timestamp = getActualTimeStamp()
     vmsFull.items.forEach(function translate (srcVm) {
       var vm = _getVmDetails(srcVm)
@@ -48,18 +48,20 @@ function renderHostVms (vmsFull) {
       var diskWrite = getVmDeviceRate(srcVm, 'disks', 'writeRate')
       var netRx = getVmDeviceRate(srcVm, 'network', 'rxRate')
       var netTx = getVmDeviceRate(srcVm, 'network', 'txRate')
-      addVmUsage(vm.id, vm.vcpuCount, timestamp, parseFloat(vm.cpuUser), parseFloat(vm.cpuSys), parseFloat(vm.memUsage),
-                diskRead, diskWrite, netRx, netTx)
+
+      var lastUsageRecord = addVmUsage(vm.id, vm.vcpuCount, timestamp, parseFloat(vm.cpuUser),
+        parseFloat(vm.cpuSys), parseFloat(vm.memUsage), diskRead, diskWrite, netRx, netTx)
+      appendVmUsage(vm, lastUsageRecord)
     })
 
-        // render vms list from template
+    // render vms list from template
     var data = {units: vms}
     var template = $('#vms-list-templ').html()
     var html = Mustache.to_html(template, data)
     $('#virtual-machines-list').html(html)
     $('#virtual-machines-novm-message').hide()
 
-        // register button event listeners
+    // register button event listeners
     registerBtnOnClickListener('btn-download-console-', downloadConsole)
     registerBtnOnClickListener('btn-forceoff-vm-', forceoff)
     registerBtnOnClickListener('btn-shutdown-vm-', shutdown)
@@ -91,6 +93,19 @@ export function onVmClick (vmId) { // show vm detail
 }
 
 // --- vms-screen usage charts ------------------------------------------
+// var diskMax = 0
+// var netMax = 0
+function computeUsageMaxs (lastRecord) {
+  /* $.each(GLOBAL.vmUsage, function (key, usageRecords) {
+   var last = usageRecords[usageRecords.length - 1]
+   diskMax = Math.max(last.diskRead, last.diskWrite, diskMax)
+   netMax = Math.max(last.netRx, last.netTx, netMax)
+   }) */
+  GLOBAL.vmUsageMax.disk = Math.max(lastRecord.diskRead, lastRecord.diskWrite, GLOBAL.vmUsageMax.disk)
+  GLOBAL.vmUsageMax.net = Math.max(lastRecord.netRx, lastRecord.netTx, GLOBAL.vmUsageMax.net)
+  debugMsg('Max diskMax=' + GLOBAL.vmUsageMax.disk + ', netMax=' + GLOBAL.vmUsageMax.net)
+}
+
 function addVmUsage (vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netTx) {
   var record = {
     timestamp: timestamp,
@@ -112,6 +127,10 @@ function addVmUsage (vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead,
     GLOBAL.vmUsage[vmId] = pruneArray(GLOBAL.vmUsage[vmId])
   }
   GLOBAL.vmUsage[vmId].push(record)
+
+  computeUsageMaxs(record)
+
+  return record
 }
 
 function getUsageElementId (device, vmId) {
@@ -145,7 +164,7 @@ function refreshMemoryChart (chartDivId, usageRecord) {
   var labels = [used + '%']
   refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
 }
-
+/*
 function refreshDiskIOChart (chartDivId, usageRecord, diskMax) {
   var r = usageRecord.diskRead
   var w = usageRecord.diskWrite
@@ -159,7 +178,7 @@ function refreshNetworkIOChart (chartDivId, usageRecord, netMax) {
 
   refreshDoubleBarChart(chartDivId, 'Net MB/s', 'Rx', r, 'Tx', w, netMax)
 }
-
+*/
 function refreshDonutChart (chartDivId, labels, columns, groups) {
   var chartConfig = $().c3ChartDefaults().getDefaultDonutConfig()
   chartConfig.bindto = chartDivId
@@ -178,7 +197,7 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
 
   c3.generate(chartConfig)
 
-    // add labels
+  // add labels
   var donutChartTitle = d3.select(chartDivId).select('text.c3-chart-arcs-title')
   donutChartTitle.text('')
   donutChartTitle.insert('tspan').text(labels[0]).classed('donut-title-small-pf', true).attr('dy', 0).attr('x', 0)
@@ -186,7 +205,7 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
     donutChartTitle.insert('tspan').text(labels[1]).classed('donut-title-small-pf', true).attr('dy', 20).attr('x', 0)
   }
 }
-
+/*
 function refreshDoubleBarChart (chartElemId, categoryName, leftDescr, leftVal, rightDescr, rightVal, maximum) {
   var height = $(chartElemId).attr('chartHeight')
   height = height || 100
@@ -226,38 +245,29 @@ function refreshDoubleBarChart (chartElemId, categoryName, leftDescr, leftVal, r
   }
   chartConfig.data = {
     columns: [
-            [leftDescr, leftVal],
-            [rightDescr, rightVal]
+      [leftDescr, leftVal],
+      [rightDescr, rightVal]
     ],
     type: 'bar'
   }
 
   c3.generate(chartConfig)
 }
-
-var diskMax = 0
-var netMax = 0
+*/
 function refreshUsageCharts () {
-  $.each(GLOBAL.vmUsage, function (key, usageRecords) {
-    var last = usageRecords[usageRecords.length - 1]
-    diskMax = Math.max(last.diskRead, last.diskWrite, diskMax)
-    netMax = Math.max(last.netRx, last.netTx, netMax)
-  })
-  debugMsg('Max diskMax=' + diskMax + ', netMax=' + netMax)
-
   $.each(GLOBAL.vmUsage, function (key, usageRecords) {
     if (usageRecords.length > 0) {
       var last = usageRecords[usageRecords.length - 1]
       refreshCpuChart(getUsageElementId('cpu', key), last)
       refreshMemoryChart(getUsageElementId('mem', key), last)
-      refreshDiskIOChart(getUsageElementId('diskio', key), last, diskMax)
-      refreshNetworkIOChart(getUsageElementId('networkio', key), last, netMax)
+      // refreshDiskIOChart(getUsageElementId('diskio', key), last, diskMax)
+      // refreshNetworkIOChart(getUsageElementId('networkio', key), last, netMax)
     }
   })
 }
 
 // ----------------------------------------------------------------------
-export function _getVmDetails (src) { // src is one item from parsed getAllVmStats
+export function _getVmDetails (src, usageRecord) { // src is one item from parsed getAllVmStats
   if (!src) {
     return undefined
   }
@@ -293,5 +303,26 @@ export function _getVmDetails (src) { // src is one item from parsed getAllVmSta
     kvmEnable: src.kvmEnable,
     acpiEnable: src.acpiEnable
   }
+
   return vm
+}
+
+function appendVmUsage (vm, usageRecord) {
+  vm['diskUsage'] = {
+    Read: usageRecord.diskRead,
+    ReadMax: GLOBAL.vmUsageMax.disk,
+    ReadPercent: computePercent(usageRecord.diskRead, GLOBAL.vmUsageMax.disk),
+    Write: usageRecord.diskWrite,
+    WriteMax: GLOBAL.vmUsageMax.disk,
+    WritePercent: computePercent(usageRecord.diskWrite, GLOBAL.vmUsageMax.disk)
+  }
+
+  vm['netUsage'] = {
+    Rx: usageRecord.netRx,
+    RxMax: GLOBAL.vmUsageMax.net,
+    RxPercent: computePercent(5, GLOBAL.vmUsageMax.net),
+    Tx: usageRecord.netTx,
+    TxMax: GLOBAL.vmUsageMax.net,
+    TxPercent: computePercent(50, GLOBAL.vmUsageMax.net)
+  }
 }

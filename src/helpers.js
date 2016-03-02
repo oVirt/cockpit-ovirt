@@ -113,3 +113,9 @@ export function pruneArray (ar) {
   debugMsg('pruneArray(): starting length: ' + ar.length + ', resulting length: ' + result.length)
   return result
 }
+
+export function computePercent (val, max) {
+  var f = (max > 0) ? (val / max) : (0)
+  f = f.toFixed(4)
+  return f * 100.0
+}

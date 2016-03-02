@@ -10,7 +10,7 @@ import {VM_STATUS_ICONS, VM_STATUS_ICONS_PATH_PREFIX} from './constants'
 import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
-import {printError, spawnVdsm, vdsmFail} from './helpers'
+import {printError, spawnVdsm, vdsmFail, debugMsg} from './helpers'
 import {_getVmDetails, readVmsList} from './hostvms'
 
 // depends on hostvms.js::latestHostVMSList
@@ -32,6 +32,7 @@ export function downloadConsole (vmId) {
 }
 
 export function shutdown (vmId) {
+  debugMsg('shutdown of: ' + vmId)
   spawnVdsm('shutdown', null, null, shutdownSuccess, vdsmFail, vmId)
 }
 
@@ -40,6 +41,7 @@ function shutdownSuccess () {
 }
 
 export function forceoff (vmId) {
+  debugMsg('forceoff of: ' + vmId)
   spawnVdsm('destroy', null, null, shutdownSuccess, vdsmFail, vmId)
 }
 
@@ -59,11 +61,11 @@ export function renderVmDetail (vmId) {
     return
   }
 
+  $('#vm-detail-not-available').hide()
+
   var template = $('#vm-detail-templ').html()
   var html = Mustache.to_html(template, vm)
   $('#vm-detail-content').html(html)
-
-  $('#vm-detail-not-available').hide()
 
   renderUsageChartsDetail(vmId)
 }
