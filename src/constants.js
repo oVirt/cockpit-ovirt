@@ -30,7 +30,9 @@ export const VM_STATUS_ICONS = {
   'down': 'off.png',
   'up': 'on.png',
   'powering up': 'powering_up.png',
-  'powering down': 'powering_down.png'
+  'powering_up': 'powering_up.png',
+  'powering down': 'powering_down.png',
+  'powering_down': 'powering_down.png'
     // "Paused":""
     /*    MigratingFrom = 5,
      MigratingTo = 6,
