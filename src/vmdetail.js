@@ -240,9 +240,9 @@ export function vmStatusToHtml (status) {
   var html = ''
   var iconFile = VM_STATUS_ICONS[status.toLowerCase()]
   if (iconFile) {
-    html = `<img src="${VM_STATUS_ICONS_PATH_PREFIX}${iconFile}" title="${status}" width="30" height=30"`
+    html = `<img src="${VM_STATUS_ICONS_PATH_PREFIX}${iconFile}" title="${status}" width="30" height=30">`
   } else {
-    html = status// use text as default
+    html = status// use text value as default
   }
 
   return html
