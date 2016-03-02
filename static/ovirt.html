@@ -2,31 +2,21 @@
     <title>oVirt</title>
     <meta charset="utf-8">
     <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
-    <link href="external/css/patternfly.css" type="text/css" rel="stylesheet">
-    <link href="external/css/patternfly-additions.css" type="text/css" rel="stylesheet">
+    <link href="css/patternfly.css" type="text/css" rel="stylesheet">
+    <link href="css/patternfly-additions.css" type="text/css" rel="stylesheet">
 
     <script src="../base1/jquery.js"></script>
     <script src="../base1/jquery.storage.js"></script>
     <script src="../base1/cockpit.js"></script>
     <script src="../base1/mustache.js"></script>
 
-    <script src="external/js/Chart.min.js"></script>
-    <script src="external/js/FileSaver.min.js"></script>
-    <script src="external/js/bootstrap.min.js"></script>
-    <script src="external/js/d3.js"></script>
-    <script src="external/js/c3.js"></script>
-    <script src="external/js/patternfly.min.js"></script>
+    <script src="js/FileSaver.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/c3.js"></script>
+    <script src="js/patternfly.min.js"></script>
 
-    <script src="constants.js"></script>
-    <script src="globaldata.js"></script>
-    <script src="helpers.js"></script>
-    <script src="vmdetail.js"></script>
-    <script src="hostvms.js"></script>
-    <script src="enginevms.js"></script>
-    <script src="engineLogin.js"></script>
-    <script src="vdsmscreen.js"></script>
-    <script src="ping.js"></script>
-    <script src="ovirt.js"></script>
+    <script src="bundle.js"></script>
 </head>
 <body>
 <div id="ping-content" hidden></div>
@@ -198,14 +188,14 @@
         {{#units}}
         <div class="list-group-item list-view-pf-stacked">
             <div class="list-view-pf-actions">
-                <img width="30" src="external/images/vm_remote_console.png" title="Get remote console" id="btn-download-console-{{id}}" data-pattern="{{id}}">
+                <img width="30" src="images/vm_remote_console.png" title="Get remote console" id="btn-download-console-{{id}}" data-pattern="{{id}}">
                 <div class="dropdown pull-right dropdown-kebab-pf">
                     <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight-{{id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="fa fa-ellipsis-v"></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight-{{id}}">
-                        <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="external/images/shutdown.png" title="Shutdown politely"> Shutdown politely</li>
-                        <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="external/images/power_off.png" title="Force off">Force off</li>
+                        <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/shutdown.png" title="Shutdown politely"> Shutdown politely</li>
+                        <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/power_off.png" title="Force off">Force off</li>
                     </ul>
                 </div>
             </div>

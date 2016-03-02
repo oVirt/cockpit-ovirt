@@ -7,3 +7,6 @@
 /notes.txt
 /vdsm/transport/
 /Wiki
+
+/node_modules
+/dist
