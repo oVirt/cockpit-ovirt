@@ -1,3 +1,4 @@
+# Used for rpm-packaging of pre-bundled application with already resolved JS dependencies
 %global _plugindir cockpit/ovirt
 
 Name:           cockpit-ovirt
@@ -9,7 +10,6 @@ URL:            https://github.com/mareklibra/%{name}
 Source0:        https://github.com/mareklibra/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz 
 BuildArch:      noarch
 
-BuildRequires: nodejs
 Requires: cockpit
 Requires: vdsm
 
@@ -17,16 +17,18 @@ Requires: vdsm
 Virtual Machine Management plugin for Cockpit based on oVirt.
 
 %prep
+echo === RPM PREPARATION
 %setup -q -n %{name}-%{version}
-echo PWD: `pwd`
-npm i
+echo Preparation ... 
+#npm i 
 
 %build
-npm run build
+#npm run build
 
 %install
+echo === RPM INSTALL
 mkdir -p %{buildroot}%{_datadir}/%{_plugindir}
-cp -r dist/* %{buildroot}%{_datadir}/%{_plugindir}
+cp -r * %{buildroot}%{_datadir}/%{_plugindir}
 chmod a+x %{buildroot}%{_datadir}/%{_plugindir}/vdsm/vdsm
 
 %files

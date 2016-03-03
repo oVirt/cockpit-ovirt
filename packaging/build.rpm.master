@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Build cockpit-ovirt.rpm on top of master branch (https://github.com/mareklibra/cockpit-ovirt/)
+
+# Requires:
+#	yum install git nodejs @development-tools rpmdevtools
+
+SPEC_FILE=./cockpit-ovirt.local.spec
+
+# TODO: read RELEASE_VERSION from .spec file
+RELEASE_VERSION=0.1
+
+GIT_REPO=https://github.com/mareklibra/cockpit-ovirt.git
+SRC_DIR=cockpit-ovirt
+DIST_DIR=dist
+RELEASE_DIR=cockpit-ovirt-${RELEASE_VERSION}/
+TGZ_PCKG=cockpit-ovirt-${RELEASE_VERSION}.tar.gz
+RPMBUILD_DIR=~/rpmbuild
+RPM_SOURCES=${RPMBUILD_DIR}/SOURCES/
+RPM_SPECS=${RPMBUILD_DIR}/SPECS/
+RPM_FILE_PREFIX=${RPMBUILD_DIR}/RPMS/noarch/cockpit-ovirt-${RELEASE_VERSION}
+SRPM_FILE_PREFIX=${RPMBUILD_DIR}/SRPMS/cockpit-ovirt-${RELEASE_VERSION}
+
+# Download sources
+function getSources {
+	echo Getting sources from ${GIT_REPO} ...
+
+	git clone ${GIT_REPO}
+}
+
+# Clean after build
+function cleanUp {
+	echo Build finished, clean up ...
+
+	rm -rfI ${SRC_DIR}
+}
+
+# JavaScript compilation, produce the 'dist' dir
+function buildJS {
+	echo Building JavaScript app ...
+
+	cd ${SRC_DIR}
+
+	npm i && \
+	npm run build
+
+	cd -
+}
+
+# Produce .tar.gz from the 'dist'
+function release {
+	echo Building release .tar.gz ...
+
+	cd ${SRC_DIR}
+
+	mv ${DIST_DIR} ${RELEASE_DIR} && \
+	tar -czf ${TGZ_PCKG} ${RELEASE_DIR} && \
+	mv ${TGZ_PCKG} ${RPM_SOURCES}
+
+	cd -
+}
+
+# Prepare input and run rpmbuild
+function buildRpm {
+	echo Building RPMs ...
+
+	cp ${SPEC_FILE} ${RPM_SPECS}
+
+	cd ${RPM_SPECS}
+	rpmbuild -ba ${SPEC_FILE}
+	cd -
+}
+
+
+function mvResult {
+	echo Moving produced packages ...
+
+	mv ${RPM_FILE_PREFIX}* ./
+	mv ${SRPM_FILE_PREFIX}* ./
+	mv ${RPM_SOURCES}/${TGZ_PCKG} ./
+}
+
+getSources
+buildJS
+
+release
+buildRpm
+mvResult
+
+cleanUp
