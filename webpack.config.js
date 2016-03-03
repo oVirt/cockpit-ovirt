@@ -40,7 +40,9 @@ module.exports = {
       { from: 'external/fonts', to: 'fonts' },
       { from: 'external/images', to: 'images' },
       { from: 'external/img', to: 'images' },
-      { from: 'external/js', to: 'js' }
+      { from: 'external/js', to: 'js' },
+      { from: 'LICENSE' },
+      { from: 'README.md' }
     ]),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
