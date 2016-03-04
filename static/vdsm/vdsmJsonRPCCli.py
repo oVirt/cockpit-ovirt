@@ -37,10 +37,17 @@ def ensureJsonrpcvdscliCompatibility():
     # jsonrpcvdscli.py
     jsonrpcvdscli._COMMAND_CONVERTER['shutdown'] = 'VM.shutdown'
 
+
+# TODO: BLBEEEEEE
+service=None
 def getVDSMService():
-    rqueues = config.get('addresses', 'request_queues')
-    rqueue = rqueues.split(',', 1)[0]
-    service = jsonrpcvdscli.connect(rqueue)
+    global service
+    if not service:
+        logger.debug("getVDSMService() connecting ...")
+        rqueues = config.get('addresses', 'request_queues')
+        rqueue = rqueues.split(',', 1)[0]
+        service = jsonrpcvdscli.connect(rqueue)
+
     return service
 
 def readStdin():
@@ -132,9 +139,12 @@ def getHost(hostId):
 def parseArgs(service):
     parser = argparse.ArgumentParser(description='Support utility for Cockpit oVirt plugin to invoke VDSM JSON RPC or Engine REST API.\n')
     parser.add_argument('vdsmCommand', help='VDSM command to be invoked',
-                        choices=['getAllVmStats', 'shutdown', 'destroy', 'ping', 'engineBridge'])
+                        choices=['getAllVmStats', 'shutdown', 'destroy', 'restart', 'ping', 'engineBridge'])
     parser.add_argument('vdsmCommandArgs', help='VDSM command arguments', nargs='*')
     return parser.parse_args()
+
+def restartVm(vmId):
+    return getVDSMService().shutdown(vmId, reboot=True)
 
 def main():
     ensureJsonrpcvdscliCompatibility()
@@ -150,6 +160,7 @@ def main():
         'getAllVmStats' : service.getAllVmStats,
         'shutdown' : service.shutdown,
         'destroy' : service.destroy,
+        'restart' : restartVm,
         'ping' : service.ping
     }
 

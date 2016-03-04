@@ -43,7 +43,8 @@ export const VM_STATUS_ICONS = {
   'powering up': 'powering_up.png',
   'powering_up': 'powering_up.png',
   'powering down': 'powering_down.png',
-  'powering_down': 'powering_down.png'
+  'powering_down': 'powering_down.png',
+  'rebootinprogress': 'vm_rebooting.png'
     // "Paused":""
     /*    MigratingFrom = 5,
      MigratingTo = 6,

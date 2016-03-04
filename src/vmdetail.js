@@ -36,6 +36,11 @@ export function shutdown (vmId) {
   spawnVdsm('shutdown', null, null, shutdownSuccess, vdsmFail, vmId)
 }
 
+export function restart (vmId) {
+  debugMsg('restart of: ' + vmId)
+  spawnVdsm('restart', null, null, shutdownSuccess, vdsmFail, vmId)
+}
+
 function shutdownSuccess () {
   setTimeout(readVmsList, CONFIG.reload.delay_after_vdsm_action)
 }

@@ -7,7 +7,7 @@ import Mustache from 'mustache'
 import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
-import {downloadConsole, forceoff, shutdown, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
+import {downloadConsole, forceoff, shutdown, restart, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
 import {debugMsg, normalizePercentage, spawnVdsm, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent} from './helpers'
 
 var vdsmDataVmsList = '' // might be partial output from the VDSM process TODO: risk of data overlapping
@@ -65,6 +65,7 @@ function renderHostVms (vmsFull) {
     registerBtnOnClickListener('btn-download-console-', downloadConsole)
     registerBtnOnClickListener('btn-forceoff-vm-', forceoff)
     registerBtnOnClickListener('btn-shutdown-vm-', shutdown)
+    registerBtnOnClickListener('btn-restart-vm-', restart)
     registerBtnOnClickListener('host-vms-list-item-', onVmClick)
     refreshUsageCharts()
     renderVmDetailActual()
@@ -93,14 +94,7 @@ export function onVmClick (vmId) { // show vm detail
 }
 
 // --- vms-screen usage charts ------------------------------------------
-// var diskMax = 0
-// var netMax = 0
 function computeUsageMaxs (lastRecord) {
-  /* $.each(GLOBAL.vmUsage, function (key, usageRecords) {
-   var last = usageRecords[usageRecords.length - 1]
-   diskMax = Math.max(last.diskRead, last.diskWrite, diskMax)
-   netMax = Math.max(last.netRx, last.netTx, netMax)
-   }) */
   GLOBAL.vmUsageMax.disk = Math.max(lastRecord.diskRead, lastRecord.diskWrite, GLOBAL.vmUsageMax.disk)
   GLOBAL.vmUsageMax.net = Math.max(lastRecord.netRx, lastRecord.netTx, GLOBAL.vmUsageMax.net)
   debugMsg('Max diskMax=' + GLOBAL.vmUsageMax.disk + ', netMax=' + GLOBAL.vmUsageMax.net)
@@ -164,21 +158,7 @@ function refreshMemoryChart (chartDivId, usageRecord) {
   var labels = [used + '%']
   refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
 }
-/*
-function refreshDiskIOChart (chartDivId, usageRecord, diskMax) {
-  var r = usageRecord.diskRead
-  var w = usageRecord.diskWrite
 
-  refreshDoubleBarChart(chartDivId, 'Disk MB/s', 'R', r, 'W', w, diskMax)
-}
-
-function refreshNetworkIOChart (chartDivId, usageRecord, netMax) {
-  var r = usageRecord.netRx
-  var w = usageRecord.netTx
-
-  refreshDoubleBarChart(chartDivId, 'Net MB/s', 'Rx', r, 'Tx', w, netMax)
-}
-*/
 function refreshDonutChart (chartDivId, labels, columns, groups) {
   var chartConfig = $().c3ChartDefaults().getDefaultDonutConfig()
   chartConfig.bindto = chartDivId
@@ -189,7 +169,7 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
     groups: groups,
     order: null
   }
-  chartConfig.donut.width = 5
+  chartConfig.donut.width = 8
 
   chartConfig.color = {
     pattern: ['#3f9c35', '#cc0000', '#D1D1D1']
@@ -205,55 +185,7 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
     donutChartTitle.insert('tspan').text(labels[1]).classed('donut-title-small-pf', true).attr('dy', 20).attr('x', 0)
   }
 }
-/*
-function refreshDoubleBarChart (chartElemId, categoryName, leftDescr, leftVal, rightDescr, rightVal, maximum) {
-  var height = $(chartElemId).attr('chartHeight')
-  height = height || 100
 
-  var chartConfig = $().c3ChartDefaults()
-  chartConfig.bindto = chartElemId
-
-  chartConfig.axis = {
-    rotated: true,
-    x: {
-      categories: [categoryName],
-      type: 'category'
-    },
-    y: {
-      max: maximum.toFixed(1),
-      min: 0,
-      tick: {
-        count: 2
-      }
-    }
-  }
-  chartConfig.bar = {
-    width: {
-      ratio: 0.8
-    }
-  }
-  chartConfig.color = {
-    pattern: ['#46BFBD', '#cc0000']
-  }
-  chartConfig.grid = {
-    y: {
-      show: false
-    }
-  }
-  chartConfig.size = {
-    height: height
-  }
-  chartConfig.data = {
-    columns: [
-      [leftDescr, leftVal],
-      [rightDescr, rightVal]
-    ],
-    type: 'bar'
-  }
-
-  c3.generate(chartConfig)
-}
-*/
 function refreshUsageCharts () {
   $.each(GLOBAL.vmUsage, function (key, usageRecords) {
     if (usageRecords.length > 0) {
@@ -267,7 +199,7 @@ function refreshUsageCharts () {
 }
 
 // ----------------------------------------------------------------------
-export function _getVmDetails (src, usageRecord) { // src is one item from parsed getAllVmStats
+export function _getVmDetails (src) { // src is one item from parsed getAllVmStats
   if (!src) {
     return undefined
   }

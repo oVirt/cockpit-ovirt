@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#INSTALL_PATH="/usr/share/cockpit/ovirt"
+#INSTALL_PATH="/usr/share/cockpit/ovirt/vdsm"
 #INSTALL_PATH=~/.local/share/cockpit/ovirt/vdsm
 
 INSTALL_PATH=`dirname $0`
