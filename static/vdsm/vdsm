@@ -1,8 +1,9 @@
 #!/bin/sh
 
 #INSTALL_PATH="/usr/share/cockpit/ovirt"
+#INSTALL_PATH=~/.local/share/cockpit/ovirt/vdsm
 
-INSTALL_PATH=~/.local/share/cockpit/ovirt/vdsm
+INSTALL_PATH=`dirname $0`
 
 CLIENT=$INSTALL_PATH/"vdsmJsonRPCCli.py"
 [ -e "$CLIENT" ] || CLIENT="$CLIENT"c
