@@ -58,7 +58,7 @@ export function parseVdsmJson (json) {
 }
 
 export function vdsmFail () {
-  printError('Vdsm execution failed! ' + CONFIG.vdsm.client_path)
+  printError('Vdsm execution failed! Please check constants.js:CONFIG.isDebug, VDSM path: ' + CONFIG.vdsm.client_path)
 }
 
 export function disableButton (name) {

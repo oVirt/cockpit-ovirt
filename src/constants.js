@@ -1,6 +1,6 @@
 // --- global configuration ---------------------------------------------
 export const CONFIG = {
-  isDebug: false,
+  isDebug: false, // NEVER commit with isDebug: true!!!!
   vdsm: {
     client_path: '/usr/share/cockpit/ovirt/vdsm/vdsm',
     conf_file_name: '/etc/vdsm/vdsm.conf'
@@ -28,7 +28,7 @@ function setupForDebug () {
   if (CONFIG.isDebug) {
     console.log('Setting up for development ...')
 
-    CONFIG.client_path = '/root/.local/share/cockpit/ovirt/vdsm/vdsm'
+    CONFIG.vdsm.client_path = '/root/.local/share/cockpit/ovirt/vdsm/vdsm'
     CONFIG.reload.auto_refresh_interval = 5000
   }
 }
