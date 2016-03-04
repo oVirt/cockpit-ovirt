@@ -1,8 +1,8 @@
 // --- global configuration ---------------------------------------------
 export const CONFIG = {
-  isDebug: true,
+  isDebug: false,
   vdsm: {
-    client_path: '/root/.local/share/cockpit/ovirt/vdsm/vdsm',
+    client_path: '/usr/share/cockpit/ovirt/vdsm/vdsm',
     conf_file_name: '/etc/vdsm/vdsm.conf'
   },
   cockpit: {
@@ -22,6 +22,17 @@ export const CONFIG = {
     usage_chart_max_points: 17
   }
 }
+
+// Prepare development settings
+function setupForDebug () {
+  if (CONFIG.isDebug) {
+    console.log('Setting up for development ...')
+
+    CONFIG.client_path = '/root/.local/share/cockpit/ovirt/vdsm/vdsm'
+    CONFIG.reload.auto_refresh_interval = 5000
+  }
+}
+setupForDebug()
 
 // const USAGE_CHART_TIMESTAMP_DENSITY = 3;
 export const VM_STATUS_ICONS_PATH_PREFIX = 'images/'
