@@ -73,6 +73,10 @@ Use `npm run build` to create production build.
 The last command will generate `/dist` directory containing all files that are needed to be copied to your
 cockpit installation.
 
+Developer's note: you can use `npm run dev` to start a background build service that will incrementally
+recompile the code on the fly and update the contents of `/dist` directory. Symbolically linking the `/dist`
+directory into proper place (see below) one can achieve automatic code updates in running cockpit instance.
+
 ### Install Plugin
 * after build, copy contents of `/dist` to /root/.local/share/cockpit/ovirt/
 
