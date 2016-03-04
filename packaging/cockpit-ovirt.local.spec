@@ -11,7 +11,7 @@ Source0:        https://github.com/mareklibra/%{name}/archive/v%{version}.tar.gz
 BuildArch:      noarch
 
 Requires: cockpit
-Requires: vdsm
+Requires: vdsm >= 4.17.999-610
 
 %description
 Virtual Machine Management plugin for Cockpit based on oVirt.
