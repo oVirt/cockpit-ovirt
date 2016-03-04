@@ -6,16 +6,16 @@
 #	yum install git nodejs @development-tools rpmdevtools
 
 SPEC_FILE=./cockpit-ovirt.local.spec
-
-# TODO: read RELEASE_VERSION from .spec file
-RELEASE_VERSION=0.1
+RELEASE_VERSION=`grep '^Version:' ${SPEC_FILE}|sed 's/Version:[[:blank:]]*//'`
+echo Going to build release \'${RELEASE_VERSION}\' based on recent master
 
 GIT_REPO=https://github.com/mareklibra/cockpit-ovirt.git
 SRC_DIR=cockpit-ovirt
 DIST_DIR=dist
+RPMBUILD_DIR=~/rpmbuild
+
 RELEASE_DIR=cockpit-ovirt-${RELEASE_VERSION}/
 TGZ_PCKG=cockpit-ovirt-${RELEASE_VERSION}.tar.gz
-RPMBUILD_DIR=~/rpmbuild
 RPM_SOURCES=${RPMBUILD_DIR}/SOURCES/
 RPM_SPECS=${RPMBUILD_DIR}/SPECS/
 RPM_FILE_PREFIX=${RPMBUILD_DIR}/RPMS/noarch/cockpit-ovirt-${RELEASE_VERSION}
@@ -25,6 +25,8 @@ SRPM_FILE_PREFIX=${RPMBUILD_DIR}/SRPMS/cockpit-ovirt-${RELEASE_VERSION}
 function getSources {
 	echo Getting sources from ${GIT_REPO} ...
 
+	# TODO: when project grows, download ZIP instead of git clone
+	# https://github.com/mareklibra/cockpit-ovirt/archive/master.zip
 	git clone ${GIT_REPO}
 }
 
@@ -32,7 +34,9 @@ function getSources {
 function cleanUp {
 	echo Build finished, clean up ...
 
-	rm -rfI ${SRC_DIR}
+	echo PWD: `pwd`
+	echo Going to 'rm -r' ${SRC_DIR}
+	rm -rf ${SRC_DIR}
 }
 
 # JavaScript compilation, produce the 'dist' dir
@@ -52,6 +56,10 @@ function release {
 	echo Building release .tar.gz ...
 
 	cd ${SRC_DIR}
+
+	echo DIST_DIR: ${DIST_DIR}
+	echo RELEASE_DIR: ${RELEASE_DIR}
+	echo TGZ_PCKG: ${TGZ_PCKG}
 
 	mv ${DIST_DIR} ${RELEASE_DIR} && \
 	tar -czf ${TGZ_PCKG} ${RELEASE_DIR} && \
@@ -79,6 +87,9 @@ function mvResult {
 	mv ${SRPM_FILE_PREFIX}* ./
 	mv ${RPM_SOURCES}/${TGZ_PCKG} ./
 }
+
+#################
+rpmdev-setuptree
 
 getSources
 buildJS
