@@ -7,6 +7,7 @@
 
 SPEC_FILE=./cockpit-ovirt.local.spec
 RELEASE_VERSION=`grep '^Version:' ${SPEC_FILE}|sed 's/Version:[[:blank:]]*//'`
+RELEASE=`grep '^Release:' ${SPEC_FILE}|sed -e 's/Release:[[:blank:]]*//'|sed -e 's/\%.*//'`
 echo Going to build release \'${RELEASE_VERSION}\' based on recent master
 
 GIT_REPO=https://github.com/mareklibra/cockpit-ovirt.git
@@ -62,40 +63,61 @@ function release {
 	echo TGZ_PCKG: ${TGZ_PCKG}
 
 	mv ${DIST_DIR} ${RELEASE_DIR} && \
-	tar -czf ${TGZ_PCKG} ${RELEASE_DIR} && \
-	mv ${TGZ_PCKG} ${RPM_SOURCES}
+	tar -czf ../${TGZ_PCKG} ${RELEASE_DIR} 
+
+#	tar -czf ${TGZ_PCKG} ${RELEASE_DIR} && \
+#	mv ${TGZ_PCKG} ${RPM_SOURCES}
 
 	cd -
 }
 
 # Prepare input and run rpmbuild
-function buildRpm {
-	echo Building RPMs ...
+#function buildRpm {
+#	echo Building RPM ...
+#
+#	cp ${SPEC_FILE} ${RPM_SPECS}
+#
+#	cd ${RPM_SPECS}
+#	echo Calling rpmbuild ...
+#	rpmbuild -ba ${SPEC_FILE}
+#	cd -
+#}
 
-	cp ${SPEC_FILE} ${RPM_SPECS}
 
-	cd ${RPM_SPECS}
-	rpmbuild -ba ${SPEC_FILE}
-	cd -
-}
+#function mvResult {
+#	echo Moving produced packages ...
+#
+#	mv ${RPM_FILE_PREFIX}* ./
+#	mv ${SRPM_FILE_PREFIX}* ./
+#	mv ${RPM_SOURCES}/${TGZ_PCKG} ./
+#}
 
+function buildMockRpm {
+	MOCK_CFG=$1
+	DISTRO=$2
+	SRPM=cockpit-ovirt-${RELEASE_VERSION}-${RELEASE}.${DISTRO}.src.rpm
+	RPM=cockpit-ovirt-${RELEASE_VERSION}-${RELEASE}.${DISTRO}.noarch.rpm
 
-function mvResult {
-	echo Moving produced packages ...
-
-	mv ${RPM_FILE_PREFIX}* ./
-	mv ${SRPM_FILE_PREFIX}* ./
-	mv ${RPM_SOURCES}/${TGZ_PCKG} ./
+	pwd
+	ls
+	mock -r ${MOCK_CFG} --buildsrpm --spec ${SPEC_FILE} --sources ${TGZ_PCKG} && \
+	mv /var/lib/mock/${MOCK_CFG}/result/${SRPM} ./ && \
+	mock -r ${MOCK_CFG} --rebuild ${SRPM} && \
+	mv /var/lib/mock/${MOCK_CFG}/result/${RPM} ./
 }
 
 #################
-rpmdev-setuptree
+
+#rpmdev-setuptree
 
 getSources
 buildJS
 
 release
-buildRpm
-mvResult
+#buildRpm
+#mvResult
+
+buildMockRpm 'epel-7-x86_64' 'el7.centos'
+buildMockRpm 'fedora-23-x86_64' 'fc23'
 
 cleanUp
