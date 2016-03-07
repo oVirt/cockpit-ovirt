@@ -1,6 +1,12 @@
 import $ from 'jquery'
 import cockpit from 'cockpit'
 
+import '../node_modules/patternfly/dist/css/patternfly.css'
+import '../node_modules/patternfly/dist/css/patternfly-additions.css'
+
+import '../node_modules/bootstrap/dist/js/bootstrap'
+import '../node_modules/patternfly/dist/js/patternfly'
+
 import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 

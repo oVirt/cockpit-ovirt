@@ -92,7 +92,7 @@ function onEngineVmClick (vmId) {
     debugMsg('URL of engine VM detail: ' + url)
 
         // open the detail
-    var win = window.open(url, '_blank')
+    var win = open(url, '_blank')
     win.focus()
   }
 }

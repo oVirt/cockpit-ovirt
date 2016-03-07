@@ -1,8 +1,7 @@
 // --- vm-detail-screen & vm manipulation methods -----------------------
 import $ from 'jquery'
 import cockpit from 'cockpit'
-import Blob from 'blob'
-import saveAs from 'save-as'
+import saveAs from 'browser-filesaver'
 import Mustache from 'mustache'
 import c3 from 'c3'
 

@@ -20,13 +20,13 @@ export function loadVdsmConf (inform) {
 }
 
 export function reloadVdsmConf () {
-  if (window.confirm('Content of vdsm.conf will be reloaded, unsaved changes will be lost.\n\nPlease confirm.')) {
+  if (confirm('Content of vdsm.conf will be reloaded, unsaved changes will be lost.\n\nPlease confirm.')) {
     loadVdsmConf(true)
   }
 }
 
 export function saveVdsmConf () {
-  if (window.confirm('Content of vdsm.conf file will be replaced.\n\nPlease confirm.')) {
+  if (confirm('Content of vdsm.conf file will be replaced.\n\nPlease confirm.')) {
     var editor = $('#editor-vdsm-conf')
     var content = editor.val()
 

@@ -2,7 +2,9 @@ var webpack = require('webpack')
 var CleanWebpackPlugin = require('clean-webpack-plugin')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 
-module.exports = {
+var isProd = isProd = process.env.NODE_ENV === 'production'
+
+var config = module.exports = {
   entry: [
     './src/ovirt.js'
   ],
@@ -16,37 +18,45 @@ module.exports = {
       test: /\.jsx?$/,
       exclude: /node_modules/,
       loader: 'babel'
+    }, {
+      test: /\.css$/,
+      loader: 'style-loader!css-loader'
+    }, {
+      test: /\.(png|jpg|jpeg|gif|svg)$/,
+      loader: 'url-loader?limit=10000'
+    }, {
+      test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/,
+      loader: 'url-loader?mimetype=application/font-woff'
+    }, {
+      test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?$/,
+      loader: 'file-loader?name=[name].[ext]'
     }]
   },
   externals: {
     // require("jquery") is external and available
     //  on the global var jQuery
     'jquery': 'jQuery',
-    'c3': 'c3',
-    'd3': 'd3',
     'cockpit': 'cockpit',
-    'blob': 'Blob',
-    'save-as': 'saveAs',
     'mustache': 'Mustache'
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([
+      { from: 'LICENSE' },
+      { from: 'README.md' },
       { from: 'static/manifest.json' },
       { from: 'static/ovirt.html' },
       { from: 'static/vdsm', to: 'vdsm' },
-      // TODO: migrate below manual dependencies to proper npm ones
-      { from: 'external/css', to: 'css' },
-      { from: 'external/fonts', to: 'fonts' },
-      { from: 'external/images', to: 'images' },
-      { from: 'external/img', to: 'images' },
-      { from: 'external/js', to: 'js' },
-      { from: 'LICENSE' },
-      { from: 'README.md' }
-    ]),
+      { from: 'static/images', to: 'images' },
+    ])
+  ]
+}
+
+if (isProd) {
+  config.plugins.push(
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
       minimize: true
     })
-  ]
+  )
 }
