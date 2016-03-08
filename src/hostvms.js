@@ -170,6 +170,7 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
     order: null
   }
   chartConfig.donut.width = 8
+  chartConfig.size.height = 120
 
   chartConfig.color = {
     pattern: ['#3f9c35', '#cc0000', '#D1D1D1']
