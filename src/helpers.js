@@ -13,7 +13,7 @@ export function printError (text) {
 }
 
 export function debugMsg (text) {
-  if (CONFIG.isDebug) {
+  if (__DEV__) {
     console.log('Debug: ' + text)
   }
 }

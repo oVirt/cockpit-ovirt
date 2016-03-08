@@ -59,4 +59,10 @@ if (isProd) {
       minimize: true
     })
   )
+} else {// isDev
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      '__DEV__': JSON.stringify(true)
+    })
+  )
 }
