@@ -56,6 +56,8 @@ function getAllVmStatsSuccess (vdsmDataVmsList) {
 function renderHostVms (vmsFull) {
   // the 'vmsFull' is parsed json result of getAllVmStats()
   if (vmsFull.hasOwnProperty('items') && vmsFull.items.length > 0) {
+    $('#virtual-machines-novm-message').hide()
+
     var vms = []
 
     // prepare data
@@ -74,12 +76,7 @@ function renderHostVms (vmsFull) {
       appendVmUsage(vm, lastUsageRecord)
     })
 
-    // render vms list from template
-    var data = {units: vms}
-    var template = $('#vms-list-templ').html()
-    var html = Mustache.to_html(template, data)
-    $('#virtual-machines-list').html(html)
-    $('#virtual-machines-novm-message').hide()
+    renderHostVmsList(vms)
 
     // register button event listeners
     registerBtnOnClickListener('btn-download-console-', downloadConsole)
@@ -95,6 +92,14 @@ function renderHostVms (vmsFull) {
     $('#virtual-machines-list').html('')
     $('#virtual-machines-novm-message').show()
   }
+}
+
+function renderHostVmsList (vms) {
+  // render vms list from template
+  var data = {units: vms}
+  var template = $('#vms-list-templ').html()
+  var html = Mustache.to_html(template, data)
+  $('#virtual-machines-list').html(html)
 }
 
 function getVmDeviceRate (vm, device, rateName) {
@@ -203,24 +208,33 @@ $(document).on('refreshDonutChartEvent',
     refreshDonutChart(e.chartDivId, e.labels, e.columns, e.groups)
   })
 
+var donutChartCache = {}
 function refreshDonutChart (chartDivId, labels, columns, groups) {
-  var chartConfig = $().c3ChartDefaults().getDefaultDonutConfig()
-  chartConfig.bindto = chartDivId
+/*  if (donutChartCache[chartDivId]) {
+    debugMsg('refreshDonutChart(): reusing for ' + chartDivId)
+    var chart = donutChartCache[chartDivId]
+    chart.load({columns:columns})
+  } else {
+  */
+    var chartConfig = $().c3ChartDefaults().getDefaultDonutConfig()
+    chartConfig.bindto = chartDivId
 
-  chartConfig.data = {
-    type: 'donut',
-    columns: columns,
-    groups: groups,
-    order: null
-  }
-  chartConfig.donut.width = 8
-  chartConfig.size.height = 120
+    chartConfig.data = {
+      type: 'donut',
+      columns: columns,
+      groups: groups,
+      order: null
+    }
+    chartConfig.donut.width = 8
+    chartConfig.size.height = 120
 
-  chartConfig.color = {
-    pattern: ['#3f9c35', '#cc0000', '#D1D1D1']
-  }
+    chartConfig.color = {
+      pattern: ['#3f9c35', '#cc0000', '#D1D1D1']
+    }
 
-  c3.generate(chartConfig)
+    var chart = c3.generate(chartConfig)
+    donutChartCache[chartDivId] = chart
+//  }
 
   // add labels
   var donutChartTitle = d3.select(chartDivId).select('text.c3-chart-arcs-title')

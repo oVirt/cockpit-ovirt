@@ -41,7 +41,8 @@
         <div id="vms-screen">
             <div id="virtual-machines" class="panel panel-default">
                 <div class="panel-heading">Virtual Machines</div>
-                <div id="virtual-machines-list"></div>
+                <div class="list-group list-view-pf" id="virtual-machines-list"></div>
+
                 <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden><div class="spinner spinner-lg"></div>No VM is running, let's keep hoping or start a new one (i.e. via oVirt's webadmin)</div>
             </div>
         </div>
@@ -176,7 +177,6 @@
 </script>
 
 <script id="vms-list-templ" type="x-template/mustache">
-    <div class="list-group list-view-pf">
         {{#units}}
         <div class="list-group-item list-view-pf-stacked">
             <div class="list-view-pf-actions">
@@ -246,22 +246,11 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!--
-                        <div class="list-view-pf-additional-info-item" style="width: 220px;">
-                            <span id="diskioUsageChart-{{id}}" chartHeight="100"></span>
-                        </div>
-                        -->
-<!--                        <div class="list-view-pf-additional-info-item" style="width: 220px;">
-                            <span id="networkioUsageChart-{{id}}" chartHeight="100"></span>
-                        </div>
-                        -->
                     </div>
                 </div>
             </div>
         </div>
         {{/units}}
-    </div>
 </script>
 
 <script id="engine-login-form-templ" type="x-template/mustache">

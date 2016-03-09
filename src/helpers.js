@@ -79,6 +79,7 @@ export function getActualTimeStamp () {
 }
 
 export function registerBtnOnClickListener (elementIdStartsWith, handler) {
+  $("[id^='" + elementIdStartsWith + "']").off('click')
   $("[id^='" + elementIdStartsWith + "']").on('click', function () {
     var dataPattern = $(this).attr('data-pattern')
 
