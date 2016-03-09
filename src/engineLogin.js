@@ -9,18 +9,21 @@ export const ENGINE_RELATED_IDS = [// element ids to be set visible when engine 
   'main-btn-menu-allvms'
 ]
 
-var vdsmLoginOut = ''
-
 export function isAllVmsPath () {
   var path = cockpit.location.path
   return (path.length > 0 && path[0] === 'allVms')
 }
 
-function engineLoginStdout (data) {
-  vdsmLoginOut += data
-}
-
 function engineLogin () { // get Engine token via host
+  var vdsmLoginOut = ''
+  function stdout (data) {
+    vdsmLoginOut += data
+  }
+  function success () {
+    engineLoginSuccessful(vdsmLoginOut)
+  }
+
+
   var userName = $('#engine-login-user').val()
   var pwd = $('#engine-login-pwd').val()
   var url = $('#engine-login-url').val()
@@ -29,8 +32,7 @@ function engineLogin () { // get Engine token via host
 
   var credentials = getEngineCredentials()
   var jsonCredentials = JSON.stringify(credentials)
-  spawnVdsm('engineBridge', jsonCredentials, engineLoginStdout, engineLoginSuccessful, vdsmFail, 'getToken')
-  vdsmLoginOut = ''
+  spawnVdsm('engineBridge', jsonCredentials, stdout, success, vdsmFail, 'getToken')
 
   onEngineLoginStart()
 }
@@ -116,7 +118,7 @@ function getEngineCredentials () {
   }
 }
 
-function engineLoginSuccessful () {
+function engineLoginSuccessful (vdsmLoginOut) {
   var resp = parseVdsmJson(vdsmLoginOut)
   debugMsg('engineLoginSuccessful() called')
   onEngineLoginEnd()

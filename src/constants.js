@@ -1,6 +1,5 @@
 // --- global configuration ---------------------------------------------
 export const CONFIG = {
-  // isDebug: false, // NEVER commit with isDebug: true!!!!
   vdsm: {
     client_path: '/usr/share/cockpit/ovirt/vdsm/vdsm',
     conf_file_name: '/etc/vdsm/vdsm.conf'

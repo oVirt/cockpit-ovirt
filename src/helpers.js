@@ -58,7 +58,10 @@ export function parseVdsmJson (json) {
 }
 
 export function vdsmFail () {
-  printError('Vdsm execution failed! Please check constants.js:CONFIG.isDebug, VDSM path: ' + CONFIG.vdsm.client_path)
+  printError('Vdsm execution failed! Please check: \n' +
+    '- [path_to_cokcpit-ovirt-plugin]/vdsm/vdsm is executable,\n' +
+    '- __DEV__ environment variable when building.\n\n' +
+    'VDSM path: ' + CONFIG.vdsm.client_path)
 }
 
 export function disableButton (name) {

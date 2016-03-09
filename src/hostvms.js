@@ -10,18 +10,21 @@ import {GLOBAL} from './globaldata'
 import {downloadConsole, forceoff, shutdown, restart, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
 import {debugMsg, normalizePercentage, spawnVdsm, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent} from './helpers'
 
-var vdsmDataVmsList = '' // might be partial output from the VDSM process TODO: risk of data overlapping
-function vdsmOutput (data) {
-  vdsmDataVmsList += data
-  debugMsg('vdsmOutput: <code>' + vdsmDataVmsList + '</code>')
-}
-
 export function readVmsList () { // invoke VDSM to get fresh vms data from the host
-  spawnVdsm('getAllVmStats', null, vdsmOutput, getAllVmStatsSuccess)
-  vdsmDataVmsList = ''
+  var vdsmDataVmsList = ''
+  function stdout (data) {
+    vdsmDataVmsList += data
+  }
+
+  function success () {
+    getAllVmStatsSuccess(vdsmDataVmsList)
+  }
+
+  spawnVdsm('getAllVmStats', null, stdout, success)
 }
 
-function getAllVmStatsSuccess () {
+function getAllVmStatsSuccess (vdsmDataVmsList) {
+  debugMsg('readVmsList.succes(): <code>' + vdsmDataVmsList + '</code>')
   var vms = parseVdsmJson(vdsmDataVmsList)
   if (vms != null) {
     if (vms.status.code === 0) {

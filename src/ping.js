@@ -3,14 +3,16 @@ import $ from 'jquery'
 
 import {debugMsg, spawnVdsm} from './helpers'
 
-var vdsmPingResponse = ''
-
 export function renderPing () {
-  spawnVdsm('ping', null, function (data) { vdsmPingResponse += data }, pingSuccessful, pingFailed)
+  var vdsmPingResponse = ''
+  spawnVdsm('ping', null,
+    function (data) { vdsmPingResponse += data },
+    function () {pingSuccessful(vdsmPingResponse)},
+    pingFailed)
   vdsmPingResponse = ''
 }
 
-function pingSuccessful () {
+function pingSuccessful (vdsmPingResponse) {
   var json = vdsmPingResponse
   var resp = $.parseJSON(json)
   if (resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message')) {

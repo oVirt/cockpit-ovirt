@@ -10,12 +10,11 @@ import {onVmClick} from './hostvms'
 import {getEngineCredentialsTokenOnly, isLoggedInEngine} from './engineLogin'
 import {printError, debugMsg, spawnVdsm, parseVdsmJson, registerBtnOnClickListener, formatHumanReadableBytes} from './helpers'
 
-var vdsmEngineAllVms = '' // might be partial output from the VDSM process
-
 export function readEngineVmsList () { // invoke VDSM (engineBridge) to get fresh VMS List from Engine (via Rest API)
-  spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()), function (data) {
-    vdsmEngineAllVms += data
-  }, getAllVmsListSuccess, engineBridgeFail, 'getAllVms')
+  var vdsmEngineAllVms = ''
+  spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
+    function (data) {vdsmEngineAllVms += data},
+    function () {getAllVmsListSuccess(vdsmEngineAllVms)}, engineBridgeFail, 'getAllVms')
   vdsmEngineAllVms = ''
 }
 
@@ -28,12 +27,8 @@ export function refreshEngineVmsList () {
     readEngineVmsList()
   }
 }
-/*
- function getAllVmsStdout(data) {
- vdsmEngineAllVms += data
- }
- */
-function getAllVmsListSuccess () {
+
+function getAllVmsListSuccess (vdsmEngineAllVms) {
   debugMsg('getAllVmsListSuccess() called')
   var vms = parseVdsmJson(vdsmEngineAllVms)
   if (vms != null) {
@@ -168,10 +163,6 @@ function getHostById (hostId) {
   return undefined
 }
 
-/* function getHostStdout(data) {
- vdsmEngineHost += data
- }
- */
 function getEngineHostSuccess (hostId) {
   debugMsg('getEngineHostSuccess() for hostId=' + hostId)
   debugMsg('Source host data: ' + vdsmEngineHost[hostId])
