@@ -23,7 +23,6 @@ function engineLogin () { // get Engine token via host
     engineLoginSuccessful(vdsmLoginOut)
   }
 
-
   var userName = $('#engine-login-user').val()
   var pwd = $('#engine-login-pwd').val()
   var url = $('#engine-login-url').val()

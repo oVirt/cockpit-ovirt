@@ -87,8 +87,10 @@ function renderHostVms (vmsFull) {
     registerBtnOnClickListener('btn-shutdown-vm-', shutdown)
     registerBtnOnClickListener('btn-restart-vm-', restart)
     registerBtnOnClickListener('host-vms-list-item-', onVmClick)
-    refreshUsageCharts()
+
     renderVmDetailActual()
+
+    refreshUsageCharts()
   } else {
     $('#virtual-machines-list').html('')
     $('#virtual-machines-novm-message').show()
@@ -155,18 +157,26 @@ function getUsageElementId (device, vmId) {
 function refreshCpuChart (chartDivId, usageRecord) {
   var maximum = usageRecord.vcpuCount * 100.0
 
-  var user = normalizePercentage(usageRecord.cpuUser)// TODO: VDSM reports chaotically, the retrieved numbers need to be reviewed
+  var user = normalizePercentage(usageRecord.cpuUser)
   var sys = normalizePercentage(usageRecord.cpuSys)
   var used = (user + sys).toFixed(1)
   var idle = (maximum - used).toFixed(1)
 
-  debugMsg('user: ' + user + ', sys: ' + sys + ', used: ' + used)
   var vCPUText = usageRecord.vcpuCount > 1 ? ' vCPUs' : ' vCPU'
   var labels = [used + '%']
   if (usageRecord.vcpuCount) {
     labels.push('of ' + usageRecord.vcpuCount + vCPUText)
   }
-  refreshDonutChart(chartDivId, labels, [['User', user], ['Sys', sys], ['Idle', idle]], [['user', 'sys', 'idle']])
+  // refreshDonutChart(chartDivId, labels, [['User', user], ['Sys', sys], ['Idle', idle]], [['user', 'sys', 'idle']])
+
+  // fire event to refresh chart asynchronously
+  $.event.trigger({
+    'type': 'refreshDonutChartEvent',
+    'chartDivId': chartDivId,
+    'labels': labels,
+    'columns': [['User', user], ['Sys', sys], ['Idle', idle]],
+    'groups': [['user', 'sys', 'idle']]
+  })
 }
 
 function refreshMemoryChart (chartDivId, usageRecord) {
@@ -176,8 +186,22 @@ function refreshMemoryChart (chartDivId, usageRecord) {
   var free = maximum - used
 
   var labels = [used + '%']
-  refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
+  // refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
+
+  // fire event to refresh chart asynchronously
+  $.event.trigger({
+    'type': 'refreshDonutChartEvent',
+    'chartDivId': chartDivId,
+    'labels': labels,
+    'columns': [['Free', free], ['Used', used]],
+    'groups': [['available', 'used']]
+  })
 }
+
+$(document).on('refreshDonutChartEvent',
+  function (e) {
+    refreshDonutChart(e.chartDivId, e.labels, e.columns, e.groups)
+  })
 
 function refreshDonutChart (chartDivId, labels, columns, groups) {
   var chartConfig = $().c3ChartDefaults().getDefaultDonutConfig()
@@ -213,8 +237,6 @@ function refreshUsageCharts () {
       var last = usageRecords[usageRecords.length - 1]
       refreshCpuChart(getUsageElementId('cpu', key), last)
       refreshMemoryChart(getUsageElementId('mem', key), last)
-      // refreshDiskIOChart(getUsageElementId('diskio', key), last, diskMax)
-      // refreshNetworkIOChart(getUsageElementId('networkio', key), last, netMax)
     }
   })
 }

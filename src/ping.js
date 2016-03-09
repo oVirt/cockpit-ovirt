@@ -7,7 +7,7 @@ export function renderPing () {
   var vdsmPingResponse = ''
   spawnVdsm('ping', null,
     function (data) { vdsmPingResponse += data },
-    function () {pingSuccessful(vdsmPingResponse)},
+    function () { pingSuccessful(vdsmPingResponse) },
     pingFailed)
   vdsmPingResponse = ''
 }

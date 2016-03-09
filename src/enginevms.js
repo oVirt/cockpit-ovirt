@@ -13,8 +13,8 @@ import {printError, debugMsg, spawnVdsm, parseVdsmJson, registerBtnOnClickListen
 export function readEngineVmsList () { // invoke VDSM (engineBridge) to get fresh VMS List from Engine (via Rest API)
   var vdsmEngineAllVms = ''
   spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
-    function (data) {vdsmEngineAllVms += data},
-    function () {getAllVmsListSuccess(vdsmEngineAllVms)}, engineBridgeFail, 'getAllVms')
+    function (data) { vdsmEngineAllVms += data },
+    function () { getAllVmsListSuccess(vdsmEngineAllVms) }, engineBridgeFail, 'getAllVms')
   vdsmEngineAllVms = ''
 }
 
