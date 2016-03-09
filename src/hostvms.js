@@ -20,6 +20,11 @@ export function readVmsList () { // invoke VDSM to get fresh vms data from the h
   }
 }
 
+$(document).on('readVmsListFinished',
+  function () {
+    isReadVmsListRunning = false
+  })
+
 function readVmsListImpl () {
   var vdsmDataVmsList = ''
   function stdout (data) {
@@ -28,16 +33,18 @@ function readVmsListImpl () {
 
   function success () {
     getAllVmStatsSuccess(vdsmDataVmsList)
+    $.event.trigger({'type': 'readVmsListFinished'})
+
     isReadVmsListRunning = false
   }
 
   function fail () {
     vdsmFail()
-    isReadVmsListRunning = false
+    $.event.trigger({'type': 'readVmsListFinished'})
   }
 
-  spawnVdsm('getAllVmStats', null, stdout, success, fail)
-  // spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
+  // spawnVdsm('getAllVmStats', null, stdout, success, fail)
+  spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
 }
 
 function getAllVmStatsSuccess (vdsmDataVmsList) {
@@ -86,8 +93,6 @@ function renderHostVms (vmsFull) {
     registerBtnOnClickListener('host-vms-list-item-name-', onVmClick)
 
     renderVmDetailActual()
-
-    refreshUsageCharts()
   } else {
     removeAllFromChartCache()
     $('#virtual-machines-list').html('')
@@ -140,6 +145,9 @@ function renderHostVm (vm) {
   } else {// append the new VM to the end
     $('#virtual-machines-list').append(generatedDiv)
   }
+
+  var usageRecords = GLOBAL.vmUsage[vm.id]
+  refreshVmUsageCharts(vm.id, usageRecords[usageRecords.length - 1])
 }
 
 function getVmDeviceRate (vm, device, rateName) {
@@ -211,16 +219,16 @@ function refreshCpuChart (chartDivId, usageRecord) {
   if (usageRecord.vcpuCount) {
     labels.push('of ' + usageRecord.vcpuCount + vCPUText)
   }
-  // refreshDonutChart(chartDivId, labels, [['User', user], ['Sys', sys], ['Idle', idle]], [['user', 'sys', 'idle']])
+  refreshDonutChart(chartDivId, labels, [['User', user], ['Sys', sys], ['Idle', idle]], [['user', 'sys', 'idle']])
 
   // fire event to refresh chart asynchronously
-  $.event.trigger({
+/*  $.event.trigger({
     'type': 'refreshDonutChartEvent',
     'chartDivId': chartDivId,
     'labels': labels,
     'columns': [['User', user], ['Sys', sys], ['Idle', idle]],
     'groups': [['user', 'sys', 'idle']]
-  })
+  })*/
 }
 
 function refreshMemoryChart (chartDivId, usageRecord) {
@@ -230,23 +238,23 @@ function refreshMemoryChart (chartDivId, usageRecord) {
   var free = maximum - used
 
   var labels = [used + '%']
-  // refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
+  refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
 
   // fire event to refresh chart asynchronously
-  $.event.trigger({
+/*  $.event.trigger({
     'type': 'refreshDonutChartEvent',
     'chartDivId': chartDivId,
     'labels': labels,
     'columns': [['Free', free], ['Used', used]],
     'groups': [['available', 'used']]
-  })
+  })*/
 }
-
+/*
 $(document).on('refreshDonutChartEvent',
   function (e) {
     refreshDonutChart(e.chartDivId, e.labels, e.columns, e.groups)
   })
-
+*/
 var donutChartCache = {}
 function removeFromChartCache (vmId) {
   donutChartCache[getUsageElementId('cpu', vmId)] = undefined
@@ -290,15 +298,19 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
     donutChartTitle.insert('tspan').text(labels[1]).classed('donut-title-small-pf', true).attr('dy', 20).attr('x', 0)
   }
 }
-
+/*
 function refreshUsageCharts () {
   $.each(GLOBAL.vmUsage, function (key, usageRecords) {
     if (usageRecords.length > 0) {
       var last = usageRecords[usageRecords.length - 1]
-      refreshCpuChart(getUsageElementId('cpu', key), last)
-      refreshMemoryChart(getUsageElementId('mem', key), last)
+      refreshVmUsageCharts(key, last)
     }
   })
+}
+*/
+function refreshVmUsageCharts (vmId, usageRecord) {
+  refreshCpuChart(getUsageElementId('cpu', vmId), usageRecord)
+  refreshMemoryChart(getUsageElementId('mem', vmId), usageRecord)
 }
 
 // ----------------------------------------------------------------------

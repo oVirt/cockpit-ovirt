@@ -123,3 +123,7 @@ export function computePercent (val, max) {
   f = f.toFixed(4)
   return f * 100.0
 }
+
+export function scheduleNextAutoRefresh () {
+  $.event.trigger({'type': 'scheduleNextAutoRefreshEvent'})
+}

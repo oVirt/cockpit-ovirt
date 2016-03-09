@@ -10,7 +10,7 @@ import '../node_modules/patternfly/dist/js/patternfly'
 import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
-import {debugMsg, printError, registerBtnOnClickListener, goTo} from './helpers'
+import {debugMsg, printError, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh} from './helpers'
 import {isLoggedInEngine, setEngineLoginTitle, setEngineFunctionalityVisibility, toggleEngineLoginVisibility, isAllVmsPath} from './engineLogin'
 import {readEngineVmsList, refreshEngineVmsList} from './enginevms'
 import {readVmsList} from './hostvms'
@@ -113,6 +113,7 @@ function refreshActionClicked (ignore) {
 
   if (spanRefresh.attr('data-pattern') === 'off') {
     startAutorefresher()
+    scheduleNextAutoRefresh()
 
     spanRefreshA.text('Refresh: auto')
     spanRefresh.attr('data-pattern', 'on')
@@ -124,13 +125,20 @@ function refreshActionClicked (ignore) {
   }
 }
 
+$(document).on('scheduleNextAutoRefreshEvent',
+  function () {
+    if (GLOBAL.autoRefresher) {
+      setTimeout(refresh, CONFIG.reload.auto_refresh_interval)
+    }
+  })
+
 function startAutorefresher () {
-  GLOBAL.autoRefresher = setInterval(refresh, CONFIG.reload.auto_refresh_interval)
+  GLOBAL.autoRefresher = true // setInterval(refresh, CONFIG.reload.auto_refresh_interval)
 }
 
 function stopAutorefresher () {
-  clearInterval(GLOBAL.autoRefresher)
-  GLOBAL.autoRefresher = null
+  //clearInterval(GLOBAL.autoRefresher)
+  GLOBAL.autoRefresher = false
 }
 
 function refresh () {
@@ -139,6 +147,8 @@ function refresh () {
 
   readVmsList()
   refreshEngineVmsList()
+
+  scheduleNextAutoRefresh()
 }
 
 function initNavigation () {
@@ -169,6 +179,7 @@ function initialize () {
 
   $(cockpit).on('locationchanged', onLocationChanged)
   onLocationChanged()
+
   refreshActionClicked()// start auto-refresher
 }
 
