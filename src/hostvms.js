@@ -83,23 +83,63 @@ function renderHostVms (vmsFull) {
     registerBtnOnClickListener('btn-forceoff-vm-', forceoff)
     registerBtnOnClickListener('btn-shutdown-vm-', shutdown)
     registerBtnOnClickListener('btn-restart-vm-', restart)
-    registerBtnOnClickListener('host-vms-list-item-', onVmClick)
+    registerBtnOnClickListener('host-vms-list-item-name-', onVmClick)
 
     renderVmDetailActual()
 
     refreshUsageCharts()
   } else {
+    removeAllFromChartCache()
     $('#virtual-machines-list').html('')
     $('#virtual-machines-novm-message').show()
   }
 }
 
+var ITEM_PREFIX = 'vms-list-item-full-'
 function renderHostVmsList (vms) {
-  // render vms list from template
-  var data = {units: vms}
+  // remove all div which are missing in 'vms'
+  $("[id^='" + ITEM_PREFIX + "']").each(function () {
+    var divVmId = $(this).attr('id').replace(ITEM_PREFIX, '')
+    if (!vms.some(function (vm) { return vm.id == divVmId })) {// remove from DOM
+      $(this).remove()
+      removeFromChartCache(divVmId)
+    }
+  })
+
+  // fire event to update/add VM asynchronously
+  vms.forEach(function (vm) {
+    $.event.trigger({
+      'type': 'renderHostVm',
+      'vm': vm
+    })
+  })
+}
+
+$(document).on('renderHostVm',
+  function (e) {
+    renderHostVm(e.vm)
+  })
+
+function renderHostVm (vm) {
+  var div = $('#'+ITEM_PREFIX+vm.id)
+
+  // generate new row for a VM
   var template = $('#vms-list-templ').html()
-  var html = Mustache.to_html(template, data)
-  $('#virtual-machines-list').html(html)
+  var generatedDiv = Mustache.to_html(template, vm)
+
+  if (div.length > 0) {
+    // store donutcharts divs
+    var cpuUsageChart = $('#cpuUsageChart-'+vm.id)
+    var memUsageChart = $('#memUsageChart-'+vm.id)
+
+    div.replaceWith(generatedDiv)
+
+    // replace donutcharts divs
+    $('#cpuUsageChart-'+vm.id).replaceWith(cpuUsageChart)
+    $('#memUsageChart-'+vm.id).replaceWith(memUsageChart)
+  } else {// append the new VM to the end
+    $('#virtual-machines-list').append(generatedDiv)
+  }
 }
 
 function getVmDeviceRate (vm, device, rateName) {
@@ -124,7 +164,6 @@ export function onVmClick (vmId) { // show vm detail
 function computeUsageMaxs (lastRecord) {
   GLOBAL.vmUsageMax.disk = Math.max(lastRecord.diskRead, lastRecord.diskWrite, GLOBAL.vmUsageMax.disk)
   GLOBAL.vmUsageMax.net = Math.max(lastRecord.netRx, lastRecord.netTx, GLOBAL.vmUsageMax.net)
-  debugMsg('Max diskMax=' + GLOBAL.vmUsageMax.disk + ', netMax=' + GLOBAL.vmUsageMax.net)
 }
 
 function addVmUsage (vmId, vcpuCount, timestamp, cpuUser, cpuSys, mem, diskRead, diskWrite, netRx, netTx) {
@@ -209,13 +248,20 @@ $(document).on('refreshDonutChartEvent',
   })
 
 var donutChartCache = {}
+function removeFromChartCache (vmId) {
+  donutChartCache[getUsageElementId('cpu', vmId)] = undefined
+  donutChartCache[getUsageElementId('mem', vmId)] = undefined
+}
+
+function removeAllFromChartCache () {
+  donutChartCache = {}
+}
+
 function refreshDonutChart (chartDivId, labels, columns, groups) {
-/*  if (donutChartCache[chartDivId]) {
-    debugMsg('refreshDonutChart(): reusing for ' + chartDivId)
+  if (donutChartCache[chartDivId]) {
     var chart = donutChartCache[chartDivId]
     chart.load({columns:columns})
   } else {
-  */
     var chartConfig = $().c3ChartDefaults().getDefaultDonutConfig()
     chartConfig.bindto = chartDivId
 
@@ -234,7 +280,7 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
 
     var chart = c3.generate(chartConfig)
     donutChartCache[chartDivId] = chart
-//  }
+  }
 
   // add labels
   var donutChartTitle = d3.select(chartDivId).select('text.c3-chart-arcs-title')

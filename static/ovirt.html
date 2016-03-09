@@ -177,8 +177,8 @@
 </script>
 
 <script id="vms-list-templ" type="x-template/mustache">
-        {{#units}}
-        <div class="list-group-item list-view-pf-stacked">
+        <!--{X{X#units}}-->
+        <div class="list-group-item list-view-pf-stacked" id="vms-list-item-full-{{id}}">
             <div class="list-view-pf-actions">
                 <img width="30" src="images/vm_remote_console.png" title="Get remote console" id="btn-download-console-{{id}}" data-pattern="{{id}}">
                 <div class="dropdown pull-right dropdown-kebab-pf">
@@ -198,7 +198,7 @@
                 </div>
                 <div class="list-view-pf-body" style="max-width: 200px;">
                     <div class="list-view-pf-description">
-                        <div class="list-group-item-heading" id="host-vms-list-item-" data-pattern="{{id}}">
+                        <div class="list-group-item-heading" id="host-vms-list-item-name-" data-pattern="{{id}}">
                             <a>{{name}}</a>
                             <small>{{{guestIPsHtml}}}</small>
                             <small>{{guestFQDN}}</small>
@@ -250,7 +250,7 @@
                 </div>
             </div>
         </div>
-        {{/units}}
+        <!--{X{X/units}}-->
 </script>
 
 <script id="engine-login-form-templ" type="x-template/mustache">

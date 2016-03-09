@@ -170,7 +170,7 @@ def fakeVm(src, offset):
     return fake
 
 def getAllVmStatsFakeExtend():
-    FAKE_VMS_COUNT = 20
+    FAKE_VMS_COUNT = 100
     logger.debug('getAllVmStatsFakeExtend() called')
     result = getVDSMService().getAllVmStats()
     if result['items']:
