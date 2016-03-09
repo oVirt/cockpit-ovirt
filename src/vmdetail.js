@@ -135,8 +135,22 @@ function prefillDs (ds) {
 function renderUsageDetailChart (chartDivId, timestamps, dsArray1, dsArray2) {
   prefillDs(dsArray1)
   prefillDs(dsArray2)
-  renderSparklineChart(chartDivId, timestamps, dsArray1, dsArray2)
+//  renderSparklineChart(chartDivId, timestamps, dsArray1, dsArray2)
+
+  // fire event to refresh chart asynchronously
+  setInterval( function () { $.event.trigger({
+    'type': 'renderSparklineChartEvent',
+    'chartDivId': chartDivId,
+    'timestamps': timestamps,
+    'dsArray1': dsArray1,
+    'dsArray2': dsArray2
+  }) }, CONFIG.delay_after_vdsm_action);
 }
+
+$(document).on('renderSparklineChartEvent',
+  function (e) {
+    renderSparklineChart(e.chartDivId, e.timestamps, e.dsArray1, e.dsArray2)
+  })
 
 // TODO: add timestamps
 function renderSparklineChart (chartDivId, timestamps, dataArray1, dataArray2) {
@@ -165,32 +179,6 @@ function renderSparklineChart (chartDivId, timestamps, dataArray1, dataArray2) {
   c3.generate(chartConfig)
 }
 
-/*
- // TODO: add timestamps
- function renderLineChart(chartDivId, timestamps, dataArray1, dataArray2) {
- var chartConfig = {
- bindto : chartDivId,
- data: {
- columns: [
- dataArray1
- ]
- },
- axis: {
- x: {
- show: false
- }
- },
- size: {
- height: 120
- },
- }
-
- if (dataArray2) {
- chartConfig.data.columns.push(dataArray2)
- }
- c3.generate(chartConfig)
- }
- */
 function renderCpuChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'cpuSys', 'cpuUser', true)
   ds.total.unshift('CPU %')
