@@ -134,8 +134,9 @@ function stopAutorefresher () {
 }
 
 function refresh () {
-    // TODO: refresh selectively depending on the locationPath
+  // TODO: refresh selectively depending on the locationPath
   debugMsg('refresh() called')
+
   readVmsList()
   refreshEngineVmsList()
 }

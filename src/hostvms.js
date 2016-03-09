@@ -8,9 +8,19 @@ import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {downloadConsole, forceoff, shutdown, restart, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
-import {debugMsg, normalizePercentage, spawnVdsm, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent} from './helpers'
+import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent} from './helpers'
 
+var isReadVmsListRunning = false
 export function readVmsList () { // invoke VDSM to get fresh vms data from the host
+  if (!isReadVmsListRunning) {
+    isReadVmsListRunning = true
+    readVmsListImpl()
+  } else {
+    debugMsg('Skipping readVmsList(), since another is already running')
+  }
+}
+
+function readVmsListImpl () {
   var vdsmDataVmsList = ''
   function stdout (data) {
     vdsmDataVmsList += data
@@ -18,9 +28,15 @@ export function readVmsList () { // invoke VDSM to get fresh vms data from the h
 
   function success () {
     getAllVmStatsSuccess(vdsmDataVmsList)
+    isReadVmsListRunning = false
   }
 
-  spawnVdsm('getAllVmStats', null, stdout, success)
+  function fail () {
+    vdsmFail()
+    isReadVmsListRunning = false
+  }
+
+  spawnVdsm('getAllVmStats', null, stdout, success, fail)
 }
 
 function getAllVmStatsSuccess (vdsmDataVmsList) {
