@@ -37,6 +37,7 @@ function readVmsListImpl () {
   }
 
   spawnVdsm('getAllVmStats', null, stdout, success, fail)
+  // spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
 }
 
 function getAllVmStatsSuccess (vdsmDataVmsList) {

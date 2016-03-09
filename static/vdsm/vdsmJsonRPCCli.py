@@ -6,6 +6,8 @@ import json
 import argparse
 import requests
 import logging
+import copy
+import random
 
 LOG_FILE_NAME='/var/log/vdsm/cockpit-ovirt.log'
 
@@ -38,7 +40,7 @@ def ensureJsonrpcvdscliCompatibility():
     jsonrpcvdscli._COMMAND_CONVERTER['shutdown'] = 'VM.shutdown'
 
 
-# TODO: BLBEEEEEE
+# TODO: Singleton
 service=None
 def getVDSMService():
     global service
@@ -52,7 +54,7 @@ def getVDSMService():
 
 def readStdin():
     inData = sys.stdin.readline()
-    line = '';
+    line = ''
     while line:
         inData += line
         line = sys.stdin.readline()
@@ -65,7 +67,7 @@ def buildResult(code, message, content):
         },
         'content':content
     }
-    return result;
+    return result
 
 # invoke engine REST API
 # TODO: use certificates
@@ -128,7 +130,6 @@ def getHost(hostId):
     credentials = readCredentials()
 
     url = "{0}/api/{1}/{2}".format(credentials['url'], 'hosts', hostId)
-#    url = "{0}/api/{1}".format(credentials['url'], 'hosts')
     resp = httpCall(url=url, method='GET', headers=getDefaultHeaders(credentials))
     if resp.status_code == 200:
         content = json.loads(resp.text)
@@ -136,15 +137,54 @@ def getHost(hostId):
     else:
         return buildResult(resp.status_code, resp.text)
 
+def restartVm(vmId):
+    logger.debug("restartVm({0}) called".format(vmId))
+    return getVDSMService().shutdown(vmId, reboot=True)
+
+def fakeVm(src, offset):
+    fake = copy.deepcopy(src)
+
+    fake['vmName'] = "{0} - fake {1}".format(fake['vmName'], offset)
+
+    strOffset = "f{0:05d}".format(offset)
+    fake['vmId'] = strOffset + fake['vmId'][len(strOffset):]
+
+    fake['cpuUser'] = random.randint(0,60)
+    fake['cpuSys'] = random.randint(0,40)
+
+    MB = 1024 * 1024
+
+    if fake['disks']:
+        diskName = fake['disks'].keys()[0]
+        disk = fake['disks'][diskName]
+        disk['readRate'] = random.randint(MB,MB*60)
+        disk['writeRate'] = random.randint(MB,MB*60)
+
+    if fake['network']:
+        netName = fake['network'].keys()[0]
+        net = fake['network'][netName]
+        net['rxRate'] = random.randint(MB,MB*60)
+        net['txRate'] = random.randint(MB,MB*60)
+
+    logger.debug("Fake VM created: vmName: '{0}', vmId: '{1}', srcVmId: '{2}'".format(fake['vmName'], fake['vmId'], src['vmId']))
+    return fake
+
+def getAllVmStatsFakeExtend():
+    FAKE_VMS_COUNT = 10
+    logger.debug('getAllVmStatsFakeExtend() called')
+    result = getVDSMService().getAllVmStats()
+    if result['items']:
+        vm = result['items'][0]
+        for offset in range(0, FAKE_VMS_COUNT):
+            result['items'].append(fakeVm(vm, offset))
+    return result
+
 def parseArgs(service):
     parser = argparse.ArgumentParser(description='Support utility for Cockpit oVirt plugin to invoke VDSM JSON RPC or Engine REST API.\n')
     parser.add_argument('vdsmCommand', help='VDSM command to be invoked',
-                        choices=['getAllVmStats', 'shutdown', 'destroy', 'restart', 'ping', 'engineBridge'])
+                        choices=['getAllVmStats', 'shutdown', 'destroy', 'restart', 'ping', 'engineBridge', 'getAllVmStatsFakeExtend'])
     parser.add_argument('vdsmCommandArgs', help='VDSM command arguments', nargs='*')
     return parser.parse_args()
-
-def restartVm(vmId):
-    return getVDSMService().shutdown(vmId, reboot=True)
 
 def main():
     ensureJsonrpcvdscliCompatibility()
@@ -158,6 +198,7 @@ def main():
 
     COMMANDS = {
         'getAllVmStats' : service.getAllVmStats,
+        'getAllVmStatsFakeExtend' : getAllVmStatsFakeExtend,
         'shutdown' : service.shutdown,
         'destroy' : service.destroy,
         'restart' : restartVm,
@@ -176,8 +217,6 @@ def main():
 
     logger.debug('result: ' + json.dumps(result))
     print json.dumps(result)
-
-    #return result['status']['code']
     return 0
 
 if __name__ == "__main__":
