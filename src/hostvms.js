@@ -105,7 +105,8 @@ function renderHostVmsList (vms) {
   // remove all div which are missing in 'vms'
   $("[id^='" + ITEM_PREFIX + "']").each(function () {
     var divVmId = $(this).attr('id').replace(ITEM_PREFIX, '')
-    if (!vms.some(function (vm) { return vm.id == divVmId })) {// remove from DOM
+    if (!vms.some(function (vm) { return vm.id === divVmId })) {
+      // remove from DOM
       $(this).remove()
       removeFromChartCache(divVmId)
     }
@@ -126,7 +127,7 @@ $(document).on('renderHostVm',
   })
 
 function renderHostVm (vm) {
-  var div = $('#'+ITEM_PREFIX+vm.id)
+  var div = $('#' + ITEM_PREFIX + vm.id)
 
   // generate new row for a VM
   var template = $('#vms-list-templ').html()
@@ -134,15 +135,15 @@ function renderHostVm (vm) {
 
   if (div.length > 0) {
     // store donutcharts divs
-    var cpuUsageChart = $('#cpuUsageChart-'+vm.id)
-    var memUsageChart = $('#memUsageChart-'+vm.id)
+    var cpuUsageChart = $('#cpuUsageChart-' + vm.id)
+    var memUsageChart = $('#memUsageChart-' + vm.id)
 
     div.replaceWith(generatedDiv)
 
     // replace donutcharts divs
-    $('#cpuUsageChart-'+vm.id).replaceWith(cpuUsageChart)
-    $('#memUsageChart-'+vm.id).replaceWith(memUsageChart)
-  } else {// append the new VM to the end
+    $('#cpuUsageChart-' + vm.id).replaceWith(cpuUsageChart)
+    $('#memUsageChart-' + vm.id).replaceWith(memUsageChart)
+  } else { // append the new VM to the end
     $('#virtual-machines-list').append(generatedDiv)
   }
 
@@ -267,8 +268,8 @@ function removeAllFromChartCache () {
 
 function refreshDonutChart (chartDivId, labels, columns, groups) {
   if (donutChartCache[chartDivId]) {
-    var chart = donutChartCache[chartDivId]
-    chart.load({columns:columns})
+    var existingChart = donutChartCache[chartDivId]
+    existingChart.load({columns: columns})
   } else {
     var chartConfig = $().c3ChartDefaults().getDefaultDonutConfig()
     chartConfig.bindto = chartDivId

@@ -138,13 +138,14 @@ function renderUsageDetailChart (chartDivId, timestamps, dsArray1, dsArray2) {
 //  renderSparklineChart(chartDivId, timestamps, dsArray1, dsArray2)
 
   // fire event to refresh chart asynchronously
-  setInterval( function () { $.event.trigger({
-    'type': 'renderSparklineChartEvent',
-    'chartDivId': chartDivId,
-    'timestamps': timestamps,
-    'dsArray1': dsArray1,
-    'dsArray2': dsArray2
-  }) }, CONFIG.delay_after_vdsm_action);
+  setInterval(function () {
+    $.event.trigger({
+      'type': 'renderSparklineChartEvent',
+      'chartDivId': chartDivId,
+      'timestamps': timestamps,
+      'dsArray1': dsArray1,
+      'dsArray2': dsArray2
+    }) }, CONFIG.delay_after_vdsm_action)
 }
 
 $(document).on('renderSparklineChartEvent',

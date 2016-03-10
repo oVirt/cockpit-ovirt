@@ -28,7 +28,7 @@ function setupForDebug () {
     console.log('Setting up for development ...')
 
     CONFIG.vdsm.client_path = '/root/.local/share/cockpit/ovirt/vdsm/vdsm'
-    //CONFIG.reload.auto_refresh_interval = 5000
+    // CONFIG.reload.auto_refresh_interval = 5000
   }
 }
 setupForDebug()

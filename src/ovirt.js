@@ -137,7 +137,7 @@ function startAutorefresher () {
 }
 
 function stopAutorefresher () {
-  //clearInterval(GLOBAL.autoRefresher)
+  // clearInterval(GLOBAL.autoRefresher)
   GLOBAL.autoRefresher = false
 }
 
