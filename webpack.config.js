@@ -20,16 +20,16 @@ var config = module.exports = {
       loader: 'babel'
     }, {
       test: /\.css$/,
-      loader: 'style-loader!css-loader'
+      loader: 'style!css'
     }, {
       test: /\.(png|jpg|jpeg|gif|svg)$/,
-      loader: 'url-loader?limit=10000'
+      loader: 'url?limit=10000'
     }, {
       test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/,
-      loader: 'url-loader?mimetype=application/font-woff'
+      loader: 'url?mimetype=application/font-woff'
     }, {
       test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?$/,
-      loader: 'file-loader?name=[name].[ext]'
+      loader: 'file?name=[name].[ext]'
     }]
   },
   externals: {
