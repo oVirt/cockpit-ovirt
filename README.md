@@ -1,4 +1,5 @@
 # Cockpit-oVirt plugin
+[![Build Status](https://travis-ci.org/mareklibra/cockpit-ovirt.svg?branch=master)](https://travis-ci.org/mareklibra/cockpit-ovirt)
 Virtual Machine Management plugin for Cockpit based on oVirt.
 
 Features in recent release:
