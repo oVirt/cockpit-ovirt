@@ -13,17 +13,26 @@ import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, print
 var isReadVmsListRunning = false
 export function readVmsList () { // invoke VDSM to get fresh vms data from the host
   if (!isReadVmsListRunning) {
-    isReadVmsListRunning = true
+    lockReadVmsList()
     readVmsListImpl()
   } else {
     debugMsg('Skipping readVmsList(), since another is already running')
   }
 }
-
+/*
 $(document).on('readVmsListFinished',
   function () {
     isReadVmsListRunning = false
   })
+*/
+
+function lockReadVmsList () {
+  isReadVmsListRunning = true
+}
+
+function releaseLockReadVmsList () {
+  isReadVmsListRunning = false
+}
 
 function readVmsListImpl () {
   var vdsmDataVmsList = ''
@@ -33,14 +42,13 @@ function readVmsListImpl () {
 
   function success () {
     getAllVmStatsSuccess(vdsmDataVmsList)
-    $.event.trigger({'type': 'readVmsListFinished'})
-
-    isReadVmsListRunning = false
+    setTimeout(releaseLockReadVmsList, 0)
   }
 
   function fail () {
     vdsmFail()
-    $.event.trigger({'type': 'readVmsListFinished'})
+    setTimeout(releaseLockReadVmsList, 0)
+    // $.event.trigger({'type': 'readVmsListFinished'})
   }
 
   // spawnVdsm('getAllVmStats', null, stdout, success, fail)
@@ -86,11 +94,13 @@ function renderHostVms (vmsFull) {
     renderHostVmsList(vms)
 
     // register button event listeners
-    registerBtnOnClickListener('btn-download-console-', downloadConsole)
-    registerBtnOnClickListener('btn-forceoff-vm-', forceoff)
-    registerBtnOnClickListener('btn-shutdown-vm-', shutdown)
-    registerBtnOnClickListener('btn-restart-vm-', restart)
-    registerBtnOnClickListener('host-vms-list-item-name-', onVmClick)
+    setTimeout(function () {
+      registerBtnOnClickListener('btn-download-console-', downloadConsole)
+      registerBtnOnClickListener('btn-forceoff-vm-', forceoff)
+      registerBtnOnClickListener('btn-shutdown-vm-', shutdown)
+      registerBtnOnClickListener('btn-restart-vm-', restart)
+      registerBtnOnClickListener('host-vms-list-item-name-', onVmClick)
+    }, 0)
 
     renderVmDetailActual()
   } else {
@@ -112,20 +122,31 @@ function renderHostVmsList (vms) {
     }
   })
 
-  // fire event to update/add VM asynchronously
   vms.forEach(function (vm) {
+    renderHostVm(vm)
+  })
+
+  /*
+  vms.forEach(function (vm) {
+    setTimeout(function () {
+      renderHostVm(vm)
+    }, 0) })*/
+}
+  // fire event to update/add VM asynchronously
+/*  vms.forEach(function (vm) {
     $.event.trigger({
       'type': 'renderHostVm',
       'vm': vm
     })
   })
-}
+  */
 
+/*
 $(document).on('renderHostVm',
   function (e) {
     renderHostVm(e.vm)
   })
-
+*/
 function renderHostVm (vm) {
   var div = $('#' + ITEM_PREFIX + vm.id)
 
@@ -148,6 +169,7 @@ function renderHostVm (vm) {
   }
 
   var usageRecords = GLOBAL.vmUsage[vm.id]
+
   refreshVmUsageCharts(vm.id, usageRecords[usageRecords.length - 1])
 }
 
@@ -220,6 +242,7 @@ function refreshCpuChart (chartDivId, usageRecord) {
   if (usageRecord.vcpuCount) {
     labels.push('of ' + usageRecord.vcpuCount + vCPUText)
   }
+
   refreshDonutChart(chartDivId, labels, [['User', user], ['Sys', sys], ['Idle', idle]], [['user', 'sys', 'idle']])
 
   // fire event to refresh chart asynchronously
@@ -310,8 +333,10 @@ function refreshUsageCharts () {
 }
 */
 function refreshVmUsageCharts (vmId, usageRecord) {
-  refreshCpuChart(getUsageElementId('cpu', vmId), usageRecord)
-  refreshMemoryChart(getUsageElementId('mem', vmId), usageRecord)
+  setTimeout(function () {
+    refreshCpuChart(getUsageElementId('cpu', vmId), usageRecord)
+    refreshMemoryChart(getUsageElementId('mem', vmId), usageRecord)
+  }, 0)
 }
 
 // ----------------------------------------------------------------------
