@@ -51,8 +51,8 @@ function readVmsListImpl () {
     // $.event.trigger({'type': 'readVmsListFinished'})
   }
 
-  // spawnVdsm('getAllVmStats', null, stdout, success, fail)
-  spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
+  spawnVdsm('getAllVmStats', null, stdout, success, fail)
+  // spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
 }
 
 function getAllVmStatsSuccess (vdsmDataVmsList) {
