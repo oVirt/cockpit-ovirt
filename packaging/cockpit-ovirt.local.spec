@@ -2,7 +2,7 @@
 %global _plugindir cockpit/ovirt
 
 Name:           cockpit-ovirt
-Version:        0.1
+Version:        0.2
 Release:        1%{?dist}
 Summary:        Virtual Machine Management plugin for Cockpit based on oVirt.
 License:        MIT
@@ -37,6 +37,7 @@ chmod a+x %{buildroot}%{_datadir}/%{_plugindir}/vdsm/vdsm
 %{_datadir}/%{_plugindir}
 
 %changelog
+* Fri Mar 11 2016 Marek Libra <mlibra@redhat.com> - 0.2
 * Thu Mar 03 2016 Marek Libra <mlibra@redhat.com> - 0.1
 - Initial packaging
 

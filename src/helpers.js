@@ -13,7 +13,7 @@ export function printError (text) {
 }
 
 export function debugMsg (text) {
-  if (__DEV__) {
+  if (typeof __DEV__ !== 'undefined') {
     console.log('Debug: ' + text)
   }
 }

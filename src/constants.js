@@ -24,7 +24,7 @@ export const CONFIG = {
 
 // Prepare development settings
 function setupForDebug () {
-  if (__DEV__) {
+  if (typeof __DEV__ !== 'undefined') {
     console.log('Setting up for development ...')
 
     CONFIG.vdsm.client_path = '/root/.local/share/cockpit/ovirt/vdsm/vdsm'
