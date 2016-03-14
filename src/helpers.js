@@ -1,6 +1,7 @@
 // --- helpers ----------------------------------------------------------
 import $ from 'jquery'
 import cockpit from 'cockpit'
+import Mustache from 'mustache'
 
 import {CONFIG} from './constants'
 
@@ -8,8 +9,17 @@ export function goTo (locationPath) {
   cockpit.location.go(locationPath)
 }
 
-export function printError (text) {
-  console.log('Error: ' + text)
+export function printError (text, detail) {
+  var msg = 'Error: ' + text
+  if (detail) {
+    msg += ', Detail: ' + detail
+  }
+
+  console.log(msg)
+
+  var template = $('#error-msg-template').html()
+  var html = Mustache.to_html(template, {msg: text})
+  $('#error-msg').prepend(html)
 }
 
 export function debugMsg (text) {
@@ -50,17 +60,17 @@ export function parseVdsmJson (json) {
       return resp
     }
   } catch (err) {
-    printError('parseVdsmJson() exception: ' + err)
+    printError('parseVdsmJson() exception ', err)
   }
 
-  printError('Malformed data format received (missing status code): ' + json)
+  printError('Malformed data format received (missing status code)', json)
   return null
 }
 
 export function vdsmFail () {
-  printError('Vdsm execution failed! Please check: \n' +
-    '- [path_to_cokcpit-ovirt-plugin]/vdsm/vdsm is executable,\n' +
-    '- __DEV__ environment variable when building.\n\n' +
+  printError('Vdsm execution failed! Please check: <br/>\n' +
+    '- [path_to_cokcpit-ovirt-plugin]/vdsm/vdsm is executable,<br/>\n' +
+    '- __DEV__ environment variable when building.<br/><br/>\n' +
     'VDSM path: ' + CONFIG.vdsm.client_path)
 }
 

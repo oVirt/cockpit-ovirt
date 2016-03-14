@@ -35,7 +35,7 @@ function getAllVmsListSuccess (vdsmEngineAllVms) {
       GLOBAL.latestEngineVmsList = vms
       renderEngineVmsList(vms)
     } else {
-      printError('getAllVmsList error (' + vms.status.code + '): ' + vms.status.message)
+      printError('getAllVmsList() error: ' + vms.status.code, vms.status.message)
     }
   }
 }
@@ -173,7 +173,7 @@ function getEngineHostSuccess (hostId) {
       debugMsg('Adding hostId=' + hostId + ', host=' + JSON.stringify(host))
       GLOBAL.hosts[hostId] = host
     } else {
-      printError('getEngineHostSuccess error (' + src.status.code + '): ' + src.status.message)
+      printError('getEngineHostSuccess() error: ' + src.status.code, src.status.message)
     }
   }
 }
@@ -194,10 +194,10 @@ export function hostToMaintenance () {
 
 function hostToMaintenanceSuccess (vdsmOut) {
   debugMsg('hostToMaintenanceSuccess() called. Data: ' + vdsmOut)
-  var result = parseVdsmJson(vdsmOut)
-
-  if (!result) {
-    // TODO: print user error (not only console)
+  var resp = $.parseJSON(vdsmOut)
+  if (!(resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message'))) {
+    // error
+    printError('Switch host to maintenance failed', vdsmOut)
   }
 }
 

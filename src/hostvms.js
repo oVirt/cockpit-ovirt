@@ -66,7 +66,6 @@ function renderHostVms (vmsFull) {
   // the 'vmsFull' is parsed json result of getAllVmStats()
   if (vmsFull.hasOwnProperty('items') && vmsFull.items.length > 0) {
     $('#virtual-machines-novm-message').hide()
-
     var vms = []
 
     // prepare data

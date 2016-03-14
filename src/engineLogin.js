@@ -179,14 +179,8 @@ export function isLoggedInEngine () {
 }
 
 export function setEngineFunctionalityVisibility () {
-  /* var enabled = */ isLoggedInEngine()
+  isLoggedInEngine()
   ENGINE_RELATED_IDS.forEach(function (id) {
-/*    var element = $('#' + id)
-        if (enabled) {
-            element.enable()
-        } else {
-            element.disabled()
-        }*/
   })
 
   if (isAllVmsPath()) {

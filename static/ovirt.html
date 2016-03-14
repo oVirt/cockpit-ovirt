@@ -44,7 +44,7 @@
                 <div class="panel-heading">Virtual Machines</div>
                 <div class="list-group list-view-pf" id="virtual-machines-list"></div>
 
-                <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>
+                <div id="virtual-machines-novm-message" class="cockpit-log-warning">
                     <div class="blank-slate-pf">
                         <div class="blank-slate-pf-icon">
                             <i class="fa fa-rocket"></i>
@@ -155,7 +155,6 @@
     </table>
 </script>
 
-<!------------------------------------------------------------------------------------->
 <script id="engine-vms-list-templ" type="x-template/mustache">
     <table class="table table-hover">
         <thead>
@@ -304,5 +303,14 @@
     {{message}} {{param1}}
 </script>
 
+<script id="error-msg-template" type="x-template/mustache">
+    <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+            <span class="pficon pficon-close"></span>
+        </button>
+        <span class="pficon pficon-error-circle-o"></span>
+        {{{msg}}}
+    </div>
+</script>
 </body>
 
