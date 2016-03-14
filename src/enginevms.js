@@ -15,7 +15,6 @@ export function readEngineVmsList () { // invoke VDSM (engineBridge) to get fres
   spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
     function (data) { vdsmEngineAllVms += data },
     function () { getAllVmsListSuccess(vdsmEngineAllVms) }, engineBridgeFail, 'getAllVms')
-  vdsmEngineAllVms = ''
 }
 
 function engineBridgeFail (msg) {
@@ -176,6 +175,29 @@ function getEngineHostSuccess (hostId) {
     } else {
       printError('getEngineHostSuccess error (' + src.status.code + '): ' + src.status.message)
     }
+  }
+}
+
+export function hostToMaintenance () {
+  // switch the host to maintenance mode via REST API
+  debugMsg('hostToMaintenance() called')
+  if (!isLoggedInEngine()) {
+    printError('hostToMaintenance(): not logged in engine')
+    return
+  }
+
+  var vdsmOut = ''
+  spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
+    function (data) { vdsmOut += data },
+    function () { hostToMaintenanceSuccess(vdsmOut) }, engineBridgeFail, 'hostToMaintenance')
+}
+
+function hostToMaintenanceSuccess (vdsmOut) {
+  debugMsg('hostToMaintenanceSuccess() called. Data: ' + vdsmOut)
+  var result = parseVdsmJson(vdsmOut)
+
+  if (!result) {
+    // TODO: print user error (not only console)
   }
 }
 

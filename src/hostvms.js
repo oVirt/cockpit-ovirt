@@ -19,12 +19,6 @@ export function readVmsList () { // invoke VDSM to get fresh vms data from the h
     debugMsg('Skipping readVmsList(), since another is already running')
   }
 }
-/*
-$(document).on('readVmsListFinished',
-  function () {
-    isReadVmsListRunning = false
-  })
-*/
 
 function lockReadVmsList () {
   isReadVmsListRunning = true
@@ -125,28 +119,8 @@ function renderHostVmsList (vms) {
   vms.forEach(function (vm) {
     renderHostVm(vm)
   })
-
-  /*
-  vms.forEach(function (vm) {
-    setTimeout(function () {
-      renderHostVm(vm)
-    }, 0) })*/
 }
-  // fire event to update/add VM asynchronously
-/*  vms.forEach(function (vm) {
-    $.event.trigger({
-      'type': 'renderHostVm',
-      'vm': vm
-    })
-  })
-  */
 
-/*
-$(document).on('renderHostVm',
-  function (e) {
-    renderHostVm(e.vm)
-  })
-*/
 function renderHostVm (vm) {
   var div = $('#' + ITEM_PREFIX + vm.id)
 
@@ -244,15 +218,6 @@ function refreshCpuChart (chartDivId, usageRecord) {
   }
 
   refreshDonutChart(chartDivId, labels, [['User', user], ['Sys', sys], ['Idle', idle]], [['user', 'sys', 'idle']])
-
-  // fire event to refresh chart asynchronously
-/*  $.event.trigger({
-    'type': 'refreshDonutChartEvent',
-    'chartDivId': chartDivId,
-    'labels': labels,
-    'columns': [['User', user], ['Sys', sys], ['Idle', idle]],
-    'groups': [['user', 'sys', 'idle']]
-  })*/
 }
 
 function refreshMemoryChart (chartDivId, usageRecord) {
@@ -263,22 +228,8 @@ function refreshMemoryChart (chartDivId, usageRecord) {
 
   var labels = [used + '%']
   refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
-
-  // fire event to refresh chart asynchronously
-/*  $.event.trigger({
-    'type': 'refreshDonutChartEvent',
-    'chartDivId': chartDivId,
-    'labels': labels,
-    'columns': [['Free', free], ['Used', used]],
-    'groups': [['available', 'used']]
-  })*/
 }
-/*
-$(document).on('refreshDonutChartEvent',
-  function (e) {
-    refreshDonutChart(e.chartDivId, e.labels, e.columns, e.groups)
-  })
-*/
+
 var donutChartCache = {}
 function removeFromChartCache (vmId) {
   donutChartCache[getUsageElementId('cpu', vmId)] = undefined
@@ -322,21 +273,20 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
     donutChartTitle.insert('tspan').text(labels[1]).classed('donut-title-small-pf', true).attr('dy', 20).attr('x', 0)
   }
 }
-/*
-function refreshUsageCharts () {
-  $.each(GLOBAL.vmUsage, function (key, usageRecords) {
-    if (usageRecords.length > 0) {
-      var last = usageRecords[usageRecords.length - 1]
-      refreshVmUsageCharts(key, last)
-    }
-  })
-}
-*/
+
 function refreshVmUsageCharts (vmId, usageRecord) {
   setTimeout(function () {
     refreshCpuChart(getUsageElementId('cpu', vmId), usageRecord)
     refreshMemoryChart(getUsageElementId('mem', vmId), usageRecord)
   }, 0)
+}
+
+export function shutdownAllHostVms () {
+  debugMsg('shutdownAllHostVms() called')
+  var vms = GLOBAL.latestHostVMSList
+  if (vms.hasOwnProperty('items')) {
+    vms.items.forEach(function (vm) { shutdown(vm.vmId) })
+  }
 }
 
 // ----------------------------------------------------------------------

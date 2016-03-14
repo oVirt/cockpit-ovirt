@@ -60,7 +60,7 @@ def readStdin():
         line = sys.stdin.readline()
     return inData
 
-def buildResult(code, message, content):
+def buildResult(code, message, content=None):
     result = {'status' : {
         'code': code,
         'message': message
@@ -80,6 +80,9 @@ def httpCall(url, method, headers = {'Accept': 'application/json'}, user=None, p
 
     if method=='GET':
         return requests.get(url,auth=auth, headers=headers, verify=verify)
+
+    if method=='POST':
+        return requests.post(url,auth=auth, headers=headers, verify=verify, data=body)
 
     logger.info('Unsupported method: {0}'.format(method));
     return None
@@ -111,6 +114,10 @@ def getDefaultHeaders(credentials):
     headers = {'Accept': 'application/json', 'Authorization': "Bearer {0}".format(credentials['token'])}
     return headers
 
+def getDefaultPostHeaders(credentials):
+    headers = {'Content-Type': 'application/xml', 'Authorization': "Bearer {0}".format(credentials['token'])}
+    return headers
+
 def getAllVms():
     logger.debug('getAllVms() called')
     credentials = readCredentials()
@@ -131,6 +138,47 @@ def getHost(hostId):
 
     url = "{0}/api/{1}/{2}".format(credentials['url'], 'hosts', hostId)
     resp = httpCall(url=url, method='GET', headers=getDefaultHeaders(credentials))
+    if resp.status_code == 200:
+        content = json.loads(resp.text)
+        return buildResult(0, 'Done', content)
+    else:
+        return buildResult(resp.status_code, resp.text)
+
+def getRunningHost(credentials=None):
+    logger.debug('getRunningHost() called')
+
+    if credentials is None:
+        credentials = readCredentials()
+
+    with open('/etc/vdsm/vdsm.id', 'r') as myfile:
+        vdsmId=myfile.read().replace('\n', '')
+    logger.debug("VDSM ID read: {0}".format(vdsmId))
+
+    url = "{0}/api/{1}".format(credentials['url'], 'hosts')
+    resp = httpCall(url=url, method='GET', headers=getDefaultHeaders(credentials))
+    if resp.status_code == 200:
+        content = json.loads(resp.text)
+
+        for host in content['host']:
+            if host['hardware_information']['uuid'] == vdsmId:
+                return buildResult(0, 'Done', host)
+
+        return buildResult(1, 'Not found', "VDSM ID '{0}' not found in engine's hosts list".format(vdsmId))
+    return buildResult(resp.status_code, resp.text)
+
+def hostToMaintenance():
+    logger.debug('hostToMaintenance() called')
+    credentials = readCredentials()
+
+    host = getRunningHost(credentials)
+
+    if host['status']['code'] != 0:
+        return host
+
+    xml_request = "<action/>"
+
+    url = "{0}/api/hosts/{1}/deactivate".format(credentials['url'], host['content']['id'])
+    resp = httpCall(url=url, method='POST', headers=getDefaultPostHeaders(credentials), body=xml_request)
     if resp.status_code == 200:
         content = json.loads(resp.text)
         return buildResult(0, 'Done', content)
@@ -182,7 +230,7 @@ def getAllVmStatsFakeExtend():
 def parseArgs(service):
     parser = argparse.ArgumentParser(description='Support utility for Cockpit oVirt plugin to invoke VDSM JSON RPC or Engine REST API.\n')
     parser.add_argument('vdsmCommand', help='VDSM command to be invoked',
-                        choices=['getAllVmStats', 'shutdown', 'destroy', 'restart', 'ping', 'engineBridge', 'getAllVmStatsFakeExtend'])
+                        choices=['getAllVmStats', 'shutdown', 'destroy', 'restart', 'ping', 'engineBridge', 'getAllVmStatsFakeExtend', 'getVdsCapabilities'])
     parser.add_argument('vdsmCommandArgs', help='VDSM command arguments', nargs='*')
     return parser.parse_args()
 
@@ -192,8 +240,10 @@ def main():
 
     ENGINE_COMMANDS = {
         'getToken': getEngineToken,
-        'getAllVms' : getAllVms,
-        'getHost' : getHost
+        'getAllVms': getAllVms,
+        'getHost': getHost,
+        'getRunningHost': getRunningHost,
+        'hostToMaintenance': hostToMaintenance
     }
 
     COMMANDS = {
@@ -202,7 +252,8 @@ def main():
         'shutdown' : service.shutdown,
         'destroy' : service.destroy,
         'restart' : restartVm,
-        'ping' : service.ping
+        'ping' : service.ping,
+        'getVdsCapabilities': service.getVdsCapabilities
     }
 
     args = parseArgs(service)

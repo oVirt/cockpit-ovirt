@@ -12,8 +12,8 @@ import {GLOBAL} from './globaldata'
 
 import {debugMsg, printError, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh} from './helpers'
 import {isLoggedInEngine, setEngineLoginTitle, setEngineFunctionalityVisibility, toggleEngineLoginVisibility, isAllVmsPath} from './engineLogin'
-import {readEngineVmsList, refreshEngineVmsList} from './enginevms'
-import {readVmsList} from './hostvms'
+import {readEngineVmsList, refreshEngineVmsList, hostToMaintenance} from './enginevms'
+import {readVmsList, shutdownAllHostVms} from './hostvms'
 import {getVmIdFromPath, renderVmDetail} from './vmdetail'
 import {saveVdsmConf, reloadVdsmConf, loadVdsmConf} from './vdsmscreen'
 import {renderPing} from './ping'
@@ -151,6 +151,21 @@ function refresh () {
   scheduleNextAutoRefresh()
 }
 
+// TODO: use bootstrap's confirmation dialogs
+function hostToMaintenanceActionClicked () {
+  if (isLoggedInEngine()) {
+    if (confirm('Please confirm the host shall be set to maintenance mode (via engine)')) {
+      hostToMaintenance()
+    }
+  } else {
+    if (confirm('Login to Engine is not currently present.\nPlease confirm all VMs on this host shall be shutdowned.')) {
+      shutdownAllHostVms()
+    }
+  }
+
+  setTimeout(readVmsList, CONFIG.reload.delay_after_vdsm_action)
+}
+
 function initNavigation () {
   $('#main-btn-menu li').on('click', function () {
     var dataPattern = $(this).attr('data-pattern')
@@ -158,6 +173,7 @@ function initNavigation () {
   })
 
   registerBtnOnClickListener('action-refresh', refreshActionClicked)
+  registerBtnOnClickListener('action-host-to-maintenance', hostToMaintenanceActionClicked)
 
   registerBtnOnClickListener('a-jump-vdsm-service-mngmt', jump)
   registerBtnOnClickListener('editor-vdsm-btn-save', saveVdsmConf)
