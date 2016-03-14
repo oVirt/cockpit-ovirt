@@ -54,6 +54,8 @@ The oVirt deals with
         * yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release-master.rpm
         * yum install ovirt-engine
         * engine-setup
+        * add host from previous step to the engine
+        * more at http://www.ovirt.org/documentation/quickstart/quickstart-guide/ 
 
 * Install [Cockpit](http://cockpit-project.org/running.html)
     * yum install cockpit
@@ -61,7 +63,8 @@ The oVirt deals with
         * systemctl enable cockpit.socket
         * systemctl start cockpit
 
-### Build
+### Install From Sources
+#### Build
 For build you will need [Node.js](https://nodejs.org/) v4 (LTS). If your OS repositories don't contain
 required version you can always use Node Version Manager [nvm](https://github.com/creationix/nvm) to
 install and manage multiple Node.js versions side by side.
@@ -79,7 +82,7 @@ Developer's note: you can use `npm run dev` to start a background build service 
 recompile the code on the fly and update the contents of `/dist` directory. Symbolically linking the `/dist`
 directory into proper place (see below) one can achieve automatic code updates in running cockpit instance.
 
-### Install Plugin
+#### Deploy Plugin
 * after build, copy contents of `/dist` to /root/.local/share/cockpit/ovirt/
 
 * **Alternative:**
@@ -93,6 +96,16 @@ directory into proper place (see below) one can achieve automatic code updates i
             \# /root/.local/share/cockpit/ovirt/vdsm/vdsm getAllVmStats
 
     * As the plugin is in early development state, **PLEASE let author know about all issues you encounter during installation/use**, it will help in making the product better.
+
+### Install From RPM
+RPM is recently built for Fedora 23 and Centos 7 and stored within oVirt's ovirt-master-snapshot-static repo.
+
+* Please meet **Prerequisites**
+* enable repo
+    * yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release-master.rpm 
+* install RPM
+    * yum install cockpit
+    * yum install cockpit-ovirt
 
 ### Verify
 * Follow:
