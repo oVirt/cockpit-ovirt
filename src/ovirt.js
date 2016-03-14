@@ -108,20 +108,20 @@ function jump (component) {
 }
 
 function refreshActionClicked (ignore) {
-  var spanRefresh = $('#action-refresh')
-  var spanRefreshA = $('#action-refresh a')
+  var buttonRefresh = $('#action-refresh')
+  var buttonRefreshText = $('#action-refresh-text')
 
-  if (spanRefresh.attr('data-pattern') === 'off') {
+  if (buttonRefresh.attr('data-pattern') === 'off') {
     startAutorefresher()
     scheduleNextAutoRefresh()
 
-    spanRefreshA.text('Refresh: auto')
-    spanRefresh.attr('data-pattern', 'on')
+    buttonRefreshText.text('Refresh: auto')
+    buttonRefresh.attr('data-pattern', 'on')
   } else {
     stopAutorefresher()
 
-    spanRefreshA.text('Refresh: off')
-    spanRefresh.attr('data-pattern', 'off')
+    buttonRefreshText.text('Refresh: off')
+    buttonRefresh.attr('data-pattern', 'off')
   }
 }
 

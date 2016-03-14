@@ -25,8 +25,11 @@
                     </ul>
                 </td>
                 <td align="right" valign="top">
-                    <span id="action-refresh" data-pattern="off"><span class="fa fa-refresh"></span> <a>Refresh: off</a></span>
-                    <span id="action-host-to-maintenance"><a>Host to Maintenance</a></span>
+                    <div class="btn-group">
+                        <button id="action-host-to-maintenance" type="button" class="btn btn-default">Host to Maintenance</button>
+                        <button id="action-refresh" type="button" class="btn btn-default" data-pattern="off"><span class="fa fa-refresh"></span><span id="action-refresh-text">Refresh: off</span></button>
+                    </div>
+                    <!--<span id="action-refresh" data-pattern="off"><span class="fa fa-refresh"></span> <a>Refresh: off</a></span>-->
                 </td>
                 <td width="25%" align="right">
                     <div id="engine-login">
