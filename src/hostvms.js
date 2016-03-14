@@ -280,7 +280,13 @@ function refreshVmUsageCharts (vmId, usageRecord) {
   }, 0)
 }
 
-export function shutdownAllHostVms () {
+export function shutdownAllHostVmsConfirm () {
+  if (confirm('Login to Engine is not currently present.\nPlease confirm all VMs on this host shall be shutdowned.')) {
+    shutdownAllHostVms()
+  }
+}
+
+function shutdownAllHostVms () {
   debugMsg('shutdownAllHostVms() called')
   var vms = GLOBAL.latestHostVMSList
   if (vms.hasOwnProperty('items')) {

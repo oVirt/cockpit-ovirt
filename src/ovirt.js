@@ -13,7 +13,7 @@ import {GLOBAL} from './globaldata'
 import {debugMsg, printError, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh} from './helpers'
 import {isLoggedInEngine, setEngineLoginTitle, setEngineFunctionalityVisibility, toggleEngineLoginVisibility, isAllVmsPath} from './engineLogin'
 import {readEngineVmsList, refreshEngineVmsList, hostToMaintenance} from './enginevms'
-import {readVmsList, shutdownAllHostVms} from './hostvms'
+import {readVmsList, shutdownAllHostVmsConfirm} from './hostvms'
 import {getVmIdFromPath, renderVmDetail} from './vmdetail'
 import {saveVdsmConf, reloadVdsmConf, loadVdsmConf} from './vdsmscreen'
 import {renderPing} from './ping'
@@ -154,13 +154,11 @@ function refresh () {
 // TODO: use bootstrap's confirmation dialogs
 function hostToMaintenanceActionClicked () {
   if (isLoggedInEngine()) {
-    if (confirm('Please confirm the host shall be set to maintenance mode (via engine)')) {
+    if (confirm('Please confirm the host shall be set to maintenance mode (by engine)')) {
       hostToMaintenance()
     }
   } else {
-    if (confirm('Login to Engine is not currently present.\nPlease confirm all VMs on this host shall be shutdowned.')) {
-      shutdownAllHostVms()
-    }
+    shutdownAllHostVmsConfirm()
   }
 
   setTimeout(readVmsList, CONFIG.reload.delay_after_vdsm_action)

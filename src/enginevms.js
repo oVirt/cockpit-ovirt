@@ -6,7 +6,7 @@ import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {getVmDetails_vdsmToInternal, vmStatusToHtml} from './vmdetail'
-import {onVmClick} from './hostvms'
+import {onVmClick, shutdownAllHostVmsConfirm} from './hostvms'
 import {getEngineCredentialsTokenOnly, isLoggedInEngine} from './engineLogin'
 import {printError, debugMsg, spawnVdsm, parseVdsmJson, registerBtnOnClickListener, formatHumanReadableBytes} from './helpers'
 
@@ -189,16 +189,25 @@ export function hostToMaintenance () {
   var vdsmOut = ''
   spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
     function (data) { vdsmOut += data },
-    function () { hostToMaintenanceSuccess(vdsmOut) }, engineBridgeFail, 'hostToMaintenance')
+    function () { hostToMaintenanceSuccess(vdsmOut) },
+    function () {
+      engineBridgeFail()
+      shutdownAllHostVmsConfirm()
+    },
+    'hostToMaintenance')
 }
 
 function hostToMaintenanceSuccess (vdsmOut) {
   debugMsg('hostToMaintenanceSuccess() called. Data: ' + vdsmOut)
   var resp = $.parseJSON(vdsmOut)
-  if (!(resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message'))) {
-    // error
-    printError('Switch host to maintenance failed', vdsmOut)
+  if (resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message')
+    && resp.status.code == 0) {
+    return
   }
+
+  // error
+  printError('Switch host to maintenance failed', vdsmOut)
+  shutdownAllHostVmsConfirm()
 }
 
 function getVmDetails_engineToInternal (vmId, parsedEngineVms) { // lookup cached VM detail
