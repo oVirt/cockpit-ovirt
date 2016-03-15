@@ -315,5 +315,24 @@
         {{{msg}}}
     </div>
 </script>
+
+<div class="modal fade" id="modal-confirmation" tabindex="-1" role="dialog" aria-labelledby="modal-confirmation-title" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="pficon pficon-close"></span>
+                </button>
+                <h4 class="modal-title" id="modal-confirmation-title">{{title}}</h4>
+            </div>
+            <div class="modal-body" id="modal-confirmation-text"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-confirmation-ok">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 

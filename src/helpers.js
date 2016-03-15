@@ -137,3 +137,17 @@ export function computePercent (val, max) {
 export function scheduleNextAutoRefresh () {
   $.event.trigger({'type': 'scheduleNextAutoRefreshEvent'})
 }
+
+export function confirmModal (title, text, onConfirm) {
+  $('#modal-confirmation-title').text(title)
+  $('#modal-confirmation-text').html(text)
+
+  $('#modal-confirmation-ok').off('click')
+  $('#modal-confirmation-ok').on('click',
+    function () {
+      $('#modal-confirmation').modal('hide')
+      onConfirm()
+    })
+
+  $('#modal-confirmation').modal('show')
+}

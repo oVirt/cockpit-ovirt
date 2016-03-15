@@ -10,7 +10,7 @@ import '../node_modules/patternfly/dist/js/patternfly'
 import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
-import {debugMsg, printError, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh} from './helpers'
+import {debugMsg, printError, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh, confirmModal} from './helpers'
 import {isLoggedInEngine, setEngineLoginTitle, setEngineFunctionalityVisibility, toggleEngineLoginVisibility, isAllVmsPath} from './engineLogin'
 import {readEngineVmsList, refreshEngineVmsList, hostToMaintenance} from './enginevms'
 import {readVmsList, shutdownAllHostVmsConfirm} from './hostvms'
@@ -151,17 +151,16 @@ function refresh () {
   scheduleNextAutoRefresh()
 }
 
-// TODO: use bootstrap's confirmation dialogs
 function hostToMaintenanceActionClicked () {
   if (isLoggedInEngine()) {
-    if (confirm('Please confirm the host shall be set to maintenance mode (by engine)')) {
-      hostToMaintenance()
-    }
+    confirmModal('Set Host to Maintenance', 'Please confirm the host shall be set to maintenance mode (by engine)',
+      function () {
+        hostToMaintenance()
+        setTimeout(readVmsList, CONFIG.reload.delay_after_vdsm_action)
+      })
   } else {
     shutdownAllHostVmsConfirm()
   }
-
-  setTimeout(readVmsList, CONFIG.reload.delay_after_vdsm_action)
 }
 
 function initNavigation () {

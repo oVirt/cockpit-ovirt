@@ -4,7 +4,7 @@ import cockpit from 'cockpit'
 
 import {CONFIG} from './constants'
 
-import {printError, debugMsg} from './helpers'
+import {printError, debugMsg, confirmModal} from './helpers'
 
 export function loadVdsmConf (inform) {
   var editor = $('#editor-vdsm-conf')
@@ -20,23 +20,25 @@ export function loadVdsmConf (inform) {
 }
 
 export function reloadVdsmConf () {
-  if (confirm('Content of vdsm.conf will be reloaded, unsaved changes will be lost.\n\nPlease confirm.')) {
-    loadVdsmConf(true)
-  }
+  confirmModal('Reload stored vdsm.conf', 'Content of vdsm.conf will be reloaded, unsaved changes will be lost.<br/>Please confirm.',
+    function () {
+      loadVdsmConf(true)
+    })
 }
 
 export function saveVdsmConf () {
-  if (confirm('Content of vdsm.conf file will be replaced.\n\nPlease confirm.')) {
-    var editor = $('#editor-vdsm-conf')
-    var content = editor.val()
+  confirmModal('Save to vdsm.conf', 'Content of vdsm.conf file will be replaced.<br/>Please confirm.',
+    function () {
+      var editor = $('#editor-vdsm-conf')
+      var content = editor.val()
 
-    cockpit.file(CONFIG.vdsm.conf_file_name).replace(content).done(function (tag) {
-      debugMsg('Content of vdsm.conf replaced.')
-      writeVdsmConfMsg('Saved', true)
-    }).fail(function (error) {
-      printError('Error writing vdsm.conf: ' + error)
+      cockpit.file(CONFIG.vdsm.conf_file_name).replace(content).done(function (tag) {
+        debugMsg('Content of vdsm.conf replaced.')
+        writeVdsmConfMsg('Saved', true)
+      }).fail(function (error) {
+        printError('Error writing vdsm.conf: ' + error)
+      })
     })
-  }
 }
 
 function writeVdsmConfMsg (text, autoclear) {

@@ -8,7 +8,7 @@ import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {downloadConsole, forceoff, shutdown, restart, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
-import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent} from './helpers'
+import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent, confirmModal} from './helpers'
 
 var isReadVmsListRunning = false
 export function readVmsList () { // invoke VDSM to get fresh vms data from the host
@@ -281,9 +281,7 @@ function refreshVmUsageCharts (vmId, usageRecord) {
 }
 
 export function shutdownAllHostVmsConfirm () {
-  if (confirm('Login to Engine is not currently present.\nPlease confirm all VMs on this host shall be shutdowned.')) {
-    shutdownAllHostVms()
-  }
+  confirmModal('Engine not accessible', 'Login to Engine is not currently present.<br/>Please confirm all VMs on this host shall be shutdowned.', shutdownAllHostVms)
 }
 
 function shutdownAllHostVms () {

@@ -200,8 +200,8 @@ export function hostToMaintenance () {
 function hostToMaintenanceSuccess (vdsmOut) {
   debugMsg('hostToMaintenanceSuccess() called. Data: ' + vdsmOut)
   var resp = $.parseJSON(vdsmOut)
-  if (resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message')
-    && resp.status.code == 0) {
+  if (resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') &&
+    resp.status.hasOwnProperty('message') && resp.status.code === 0) {
     return
   }
 

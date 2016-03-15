@@ -1,5 +1,3 @@
-// TODO: wrap into object GLOBAL
-
 export var GLOBAL = {
   autoRefresher: true,
   latestHostVMSList: {}, // latest parsed&successful VDSM's getAllVmStats() result
