@@ -72,7 +72,7 @@ function onEngineVmClick (vmId) {
         // get VM's host
     var vm = getVmDetails_engineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm)
     if (!vm) {
-      printError("Host data for engine VM '" + vmId + "' not found")
+      debugMsg("Host data for engine VM '" + vmId + "' not found")
       return
     }
 
