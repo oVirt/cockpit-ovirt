@@ -4,7 +4,7 @@ Name:           cockpit-ovirt
 Version:        0.2
 Release:        1%{?dist}
 Summary:        Virtual Machine Management plugin for Cockpit based on oVirt.
-License:        MIT
+License:        ASL 2.0
 URL:            https://github.com/mareklibra/%{name}
 Source0:        https://github.com/mareklibra/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildArch:      noarch
