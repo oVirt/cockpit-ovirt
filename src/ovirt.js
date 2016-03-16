@@ -17,6 +17,7 @@ import {readVmsList, shutdownAllHostVmsConfirm} from './hostvms'
 import {getVmIdFromPath, renderVmDetail} from './vmdetail'
 import {saveVdsmConf, reloadVdsmConf, loadVdsmConf} from './vdsmscreen'
 import {renderPing} from './ping'
+import {i18nInit} from './i18n'
 
 function showVmsScreen () {
   hideAllScreens()
@@ -32,7 +33,7 @@ function showEngineVmsScreen () {
     readEngineVmsList()
     $('#engine-vms-screen').show()
   } else { // should not happen, engine is not available
-    printError('showEngineVmsScreen() called but no engine login is available')
+    printError('No engine login is available'.translate())
     goTo('/vms')
   }
 
@@ -85,7 +86,7 @@ function onLocationChanged () {
     if (vmId != null) {
       showVmDetailScreen(vmId)
     } else {
-      defaultScreen('vmId must be specified')
+      defaultScreen('vmId must be specified'.translate())
     }
   } else if (isAllVmsPath()) {
     showEngineVmsScreen()
@@ -94,7 +95,7 @@ function onLocationChanged () {
   } else if (path[0] === 'ping') {
     showPing()
   } else {
-    defaultScreen('Unknown location path: ' + path[0])
+    defaultScreen('Unknown location path: {0}'.translate().format(path[0]))
   }
 }
 
@@ -115,12 +116,12 @@ function refreshActionClicked (ignore) {
     startAutorefresher()
     scheduleNextAutoRefresh()
 
-    buttonRefreshText.text('Refresh: auto')
+    buttonRefreshText.text('Refresh: auto'.translate())
     buttonRefresh.attr('data-pattern', 'on')
   } else {
     stopAutorefresher()
 
-    buttonRefreshText.text('Refresh: off')
+    buttonRefreshText.text('Refresh: off'.translate())
     buttonRefresh.attr('data-pattern', 'off')
   }
 }
@@ -153,7 +154,7 @@ function refresh () {
 
 function hostToMaintenanceActionClicked () {
   if (isLoggedInEngine()) {
-    confirmModal('Set Host to Maintenance', 'Please confirm the host shall be set to maintenance mode (by engine)',
+    confirmModal('Set Host to Maintenance'.translate(), 'Please confirm the host shall be set to maintenance mode (by engine)'.translate(),
       function () {
         hostToMaintenance()
         setTimeout(readVmsList, CONFIG.reload.delay_after_vdsm_action)
@@ -181,12 +182,14 @@ function initNavigation () {
 
 function initEngineLogin () {
   if (isLoggedInEngine()) {
-    setEngineLoginTitle('Logged to Engine')
+    setEngineLoginTitle('Logged to Engine'.translate())
   }
   setEngineFunctionalityVisibility()
 }
 
 function initialize () {
+  i18nInit()
+
   initNavigation()
   initEngineLogin()
 

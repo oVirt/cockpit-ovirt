@@ -57,7 +57,7 @@ function getAllVmStatsSuccess (vdsmDataVmsList) {
       GLOBAL.latestHostVMSList = vms // cache for reuse i.e. in displayVMDetail()
       renderHostVms(vms)
     } else {
-      printError('getAllVmStats() error (' + vms.status.code + '): ' + vms.status.message)
+      printError('Error when reading VM stats ({0}): {1}'.translate().format(vms.status.code, vms.status.message))
     }
   }
 }
@@ -281,7 +281,9 @@ function refreshVmUsageCharts (vmId, usageRecord) {
 }
 
 export function shutdownAllHostVmsConfirm () {
-  confirmModal('Engine not accessible', 'Login to Engine is not currently present.<br/>Please confirm all VMs on this host shall be shutdowned.', shutdownAllHostVms)
+  confirmModal('Engine not accessible'.translate(),
+    'Login to Engine not available.<br/>Please confirm all VMs on this host will be shut down'.translate(),
+    shutdownAllHostVms)
 }
 
 function shutdownAllHostVms () {

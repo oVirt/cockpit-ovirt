@@ -126,7 +126,7 @@ function engineLoginSuccessful (vdsmLoginOut) {
       if (resp.hasOwnProperty('content') && resp.content.hasOwnProperty('access_token')) {
         // TODO: make the title green
         debugMsg('Login successful, token received')
-        setEngineLoginTitle('Logged to Engine')
+        setEngineLoginTitle('Logged to Engine'.translate())
         toggleEngineLoginVisibility()
 
         addEngineToken(resp.content.access_token)
@@ -134,7 +134,7 @@ function engineLoginSuccessful (vdsmLoginOut) {
         setEngineLoginButtonVisibility()
         setEngineFunctionalityVisibility()
       } else {
-        engineLoginFailed('No token received', resp.status.code)
+        engineLoginFailed('No token received'.translate(), resp.status.code)
       }
     } else {
       engineLoginFailed(resp.status.message, resp.status.code)
@@ -147,11 +147,11 @@ function engineLoginFailed (msg, statusCode) {
   onEngineLoginEnd()
 
     // TODO: make the title red
-  setEngineLoginTitle('Engine login failed')
+  setEngineLoginTitle('Engine login failed'.translate())
 
   removeEngineToken()
 
-  setEngineLoginErrorMsg('(' + statusCode + ') ' + msg)
+  setEngineLoginErrorMsg('({0}) {1}'.format(statusCode, msg))
   setEngineFunctionalityVisibility()
 }
 

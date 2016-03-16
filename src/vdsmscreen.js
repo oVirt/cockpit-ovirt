@@ -15,19 +15,19 @@ export function loadVdsmConf (inform) {
       writeVdsmConfMsg('Loaded', true)
     }
   }).fail(function (error) {
-    printError('Error reading vdsm.conf: ' + error)
+    printError('Error reading vdsm.conf: {0}'.translate().format(error))
   })
 }
 
 export function reloadVdsmConf () {
-  confirmModal('Reload stored vdsm.conf', 'Content of vdsm.conf will be reloaded, unsaved changes will be lost.<br/>Please confirm.',
+  confirmModal('Reload stored vdsm.conf'.translate(), 'Content of vdsm.conf will be reloaded, unsaved changes will be lost.<br/>Please confirm.'.translate(),
     function () {
       loadVdsmConf(true)
     })
 }
 
 export function saveVdsmConf () {
-  confirmModal('Save to vdsm.conf', 'Content of vdsm.conf file will be replaced.<br/>Please confirm.',
+  confirmModal('Save to vdsm.conf'.translate(), 'Content of vdsm.conf file will be replaced.<br/>Please confirm.'.translate(),
     function () {
       var editor = $('#editor-vdsm-conf')
       var content = editor.val()
@@ -36,7 +36,7 @@ export function saveVdsmConf () {
         debugMsg('Content of vdsm.conf replaced.')
         writeVdsmConfMsg('Saved', true)
       }).fail(function (error) {
-        printError('Error writing vdsm.conf: ' + error)
+        printError('Error writing vdsm.conf: {0}'.translate().format(error))
       })
     })
 }

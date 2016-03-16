@@ -13,27 +13,34 @@
 <body>
 <div id="ping-content" hidden></div>
 
+<!-- TODO: translate mustache generated HTML (templates within <script> elements) -->
+
 <div id="ovirt-content">
     <div class="content-header-extra">
         <table width="100%">
             <tr>
                 <td valign="top">
                     <ul class="nav nav-tabs" id="main-btn-menu">
-                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a>Running VMs</a></li>
-                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a>VMs in Cluster</a></li>
-                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a>VDSM</a></li>
+                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a
+                                translate-id="translate-running-vms">Running VMs</a></li>
+                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a translate-id="translate-vms-in-cluster">VMs in Cluster</a></li>
+                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a translate-id="translate-vdsm">VDSM</a></li>
                     </ul>
                 </td>
                 <td align="right" valign="top">
                     <div class="btn-group">
-                        <button id="action-host-to-maintenance" type="button" class="btn btn-default">Host to Maintenance</button>
-                        <button id="action-refresh" type="button" class="btn btn-default" data-pattern="off"><span class="fa fa-refresh"></span><span id="action-refresh-text">Refresh: off</span></button>
+                        <button id="action-host-to-maintenance" type="button" class="btn btn-default"
+                                translate-id="translate-host-to-maintenance">Host to Maintenance
+                        </button>
+                        <button id="action-refresh" type="button" class="btn btn-default" data-pattern="off"><span
+                                class="fa fa-refresh"></span><span id="action-refresh-text"></span></button>
                     </div>
-                    <!--<span id="action-refresh" data-pattern="off"><span class="fa fa-refresh"></span> <a>Refresh: off</a></span>-->
                 </td>
                 <td width="25%" align="right">
                     <div id="engine-login">
-                        <div style="white-space: nowrap;"><div id="engine-login-title">Login to Engine</div></div>
+                        <div style="white-space: nowrap;">
+                            <div id="engine-login-title" translate-id="translate-login-to-engine">Login to Engine</div>
+                        </div>
                         <div id="engine-login-content" hidden></div>
                     </div>
                 </td>
@@ -44,7 +51,7 @@
     <div class="container-fluid" style="margin-top: 5em">
         <div id="vms-screen">
             <div id="virtual-machines" class="panel panel-default">
-                <div class="panel-heading">Virtual Machines</div>
+                <div class="panel-heading" translate-id="translate-vms">Virtual Machines</div>
                 <div class="list-group list-view-pf" id="virtual-machines-list"></div>
 
                 <div id="virtual-machines-novm-message" class="cockpit-log-warning">
@@ -52,37 +59,40 @@
                         <div class="blank-slate-pf-icon">
                             <i class="fa fa-rocket"></i>
                         </div>
-                        <h1>No VM is running on this host</h1>
-                        <p>Let's keep hoping in a change or start a new one ...</p>
-                        <p>(i.e. via oVirt's engine after login)</p>
+                        <span translate-id="translate-no-running-vm"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         <div id="vm-detail-screen">
             <div id="vm-detail-content" class="panel panel-default"></div>
-            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden><div class="spinner spinner-lg"></div> VM detail not available or being loaded</div>
+            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>
+                <div class="spinner spinner-lg"></div>
+                <span translate-id="translate-vm-detail-not-available">VM detail not available or being loaded</span>
+            </div>
         </div>
         <div id="engine-vms-screen">
             <div id="engine-virtual-machines" class="panel panel-default">
-                <div class="panel-heading">VMs available on the engine</div>
+                <div class="panel-heading" translate-id="translate-vms-available-on-engine">VMs available on the engine</div>
                 <div id="engine-virtual-machines-list"></div>
-                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden>No VM is available</div>
+                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden translate-id="translate-no-vm-avail">No VM is available</div>
             </div>
         </div>
         <div id="vdsm-screen">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span class="pficon-settings"></span> Edit vdsm.conf (or go to <a id="a-jump-vdsm-service-mngmt" data-pattern="/system/services#/vdsmd.service">VDSM Service Management</a>)
+                    <span class="pficon-settings"></span>
+                    <span translate-id="translate-edit-vdsm-conf">Edit vdsm.conf (or go to </span><a id="a-jump-vdsm-service-mngmt" data-pattern="/system/services#/vdsmd.service">VDSM Service Management</a>)
                     <div style="float:right;">
                         <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
                         <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
-                            <button class="btn btn-default" id="editor-vdsm-btn-save" translatable="yes">Save</button>
-                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translatable="yes">Reload</button>
+                            <button class="btn btn-default" id="editor-vdsm-btn-save" translate-id="translate-save">Save</button>
+                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translate-id="translate-reload">Reload</button>
                         </div>
                     </div>
                 </div>
-                <textarea id="editor-vdsm-conf" style="width:100%;height:50%;">Loading data ...</textarea>
+                <textarea id="editor-vdsm-conf" style="width:100%;height:50%;" translate-id="translate-loading-data">Loading data ...</textarea>
             </div>
         </div>
     </div>
@@ -145,12 +155,20 @@
             <td width=40%"><!-- Usage graphs -->
                 <table width="100%">
                     <tr>
-                        <td width="50%">CPU:<div id="cpuUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
-                        <td width="50%">Memory:<div id="memUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
+                        <td width="50%">CPU:
+                            <div id="cpuUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                        </td>
+                        <td width="50%">Memory:
+                            <div id="memUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                        </td>
                     </tr>
                     <tr>
-                        <td>Disk:<div id="diskioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
-                        <td>Network:<div id="networkioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div></td>
+                        <td>Disk:
+                            <div id="diskioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                        </td>
+                        <td>Network:
+                            <div id="networkioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                        </td>
                     </tr>
                 </table>
             </td>
@@ -188,87 +206,97 @@
 </script>
 
 <script id="vms-list-templ" type="x-template/mustache">
-        <!--{X{X#units}}-->
-        <div class="list-group-item list-view-pf-stacked" id="vms-list-item-full-{{id}}">
-            <div class="list-view-pf-actions">
-                <img width="30" src="images/vm_remote_console.png" title="Get remote console" id="btn-download-console-{{id}}" data-pattern="{{id}}">
-                <div class="dropdown pull-right dropdown-kebab-pf">
-                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight-{{id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <span class="fa fa-ellipsis-v"></span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight-{{id}}">
-                        <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/shutdown.png" title="Shutdown politely"> Shutdown politely</li>
-                        <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/power_off.png" title="Force off">Force off</li>
-                        <li id="btn-restart-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/vm_rebooting.png" title="Restart">Restart</li>
-                    </ul>
-                </div>
+    <!--{X{X#units}}-->
+    <div class="list-group-item list-view-pf-stacked" id="vms-list-item-full-{{id}}">
+        <div class="list-view-pf-actions">
+            <img width="30" src="images/vm_remote_console.png" title="Get remote console"
+                 id="btn-download-console-{{id}}" data-pattern="{{id}}">
+            <div class="dropdown pull-right dropdown-kebab-pf">
+                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight-{{id}}"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <span class="fa fa-ellipsis-v"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight-{{id}}">
+                    <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/shutdown.png" title="Shutdown politely">Shutdown politely</li>
+                    <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/power_off.png" title="Force off">Force off</li>
+                    <li id="btn-restart-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/vm_rebooting.png" title="Restart">Restart</li>
+                </ul>
             </div>
-            <div class="list-view-pf-main-info">
-                <div class="list-view-pf-left">
-                    {{{statusHtml}}}
-                </div>
-                <div class="list-view-pf-body" style="max-width: 200px;">
-                    <div class="list-view-pf-description">
-                        <div class="list-group-item-heading" id="host-vms-list-item-name-" data-pattern="{{id}}">
-                            <a>{{name}}</a>
-                            <small>{{{guestIPsHtml}}}</small>
-                            <small>{{guestFQDN}}</small>
-                            <small>Up for: {{elapsedTimeHuman}}</small>
-                        </div>
+        </div>
+        <div class="list-view-pf-main-info">
+            <div class="list-view-pf-left">
+                {{{statusHtml}}}
+            </div>
+            <div class="list-view-pf-body" style="max-width: 200px;">
+                <div class="list-view-pf-description">
+                    <div class="list-group-item-heading" id="host-vms-list-item-name-" data-pattern="{{id}}">
+                        <a>{{name}}</a>
+                        <small>{{{guestIPsHtml}}}</small>
+                        <small>{{guestFQDN}}</small>
+                        <small>Up for: {{elapsedTimeHuman}}</small>
                     </div>
                 </div>
-                <div class="list-view-pf-body">
-                    <div class="list-view-pf-additional-info">
-                        <div class="list-view-pf-additional-info-item">
-                            <span id="cpuUsageChart-{{id}}"></span>
-                        </div>
-                        <div class="list-view-pf-additional-info-item">
-                            <span id="memUsageChart-{{id}}"></span>
-                        </div>
+            </div>
+            <div class="list-view-pf-body">
+                <div class="list-view-pf-additional-info">
+                    <div class="list-view-pf-additional-info-item">
+                        <span id="cpuUsageChart-{{id}}"></span>
+                    </div>
+                    <div class="list-view-pf-additional-info-item">
+                        <span id="memUsageChart-{{id}}"></span>
+                    </div>
 
-                        <div style="width: 200px;margin-right: 20px;">
-                            <div class="progress-description">
-                                <strong>Disk:</strong>
-                            </div>
-                            <div class="progress progress-label-top-right">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Read}}" aria-valuemin="0" aria-valuemax="{{diskUsage.ReadMax}}" style="width: {{diskUsage.ReadPercent}}%;">
-                                    <span>Read <small>({{diskUsage.Read}} / {{diskUsage.ReadMax}})</small></span>
-                                </div>
-                            </div>
-                            <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
-                                <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Write}}" aria-valuemin="0" aria-valuemax="{{diskUsage.WriteMax}}" style="width: {{diskUsage.WritePercent}}%;line-height:40px;">
-                                    <span>Write <small>({{diskUsage.Write}} / {{diskUsage.WriteMax}})</small></span>
-                                </div>
+                    <div style="width: 200px;margin-right: 20px;">
+                        <div class="progress-description">
+                            <strong>Disk:</strong>
+                        </div>
+                        <div class="progress progress-label-top-right">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Read}}"
+                                 aria-valuemin="0" aria-valuemax="{{diskUsage.ReadMax}}"
+                                 style="width: {{diskUsage.ReadPercent}}%;">
+                                <span>Read <small>({{diskUsage.Read}} / {{diskUsage.ReadMax}})</small></span>
                             </div>
                         </div>
+                        <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Write}}"
+                                 aria-valuemin="0" aria-valuemax="{{diskUsage.WriteMax}}"
+                                 style="width: {{diskUsage.WritePercent}}%;line-height:40px;">
+                                <span>Write <small>({{diskUsage.Write}} / {{diskUsage.WriteMax}})</small></span>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div style="width: 200px;margin-right: 20px;">
-                            <div class="progress-description">
-                                <strong>Network:</strong>
+                    <div style="width: 200px;margin-right: 20px;">
+                        <div class="progress-description">
+                            <strong>Network:</strong>
+                        </div>
+                        <div class="progress progress-label-top-right">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}"
+                                 aria-valuemin="0" aria-valuemax="{{netUsage.RxMax}}"
+                                 style="width: {{netUsage.RxPercent}}%;">
+                                <span>Rx <small>({{netUsage.Rx}} / {{netUsage.RxMax}})</small></span>
                             </div>
-                            <div class="progress progress-label-top-right">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}" aria-valuemin="0" aria-valuemax="{{netUsage.RxMax}}" style="width: {{netUsage.RxPercent}}%;">
-                                    <span>Rx <small>({{netUsage.Rx}} / {{netUsage.RxMax}})</small></span>
-                                </div>
-                            </div>
-                            <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
-                                <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Tx}}" aria-valuemin="0" aria-valuemax="{{netUsage.TxMax}}" style="width: {{netUsage.TxPercent}}%;line-height:40px;">
-                                    <span>Tx <small>({{netUsage.Tx}} / {{netUsage.TxMax}})</small></span>
-                                </div>
+                        </div>
+                        <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Tx}}"
+                                 aria-valuemin="0" aria-valuemax="{{netUsage.TxMax}}"
+                                 style="width: {{netUsage.TxPercent}}%;line-height:40px;">
+                                <span>Tx <small>({{netUsage.Tx}} / {{netUsage.TxMax}})</small></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!--{X{X/units}}-->
+    </div>
+    <!--{X{X/units}}-->
 </script>
 
 <script id="engine-login-form-templ" type="x-template/mustache">
     <table class="cockpit-form-table">
         <tr>
             <td>
-                <label class="control-label" translatable="yes">User:</label>
+                <label class="control-label">User:</label>
             </td>
             <td>
                 <input id="engine-login-user" class="form-control" type="text" value="{{user}}"></input>
@@ -276,7 +304,7 @@
         </tr>
         <tr>
             <td>
-                <label class="control-label" translatable="yes">Password:</label>
+                <label class="control-label">Password:</label>
             </td>
             <td>
                 <input id="engine-login-pwd" class="form-control" type="password" value="{{pwd}}"></input>
@@ -284,7 +312,7 @@
         </tr>
         <tr>
             <td>
-                <label class="control-label" translatable="yes">URL:</label>
+                <label class="control-label">URL:</label>
             </td>
             <td>
                 <input id="engine-login-url" class="form-control" type="text" value="{{url}}"></input>
@@ -292,14 +320,14 @@
         </tr>
         <tr id="engine-login-error-msg" hidden>
             <td>
-                <label class="control-label" translatable="yes">Error:</label>
+                <label class="control-label">Error:</label>
             </td>
             <td id="engine-login-error-msg-text">
             </td>
         </tr>
     </table>
-    <button id="engine-login-button-login" class="btn btn-default" translatable="yes">Login</button>
-    <button id="engine-login-button-logout" class="btn btn-default" translatable="yes">Logout</button>
+    <button id="engine-login-button-login" class="btn btn-default">Login</button>
+    <button id="engine-login-button-logout" class="btn btn-default">Logout</button>
 </script>
 
 <script id="message-one-param-temp" type="x-template/mustache">
@@ -316,7 +344,8 @@
     </div>
 </script>
 
-<div class="modal fade" id="modal-confirmation" tabindex="-1" role="dialog" aria-labelledby="modal-confirmation-title" aria-hidden="false">
+<div class="modal fade" id="modal-confirmation" tabindex="-1" role="dialog" aria-labelledby="modal-confirmation-title"
+     aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -327,12 +356,11 @@
             </div>
             <div class="modal-body" id="modal-confirmation-text"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="modal-confirmation-ok">Ok</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" translate-id="translate-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-confirmation-ok" translate-id="translate-ok">Ok</button>
             </div>
         </div>
     </div>
 </div>
 
 </body>
-

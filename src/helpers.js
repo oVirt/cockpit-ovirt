@@ -4,15 +4,16 @@ import cockpit from 'cockpit'
 import Mustache from 'mustache'
 
 import {CONFIG} from './constants'
+import {gettext} from './i18n'
 
 export function goTo (locationPath) {
   cockpit.location.go(locationPath)
 }
 
 export function printError (text, detail) {
-  var msg = 'Error: ' + text
+  var msg = 'Error: {0}'.translate().format(text)
   if (detail) {
-    msg += ', Detail: ' + detail
+    msg += ', Detail: '.translate().format(detail)
   }
 
   console.log(msg)
@@ -60,10 +61,10 @@ export function parseVdsmJson (json) {
       return resp
     }
   } catch (err) {
-    printError('parseVdsmJson() exception ', err)
+    printError('VDSM data parsing exception'.translate(), err)
   }
 
-  printError('Malformed data format received (missing status code)', json)
+  printError('Malformed data format received (missing status code)'.translate(), json)
   return null
 }
 
@@ -150,4 +151,19 @@ export function confirmModal (title, text, onConfirm) {
     })
 
   $('#modal-confirmation').modal('show')
+}
+
+/*eslint no-extend-native:0 */
+String.prototype.format = function () {
+  var s = this
+  var i = arguments.length
+
+  while (i--) {
+    s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i])
+  }
+  return s
+}
+
+String.prototype.translate = function () {
+  return gettext(this)
 }

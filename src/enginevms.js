@@ -35,7 +35,7 @@ function getAllVmsListSuccess (vdsmEngineAllVms) {
       GLOBAL.latestEngineVmsList = vms
       renderEngineVmsList(vms)
     } else {
-      printError('getAllVmsList() error: ' + vms.status.code, vms.status.message)
+      printError('getAllVmsList() error: {0}'.translate().format(vms.status.code), vms.status.message)
     }
   }
 }
@@ -93,7 +93,6 @@ function onEngineVmClick (vmId) {
 
 // --- Engine data transformation ---------------------------------------
 function _getEngineHostDetails (src) { // src are parsed host data retrieved from engine (via REST API)
-  debugMsg('_getEngineHostDetails called with: ' + JSON.stringify(src))
   return {
     name: src.content.name,
     address: src.content.address // ip/fqdn of the host
@@ -101,7 +100,6 @@ function _getEngineHostDetails (src) { // src are parsed host data retrieved fro
 }
 
 function _getEngineVmDetails (src, host) { // src is one item from parsed engine's vms list
-  debugMsg('_getEngineVmDetails() called, host: ' + JSON.stringify(host))
   var cpuTopology = src.cpu.topology
   var totalCpus = cpuTopology.sockets * cpuTopology.cores * cpuTopology.threads
 
@@ -173,7 +171,7 @@ function getEngineHostSuccess (hostId) {
       debugMsg('Adding hostId=' + hostId + ', host=' + JSON.stringify(host))
       GLOBAL.hosts[hostId] = host
     } else {
-      printError('getEngineHostSuccess() error: ' + src.status.code, src.status.message)
+      printError('getEngineHostSuccess() error: {0}'.translate().format(src.status.code), src.status.message)
     }
   }
 }
@@ -182,7 +180,7 @@ export function hostToMaintenance () {
   // switch the host to maintenance mode via REST API
   debugMsg('hostToMaintenance() called')
   if (!isLoggedInEngine()) {
-    printError('hostToMaintenance(): not logged in engine')
+    printError("Can't switch host to maintenance, missing engine login.".translate())
     return
   }
 
@@ -206,7 +204,7 @@ function hostToMaintenanceSuccess (vdsmOut) {
   }
 
   // error
-  printError('Switch host to maintenance failed', vdsmOut)
+  printError('Switch host to maintenance failed'.translate(), vdsmOut)
   shutdownAllHostVmsConfirm()
 }
 

@@ -12,9 +12,8 @@ import {GLOBAL} from './globaldata'
 import {printError, spawnVdsm, vdsmFail, debugMsg} from './helpers'
 import {_getVmDetails, readVmsList} from './hostvms'
 
-// depends on hostvms.js::latestHostVMSList
 function consoleFileContent (vm) {
-// TODO: content of .vv file
+// TODO: generate content of .vv file
   var blob = new Blob([
     'Hello, world!\n',
     'TODO: generate .vv file'
@@ -182,30 +181,30 @@ function renderSparklineChart (chartDivId, timestamps, dataArray1, dataArray2) {
 
 function renderCpuChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'cpuSys', 'cpuUser', true)
-  ds.total.unshift('CPU %')
+  ds.total.unshift('CPU %'.translate())
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.total)
 }
 
 function renderMemoryChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'memory', null)
-  ds.ds1.unshift('Memory %')
+  ds.ds1.unshift('Memory %'.translate())
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1)
 }
 
 function renderDiskIOChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'diskRead', 'diskWrite')
-  ds.ds1.unshift('Read')
-  ds.ds2.unshift('Write')
+  ds.ds1.unshift('Read'.translate())
+  ds.ds2.unshift('Write'.translate())
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1, ds.ds2)
 }
 
 function renderNetworkIOChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'netRx', 'netTx')
-  ds.ds1.unshift('Rx')
-  ds.ds2.unshift('Tx')
+  ds.ds1.unshift('Rx'.translate())
+  ds.ds2.unshift('Tx'.translate())
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1, ds.ds2)
 }
@@ -222,7 +221,7 @@ export function getVmDetails_vdsmToInternal (vmId, parsedVdsmGetAllVMs) { // loo
 }
 
 export function guestIPsToHtml (guestIPs) {
-  return 'Guest IPs: ' + guestIPs
+  return 'Guest IPs: {0}'.translate().format(guestIPs)
 }
 
 export function vmStatusToHtml (status) {
