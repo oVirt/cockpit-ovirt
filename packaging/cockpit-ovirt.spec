@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        Virtual Machine Management plugin for Cockpit based on oVirt.
 License:        MIT
 URL:            https://github.com/mareklibra/%{name}
-Source0:        https://github.com/mareklibra/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz 
+Source0:        https://github.com/mareklibra/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires: nodejs
