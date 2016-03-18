@@ -10,3 +10,5 @@
 
 /node_modules
 /dist
+Makefile.in
+.npm

@@ -1,0 +1,5 @@
+autoconf
+automake
+git
+npm
+rpmbuild
