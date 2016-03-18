@@ -6,6 +6,8 @@ import {CONFIG} from './constants'
 
 import {printError, debugMsg, confirmModal} from './helpers'
 
+import { gettext as _ } from './i18n'
+
 export function loadVdsmConf (inform) {
   var editor = $('#editor-vdsm-conf')
 
@@ -15,19 +17,19 @@ export function loadVdsmConf (inform) {
       writeVdsmConfMsg('Loaded', true)
     }
   }).fail(function (error) {
-    printError('Error reading vdsm.conf: {0}'.translate().format(error))
+    printError(_('Error reading vdsm.conf: {0}').format(error))
   })
 }
 
 export function reloadVdsmConf () {
-  confirmModal('Reload stored vdsm.conf'.translate(), 'Content of vdsm.conf will be reloaded, unsaved changes will be lost.<br/>Please confirm.'.translate(),
+  confirmModal(_('Reload stored vdsm.conf'), _('Content of vdsm.conf will be reloaded, unsaved changes will be lost.<br/>Please confirm.'),
     function () {
       loadVdsmConf(true)
     })
 }
 
 export function saveVdsmConf () {
-  confirmModal('Save to vdsm.conf'.translate(), 'Content of vdsm.conf file will be replaced.<br/>Please confirm.'.translate(),
+  confirmModal(_('Save to vdsm.conf'), _('Content of vdsm.conf file will be replaced.<br/>Please confirm.'),
     function () {
       var editor = $('#editor-vdsm-conf')
       var content = editor.val()
@@ -36,7 +38,7 @@ export function saveVdsmConf () {
         debugMsg('Content of vdsm.conf replaced.')
         writeVdsmConfMsg('Saved', true)
       }).fail(function (error) {
-        printError('Error writing vdsm.conf: {0}'.translate().format(error))
+        printError(_('Error writing vdsm.conf: {0}').format(error))
       })
     })
 }

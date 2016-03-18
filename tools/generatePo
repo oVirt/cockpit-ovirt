@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Update <project_root>/po/*.po files for locales listed in <>project_root/po/LOCALES
+# Must be executed from the project root directory, i.e. ./tools/generatePo
+
+# INPUT FILES from po/POTFILES.in and static/ovirt.html
+
+# TODO: extend for ovirt.html
+
+for LOC in `cat po/LOCALES` ; do
+	xgettext -o po/${LOC}.po -j --files-from=po/POTFILES.in
+done
+

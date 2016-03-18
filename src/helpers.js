@@ -4,16 +4,17 @@ import cockpit from 'cockpit'
 import Mustache from 'mustache'
 
 import {CONFIG} from './constants'
-import {gettext} from './i18n'
+
+import { gettext as _ } from './i18n'
 
 export function goTo (locationPath) {
   cockpit.location.go(locationPath)
 }
 
 export function printError (text, detail) {
-  var msg = 'Error: {0}'.translate().format(text)
+  var msg = _('Error: {0}').format(text)
   if (detail) {
-    msg += ', Detail: '.translate().format(detail)
+    msg += _(', Detail: ').format(detail)
   }
 
   console.log(msg)
@@ -27,10 +28,6 @@ export function debugMsg (text) {
   if (typeof __DEV__ !== 'undefined') {
     console.log('Debug: ' + text)
   }
-}
-
-export function nullToEmpty (obj) {
-  return obj == null ? '' : obj
 }
 
 export function spawnVdsm (commandName, stdin, stdoutCallback, successCallback, failCallback, arg1, arg2) {
@@ -61,10 +58,10 @@ export function parseVdsmJson (json) {
       return resp
     }
   } catch (err) {
-    printError('VDSM data parsing exception'.translate(), err)
+    printError(_('VDSM data parsing exception'), err)
   }
 
-  printError('Malformed data format received (missing status code)'.translate(), json)
+  printError(_('Malformed data format received (missing status code)'), json)
   return null
 }
 
@@ -162,8 +159,4 @@ String.prototype.format = function () {
     s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i])
   }
   return s
-}
-
-String.prototype.translate = function () {
-  return gettext(this)
 }

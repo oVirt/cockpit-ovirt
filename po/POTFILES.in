@@ -1,0 +1,13 @@
+# List of source files containing translatable strings.
+src/constants.js
+src/engineLogin.js
+src/enginevms.js
+src/globaldata.js
+src/helpers.js
+src/hostvms.js
+src/i18n.js
+src/ovirt.js
+src/ping.js
+src/vdsmscreen.js
+src/vmdetail.js
+#[type: gettext/glade] static/ovirt.html

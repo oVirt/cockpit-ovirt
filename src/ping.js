@@ -3,6 +3,8 @@ import $ from 'jquery'
 
 import {debugMsg, spawnVdsm} from './helpers'
 
+import { gettext as _ } from './i18n'
+
 export function renderPing () {
   var vdsmPingResponse = ''
   spawnVdsm('ping', null,
@@ -17,20 +19,20 @@ function pingSuccessful (vdsmPingResponse) {
   var resp = $.parseJSON(json)
   if (resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message')) {
     if (resp.status.code === 0) {
-      printPingContent('Ping succeeded.<br/>The cockpit-ovirt plugin is installed and VDSM connection can be established.'.translate(), json)// still might be an error, but well-formatted response with its description
+      printPingContent(_('Ping succeeded.<br/>The cockpit-ovirt plugin is installed and VDSM connection can be established.'), json)// still might be an error, but well-formatted response with its description
     } else { // well-formatted error-response with description
-      printPingContent('Ping failed: {0}'.translate().format(resp.status.message), json)
+      printPingContent(_('Ping failed: {0}').format(resp.status.message), json)
     }
     return
   }
 
   // wrong format
-  pingFailed(null, 'Ping failed with malformed error message returned: {0}'.translate().format(json))
+  pingFailed(null, _('Ping failed with malformed error message returned: {0}').format(json))
 }
 
 function pingFailed (stderr, detail) {
   if (!detail) {
-    detail = 'Ping execution failed.'.translate()
+    detail = _('Ping execution failed.')
   }
 
   detail = stderr + '\n' + detail

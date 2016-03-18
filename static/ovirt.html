@@ -2,7 +2,6 @@
     <title>oVirt</title>
     <meta charset="utf-8">
     <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
-
     <script src="../base1/jquery.js"></script>
     <script src="../base1/jquery.storage.js"></script>
     <script src="../base1/cockpit.js"></script>
@@ -21,16 +20,15 @@
             <tr>
                 <td valign="top">
                     <ul class="nav nav-tabs" id="main-btn-menu">
-                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a
-                                translate-id="translate-running-vms">Running VMs</a></li>
-                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a translate-id="translate-vms-in-cluster">VMs in Cluster</a></li>
-                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a translate-id="translate-vdsm">VDSM</a></li>
+                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a translatable="yes">Running VMs</a></li>
+                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a translatable="yes">VMs in Cluster</a></li>
+                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a translatable="yes">VDSM</a></li>
                     </ul>
                 </td>
                 <td align="right" valign="top">
                     <div class="btn-group">
                         <button id="action-host-to-maintenance" type="button" class="btn btn-default"
-                                translate-id="translate-host-to-maintenance">Host to Maintenance
+                                translatable="yes">Host to Maintenance
                         </button>
                         <button id="action-refresh" type="button" class="btn btn-default" data-pattern="off"><span
                                 class="fa fa-refresh"></span><span id="action-refresh-text"></span></button>
@@ -39,7 +37,7 @@
                 <td width="25%" align="right">
                     <div id="engine-login">
                         <div style="white-space: nowrap;">
-                            <div id="engine-login-title" translate-id="translate-login-to-engine">Login to Engine</div>
+                            <div id="engine-login-title" translatable="yes">Login to Engine</div>
                         </div>
                         <div id="engine-login-content" hidden></div>
                     </div>
@@ -51,7 +49,7 @@
     <div class="container-fluid" style="margin-top: 5em">
         <div id="vms-screen">
             <div id="virtual-machines" class="panel panel-default">
-                <div class="panel-heading" translate-id="translate-vms">Virtual Machines</div>
+                <div class="panel-heading" translatable="yes">Virtual Machines</div>
                 <div class="list-group list-view-pf" id="virtual-machines-list"></div>
 
                 <div id="virtual-machines-novm-message" class="cockpit-log-warning">
@@ -59,7 +57,7 @@
                         <div class="blank-slate-pf-icon">
                             <i class="fa fa-rocket"></i>
                         </div>
-                        <span translate-id="translate-no-running-vm"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
+                        <span translatable="yes"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
                         </span>
                     </div>
                 </div>
@@ -69,30 +67,30 @@
             <div id="vm-detail-content" class="panel panel-default"></div>
             <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>
                 <div class="spinner spinner-lg"></div>
-                <span translate-id="translate-vm-detail-not-available">VM detail not available or being loaded</span>
+                <span translatable="yes">VM detail not available or being loaded</span>
             </div>
         </div>
         <div id="engine-vms-screen">
             <div id="engine-virtual-machines" class="panel panel-default">
-                <div class="panel-heading" translate-id="translate-vms-available-on-engine">VMs available on the engine</div>
+                <div class="panel-heading" translatable="yes">VMs available on the engine</div>
                 <div id="engine-virtual-machines-list"></div>
-                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden translate-id="translate-no-vm-avail">No VM is available</div>
+                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden translatable="yes">No VM is available</div>
             </div>
         </div>
         <div id="vdsm-screen">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <span class="pficon-settings"></span>
-                    <span translate-id="translate-edit-vdsm-conf">Edit vdsm.conf (or go to </span><a id="a-jump-vdsm-service-mngmt" data-pattern="/system/services#/vdsmd.service">VDSM Service Management</a>)
+                    <span translatable="yes">Edit vdsm.conf (or go to </span><a id="a-jump-vdsm-service-mngmt" data-pattern="/system/services#/vdsmd.service">VDSM Service Management</a>)
                     <div style="float:right;">
                         <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
                         <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
-                            <button class="btn btn-default" id="editor-vdsm-btn-save" translate-id="translate-save">Save</button>
-                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translate-id="translate-reload">Reload</button>
+                            <button class="btn btn-default" id="editor-vdsm-btn-save" translatable="yes">Save</button>
+                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translatable="yes">Reload</button>
                         </div>
                     </div>
                 </div>
-                <textarea id="editor-vdsm-conf" style="width:100%;height:50%;" translate-id="translate-loading-data">Loading data ...</textarea>
+                <textarea id="editor-vdsm-conf" style="width:100%;height:50%;" translatable="yes">Loading data ...</textarea>
             </div>
         </div>
     </div>
@@ -356,8 +354,8 @@
             </div>
             <div class="modal-body" id="modal-confirmation-text"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" translate-id="translate-cancel">Cancel</button>
-                <button type="button" class="btn btn-primary" id="modal-confirmation-ok" translate-id="translate-ok">Ok</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" translatable="yes">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-confirmation-ok" translatable="yes">Ok</button>
             </div>
         </div>
     </div>

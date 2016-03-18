@@ -5,6 +5,8 @@ import Mustache from 'mustache'
 
 import {debugMsg, spawnVdsm, parseVdsmJson, vdsmFail, registerBtnOnClickListener, goTo} from './helpers'
 
+import { gettext as _ } from './i18n'
+
 export const ENGINE_RELATED_IDS = [// element ids to be set visible when engine login is available
   'main-btn-menu-allvms'
 ]
@@ -126,7 +128,7 @@ function engineLoginSuccessful (vdsmLoginOut) {
       if (resp.hasOwnProperty('content') && resp.content.hasOwnProperty('access_token')) {
         // TODO: make the title green
         debugMsg('Login successful, token received')
-        setEngineLoginTitle('Logged to Engine'.translate())
+        setEngineLoginTitle(_('Logged to Engine'))
         toggleEngineLoginVisibility()
 
         addEngineToken(resp.content.access_token)
@@ -134,7 +136,7 @@ function engineLoginSuccessful (vdsmLoginOut) {
         setEngineLoginButtonVisibility()
         setEngineFunctionalityVisibility()
       } else {
-        engineLoginFailed('No token received'.translate(), resp.status.code)
+        engineLoginFailed(_('No token received'), resp.status.code)
       }
     } else {
       engineLoginFailed(resp.status.message, resp.status.code)
@@ -147,7 +149,7 @@ function engineLoginFailed (msg, statusCode) {
   onEngineLoginEnd()
 
     // TODO: make the title red
-  setEngineLoginTitle('Engine login failed'.translate())
+  setEngineLoginTitle(_('Engine login failed'))
 
   removeEngineToken()
 

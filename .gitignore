@@ -2,7 +2,7 @@
 /cockpit-ovirt.iml
 /mailing
 /samples
-/tools
+/tools.local
 
 /notes.txt
 /vdsm/transport/

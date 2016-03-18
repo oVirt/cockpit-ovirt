@@ -10,6 +10,8 @@ import {GLOBAL} from './globaldata'
 import {downloadConsole, forceoff, shutdown, restart, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
 import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent, confirmModal} from './helpers'
 
+import { gettext as _ } from './i18n'
+
 var isReadVmsListRunning = false
 export function readVmsList () { // invoke VDSM to get fresh vms data from the host
   if (!isReadVmsListRunning) {
@@ -57,7 +59,7 @@ function getAllVmStatsSuccess (vdsmDataVmsList) {
       GLOBAL.latestHostVMSList = vms // cache for reuse i.e. in displayVMDetail()
       renderHostVms(vms)
     } else {
-      printError('Error when reading VM stats ({0}): {1}'.translate().format(vms.status.code, vms.status.message))
+      printError(_('Error when reading VM stats ({0}): {1}').format(vms.status.code, vms.status.message))
     }
   }
 }
@@ -70,7 +72,7 @@ function renderHostVms (vmsFull) {
 
     // prepare data
     var timestamp = getActualTimeStamp()
-    vmsFull.items.forEach(function translate (srcVm) {
+    vmsFull.items.forEach(function (srcVm) {
       var vm = _getVmDetails(srcVm)
       vms.push(vm)
 
@@ -281,8 +283,8 @@ function refreshVmUsageCharts (vmId, usageRecord) {
 }
 
 export function shutdownAllHostVmsConfirm () {
-  confirmModal('Engine not accessible'.translate(),
-    'Login to Engine not available.<br/>Please confirm all VMs on this host will be shut down'.translate(),
+  confirmModal(_('Engine not accessible'),
+    _('Login to Engine not available.<br/>Please confirm all VMs on this host will be shut down'),
     shutdownAllHostVms)
 }
 

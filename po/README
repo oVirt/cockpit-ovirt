@@ -1,0 +1,16 @@
+Translation workflow:
+- Regenerate .po files:
+   $ tools/generatePo
+   PLEASE NOTE: the generatePo recently does not extract texts from ovirt.html. Please extend it if you need to.
+
+- Update headers in .po files
+
+- Translate .po files
+
+- Commit .po changes to git
+
+------------------------------------------------
+The po/LOCALES is a one-line, by space-separated list of locales for generating of both .po and .json files.
+
+Each time the webpack build is executed, the .po files are converted to dist/i18n/*.json files which are loaded from JavaScript at runtime.
+

@@ -12,6 +12,8 @@ import {GLOBAL} from './globaldata'
 import {printError, spawnVdsm, vdsmFail, debugMsg} from './helpers'
 import {_getVmDetails, readVmsList} from './hostvms'
 
+import { gettext as _ } from './i18n'
+
 function consoleFileContent (vm) {
 // TODO: generate content of .vv file
   var blob = new Blob([
@@ -181,30 +183,30 @@ function renderSparklineChart (chartDivId, timestamps, dataArray1, dataArray2) {
 
 function renderCpuChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'cpuSys', 'cpuUser', true)
-  ds.total.unshift('CPU %'.translate())
+  ds.total.unshift(_('CPU %'))
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.total)
 }
 
 function renderMemoryChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'memory', null)
-  ds.ds1.unshift('Memory %'.translate())
+  ds.ds1.unshift(_('Memory %'))
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1)
 }
 
 function renderDiskIOChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'diskRead', 'diskWrite')
-  ds.ds1.unshift('Read'.translate())
-  ds.ds2.unshift('Write'.translate())
+  ds.ds1.unshift(_('Read'))
+  ds.ds2.unshift(_('Write'))
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1, ds.ds2)
 }
 
 function renderNetworkIOChartDetail (chartDivId, usageRecords) {
   var ds = getUsageDataset(usageRecords, 'netRx', 'netTx')
-  ds.ds1.unshift('Rx'.translate())
-  ds.ds2.unshift('Tx'.translate())
+  ds.ds1.unshift(_('Rx'))
+  ds.ds2.unshift(_('Tx'))
   ds.timestamps.unshift('timestamps')
   renderUsageDetailChart(chartDivId, ds.timestamps, ds.ds1, ds.ds2)
 }
@@ -221,14 +223,14 @@ export function getVmDetails_vdsmToInternal (vmId, parsedVdsmGetAllVMs) { // loo
 }
 
 export function guestIPsToHtml (guestIPs) {
-  return 'Guest IPs: {0}'.translate().format(guestIPs)
+  return _('Guest IPs: {0}').format(guestIPs)
 }
 
 export function vmStatusToHtml (status) {
   var html = ''
   var iconFile = VM_STATUS_ICONS[status.toLowerCase()]
   if (iconFile) {
-    html = `<img src="${VM_STATUS_ICONS_PATH_PREFIX}${iconFile}" title="${status}" width="30" height=30">`
+    html = `<img src="${VM_STATUS_ICONS_PATH_PREFIX}${iconFile}" title="${status}" width="30" height="30">`
   } else {
     html = status// use text value as default
   }

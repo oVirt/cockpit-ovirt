@@ -10,6 +10,8 @@ import {onVmClick, shutdownAllHostVmsConfirm} from './hostvms'
 import {getEngineCredentialsTokenOnly, isLoggedInEngine} from './engineLogin'
 import {printError, debugMsg, spawnVdsm, parseVdsmJson, registerBtnOnClickListener, formatHumanReadableBytes} from './helpers'
 
+import { gettext as _ } from './i18n'
+
 export function readEngineVmsList () { // invoke VDSM (engineBridge) to get fresh VMS List from Engine (via Rest API)
   var vdsmEngineAllVms = ''
   spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
@@ -35,7 +37,7 @@ function getAllVmsListSuccess (vdsmEngineAllVms) {
       GLOBAL.latestEngineVmsList = vms
       renderEngineVmsList(vms)
     } else {
-      printError('getAllVmsList() error: {0}'.translate().format(vms.status.code), vms.status.message)
+      printError(_('getAllVmsList() error: {0}').format(vms.status.code), vms.status.message)
     }
   }
 }
@@ -171,7 +173,7 @@ function getEngineHostSuccess (hostId) {
       debugMsg('Adding hostId=' + hostId + ', host=' + JSON.stringify(host))
       GLOBAL.hosts[hostId] = host
     } else {
-      printError('getEngineHostSuccess() error: {0}'.translate().format(src.status.code), src.status.message)
+      printError(_('getEngineHostSuccess() error: {0}').format(src.status.code), src.status.message)
     }
   }
 }
@@ -180,7 +182,7 @@ export function hostToMaintenance () {
   // switch the host to maintenance mode via REST API
   debugMsg('hostToMaintenance() called')
   if (!isLoggedInEngine()) {
-    printError("Can't switch host to maintenance, missing engine login.".translate())
+    printError(_("Can't switch host to maintenance, missing engine login."))
     return
   }
 
@@ -204,7 +206,7 @@ function hostToMaintenanceSuccess (vdsmOut) {
   }
 
   // error
-  printError('Switch host to maintenance failed'.translate(), vdsmOut)
+  printError(_('Switch host to maintenance failed'), vdsmOut)
   shutdownAllHostVmsConfirm()
 }
 
