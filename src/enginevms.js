@@ -61,6 +61,7 @@ function renderEngineVmsList (vmsFull) {
     $('#engine-virtual-machines-novm-message').hide()
 
     registerBtnOnClickListener('engine-vms-list-item-', onEngineVmClick)
+    registerBtnOnClickListener('btn-engine-vm-run-', onEngineRunVmClick)
   } else {
     $('#engine-virtual-machines-list').html('')
     $('#engine-virtual-machines-novm-message').show()
@@ -68,13 +69,14 @@ function renderEngineVmsList (vmsFull) {
 }
 
 function onEngineVmClick (vmId) {
+  debugMsg(`onEngineVmClick(${vmId}) called`)
   if (getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)) { // the VM is running on this host
     onVmClick(vmId)
   } else { // remote cockpit
         // get VM's host
     var vm = getVmDetails_engineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm)
     if (!vm) {
-      debugMsg("Host data for engine VM '" + vmId + "' not found")
+      debugMsg(`Host data for engine VM '${vmId}' not found`)
       return
     }
 
@@ -92,6 +94,27 @@ function onEngineVmClick (vmId) {
     win.focus()
   }
 }
+
+function onEngineRunVmClick (vmId) {
+  debugMsg(`onEngineRunVmClick(${vmId}) called`)
+  var vm = getVmDetails_engineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm, false)
+  if (!vm) {
+    debugMsg(`onEngineRunVmClick(): VM detail for '${vmId}' not found`)
+    return
+  }
+
+  var stdout = ''
+  spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
+    function (data) {
+      stdout += data
+    },
+    function () {
+      engineRunVmSuccess(vmId)
+    },
+    engineBridgeFail, 'runVm', vmId)
+}
+
+function engineRunVmSuccess (vmId) {}
 
 // --- Engine data transformation ---------------------------------------
 function _getEngineHostDetails (src) { // src are parsed host data retrieved from engine (via REST API)
@@ -116,13 +139,22 @@ function _getEngineVmDetails (src, host) { // src is one item from parsed engine
     status: src.status.state,
     statusHtml: vmStatusToHtml(src.status.state),
     osType: src.os.type,
-    host: host
+    host: host,
+
+    // actions
+    runActionHidden: isRunActionAllowed(src) ? '' : 'hidden'
         // small icon
         // memory guaranteed
         // display
         // host
   }
   return vm
+}
+
+function isRunActionAllowed (engineVm) {
+  var state = engineVm.status.state.toLowerCase()
+
+  return ['down', ''].includes(state)
 }
 
 // ------------------------------------------------------------
@@ -210,12 +242,20 @@ function hostToMaintenanceSuccess (vdsmOut) {
   shutdownAllHostVmsConfirm()
 }
 
-function getVmDetails_engineToInternal (vmId, parsedEngineVms) { // lookup cached VM detail
+function getVmDetails_engineToInternal (vmId, parsedEngineVms, inclHost = true) { // lookup cached VM detail
   var s = parsedEngineVms.find(function (src) { return src.id === vmId })
-  if (!s || !s.host || !s.host.id) {
+  if (!s) {
+    debugMsg(`parsedEngineVms(${vmId}) not found`)
     return undefined
   }
 
-  var hostId = s.host.id
-  return _getEngineVmDetails(s, getHostById(hostId))
+  if (inclHost) {
+    if (!s.host || !s.host.id) {
+      return undefined
+    }
+
+    return _getEngineVmDetails(s, getHostById(s.host.id))
+  } else {
+    return _getEngineVmDetails(s)
+  }
 }

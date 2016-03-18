@@ -3,6 +3,7 @@ import sys
 from vdsm.config import config
 from vdsm import jsonrpcvdscli
 import json
+import xml.dom.minidom
 import argparse
 import requests
 import logging
@@ -59,6 +60,7 @@ def read_stdin():
     return inData
 
 def build_result(code, message, content=None):
+    logger.debug('build_result, code: {0}, message: "{1}", content: {2}'.format(code, message, content is not None))
     result = {'status' : {
         'code': code,
         'message': message
@@ -72,18 +74,22 @@ def build_result(code, message, content=None):
 def http_call(url, method, headers = {'Accept': 'application/json'}, user=None, pwd=None, body=None, verify=False):
     logger.debug("http_call: '{0}',\n  method:{1}, user:{2}, headers:{3}".format(url, method, user, headers))
 
+    if method not in ['GET', 'POST']:
+        logger.info('Unsupported method: {0}'.format(method));
+        return None
+
     auth=None
     if user:
         auth=(user, pwd)
 
     if method=='GET':
-        return requests.get(url,auth=auth, headers=headers, verify=verify)
+        result = requests.get(url,auth=auth, headers=headers, verify=verify)
 
     if method=='POST':
-        return requests.post(url,auth=auth, headers=headers, verify=verify, data=body)
+        result = requests.post(url,auth=auth, headers=headers, verify=verify, data=body)
 
-    logger.info('Unsupported method: {0}'.format(method));
-    return None
+    logger.debug('http_call status_code: {0}'.format(result.status_code))
+    return result
 
 def get_engine_token():
     logger.debug('get_engine_token() called')
@@ -105,7 +111,6 @@ def read_credentials():
     si=read_stdin()
     logger.debug("stdin:{0}".format(si));
     credentials = json.loads(si)
-    logger.debug(credentials)
     return credentials
 
 def get_default_headers(credentials):
@@ -164,6 +169,21 @@ def get_running_host(credentials=None):
         return build_result(1, 'Not found', "VDSM ID '{0}' not found in engine's hosts list".format(vdsmId))
     return build_result(resp.status_code, resp.text)
 
+def run_engine_vm(vmId):
+    logger.debug("run_engine_vm({0}) called".format(vmId))
+    credentials = read_credentials()
+
+    xml_request = "<action/>"
+
+    url = "{0}/api/vms/{1}/start".format(credentials['url'], vmId)
+    resp = http_call(url=url, method='POST', headers=get_default_post_headers(credentials), body=xml_request)
+    # TODO: refactor error handling and returned data (XML vs. JSON, prune data)
+    if resp.status_code == 200:
+        content_xml = resp.text
+        return build_result(0, 'Done', content_xml)
+    else:
+        return build_result(resp.status_code, resp.text)
+
 def host_to_maintenance():
     logger.debug('host_to_maintenance() called')
     credentials = read_credentials()
@@ -178,8 +198,8 @@ def host_to_maintenance():
     url = "{0}/api/hosts/{1}/deactivate".format(credentials['url'], host['content']['id'])
     resp = http_call(url=url, method='POST', headers=get_default_post_headers(credentials), body=xml_request)
     if resp.status_code == 200:
-        content = json.loads(resp.text)
-        return build_result(0, 'Done', content)
+        content_xml = resp.text
+        return build_result(0, 'Done', content_xml)
     else:
         return build_result(resp.status_code, resp.text)
 
@@ -241,7 +261,8 @@ def main():
         'getAllVms': get_all_vms,
         'getHost': get_host,
         'getRunningHost': get_running_host,
-        'hostToMaintenance': host_to_maintenance
+        'hostToMaintenance': host_to_maintenance,
+        'runVm': run_engine_vm
     }
 
     COMMANDS = {

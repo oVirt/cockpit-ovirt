@@ -196,7 +196,10 @@
             <td>{{vCPUs}}</td>
             <td>{{osType}}</td>
             <td>{{origin}}</td>
-            <td></td>
+            <td>
+                <img width="30" src="images/vm_run.png" title="Run"
+                     id="btn-engine-vm-run-{{id}}" data-pattern="{{id}}" {{runActionHidden}}>
+            </td>
         </tr>
         {{/units}}
         </tbody>
@@ -204,7 +207,6 @@
 </script>
 
 <script id="vms-list-templ" type="x-template/mustache">
-    <!--{X{X#units}}-->
     <div class="list-group-item list-view-pf-stacked" id="vms-list-item-full-{{id}}">
         <div class="list-view-pf-actions">
             <img width="30" src="images/vm_remote_console.png" title="Get remote console"
@@ -287,7 +289,6 @@
             </div>
         </div>
     </div>
-    <!--{X{X/units}}-->
 </script>
 
 <script id="engine-login-form-templ" type="x-template/mustache">
