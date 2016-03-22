@@ -12,3 +12,15 @@
 /dist
 Makefile.in
 .npm
+
+config.*
+*.spec
+*.gz
+aclocal.m4
+configure
+missing
+*Makefile
+autom4te.cache
+install-sh
+tmp.repos
+*node_modules

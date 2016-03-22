@@ -1,11 +1,13 @@
 # Used for rpm-packaging of pre-bundled application with already resolved JS dependencies
-%global _plugindir cockpit/ovirt
+%global _plugindir %{_datarootdir}/cockpit/
 %global source_basename @PACKAGE_TARNAME@-@PACKAGE_VERSION@
+%global product oVirt
+%global dashboard_family %{product} Node
 
 Name:           cockpit-ovirt
 Version:        @PACKAGE_RPM_VERSION@
 Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?checkout}%{?dist}
-Summary:        Virtual Machine Management plugin for Cockpit based on oVirt.
+Summary:        Virtual Machine Management plugin for Cockpit based on %{product}.
 License:        ASL 2
 URL:            https://github.com/mareklibra/%{name}
 Source0:        %{source_basename}.tar.gz
@@ -17,26 +19,39 @@ Requires: vdsm >= 4.17.999-610
 %description
 Virtual Machine Management plugin for Cockpit based on oVirt.
 
+%package node-dashboard
+
+Summary:        Cockpit dashboard for %{dashboard_family} Node configuration
+Requires:       cockpit
+BuildArch:      noarch
+
+%description node-dashboard
+This package provides a Cockpit dashboard for use with %{dashboard_family}.
+
 %prep
-echo === RPM PREPARATION
 %setup -q -n"%{source_basename}"
-echo Preparation ... 
 
 %build
+%configure
 
 %install
-echo === RPM INSTALL
-mkdir -p %{buildroot}%{_datadir}/%{_plugindir}
-cp -r engine-plugin/* %{buildroot}%{_datadir}/%{_plugindir}
-chmod a+x %{buildroot}%{_datadir}/%{_plugindir}/vdsm/vdsm
+make install DESTDIR=%{buildroot}
+chmod a+x %{buildroot}/%{_plugindir}vdsm
 
 %files
-%doc README.md 
+%doc vdsm/README.md 
 %license LICENSE
-%{_datadir}/%{_plugindir}
+%{_plugindir}/vdsm
+
+%files node-dashboard
+%{_datarootdir}/cockpit/ovirt/manifest.json
+%{_datarootdir}/cockpit/ovirt/app.css
+%{_datarootdir}/cockpit/ovirt/index.html
 
 %changelog
-* Fri Mar 11 2016 Marek Libra <rbarry@redhat.com> - 0.3
+* Tue Mar 22 2016 Marek Libra <rbarry@redhat.com> - 0.4
+- Add node-dashboard
+* Fri Mar 18 2016 Marek Libra <rbarry@redhat.com> - 0.3
 - Update packaging to match upstream standards
 - Convert to autotools
 * Fri Mar 11 2016 Marek Libra <mlibra@redhat.com> - 0.2

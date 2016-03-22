@@ -6,6 +6,8 @@ shopt -s nullglob
 rm -Rf \
     exported-artifacts \
     tmp.repos
+
+echo '{ "allow_root": true }' > ~/.bowerrc
 mkdir exported-artifacts
 
 # generate automake/autoconf files

@@ -19,12 +19,14 @@ OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 
 SHELL := /bin/bash
 
+SUBDIRS = \
+	node-dashboard \
+	vdsm
+
 EXTRA_DIST = \
   cockpit-ovirt.spec \
   cockpit-ovirt.spec.in \
-	LICENSE \
-	README.md \
-	engine-plugin
+	LICENSE
 
 DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 	aclocal.m4 \
@@ -41,13 +43,6 @@ TMPREPOS = tmp.repos
 RPMBUILD_ARGS :=
 RPMBUILD_ARGS += --define="_topdir `pwd`/$(TMPREPOS)"
 RPMBUILD_ARGS += $(if $(RELEASE_SUFFIX), --define="release_suffix $$RELEASE_SUFFIX")
-
-engine-plugin:
-	npm i
-	npm run build
-	mv dist engine-plugin
-
-dist: engine-plugin
 
 srpm:	dist
 	rm -fr "$(TMPREPOS)"
@@ -77,8 +72,11 @@ distclean-local:
 
 .PHONY: rpms publish srpms
 
-test:
-	npm i
-	npm test
+
+check: vdsm-checks
+	@echo Passed $@
+
+vdsm-checks:
+	$(MAKE) -C vdsm/ test
 
 # vim: ts=2

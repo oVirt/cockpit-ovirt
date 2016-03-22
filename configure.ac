@@ -18,7 +18,7 @@ dnl
 AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
-define([VERSION_MINOR], [3])
+define([VERSION_MINOR], [4])
 define([VERSION_FIX], [0])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
 define([VERSION_RELEASE], [0.0])
@@ -39,5 +39,7 @@ AC_CHECK_PROGS([RPMBUILD], [rpmbuild])
 AM_PATH_PYTHON
 
 AC_CONFIG_FILES([Makefile
-                cockpit-ovirt.spec])
+                 node-dashboard/Makefile
+                 vdsm/Makefile
+                 cockpit-ovirt.spec])
 AC_OUTPUT
