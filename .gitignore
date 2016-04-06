@@ -6,12 +6,12 @@
 
 /notes.txt
 /vdsm/transport/
+/vdsm/vdsm
 /Wiki
 
-/node_modules
-/dist
 Makefile.in
 .npm
+node-dashboard/ovirt-node-dashboard
 
 config.*
 *.spec

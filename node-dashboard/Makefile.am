@@ -15,11 +15,35 @@
 # MA  02110-1301, USA.  A copy of the GNU General Public License is
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
-cockpitdir=$(datarootdir)/cockpit/ovirt
+cockpitdir=$(datarootdir)/cockpit
 
-dist_cockpit_DATA = \
-	manifest.json \
-	app.css \
-	index.html
+export PATH := /usr/share/ovirt-engine-nodejs/bin:$(PATH)
+
+EXTRA_DIST = \
+  README.md \
+  ovirt-node-dashboard
+
+DISTCLEANDIRS = node_modules \
+  ovirt-node-dashboard
+
+ovirt-node-dashboard:
+	npm i
+	npm run build
+	mv dist ovirt-node-dashboard
+
+dist: ovirt-node-dashboard
+
+install-data-local:
+	$(MKDIR_P) $(DESTDIR)/${cockpitdir}
+	cp -rpv ovirt-node-dashboard $(DESTDIR)$(cockpitdir)
+
+distclean-local:
+	rm -rf ${DISTCLEANDIRS}
+
+test:
+	npm i
+	npm test
+
+.PHONY: install
 
 # vim: ts=2
