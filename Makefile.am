@@ -20,7 +20,7 @@ OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 SHELL := /bin/bash
 
 SUBDIRS = \
-	node-dashboard \
+	dashboard \
 	vdsm
 
 EXTRA_DIST = \

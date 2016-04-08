@@ -1,7 +1,7 @@
 // --- global configuration ---------------------------------------------
 export const CONFIG = {
   vdsm: {
-    client_path: '/usr/share/cockpit/ovirt/vdsm/vdsm',
+    client_path: '/usr/share/cockpit/ovirt-dashboard/vdsm/vdsm/vdsm',
     conf_file_name: '/etc/vdsm/vdsm.conf'
   },
   cockpit: {
@@ -27,7 +27,7 @@ function setupForDebug () {
   if (typeof __DEV__ !== 'undefined') {
     console.log('Setting up for development ...')
 
-    CONFIG.vdsm.client_path = '/root/.local/share/cockpit/ovirt/vdsm/vdsm'
+    CONFIG.vdsm.client_path = '/root/.local/share/cockpit/ovirt-dashboard/vdsm/vdsm'
     // CONFIG.reload.auto_refresh_interval = 5000
   }
 }

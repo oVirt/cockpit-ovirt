@@ -10,6 +10,9 @@ const Sidebar = () => {
       <li><Link to="/he">
         <span className="fa fa-cubes fa-fw"></span> Hosted Engine
       </Link></li>
+      <li><Link to="/management">
+        <span className="fa fa-dashboard fa-fw"></span> Virtual Machines
+      </Link></li>
     </ul>
   )
 }

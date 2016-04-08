@@ -15,7 +15,7 @@
 # MA  02110-1301, USA.  A copy of the GNU General Public License is
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
-plugindir=$(datarootdir)/cockpit
+plugindir=$(datarootdir)/cockpit/ovirt-dashboard
 
 export PATH := /usr/share/ovirt-engine-nodejs/bin:$(PATH)
 

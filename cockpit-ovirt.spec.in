@@ -2,14 +2,13 @@
 %global _plugindir %{_datarootdir}/cockpit/
 %global source_basename @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 %global product oVirt
-%global dashboard_family %{product} Node
 
 Name:           cockpit-ovirt
 Version:        @PACKAGE_RPM_VERSION@
 Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?checkout}%{?dist}
-Summary:        Virtual Machine Management plugin for Cockpit based on %{product}.
+Summary:        Dashboard for Cockpit based on %{product}.
 License:        ASL 2
-URL:            https://github.com/mareklibra/%{name}
+URL:            https://gerrit.ovirt.org/cockpit-ovirt
 Source0:        %{source_basename}.tar.gz
 BuildArch:      noarch
 
@@ -20,16 +19,7 @@ Requires: cockpit
 Requires: vdsm >= 4.17.999-610
 
 %description
-Virtual Machine Management plugin for Cockpit based on oVirt.
-
-%package node-dashboard
-
-Summary:        Cockpit dashboard for %{dashboard_family} Node configuration
-Requires:       cockpit
-BuildArch:      noarch
-
-%description node-dashboard
-This package provides a Cockpit dashboard for use with %{dashboard_family}.
+This package provides a Cockpit dashboard for use with %{product}.
 
 %prep
 %setup -q -n"%{source_basename}"
@@ -39,18 +29,17 @@ This package provides a Cockpit dashboard for use with %{dashboard_family}.
 
 %install
 make install DESTDIR=%{buildroot}
-chmod a+x %{buildroot}/%{_plugindir}vdsm
+chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsm
 
 %files
 %doc vdsm/README.md 
 %license LICENSE
-%{_plugindir}/vdsm
-
-%files node-dashboard
-%{_plugindir}/ovirt-node-dashboard
+%{_plugindir}/ovirt-dashboard
 
 %changelog
-* Tue Mar 22 2016 Marek Libra <rbarry@redhat.com> - 0.4
+* Fri Apr 08 2016 Ryan Barry <rbarry@redhat.com> - 0.5
+- Add node-dashboard
+* Tue Mar 22 2016 Ryan Barry <rbarry@redhat.com> - 0.4
 - Add node-dashboard
 * Fri Mar 18 2016 Marek Libra <rbarry@redhat.com> - 0.3
 - Update packaging to match upstream standards

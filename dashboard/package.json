@@ -1,7 +1,7 @@
 {
-  "name": "cockpit-ovirt-node-dashboard",
+  "name": "cockpit-ovirt-dashboard",
   "version": "0.0.1",
-  "description": "oVirt Node Cockpit Dashboard",
+  "description": "oVirt Cockpit Dashboard",
   "main": "src/app.js",
   "scripts": {
     "clean-js": "rm public/*.js",

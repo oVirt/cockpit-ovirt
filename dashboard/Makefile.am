@@ -21,21 +21,21 @@ export PATH := /usr/share/ovirt-engine-nodejs/bin:$(PATH)
 
 EXTRA_DIST = \
   README.md \
-  ovirt-node-dashboard
+  ovirt-dashboard
 
 DISTCLEANDIRS = node_modules \
-  ovirt-node-dashboard
+  ovirt-dashboard
 
-ovirt-node-dashboard:
+ovirt-dashboard:
 	npm i
 	npm run build
-	mv dist ovirt-node-dashboard
+	mv dist ovirt-dashboard
 
-dist: ovirt-node-dashboard
+dist: ovirt-dashboard
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)/${cockpitdir}
-	cp -rpv ovirt-node-dashboard $(DESTDIR)$(cockpitdir)
+	cp -rpv ovirt-dashboard $(DESTDIR)$(cockpitdir)
 
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
