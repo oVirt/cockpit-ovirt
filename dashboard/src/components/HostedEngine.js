@@ -180,13 +180,23 @@ const HostedEngineOutput = ({output}) => {
 const Curtains = ({callback}) => {
   return (
     <div className="curtains blank-slate-pf">
-      <div className="blank-slate-pf-main-action container-center">
+      <div className="container-center">
+        <div className="blank-slate-pf-icon">
+          <i className="pficon-cluster" />
+        </div>
         <h1>
           Hosted Engine Setup
         </h1>
-        <button
-          className="btn btn-lg btn-primary"
-          onClick={callback}>Start</button>
+        <p>
+          Configure and install a highly-available virtual machine which will
+          run oVirt Engine to manage multiple compute nodes, or add this systemd
+          to an existing hosted engine cluster
+        </p>
+        <div className="blank-slate-pf-main-action">
+          <button
+            className="btn btn-lg btn-primary"
+            onClick={callback}>Start</button>
+        </div>
       </div>
     </div>
   )

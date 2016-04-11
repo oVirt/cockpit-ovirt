@@ -22,6 +22,10 @@ export default class Management extends Component {
       $('iframe').height($('iframe').contents().height())
     })
 
-    this.interval = setInterval(this.updateFrame, 1000);
+    var interval = setInterval(this.updateFrame, 1000)
+    this.setState({intervalId: interval})
+  }
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId)
   }
 }
