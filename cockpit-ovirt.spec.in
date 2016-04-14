@@ -1,4 +1,5 @@
 # Used for rpm-packaging of pre-bundled application with already resolved JS dependencies
+%define use_vdsm %( test -z @VDSM@ && echo 1 || echo 0)
 %global _plugindir %{_datarootdir}/cockpit/
 %global source_basename @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 %global product oVirt
@@ -16,7 +17,10 @@ BuildArch:      noarch
 BuildRequires: python
 
 Requires: cockpit
+%if 0%{?use_vdsm}
 Requires: vdsm >= 4.17.999-610
+%else
+%endif
 
 %description
 This package provides a Cockpit dashboard for use with %{product}.
@@ -25,14 +29,18 @@ This package provides a Cockpit dashboard for use with %{product}.
 %setup -q -n"%{source_basename}"
 
 %build
-%configure
+%configure --with-vdsm
 
 %install
 make install DESTDIR=%{buildroot}
+%if 0%{?use_vdsm}
 chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsm
+%endif
 
 %files
+%if 0%{?use_vdsm}
 %doc vdsm/README.md 
+%endif
 %license LICENSE
 %{_plugindir}/ovirt-dashboard
 

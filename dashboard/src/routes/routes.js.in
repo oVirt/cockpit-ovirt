@@ -1,0 +1,46 @@
+import React from 'react'
+import App from '../components/App'
+import Dashboard from '../components/Dashboard'
+import HostedEngine from '../components/HostedEngine'
+import Management from '../components/Management'
+
+let root = {
+  path: '/',
+  component: App,
+  indexRoute: {
+    component: Dashboard
+  },
+  childRoutes: [],
+}
+
+export let paths = {
+  "Dashboard": {
+    path: "/dashboard",
+    icon: "fa-dashboard",
+    component: Dashboard,
+    indexRoute: true
+  },
+  "Hosted Engine": {
+    path: "/he",
+    icon: "fa-cubes",
+    component: HostedEngine,
+    indexRoute: false
+@VDSM@  },
+@VDSM@  "Virtual Machines": {
+@VDSM@    path: "/management",
+@VDSM@    icon: "fa-database",
+@VDSM@    component: Management,
+@VDSM@    indexRoute: false
+  }
+}
+
+function generateRoutes() {
+  for (var key in paths) {
+    root.childRoutes.push(paths[key])
+  }
+  return root
+}
+
+const routes = generateRoutes()
+
+export default routes

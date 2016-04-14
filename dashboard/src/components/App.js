@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router'
+import { paths } from '../routes/routes'
 var classNames = require('classnames')
 
 class Sidebar extends Component {
@@ -8,20 +9,7 @@ class Sidebar extends Component {
   }
   static get defaultProps() {
     return {
-      links: {
-        "Dashboard": {
-          path: "/",
-          icon: "fa-dashboard",
-        },
-        "Hosted Engine": {
-          path: "/he",
-          icon: "fa-cubes",
-        },
-        "Virtual Machines": {
-          path: "/management",
-          icon: "fa-database"
-        }
-      }
+      links: paths
     }
   }
   render() {

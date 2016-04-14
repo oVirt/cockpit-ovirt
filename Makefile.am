@@ -16,12 +16,21 @@
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
+if VDSM
+	BUILD_VDSM = vdsm
+else
+	BUILD_VDSM =
+endif
 
 SHELL := /bin/bash
 
-SUBDIRS = \
+DIST_SUBDIRS = \
 	dashboard \
 	vdsm
+
+SUBDIRS = \
+	dashboard \
+	$(BUILD_VDSM)
 
 EXTRA_DIST = \
   cockpit-ovirt.spec \

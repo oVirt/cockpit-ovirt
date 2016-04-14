@@ -19,7 +19,7 @@ AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [5])
-define([VERSION_FIX], [0])
+define([VERSION_FIX], [1])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
 define([VERSION_RELEASE], [0.0])
 define([VERSION_SUFFIX], [master])
@@ -31,6 +31,12 @@ AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
 AC_SUBST([PLUGINNAME], ['oVirt Node Dbus Backend'])
 
+AC_ARG_WITH([vdsm], [AC_HELP_STRING([--with-vdsm],
+            [enable the VDSM plugin for the dashboard])],
+            [VDSM=""], [VDSM="//"])
+AC_SUBST([VDSM])
+AM_CONDITIONAL([VDSM], [test "$VDSM" -z])
+
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 
 AC_ARG_VAR([RPMBUILD], [path to rpmbuild utility])
@@ -40,6 +46,7 @@ AM_PATH_PYTHON
 
 AC_CONFIG_FILES([Makefile
                  dashboard/Makefile
+                 dashboard/src/routes/routes.js
                  vdsm/Makefile
                  cockpit-ovirt.spec])
 AC_OUTPUT
