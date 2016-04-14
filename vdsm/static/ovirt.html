@@ -227,8 +227,8 @@
             <div class="list-view-pf-left">
                 {{{statusHtml}}}
             </div>
-            <div class="list-view-pf-body" style="max-width: 200px;">
-                <div class="list-view-pf-description">
+            <div class="list-view-pf-body">
+                <div class="list-view-pf-description" style="max-width: 200px;">
                     <div class="list-group-item-heading" id="host-vms-list-item-name-" data-pattern="{{id}}">
                         <a>{{name}}</a>
                         <small>{{{guestIPsHtml}}}</small>
@@ -236,13 +236,11 @@
                         <small>Up for: {{elapsedTimeHuman}}</small>
                     </div>
                 </div>
-            </div>
-            <div class="list-view-pf-body">
                 <div class="list-view-pf-additional-info">
-                    <div class="list-view-pf-additional-info-item">
+                    <div class="list-view-pf-additional-info-item" style="width: 200px;margin-right: 20px;">
                         <span id="cpuUsageChart-{{id}}"></span>
                     </div>
-                    <div class="list-view-pf-additional-info-item">
+                    <div class="list-view-pf-additional-info-item" style="width: 200px;margin-right: 20px;">
                         <span id="memUsageChart-{{id}}"></span>
                     </div>
 
@@ -268,7 +266,7 @@
 
                     <div style="width: 200px;margin-right: 20px;">
                         <div class="progress-description">
-                            <strong>Network:</strong>
+                            <strong>My Network:</strong>
                         </div>
                         <div class="progress progress-label-top-right">
                             <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}"
