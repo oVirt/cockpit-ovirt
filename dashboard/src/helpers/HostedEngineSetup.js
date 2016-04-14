@@ -40,7 +40,8 @@ class RunSetup {
         infos: [],
         warnings: [],
         errors: [],
-        lines: []
+        lines: [],
+        terminated: false
       }
     }
 
@@ -97,8 +98,9 @@ class RunSetup {
     payload.forEach(function(line) {
       if (actions[line.slice(0,4)]) {
         actions[line.slice(0,4)](line);
-      }
-      else {
+      } else if (line.indexOf('TERMINATE') > 0) {
+        values.output.terminated = true
+      } else {
         console.log("Found an unknown/blank line:");
         console.log(line);
       }

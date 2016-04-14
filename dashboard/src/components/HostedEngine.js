@@ -53,7 +53,8 @@ class Setup extends Component {
       infos: [],
       warnings: [],
       errors: [],
-      lines: []
+      lines: [],
+      terminated: false
     }
     this.setState({question: question})
     this.setState({output: output})
@@ -78,11 +79,27 @@ class Setup extends Component {
 
     for (var key in ret.output) {
       var value = this.state.output
-      value[key] = value[key].concat(ret.output[key])
+      if (key === "terminated") {
+         value.terminated = ret.output.terminated
+      } else {
+          // Pop off the beginning of the box if it gets too long, since
+          // otopi has a lot of informational messages for some steps,
+          // and it pushes everything down the screen
+          if (value[key].length > 10) {
+            value[key].shift()
+          }
+          value[key] = value[key].concat(ret.output[key])
+      }
       this.setState({output: value })
     }
   }
   render() {
+    let finished_error = this.state.output.terminated &&
+      this.state.output.errors.length > 0
+
+    let show_input = !this.state.output.terminated &&
+      this.state.question.prompt.length > 0
+
     return (
       <div className="ovirt-input">
         {this.state.output.infos.length > 0 ?
@@ -96,12 +113,17 @@ class Setup extends Component {
             icon="warning-triangle-o"/>
         : null }
         <HostedEngineOutput output={this.state.output}/>
-        {this.state.question.prompt.length > 0 ?
+        {show_input ?
           <HostedEngineInput
             question={this.state.question}
             passInput={this.passInput}
             errors={this.state.output.errors}/>
-          : <div className="spinner"/> }
+          : !this.state.output.terminated ? <div className="spinner"/> : null }
+        {finished_error ?
+          <Message messages={this.state.output.errors}
+            type="danger"
+            icon="error-circle-o" />
+          : null }
       </div>
     )
   }
