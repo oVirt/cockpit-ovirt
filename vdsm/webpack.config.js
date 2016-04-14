@@ -3,7 +3,7 @@ var CleanWebpackPlugin = require('clean-webpack-plugin')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 var GenerateI18N = require('./GenerateI18N')
 
-var isProd = isProd = process.env.NODE_ENV === 'production'
+var isProd = process.env.NODE_ENV === 'production'
 
 var config = module.exports = {
   entry: [
