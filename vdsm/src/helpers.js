@@ -53,12 +53,14 @@ export function spawnVdsm (commandName, stdin, stdoutCallback, successCallback, 
 export function parseVdsmJson (json) {
   try {
     var resp = $.parseJSON(json)
+    debugMsg('parseVdsmJson() parsed')
     if (resp.hasOwnProperty('status') && resp.status.hasOwnProperty('code') && resp.status.hasOwnProperty('message')) {
       debugMsg('vdsm json successfully parsed')
       return resp
     }
   } catch (err) {
-    printError(_('VDSM data parsing exception'), err)
+    printError(_('VDSM data parsing exception'), err.message)
+    debugMsg(new Error().stack)
   }
 
   printError(_('Malformed data format received (missing status code)'), json)

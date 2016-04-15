@@ -27,7 +27,7 @@ function setupForDebug () {
   if (typeof __DEV__ !== 'undefined') {
     console.log('Setting up for development ...')
 
-    CONFIG.vdsm.client_path = '/root/.local/share/cockpit/ovirt-dashboard/vdsm/vdsm'
+    // CONFIG.vdsm.client_path = '/root/.local/share/cockpit/ovirt-dashboard/vdsm/vdsm'
     // CONFIG.reload.auto_refresh_interval = 5000
   }
 }

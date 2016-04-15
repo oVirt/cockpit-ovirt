@@ -120,8 +120,8 @@ function getEngineCredentials () {
 }
 
 function engineLoginSuccessful (vdsmLoginOut) {
-  var resp = parseVdsmJson(vdsmLoginOut)
   debugMsg('engineLoginSuccessful() called')
+  var resp = parseVdsmJson(vdsmLoginOut)
   onEngineLoginEnd()
   if (resp != null) {
     if (resp.status.code === 0) {

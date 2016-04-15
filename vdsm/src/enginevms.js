@@ -68,6 +68,9 @@ function renderEngineVmsList (vmsFull) {
   }
 }
 
+/* TODO: fix VM-mngmt routing to work with the dashboard-react routing
+ *
+ */
 function onEngineVmClick (vmId) {
   debugMsg(`onEngineVmClick(${vmId}) called`)
   if (getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)) { // the VM is running on this host
@@ -119,6 +122,7 @@ function engineRunVmSuccess (vmId) {}
 // --- Engine data transformation ---------------------------------------
 function _getEngineHostDetails (src) { // src are parsed host data retrieved from engine (via REST API)
   return {
+    id: src.content.id,
     name: src.content.name,
     address: src.content.address // ip/fqdn of the host
   }
@@ -158,19 +162,18 @@ function isRunActionAllowed (engineVm) {
 }
 
 // ------------------------------------------------------------
-var vdsmEngineHost = {}
 function readEngineHost (hostId) {
   debugMsg('Reading detail for hostId: ' + hostId)
+  var vdsmEngineHost = ''
   spawnVdsm('engineBridge', JSON.stringify(getEngineCredentialsTokenOnly()),
         function (data) {
           debugMsg('getHost() Stdout retrieved for hostId: ' + hostId)
-          vdsmEngineHost[hostId] += data
+          vdsmEngineHost += data
         },
         function () {
-          getEngineHostSuccess(hostId)
+          getEngineHostSuccess(vdsmEngineHost)
         },
         engineBridgeFail, 'getHost', hostId)
-  vdsmEngineHost[hostId] = ''
 }
 
 function getHostOfVm (vm) {
@@ -194,14 +197,15 @@ function getHostById (hostId) {
   return undefined
 }
 
-function getEngineHostSuccess (hostId) {
-  debugMsg('getEngineHostSuccess() for hostId=' + hostId)
-  debugMsg('Source host data: ' + vdsmEngineHost[hostId])
+function getEngineHostSuccess (data) {
+  debugMsg('getEngineHostSuccess(): source host data: ' + data)
+  var src = parseVdsmJson(data)
+  debugMsg('getEngineHostSuccess() json parsed')
 
-  var src = parseVdsmJson(vdsmEngineHost[hostId])
   if (src != null) {
     if (src.status.code === 0) {
       var host = _getEngineHostDetails(src)
+      var hostId = host.id
       debugMsg('Adding hostId=' + hostId + ', host=' + JSON.stringify(host))
       GLOBAL.hosts[hostId] = host
     } else {
