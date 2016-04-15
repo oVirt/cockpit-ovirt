@@ -29,6 +29,7 @@ DISTCLEANDIRS = node_modules \
 vdsm:
 	npm i
 	npm run build
+	chmod a+x dist/vdsm/vdsm
 	mv dist vdsm
 
 dist: vdsm
