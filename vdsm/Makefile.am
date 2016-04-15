@@ -32,7 +32,7 @@ vdsm:
 	chmod a+x dist/vdsm/vdsm
 	mv dist vdsm
 
-dist: vdsm
+all: vdsm
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)/${plugindir}
@@ -41,10 +41,12 @@ install-data-local:
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
+all: vdsm
+
 test:
 	npm i
 	npm test
 
-.PHONY: install
+.PHONY: all
 
 # vim: ts=2

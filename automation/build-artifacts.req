@@ -3,4 +3,5 @@ automake
 gcc-c++
 git
 ovirt-engine-nodejs
+ovirt-engine-nodejs-modules
 rpmbuild

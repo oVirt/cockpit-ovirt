@@ -1,3 +1,3 @@
 #!/bin/bash -xe
 
-./autogen.sh && make -j8 check
+./autogen.sh --with-vdsm && make -j8 check

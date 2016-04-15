@@ -18,15 +18,17 @@
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 if VDSM
 	BUILD_VDSM = vdsm
+	VDSM_CHECK = vdsm-checks
 else
 	BUILD_VDSM =
+	VDSM_CHECK =
 endif
 
 SHELL := /bin/bash
 
-DIST_SUBDIRS = \
-	dashboard \
-	vdsm
+#DIST_SUBDIRS = \
+#	dashboard \
+#	vdsm
 
 SUBDIRS = \
 	dashboard \
@@ -82,7 +84,7 @@ distclean-local:
 .PHONY: rpms publish srpms
 
 
-check: vdsm-checks
+check: $(VDSM_CHECK)
 	@echo Passed $@
 
 vdsm-checks:

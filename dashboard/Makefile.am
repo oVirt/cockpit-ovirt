@@ -17,21 +17,23 @@
 
 cockpitdir=$(datarootdir)/cockpit
 
-export PATH := /usr/share/ovirt-engine-nodejs/bin:$(PATH)
+export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
 
 EXTRA_DIST = \
   README.md \
-  ovirt-dashboard
+	.bowerrc \
+	.eslintrc \
+	src \
+	static \
+	package.json \
+	webpack.config.js
 
 DISTCLEANDIRS = node_modules \
   ovirt-dashboard
 
 ovirt-dashboard:
-	npm i
 	npm run build
 	mv dist ovirt-dashboard
-
-dist: ovirt-dashboard
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)/${cockpitdir}
@@ -40,10 +42,12 @@ install-data-local:
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
+all: ovirt-dashboard
+
 test:
 	npm i
 	npm test
 
-.PHONY: install
+#.PHONY: all
 
 # vim: ts=2
