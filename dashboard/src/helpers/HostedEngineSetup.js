@@ -14,7 +14,6 @@ class RunSetup {
           "TERM=xterm-256color",
           "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
       ],
-      //"spawn": ['/home/rbarry/hosted-engine',
       "spawn": ['hosted-engine', '--deploy',
                 '--otopi-environment="DIALOG/dialect=str:machine"'],
       "pty": true
@@ -22,6 +21,8 @@ class RunSetup {
 
     $(this.channel).on("close", function(ev, options) {
       console.log("hosted-engine-setup exited")
+      console.log(ev)
+      console.log(options)
     })
     $(this.channel).on("message", $.proxy(this.handleOutput, this))
   }
@@ -41,7 +42,8 @@ class RunSetup {
     var values = {
       question: {
         prompt: [],
-        suggested: ''
+        suggested: '',
+        password: false
       },
       output: {
         infos: [],
@@ -121,6 +123,12 @@ class RunSetup {
     payload.forEach(function(line) {
       // Strip off the beginning
       values.question.prompt.push(line.replace(/###/, ""))
+
+      // This is a hack until https://bugzilla.redhat.com/show_bug.cgi?id=1336250
+      // is merged: https://gerrit.ovirt.org/#/c/56955/
+      if (line.match(/password/i)) {
+        values.question.password = true
+      }
 
       var match = line.match(/\[(.*)\]/)
       values.question.suggested = match ? match[1] : ""
