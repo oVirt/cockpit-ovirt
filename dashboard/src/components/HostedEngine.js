@@ -48,7 +48,8 @@ class Setup extends Component {
   resetState() {
     var question = {
       prompt: [],
-      suggested: ''
+      suggested: '',
+      password: false
     }
 
     var output = {
@@ -79,6 +80,7 @@ class Setup extends Component {
     question.suggested = ret.question.suggested
 
     question.prompt = question.prompt.concat(ret.question.prompt)
+    question.password = ret.question.password
 
     this.setState({question: question})
 
@@ -121,6 +123,7 @@ class Setup extends Component {
         {show_input ?
           <HostedEngineInput
             question={this.state.question}
+            password={this.state.question.password}
             passInput={this.passInput}
             errors={this.state.output.errors}/>
           : !this.state.output.terminated ? <div className="spinner"/> : null }
@@ -169,6 +172,9 @@ class HostedEngineInput extends Component {
       this.props.errors.map(function(err, i) {
         return <span key={i} className="help-block">{err}</span>
     }) : null
+
+    var type = this.props.password ? 'password' : 'text'
+
     return (
       <form
         onSubmit={this.handleSubmit}>
@@ -179,7 +185,8 @@ class HostedEngineInput extends Component {
             {prompt}
           </label>
           <input
-            type="text"
+            autoFocus
+            type={type}
             className="form-control"
             onChange={this.handleInput}
             value={this.state.input} />
