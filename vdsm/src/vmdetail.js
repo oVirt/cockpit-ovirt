@@ -1,7 +1,7 @@
 // --- vm-detail-screen & vm manipulation methods -----------------------
 import $ from 'jquery'
 import cockpit from 'cockpit'
-import saveAs from 'browser-filesaver'
+// import saveAs from 'browser-filesaver'
 import Mustache from 'mustache'
 import c3 from 'c3'
 
@@ -13,7 +13,7 @@ import {printError, spawnVdsm, vdsmFail, debugMsg} from './helpers'
 import {_getVmDetails, readVmsList} from './hostvms'
 
 import { gettext as _ } from './i18n'
-
+/*
 function consoleFileContent (vm) {
 // TODO: generate content of .vv file
   var blob = new Blob([
@@ -23,11 +23,11 @@ function consoleFileContent (vm) {
 
   return blob
 }
-
+*/
 export function downloadConsole (vmId) {
-  var vm = getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)
+/*  var vm = getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)
   saveAs(consoleFileContent(vm), 'console.vv') // TODO: resolve content-security-policy error
-
+*/
   printError('TODO: finish generating of console.vv file. ')
 }
 
