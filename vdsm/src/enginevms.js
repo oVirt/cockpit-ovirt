@@ -5,7 +5,7 @@ import Mustache from 'mustache'
 import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
-import {getVmDetails_vdsmToInternal, vmStatusToHtml} from './vmdetail'
+import {getVmDetailsVdsmToInternal, vmStatusToHtml} from './vmdetail'
 import {onVmClick, shutdownAllHostVmsConfirm} from './hostvms'
 import {getEngineCredentialsTokenOnly, isLoggedInEngine} from './engineLogin'
 import {printError, debugMsg, spawnVdsm, parseVdsmJson, registerBtnOnClickListener, formatHumanReadableBytes} from './helpers'
@@ -73,11 +73,11 @@ function renderEngineVmsList (vmsFull) {
  */
 function onEngineVmClick (vmId) {
   debugMsg(`onEngineVmClick(${vmId}) called`)
-  if (getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)) { // the VM is running on this host
+  if (getVmDetailsVdsmToInternal(vmId, GLOBAL.latestHostVMSList)) { // the VM is running on this host
     onVmClick(vmId)
   } else { // remote cockpit
         // get VM's host
-    var vm = getVmDetails_engineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm)
+    var vm = getVmDetailsEngineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm)
     if (!vm) {
       debugMsg(`Host data for engine VM '${vmId}' not found`)
       return
@@ -100,7 +100,7 @@ function onEngineVmClick (vmId) {
 
 function onEngineRunVmClick (vmId) {
   debugMsg(`onEngineRunVmClick(${vmId}) called`)
-  var vm = getVmDetails_engineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm, false)
+  var vm = getVmDetailsEngineToInternal(vmId, GLOBAL.latestEngineVmsList.content.vm, false)
   if (!vm) {
     debugMsg(`onEngineRunVmClick(): VM detail for '${vmId}' not found`)
     return
@@ -246,7 +246,7 @@ function hostToMaintenanceSuccess (vdsmOut) {
   shutdownAllHostVmsConfirm()
 }
 
-function getVmDetails_engineToInternal (vmId, parsedEngineVms, inclHost = true) { // lookup cached VM detail
+function getVmDetailsEngineToInternal (vmId, parsedEngineVms, inclHost = true) { // lookup cached VM detail
   var s = parsedEngineVms.find(function (src) { return src.id === vmId })
   if (!s) {
     debugMsg(`parsedEngineVms(${vmId}) not found`)

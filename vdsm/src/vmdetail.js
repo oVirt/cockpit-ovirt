@@ -5,8 +5,7 @@ import cockpit from 'cockpit'
 import Mustache from 'mustache'
 import c3 from 'c3'
 
-import {VM_STATUS_ICONS, VM_STATUS_ICONS_PATH_PREFIX} from './constants'
-import {CONFIG} from './constants'
+import {CONFIG, VM_STATUS_ICONS, VM_STATUS_ICONS_PATH_PREFIX} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {printError, spawnVdsm, vdsmFail, debugMsg} from './helpers'
@@ -25,7 +24,7 @@ function consoleFileContent (vm) {
 }
 */
 export function downloadConsole (vmId) {
-/*  var vm = getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)
+/*  var vm = getVmDetailsVdsmToInternal(vmId, GLOBAL.latestHostVMSList)
   saveAs(consoleFileContent(vm), 'console.vv') // TODO: resolve content-security-policy error
 */
   printError('TODO: finish generating of console.vv file. ')
@@ -59,7 +58,7 @@ export function renderVmDetailActual () { // called after successful readVmsList
 
 export function renderVmDetail (vmId) {
   // populate VM detail data
-  var vm = getVmDetails_vdsmToInternal(vmId, GLOBAL.latestHostVMSList)
+  var vm = getVmDetailsVdsmToInternal(vmId, GLOBAL.latestHostVMSList)
 
   if (!vm) {
     $('#vm-detail-not-available').show()
@@ -212,7 +211,7 @@ function renderNetworkIOChartDetail (chartDivId, usageRecords) {
 }
 
 // ----------------------------------------------------------------------
-export function getVmDetails_vdsmToInternal (vmId, parsedVdsmGetAllVMs) { // lookup cached VM detail
+export function getVmDetailsVdsmToInternal (vmId, parsedVdsmGetAllVMs) { // lookup cached VM detail
   if (parsedVdsmGetAllVMs.hasOwnProperty('items')) {
     return _getVmDetails(parsedVdsmGetAllVMs.items.find(function (src) {
       return src.vmId === vmId
