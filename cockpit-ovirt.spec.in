@@ -36,6 +36,9 @@ export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
 # Copy the Node.js dependencies to the local "node_modules" directory
 ln -s "%{_datadir}/ovirt-engine-nodejs-modules/node_modules"
 ln -s "%{_datadir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/node_modules
+%if 0%{?use_vdsm}
+ln -s "%{_datadir}/ovirt-engine-nodejs-modules/node_modules" ./vdsm/node_modules
+%endif
 
 
 %build
@@ -62,6 +65,8 @@ chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsm
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Mon Apr 25 2016 Marek Libra <mlibra@redhat.com> - 0.6
+- Add vdsm VM Management
 * Fri Apr 08 2016 Ryan Barry <rbarry@redhat.com> - 0.5
 - Add node-dashboard
 * Tue Mar 22 2016 Ryan Barry <rbarry@redhat.com> - 0.4

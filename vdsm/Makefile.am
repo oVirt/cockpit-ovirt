@@ -17,17 +17,22 @@
 
 plugindir=$(datarootdir)/cockpit/ovirt-dashboard
 
-export PATH := /usr/share/ovirt-engine-nodejs/bin:$(PATH)
+export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
 
 EXTRA_DIST = \
 	README.md \
-	vdsm
+	.eslintrc \
+	package.json \
+	webpack.config.js \
+	GenerateI18N.js \
+	src \
+	static \
+	po
 
 DISTCLEANDIRS = node_modules \
 	vdsm
 
 vdsm:
-	npm i
 	npm run build
 	chmod a+x dist/vdsm/vdsm
 	mv dist vdsm
