@@ -6,6 +6,23 @@ const wait_valid = (proxy, callback) => {
   });
 }
 
+export function SshHostKey(type, callback) {
+  let path = `/etc/ssh/ssh_host_${type}_key`
+  let host_key = cockpit.file(path, {superuser: 'try'})
+  host_key.read()
+    .done(function(resp) {
+      resp = resp.split('\n').join('<br />')
+      callback(resp)
+    })
+    .fail(function(error) {
+      console.log(`Error opening ${path}`)
+      console.log(error)
+    })
+    .always(function() {
+      host_key.close()
+    })
+}
+
 export class VirtualMachines {
   constructor() {
     var client = cockpit.dbus('org.freedesktop.machine1')

@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
-import { VirtualMachines, NetworkInterfaces } from '../helpers/Dashboard'
+import ReactDOM from 'react-dom'
+import { VirtualMachines, NetworkInterfaces,
+  SshHostKey } from '../helpers/Dashboard'
 
 export default class Dashboard extends Component {
   render() {
@@ -7,6 +9,7 @@ export default class Dashboard extends Component {
       <div>
         <RunningVms />
         <NICs />
+        <SshKey />
       </div>
     )
   }
@@ -88,5 +91,83 @@ class NICs extends Component {
     return (
       <div />
       )
+  }
+}
+
+class SshKey extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      host_key: 'Loading...',
+      dialog_open: false
+    }
+    this.onClick = this.onClick.bind(this)
+  }
+  onClick() {
+    this.setState({dialog_open: !this.state.dialog_open})
+  }
+  componentDidMount() {
+    var self = this
+    SshHostKey('rsa', function(key) {
+      self.setState({host_key: key})
+    })
+  }
+  render() {
+    return (
+      <div>
+        <button className="btn btn-default"
+          type="button"
+          onClick={this.onClick}>
+          Show SSH Host key
+        </button>
+        <div>
+          {this.state.dialog_open ?
+            <HostKeyModal
+              hostKey={this.state.host_key}
+              hide={this.onClick}
+            />
+            :
+            null
+          }
+        </div>
+      </div>
+    )
+  }
+}
+
+class HostKeyModal extends Component {
+  constructor(props) {
+    super(props)
+    console.log(this.props)
+  }
+  componentDidMount() {
+    $(ReactDOM.findDOMNode(this)).modal('show')
+
+  }
+  render() {
+    var self = this
+    var getHtml = function() { return {__html: self.props.hostKey}}
+    return (
+      <div className="modal fade">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-hidden="true">
+                <span className="pficon pficon-close"></span>
+              </button>
+              <h4 className="modal-title">
+                Host RSA Key
+              </h4>
+            </div>
+            <div className="modal-body">
+              <div dangerouslySetInnerHTML={getHtml()} />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 }
