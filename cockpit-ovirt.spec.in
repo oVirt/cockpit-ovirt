@@ -11,7 +11,7 @@ Summary:        Dashboard for Cockpit based on %{product}.
 License:        ASL 2
 URL:            https://gerrit.ovirt.org/cockpit-ovirt
 Source0:        %{source_basename}.tar.gz
-BuildArch:      noarch
+BuildArch:      x86_64
 
 #This is a hack for copr, but why is it needed?
 BuildRequires: python
