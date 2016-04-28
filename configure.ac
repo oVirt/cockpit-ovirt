@@ -18,11 +18,11 @@ dnl
 AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
-define([VERSION_MINOR], [6])
+define([VERSION_MINOR], [7])
 define([VERSION_FIX], [1])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
 define([VERSION_RELEASE], [0.0])
-define([VERSION_SUFFIX], [ovirt40])
+define([VERSION_SUFFIX], [1])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER[-]VERSION_RELEASE[.]VERSION_SUFFIX, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
@@ -50,7 +50,8 @@ AM_COND_IF([VDSM],
 AC_CONFIG_FILES([Makefile
                  dashboard/Makefile
                  dashboard/src/routes/routes.js
-                 cockpit-ovirt.spec])
+                 cockpit-ovirt.spec
+                 ovirt-uiplugin/Makefile])
 
 dnl AM_COND_IF([VDSM],
 dnl            [AC_CONFIG_FILES([vdsm/Makefile])])

@@ -15,40 +15,29 @@
 # MA  02110-1301, USA.  A copy of the GNU General Public License is
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
-plugindir=$(datarootdir)/cockpit/ovirt-dashboard
+plugindir=$(datarootdir)/ovirt-engine/ui-plugins
 
-export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
+#export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
+
+pluginfiles = cockpit.json \
+	cockpit-resources
 
 EXTRA_DIST = \
-	README.md \
-	.eslintrc \
-	package.json \
-	webpack.config.js \
-	GenerateI18N.js \
-	src \
-	static \
-	po
+	README.cockpit \
+	$(pluginfiles)
 
-DISTCLEANDIRS = node_modules \
-	vdsm
+DISTCLEANDIRS = 
 
-vdsm:
-	npm run build
-	chmod a+x dist/vdsm/vdsm
-	mv dist vdsm
-
-all: vdsm
+all:
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)/${plugindir}
-	cp -rpv vdsm $(DESTDIR)$(plugindir)
+	cp -rpv $(pluginfiles) $(DESTDIR)$(plugindir)
 
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
 test:
-	npm i
-	npm test
 
 .PHONY: all
 

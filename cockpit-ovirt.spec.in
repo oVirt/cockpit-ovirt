@@ -1,8 +1,12 @@
 # Used for rpm-packaging of pre-bundled application with already resolved JS dependencies
 %define use_vdsm %( test -z @VDSM@ && echo 1 || echo 0)
 %global _plugindir %{_datarootdir}/cockpit/
+%global _ovirtenginedir %{_datarootdir}/ovirt-engine
+%global _uipluginsdir %{_ovirtenginedir}/ui-plugins
 %global source_basename @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 %global product oVirt
+# TODO: add autogen.sh --with-rhev
+%global use_rhev %( test -z @RHEV@ && echo 1 || echo 0)
 
 Name:           cockpit-ovirt
 Version:        @PACKAGE_RPM_VERSION@
@@ -12,12 +16,16 @@ License:        ASL 2
 URL:            https://gerrit.ovirt.org/cockpit-ovirt
 Source0:        %{source_basename}.tar.gz
 BuildArch:      x86_64
+ExclusiveArch:  x86_64
 
 #This is a hack for copr, but why is it needed?
 BuildRequires: python
 BuildRequires: ovirt-engine-nodejs
 BuildRequires: ovirt-engine-nodejs-modules
 
+%package dashboard
+Summary:        Dashboard for Cockpit based on %{product}.
+BuildArch:      noarch
 Requires: cockpit
 %if 0%{?use_vdsm}
 Requires: vdsm >= 4.17.999-610
@@ -25,6 +33,9 @@ Requires: vdsm >= 4.17.999-610
 %endif
 
 %description
+This package provides a Cockpit dashboard for use with %{product}.
+
+%description dashboard
 This package provides a Cockpit dashboard for use with %{product}.
 
 %prep
@@ -57,14 +68,32 @@ make install DESTDIR=%{buildroot}
 chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsm
 %endif
 
-%files
+%files dashboard
 %if 0%{?use_vdsm}
 %doc vdsm/README.md 
 %endif
 %license LICENSE
 %{_plugindir}/ovirt-dashboard
 
+%package uiplugin
+Summary: UI Plugin embedding Cockpit in oVirt's Administration Portal
+%if 0%{?use_rhev}
+Requires: rhev-engine-webadmin-portal
+%else
+Requires: ovirt-engine-webadmin-portal
+%endif
+BuildArch: noarch
+
+%description uiplugin
+Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-level host management.
+
+%files uiplugin
+%{_uipluginsdir}/cockpit.json
+%{_uipluginsdir}/cockpit-resources
+
 %changelog
+* Thu Apr 28 2016 Marek Libra <mlibra@redhat.com> - 0.7
+- Add Webadmin Cockpit UI Plugin
 * Mon Apr 25 2016 Marek Libra <mlibra@redhat.com> - 0.6
 - Add vdsm VM Management
 * Fri Apr 08 2016 Ryan Barry <rbarry@redhat.com> - 0.5

@@ -1,0 +1,25 @@
+* Installation
+** oVirt Cockpit UI Plugin
+Copy content of the plugin source directory to $ENGINE_USR/ui-plugins/
+For example:
+    cd $PLUGIN_HOME && \
+    ln -s cockpit.json cockpit-resources /usr/share/ovirt-engine/ui-plugins/
+
+and refresh browser window.
+
+** Cockpit
+**On a host**, usually following steps are enough to install the Cockpit:
+    dnf install cockpit
+    systemctl start cockpit.socket
+    systemctl enable cockpit.socket
+
+** Access
+Once plugin is installed, the user can access the Cockpit running on a host via Hosts main-tab by:
+- selecting a host and switching to the 'Cockpit' sub-tab
+- right-clicking on a host and selecting 'Cockpit' from the menu
+
+If the Cockpit is not installed/accessible on the particular host, the tab/menu item is disabled.
+
+** Plugin Configuration
+See the cockpit.json and "config".
+

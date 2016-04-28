@@ -32,6 +32,7 @@ SHELL := /bin/bash
 
 SUBDIRS = \
 	dashboard \
+  ovirt-uiplugin \
 	$(BUILD_VDSM)
 
 EXTRA_DIST = \

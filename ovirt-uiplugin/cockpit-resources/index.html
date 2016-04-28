@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type='text/javascript'>
+    var api = parent.pluginApi('cockpit-plugin');
+    var config = api.configObject();
+
+    // Customize API options that affect specific features of plugin API
+    if (config.hasOwnProperty('allowedOrigins')) {
+        api.options({
+            // Configure source origin(s), i.e. protocol://domain:port
+            // from which HTML5 message events will be accepted
+            allowedMessageOrigins: config.allowedOrigins
+        });
+    }
+
+    var COCKPIT_PORT = '9090';
+    if (config.hasOwnProperty('cockpitPort')) {
+        COCKPIT_PORT = config.cockpitPort;
+    }
+
+    api.register({
+        UiInit : function() {
+            // Add 'Cockpit' sub-tab under 'Hosts' main-tab
+            api.addSubTab('Host', 'Cockpit', 'cockpit', '');
+
+            // Add 'Cockpit' button (+ context menu) to 'Hosts' main-tab
+            api.addMainTabActionButton('Host', 'Cockpit', {
+                onClick : function() {
+                    var win = window.open(getCockpitUrl(arguments[0]), '_blank');
+                    win.focus();
+                },
+                isEnabled : function() {
+                    // The button is enabled only when a single host is selected && cockpit is running on the host
+                    return arguments.length == 1 && isCockpitRunning(arguments[0]);
+                }
+            });
+
+	    console.log('Cockpit UI Plugin initialized');
+        },
+        HostSelectionChange : function() {
+	        console.log('Cockpit UI Plugin: host selection changed');
+            if (arguments.length == 1 && isCockpitRunning(arguments[0])) {
+                // Update iframe URL
+                api.setTabContentUrl('cockpit', getCockpitUrl(arguments[0]));
+            } else {
+                api.setTabContentUrl('cockpit', 'plugin/cockpit-plugin/noCockpit.html');
+            }
+        },
+    });
+
+    // Get 'Cockpit' URL using specified host address
+    var getCockpitUrl = function(selectedHost, protocol) {
+        protocol = typeof protocol !== 'undefined' ? protocol : 'https';
+        var hostAddress = selectedHost.hostname;
+        var port = COCKPIT_PORT;
+        var url = protocol + '://' + hostAddress + ':' + port;
+
+        console.log('Cockpit URL: ' + url);
+        return url;
+    }
+
+    // true if the Cockpit is running on a host and is accessible via recent URL configuration
+    var isCockpitRunning = function (selectedHost) {
+        var url = getCockpitUrl(selectedHost, 'http') + '/ping';
+
+        try { // 200 OK: { "service": "cockpit" }
+            var client = new XMLHttpRequest();
+            client.open("GET", url, false);
+            client.setRequestHeader("Content-Type", "text/plain");
+            client.send();
+            console.log('isCockpitRunning("' + url + '"): ' + client.status);
+            return client.status == 200;
+        } catch (err) { // Cockpit is probably not running
+            console.log('isCockpitRunning("' + url + '"): ' + err);
+        }
+        return false;
+    }
+
+    api.ready();
+</script>
+</head>
+<body>
+</body>
+</html>
