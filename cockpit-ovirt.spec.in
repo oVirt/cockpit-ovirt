@@ -93,6 +93,8 @@ Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-le
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Wed May 04 2016 Marek Libra <mlibra@redhat.com> - 0.8
+- Remove debuginfo package
 * Thu Apr 28 2016 Marek Libra <mlibra@redhat.com> - 0.7
 - Add Webadmin Cockpit UI Plugin
 * Mon Apr 25 2016 Marek Libra <mlibra@redhat.com> - 0.6
