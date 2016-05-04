@@ -200,7 +200,7 @@ const HostedEngineOutput = ({output}) => {
 
 const Curtains = ({callback}) => {
   return (
-    <div className="curtains blank-slate-pf">
+    <div className="curtains curtains-ct blank-slate-pf">
       <div className="container-center">
         <div className="blank-slate-pf-icon">
           <i className="pficon-cluster" />
