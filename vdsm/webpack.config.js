@@ -52,6 +52,7 @@ var config = module.exports = {
       {from: 'README.md'},
       {from: 'static/manifest.json'},
       {from: 'static/ovirt.html'},
+      {from: 'static/app.css'},
       {from: 'static/vdsm', to: 'vdsm'},
       {from: 'static/images', to: 'images'}
     ])
