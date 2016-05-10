@@ -11,7 +11,7 @@ echo '{ "allow_root": true }' > ~/.bowerrc
 mkdir exported-artifacts
 
 # generate automake/autoconf files
-./autogen.sh --with-vdsm
+./autogen.sh
 
 # create rpm
 make rpm
