@@ -75,21 +75,31 @@ class RunningVms extends Component {
 class NICs extends Component {
   constructor(props) {
     super(props)
-    this.nics = new NetworkInterfaces()
+    this.onClick = this.onClick.bind(this)
   }
-  componentDidMount() {
-    var self = this
-    var interval = setInterval(function () {
-      var model = self.nics.listNics()
-    }, 1000)
-    this.setState({intervalId: interval})
-  }
-  componentWillUnmount() {
-    clearInterval(this.state.intervalId)
+  onClick(path) {
+    // <a href=... and window.location are both weird inside cockpit
+    // use cockpit.jump to load it
+    cockpit.jump(path)
   }
   render() {
+    let urls = {
+      "View Networking Information": "/network",
+      "View System Logs": "/system/logs",
+      "View Storage": "/storage"
+    }
+    let buttons = []
+    for (let url in urls) {
+      buttons.push(<button
+        className="btn btn-default"
+        onClick={() => this.onClick(urls[url])}>
+        {url}
+      </button>
+    )}
     return (
-      <div />
+      <div className="btn-group">
+        {buttons}
+      </div>
       )
   }
 }
