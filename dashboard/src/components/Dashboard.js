@@ -19,7 +19,7 @@ class RunningVms extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      vms: []
+      vms: null
     }
     this.proxy = new VirtualMachines()
     this.updateList = this.updateList.bind(this)
@@ -44,29 +44,32 @@ class RunningVms extends Component {
   render() {
     return (
       <div>
-      <div className="list-group list-view-pf">
-        <div className="list-group-item">
-          <div className="list-view-pf-main-info">
-            <div className="list-view-pf-left">
-              <span className="pficon pficon-virtual-machine
-                list-view-pf-icon-sm" />
-            </div>
-            <div className="list-view-pf-body">
-              <div className="list-view-pf-description">
-                <div className="list-group-item-heading">
-                  Virtual Machines
+        {this.state.vms != null ?
+          <div className="list-group list-view-pf">
+            <div className="list-group-item">
+              <div className="list-view-pf-main-info">
+                <div className="list-view-pf-left">
+                  <span className="pficon pficon-virtual-machine
+                    list-view-pf-icon-sm" />
+                </div>
+                <div className="list-view-pf-body">
+                  <div className="list-view-pf-description">
+                    <div className="list-group-item-heading">
+                      Virtual Machines
+                    </div>
+                  </div>
+                  <div className="list-view-pf-additional-info">
+                    <div className="list-view-pf-additional-info-item">
+                      <span className="pficon pficon-screen" />
+                      <strong>
+                        {this.state.vms.length}
+                      </strong> Running
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="list-view-pf-additional-info">
-                <div className="list-view-pf-additional-info-item">
-                  <span className="pficon pficon-screen" />
-                  <strong> {this.state.vms.length}</strong> Running
-                </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </div> : null}
     </div>
     )
   }
