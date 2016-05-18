@@ -26,6 +26,13 @@ class RunSetup {
     $(this.channel).on("message", $.proxy(this.handleOutput, this))
   }
 
+  close() {
+    console.log("Closing ovirt-hosted-engine-setup")
+    if (this.channel.valid) {
+      this.channel.close()
+    }
+  }
+
   handleOutput(ev, payload) {
     this._callback(this.getValues(payload))
   }
