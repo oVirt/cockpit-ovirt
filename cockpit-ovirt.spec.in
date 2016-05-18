@@ -93,6 +93,13 @@ Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-le
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Wed May 18 2016 Ryan Barry <rbarry@redhat.com> - 0.9
+- Add links to other parts of cockpit on the dashboard
+- Add the ability to show the host SSH key to the dashboard
+- Terminate hosted engine setup when the page is exited
+- Mask some fields in hosted engine setup
+* Wed May 04 2016 Marek Libra <mlibra@redhat.com> - 0.8
+- Remove debuginfo package
 * Wed May 04 2016 Marek Libra <mlibra@redhat.com> - 0.8
 - Remove debuginfo package
 * Thu Apr 28 2016 Marek Libra <mlibra@redhat.com> - 0.7
