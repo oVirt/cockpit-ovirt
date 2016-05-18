@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import RunSetup from '../helpers/HostedEngineSetup'
 var classNames = require('classnames')
 
-const setup = new RunSetup()
+var setup = null
 
 class HostedEngine extends Component {
   constructor(props) {
@@ -15,6 +15,9 @@ class HostedEngine extends Component {
   }
   onClick () {
     this.setState({hidden: false})
+  }
+  componentWillMount() {
+    setup = new RunSetup()
   }
   render() {
     return (
@@ -61,6 +64,9 @@ class Setup extends Component {
   componentWillMount() {
     this.resetState()
     this.setState({setup: setup.start(this.parseOutput)})
+  }
+  componentWillUnmount() {
+    setup.close()
   }
   passInput(input) {
     if (this.state.question.prompt.length > 0) {
@@ -151,6 +157,7 @@ class HostedEngineInput extends Component {
   render() {
     var inputClass = classNames({
       'col-xs-7': true,
+      'form-group': true,
       'has-error': this.props.errors.length > 0
     })
     var prompt = this.props.question.prompt.map(function(line, i) {

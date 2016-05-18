@@ -145,6 +145,10 @@ path.line.highlight {
     text-align: left;
 }
 
+.btn-terminate {
+  margin-top: 10px;
+}
+
 .viewport {
   white-space: nowrap;
   min-height: 300px;
@@ -169,4 +173,3 @@ path.line.highlight {
 .ovirt-content-header-extra .btn-group:not(:first-child) {
     padding-left: 20px;
 }
-
