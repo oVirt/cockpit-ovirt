@@ -1,13 +1,24 @@
+export function checkDeployed() {
+  let proc = cockpit.spawn(
+    ["/usr/sbin/hosted-engine",
+     "--check-deployed"
+   ])
+
+}
+
 class RunSetup {
-  constructor(closeCallback) {
-    this._callback = null
+  constructor(abortCallback) {
+    this._outputCallback = null
+    this._exitCallback = null
+    this._manual_close = false
     this._found_question = false
     this._chomp_input = false
-    this.closeCallback = closeCallback
+    this.abortCallback = abortCallback
   }
 
-  start(callback) {
-    this._callback = callback
+  start(outputCallback, exitCallback) {
+    this._outputCallback = outputCallback
+    this._exitCallback = exitCallback
 
     this.channel = cockpit.channel({
       "payload": "stream",
@@ -15,12 +26,16 @@ class RunSetup {
           "TERM=xterm-256color",
           "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
       ],
-      "spawn": ['hosted-engine', '--deploy',
+      "spawn": ['hosted-engine',
                 '--otopi-environment="DIALOG/dialect=str:machine"'],
       "pty": true
     })
 
+    var self = this
     $(this.channel).on("close", function(ev, options) {
+      if (!self._manual_close) {
+        self._exitCallback(options["exit-status"])
+      }
       console.log("hosted-engine-setup exited")
       console.log(ev)
       console.log(options)
@@ -30,14 +45,15 @@ class RunSetup {
 
   close() {
     console.log("Closing ovirt-hosted-engine-setup")
+    this.manual_close = true
     if (this.channel.valid) {
       this.channel.close()
     }
-    this.closeCallback()
+    this.abortCallback()
   }
 
   handleOutput(ev, payload) {
-    this._callback(this.getValues(payload))
+    this._outputCallback(this.getValues(payload))
   }
 
   getValues(payload) {
