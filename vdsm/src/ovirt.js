@@ -103,11 +103,12 @@ function defaultScreen (errorText) {
   printError(errorText)
   showVmsScreen()
 }
-
+/*
 function jump (component) {
+  console.log('jump called with: ' + component)
   cockpit.jump(component)// TODO: specify host
 }
-
+*/
 function refreshActionClicked (ignore) {
   var buttonRefresh = $('#action-refresh')
   var buttonRefreshText = $('#action-refresh-text')
@@ -173,7 +174,6 @@ function initNavigation () {
   registerBtnOnClickListener('action-refresh', refreshActionClicked)
   registerBtnOnClickListener('action-host-to-maintenance', hostToMaintenanceActionClicked)
 
-  registerBtnOnClickListener('a-jump-vdsm-service-mngmt', jump)
   registerBtnOnClickListener('editor-vdsm-btn-save', saveVdsmConf)
   registerBtnOnClickListener('editor-vdsm-btn-reload', reloadVdsmConf)
 
