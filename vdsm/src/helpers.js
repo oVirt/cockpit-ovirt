@@ -11,6 +11,7 @@ export function goTo (locationPath) {
   cockpit.location.go(locationPath)
 }
 
+var nextErrorMsgId = 1
 export function printError (text, detail) {
   var msg = _('Error: {0}').format(text)
   if (detail) {
@@ -19,9 +20,19 @@ export function printError (text, detail) {
 
   console.log(msg)
 
+  nextErrorMsgId++
   var template = $('#error-msg-template').html()
-  var html = Mustache.to_html(template, {msg: text})
+  var html = Mustache.to_html(template, {msg: text, id: nextErrorMsgId})
   $('#error-msg').prepend(html)
+
+  setTimeout(function () {
+    try {
+      var msg = $('#error-msg-' + nextErrorMsgId)
+      msg.remove()
+    } catch (err) {
+      console.log(err)
+    }
+  }, CONFIG.reload.auto_clear_msg_delay)
 }
 
 export function printWarning (text, detail) {
@@ -82,9 +93,9 @@ export function parseVdsmJson (json) {
 }
 
 export function vdsmFail () {
-  printError('Vdsm execution failed! Please check: <br/>\n' +
-    '- [path_to_cokcpit-ovirt-plugin]/vdsm/vdsm is executable,<br/>\n' +
-    '- __DEV__ environment variable when building.<br/><br/>\n' +
+  printError('Vdsm execution failed! Please check that: <br/>\n' +
+    '- VDSM is set up properly (i.e. /etc/pki/vdsm/certs/cacert.pem is required)<br/>\n' +
+    '- [path_to_cokcpit-ovirt-plugin]/vdsm/vdsm is executable,<br/><br/>\n' +
     'VDSM path: ' + CONFIG.vdsm.client_path)
 }
 
