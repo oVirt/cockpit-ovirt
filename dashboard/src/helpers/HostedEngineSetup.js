@@ -1,11 +1,3 @@
-export function checkDeployed() {
-  let proc = cockpit.spawn(
-    ["/usr/sbin/hosted-engine",
-     "--check-deployed"
-   ])
-
-}
-
 class RunSetup {
   constructor(abortCallback) {
     this._outputCallback = null
@@ -26,7 +18,7 @@ class RunSetup {
           "TERM=xterm-256color",
           "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
       ],
-      "spawn": ['hosted-engine',
+      "spawn": ['hosted-engine', '--deploy',
                 '--otopi-environment="DIALOG/dialect=str:machine"'],
       "pty": true
     })
