@@ -1,357 +1,216 @@
 import React, { Component } from 'react'
-import RunSetup from '../helpers/HostedEngineSetup'
+import HostedEngineSetup from './HostedEngineSetup'
+import {checkDeployed, getMetrics} from '../helpers/HostedEngineStatus'
 var classNames = require('classnames')
-
-var setup = null
 
 class HostedEngine extends Component {
   constructor(props) {
     super(props)
-      this.state = {
-        hidden: true,
-        cancelled: false
-      }
-    this.onClick = this.onClick.bind(this)
-    this.abortCallback = this.abortCallback.bind(this)
-    this.startSetup = this.startSetup.bind(this)
-  }
-  onClick () {
-    this.setState({hidden: false})
-    this.setState({cancelled: false})
-    this.startSetup()
-  }
-  startSetup() {
-    setup = new RunSetup(this.abortCallback)
-  }
-  abortCallback() {
-    this.setState({cancelled: true})
-    this.setState({hidden: true})
-  }
-  render() {
-    return (
-      <div>
-        {this.state.hidden ?
-          <Curtains
-            callback={this.onClick}
-            cancelled={this.state.cancelled}
-            />
-          :
-          <Setup setupCallback={this.startSetup}/>
-        }
-      </div>
-    )
-  }
-}
-
-class Setup extends Component {
-  // TODO: move all of the I/O and event stuff to Redux instead of
-  // passing state
-  constructor(props) {
-    super(props)
     this.state = {
-      question: null,
-      output: null,
-      terminated: false,
-      success: false
+      deployed: null
     }
-    this.resetState = this.resetState.bind(this)
-    this.processExit = this.processExit.bind(this)
-    this.parseOutput = this.parseOutput.bind(this)
-    this.passInput = this.passInput.bind(this)
-    this.restart = this.restart.bind(this)
+    this.deployedCallback = this.deployedCallback.bind(this)
   }
-  resetState() {
-    var question = {
-      prompt: [],
-      suggested: '',
-      password: false
-    }
-
-    var output = {
-      infos: [],
-      warnings: [],
-      errors: [],
-      lines: [],
-    }
-    this.setState({question: question})
-    this.setState({output: output})
-    this.setState({terminated: false})
-    this.setState({success: false})
-  }
-  restart() {
-    this.resetState()
-    this.props.setupCallback()
-    this.setState({setup: setup.start(this.parseOutput,
-                                      this.processExit)
-                  })
+  deployedCallback(value) {
+    this.setState({deployed: value})
   }
   componentWillMount() {
-    this.resetState()
-    this.setState({setup: setup.start(this.parseOutput,
-                                      this.processExit)
-                  })
-  }
-  componentWillUnmount() {
-    setup.close()
-  }
-  processExit(status) {
-    this.setState({terminated: true})
-    this.setState({success: status == 0 ? true : false})
-    console.log(this.state.success)
-  }
-  passInput(input) {
-    if (this.state.question.prompt.length > 0) {
-      setup.handleInput(input)
-      this.resetState()
-    }
-  }
-  parseOutput(ret) {
-    var question = this.state.question
-    question.suggested = ret.question.suggested
-
-    question.prompt = question.prompt.concat(ret.question.prompt)
-    question.password = ret.question.password
-
-    this.setState({question: question})
-
-    for (var key in ret.output) {
-      var value = this.state.output
-      if (key === "terminated") {
-         this.setState({terminated: ret.output.terminated})
-      } else {
-          // Pop off the beginning of the box if it gets too long, since
-          // otopi has a lot of informational messages for some steps,
-          // and it pushes everything down the screen
-          if (value[key].length > 10) {
-            value[key].shift()
-          }
-          value[key] = value[key].concat(ret.output[key])
-      }
-      this.setState({output: value })
-    }
+    checkDeployed(this.deployedCallback)
   }
   render() {
-    let finished_error = this.state.terminated  &&
-      this.state.output.errors.length > 0
-
-    let show_input = !this.state.terminated &&
-      this.state.question.prompt.length > 0
-
     return (
       <div>
-        {this.state.success ?
-        <Success /> :
-          <div className="ovirt-input">
-            {this.state.output.infos.length > 0 ?
-              <Message messages={this.state.output.infos}
-                type="info"
-                icon="info"/>
-            : null }
-            {this.state.output.warnings.length > 0 ?
-              <Message messages={this.state.output.warnings}
-                type="warning"
-                icon="warning-triangle-o"/>
-            : null }
-            <HostedEngineOutput output={this.state.output}/>
-            {show_input ?
-              <HostedEngineInput
-                question={this.state.question}
-                password={this.state.question.password}
-                passInput={this.passInput}
-                errors={this.state.output.errors}/>
-              : !this.state.terminated ? <div>
-                <div className="spinner"/>
-                <CancelButton /></div> : null }
-            {finished_error ?
-              <div>
-                <Message messages={this.state.output.errors}
-                  type="danger"
-                  icon="error-circle-o" />
-                <RestartButton restartCallback={this.restart} />
-              </div>
-              : null }
-          </div>
+        {(this.state.deployed == null) ?
+          <div className="spinner" /> :
+          this.state.deployed ?
+            <Status /> :
+            <HostedEngineSetup />
         }
       </div>
     )
   }
 }
 
-class HostedEngineInput extends Component {
+class Status extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      input: ''
+      status: null,
+      vm: null
     }
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleInput = this.handleInput.bind(this)
-  }
-  handleInput(e) {
-    this.setState({input: e.target.value})
-  }
-  handleSubmit(e) {
-    e.preventDefault()
-    this.props.passInput(this.state.input)
-  }
-  componentWillReceiveProps(nextProps) {
-    var suggested = nextProps.question.suggested
-    this.setState({input: suggested})
-  }
-  render() {
-    var inputClass = classNames({
-      'col-xs-7': true,
-      'form-group': true,
-      'has-error': this.props.errors.length > 0
-    })
-    var prompt = this.props.question.prompt.map(function(line, i) {
-      return <span key={i}>
-        {line}<br />
-        </span>
-    })
-    var err_text = this.props.errors.length > 0 ?
-      this.props.errors.map(function(err, i) {
-        return <span key={i} className="help-block">{err}</span>
-    }) : null
-
-    var type = this.props.password ? 'password' : 'text'
-
-    return (
-      <form
-        onSubmit={this.handleSubmit}>
-        <div className={inputClass}>
-          <label
-            className="control-label he-input"
-            htmlFor="input">
-            {prompt}
-          </label>
-          <input
-            autoFocus
-            type={type}
-            className="form-control"
-            onChange={this.handleInput}
-            value={this.state.input} />
-          {err_text}
-          <CancelButton />
-        </div>
-      </form>
-    )
-  }
-}
-
-class CancelButton extends Component {
-  constructor(props) {
-    super(props)
+    this.updateStatus = this.updateStatus.bind(this)
     this.onClick = this.onClick.bind(this)
   }
   onClick() {
-    setup.close()
+    this.setState({expanded: !this.state.expanded})
+  }
+  updateStatus(status) {
+    this.setState({status: status})
+    let found_running = false
+    let running_host = {}
+    for (var key in status) {
+      if (status[key]["engine-status"]["vm"] === "up") {
+        running_host = {hostname: status[key]["hostname"]}
+        found_running = true
+      }
+    }
+    this.setState({vm: found_running ? running_host : false})
+  }
+  componentDidMount() {
+    var self = this
+    var interval = setInterval(function() {
+      getMetrics(self.updateStatus)
+    }, 1000)
+    this.setState({intervalId: interval})
+  }
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId)
   }
   render() {
+    let hosts = []
+    for (let id in this.state.status) {
+      let host = this.state.status[id]
+      hosts.push(<HostDetail host={host} />)
+    }
+    let split = (arr, n) => {
+      let tmp = []
+      while (arr.length) {
+        let chunk = arr.splice(0, n).map(function(host, i) {
+          return <div className="col-md-6" key={i}>
+            {host}
+          </div>
+        })
+        let row = (
+          <div className="row">
+            {chunk}
+          </div>
+        )
+        tmp.push(row)
+      }
+      return tmp
+    }
+    var rows = split(hosts, 2)
     return (
-      <div>
-        <button
-          type="button"
-          className="btn btn-danger btn-spacer"
-          onClick={this.onClick}>
-          Cancel Setup
-        </button>
+      <div className="container-fluid">
+          <Engine
+            status={this.state.vm}
+          />
+        {rows}
       </div>
     )
   }
 }
 
-class RestartButton extends Component {
-  constructor(props) {
-    super(props)
-    this.onClick = this.onClick.bind(this)
+const Engine = ({status}) => {
+  let hostname = "Not running"
+  if (status != null) {
+    hostname = status.hostname
   }
-  onClick() {
-    this.props.restartCallback()
-  }
-  render() {
-    return (
-      <div>
-        <button className="btn btn-primary btn-spacer"
-          onClick={this.onClick}>
-          Restart Setup
-        </button>
-      </div>
-    )
-  }
-}
-
-const HostedEngineOutput = ({output}) => {
-  var output_div = output.lines.map(function(line, i) {
-    return <span key={i}>
-      {line}<br />
-    </span>
-  })
   return (
-    <div className="panel panel-default viewport">
-      <div className="he-input">
-        {output_div}
-      </div>
+    <div>
+      {(status == null) ?
+        <div className="spinner" /> :
+          (status != false) ?
+          <Running host={status.hostname} /> :
+          <NotRunning />
+      }
     </div>
   )
 }
 
-const Success = () => {
+// There's an annoying amount of duplication here, because
+// patternfly doesn't seem to like classless <div> inside
+// list-groups, so we can't shove the boilerplate up to Engine
+const NotRunning = () => {
   return (
-    <div className="curtains curtains-ct blank-slate-pf">
-      <div className="container-center">
-        <div className="blank-slate-pf-icon">
-          <i className="pficon-ok" />
-        </div>
-        <h1>
-          Hosted Engine Setup successfully completed!
-        </h1>
-      </div>
-    </div>
-  )
-}
-
-const Curtains = ({callback, cancelled}) => {
-  let message = cancelled ?
-    "Hosted engine setup was aborted" :
-    "Configure and install a highly-available virtual machine which will"
-    "run oVirt Engine to manage multiple compute nodes, or add this systemd"
-    "to an existing hosted engine cluster"
-  let button_text = cancelled ?
-    "Restart" : "Start"
-  return (
-    <div className="curtains curtains-ct blank-slate-pf">
-      <div className="container-center">
-        <div className="blank-slate-pf-icon">
-          <i className="pficon-cluster" />
-        </div>
-        <h1>
-          Hosted Engine Setup
-        </h1>
-        <p>
-          {message}
-        </p>
-        <div className="blank-slate-pf-main-action">
-          <button
-            className="btn btn-lg btn-primary"
-            onClick={callback}>{button_text}</button>
+    <div className="list-group list-view-pf">
+      <div className="list-group-item">
+        <div className="list-view-pf-main-info">
+          <div className="list-view-pf-left">
+            <span className="pficon pficon-error-circle-o
+              list-view-pf-icon-lg" />
+          </div>
+          <div className="list-view-pf-body">
+            <div className="list-view-pf-description">
+              Hosted Engine is not running!
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-const Message = ({messages, type, icon}) => {
-  var type = "alert alert-" + type
-  var icon = "pficon pficon-" + icon
-  var output = messages.map(function(message, i) {
-      return <div key={i}>
-          <span className={icon}></span>
-          {message}
-      </div>
-  }, this)
+const Running = ({host}) => {
   return (
-      <div className={type}>{output}</div>
+    <div className="list-group list-view-pf">
+      <div className="list-group-item">
+        <div className="list-view-pf-main-info">
+          <div className="list-view-pf-left">
+            <span className="pficon pficon-ok list-view-pf-icon-lg
+              list-view-pf-icon-success" />
+          </div>
+          <div className="list-view-pf-body">
+            <div className="list-view-pf-description">
+              <div className="list-group-item-heading">
+                Hosted Engine is up!
+              </div>
+            </div>
+            <div className="list-group-item-text">
+              Hosted Engine is running on <strong>{host}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   )
 }
+
+const HostDetail = ({host}) => {
+  return (
+    <div>
+      <div className="list-group list-view-pf">
+        <div className="list-group-item list-view-pf-stacked">
+          <div className="list-view-pf-main-info">
+            <div className="list-view-pf-body">
+              <div className="list-view-pf-description">
+                <div className="list-group-item-heading">
+                  {host.hostname}
+                </div>
+                <div className="list-group-item-text">
+                  Agent stopped: {host.stopped.toString()}<br />
+                  Local Maintenance: {host.maintenance.toString()}
+                </div>
+              </div>
+              <div className="list-view-pf-additional-info">
+                <div className="list-view-pf-additional-info-item
+                  list-view-pf-additional-info-item-stacked">
+                  <strong>VM Status</strong>
+                  <div>State: {host["engine-status"].vm}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/*
+<div className="list-view-pf-additional-info-item
+  list-view-pf-additional-info-item-stacked">
+  <strong>Live Data</strong> {host["live-data"].toString()}
+</div>
+<div className="list-view-pf-additional-info-item
+  list-view-pf-additional-info-item-stacked">
+  <strong>Host ID</strong> {host["host-id"]}
+</div>
+<div>Health: {host["engine-status"].health}</div>
+{("reason" in host["engine-status"]) ?
+  <div>Reason: {host["engine-status"].reason}</div> :
+  null
+}
+*/
 
 export default HostedEngine
