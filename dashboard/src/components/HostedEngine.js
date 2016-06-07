@@ -12,7 +12,7 @@ class HostedEngine extends Component {
         cancelled: false
       }
     this.onClick = this.onClick.bind(this)
-    this.closeCallback = this.closeCallback.bind(this)
+    this.abortCallback = this.abortCallback.bind(this)
     this.startSetup = this.startSetup.bind(this)
   }
   onClick () {
@@ -21,9 +21,9 @@ class HostedEngine extends Component {
     this.startSetup()
   }
   startSetup() {
-    setup = new RunSetup(this.closeCallback)
+    setup = new RunSetup(this.abortCallback)
   }
-  closeCallback() {
+  abortCallback() {
     this.setState({cancelled: true})
     this.setState({hidden: true})
   }
@@ -50,9 +50,12 @@ class Setup extends Component {
     super(props)
     this.state = {
       question: null,
-      output: null
+      output: null,
+      terminated: false,
+      success: false
     }
     this.resetState = this.resetState.bind(this)
+    this.processExit = this.processExit.bind(this)
     this.parseOutput = this.parseOutput.bind(this)
     this.passInput = this.passInput.bind(this)
     this.restart = this.restart.bind(this)
@@ -69,22 +72,32 @@ class Setup extends Component {
       warnings: [],
       errors: [],
       lines: [],
-      terminated: false
     }
     this.setState({question: question})
     this.setState({output: output})
+    this.setState({terminated: false})
+    this.setState({success: false})
   }
   restart() {
     this.resetState()
     this.props.setupCallback()
-    this.setState({setup: setup.start(this.parseOutput)})
+    this.setState({setup: setup.start(this.parseOutput,
+                                      this.processExit)
+                  })
   }
   componentWillMount() {
     this.resetState()
-    this.setState({setup: setup.start(this.parseOutput)})
+    this.setState({setup: setup.start(this.parseOutput,
+                                      this.processExit)
+                  })
   }
   componentWillUnmount() {
     setup.close()
+  }
+  processExit(status) {
+    this.setState({terminated: true})
+    this.setState({success: status == 0 ? true : false})
+    console.log(this.state.success)
   }
   passInput(input) {
     if (this.state.question.prompt.length > 0) {
@@ -104,7 +117,7 @@ class Setup extends Component {
     for (var key in ret.output) {
       var value = this.state.output
       if (key === "terminated") {
-         value.terminated = ret.output.terminated
+         this.setState({terminated: ret.output.terminated})
       } else {
           // Pop off the beginning of the box if it gets too long, since
           // otopi has a lot of informational messages for some steps,
@@ -118,42 +131,47 @@ class Setup extends Component {
     }
   }
   render() {
-    let finished_error = this.state.output.terminated &&
+    let finished_error = this.state.terminated  &&
       this.state.output.errors.length > 0
 
-    let show_input = !this.state.output.terminated &&
+    let show_input = !this.state.terminated &&
       this.state.question.prompt.length > 0
 
     return (
-      <div className="ovirt-input">
-        {this.state.output.infos.length > 0 ?
-          <Message messages={this.state.output.infos}
-            type="info"
-            icon="info"/>
-        : null }
-        {this.state.output.warnings.length > 0 ?
-          <Message messages={this.state.output.warnings}
-            type="warning"
-            icon="warning-triangle-o"/>
-        : null }
-        <HostedEngineOutput output={this.state.output}/>
-        {show_input ?
-          <HostedEngineInput
-            question={this.state.question}
-            password={this.state.question.password}
-            passInput={this.passInput}
-            errors={this.state.output.errors}/>
-          : !this.state.output.terminated ? <div>
-            <div className="spinner"/>
-            <CancelButton /></div> : null }
-        {finished_error ?
-          <div>
-            <Message messages={this.state.output.errors}
-              type="danger"
-              icon="error-circle-o" />
-            <RestartButton restartCallback={this.restart} />
+      <div>
+        {this.state.success ?
+        <Success /> :
+          <div className="ovirt-input">
+            {this.state.output.infos.length > 0 ?
+              <Message messages={this.state.output.infos}
+                type="info"
+                icon="info"/>
+            : null }
+            {this.state.output.warnings.length > 0 ?
+              <Message messages={this.state.output.warnings}
+                type="warning"
+                icon="warning-triangle-o"/>
+            : null }
+            <HostedEngineOutput output={this.state.output}/>
+            {show_input ?
+              <HostedEngineInput
+                question={this.state.question}
+                password={this.state.question.password}
+                passInput={this.passInput}
+                errors={this.state.output.errors}/>
+              : !this.state.terminated ? <div>
+                <div className="spinner"/>
+                <CancelButton /></div> : null }
+            {finished_error ?
+              <div>
+                <Message messages={this.state.output.errors}
+                  type="danger"
+                  icon="error-circle-o" />
+                <RestartButton restartCallback={this.restart} />
+              </div>
+              : null }
           </div>
-          : null }
+        }
       </div>
     )
   }
@@ -272,6 +290,21 @@ const HostedEngineOutput = ({output}) => {
     <div className="panel panel-default viewport">
       <div className="he-input">
         {output_div}
+      </div>
+    </div>
+  )
+}
+
+const Success = () => {
+  return (
+    <div className="curtains curtains-ct blank-slate-pf">
+      <div className="container-center">
+        <div className="blank-slate-pf-icon">
+          <i className="pficon-ok" />
+        </div>
+        <h1>
+          Hosted Engine Setup successfully completed!
+        </h1>
       </div>
     </div>
   )
