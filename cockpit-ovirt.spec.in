@@ -28,6 +28,7 @@ BuildRequires: ovirt-engine-nodejs-modules
 Summary:        Dashboard for Cockpit based on %{product}.
 BuildArch:      noarch
 Requires: cockpit
+Requires: ovirt-hosted-engine-setup
 %if 0%{?use_vdsm}
 Requires: vdsm >= 4.17.999-610
 %else
