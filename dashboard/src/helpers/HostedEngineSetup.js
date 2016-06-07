@@ -53,7 +53,8 @@ class RunSetup {
       question: {
         prompt: [],
         suggested: '',
-        password: false
+        password: false,
+        complete: false
       },
       output: {
         infos: [],
@@ -66,14 +67,10 @@ class RunSetup {
 
     // This is quite annoying, but the cockpit channel buffers in unpredictable
     // ways, so split off parts after the question and track them separately
-    if (/\*\*\*Q/.test(payload)) {
+    if (/\*\*%QStart/.test(payload)) {
       this._found_question = true
-      var parts = payload.split(/\*\*\*Q:.*/)
-      if (parts.length > 1) {
-        values = this.getQuestion(parts.pop(), values)
-      }
-      values = this.parseOutput(parts[0], values)
-    } else if (this._found_question) {
+    }
+    if (this._found_question) {
       values = this.getQuestion(payload, values)
     } else {
       values = this.parseOutput(payload, values)
@@ -132,15 +129,21 @@ class RunSetup {
     payload = payload.trim().split(/\n/)
     payload.forEach(function(line) {
       // Strip off the beginning
-      values.question.prompt.push(line.replace(/###/, ""))
+      if (/^###/.test(line)) {
+        values.question.prompt.push(line.replace(/###/, ""))
+      }
 
       // This is a hack until https://bugzilla.redhat.com/show_bug.cgi?id=1336250
       // is merged: https://gerrit.ovirt.org/#/c/56955/
-      if (line.match(/password/i)) {
+      if (line.match(/password/i || /\*\*%QHidden: TRUE/.test(line))) {
         values.question.password = true
       }
 
-      var match = line.match(/\[(.*)\]/)
+      if (/\*\*%QEnd/.test(line)) {
+        values.question.complete = true
+      }
+
+      var match = line.match(/\*\*%QDefault: (.*)/)
       values.question.suggested = match ? match[1] : ""
     })
     return values
