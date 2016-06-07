@@ -64,7 +64,8 @@ class Setup extends Component {
     var question = {
       prompt: [],
       suggested: '',
-      password: false
+      password: false,
+      complete: false
     }
 
     var output = {
@@ -111,6 +112,7 @@ class Setup extends Component {
 
     question.prompt = question.prompt.concat(ret.question.prompt)
     question.password = ret.question.password
+    question.complete = ret.question.complete || this.state.question.complete
 
     this.setState({question: question})
 
@@ -135,7 +137,8 @@ class Setup extends Component {
       this.state.output.errors.length > 0
 
     let show_input = !this.state.terminated &&
-      this.state.question.prompt.length > 0
+      (this.state.question.prompt.length > 0 &&
+        this.state.question.complete)
 
     return (
       <div>
