@@ -93,6 +93,10 @@ Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-le
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Tue Jun 07 2016 Ryan Barry <rbarry@redhat.com> - 0.10
+- Add a hosted engine status pae
+- Add cancellation buttons for hosted engine
+- Catch abnormal exits
 * Wed May 18 2016 Ryan Barry <rbarry@redhat.com> - 0.9
 - Add links to other parts of cockpit on the dashboard
 - Add the ability to show the host SSH key to the dashboard
