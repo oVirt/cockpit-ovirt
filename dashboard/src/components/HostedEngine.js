@@ -9,23 +9,34 @@ class HostedEngine extends Component {
     super(props)
       this.state = {
         hidden: true,
-        foo: "bar"
+        cancelled: false
       }
     this.onClick = this.onClick.bind(this)
+    this.closeCallback = this.closeCallback.bind(this)
+    this.startSetup = this.startSetup.bind(this)
   }
   onClick () {
     this.setState({hidden: false})
+    this.setState({cancelled: false})
+    this.startSetup()
   }
-  componentWillMount() {
-    setup = new RunSetup()
+  startSetup() {
+    setup = new RunSetup(this.closeCallback)
+  }
+  closeCallback() {
+    this.setState({cancelled: true})
+    this.setState({hidden: true})
   }
   render() {
     return (
       <div>
         {this.state.hidden ?
-          <Curtains callback={this.onClick} />
+          <Curtains
+            callback={this.onClick}
+            cancelled={this.state.cancelled}
+            />
           :
-          <Setup />
+          <Setup setupCallback={this.startSetup}/>
         }
       </div>
     )
@@ -44,6 +55,7 @@ class Setup extends Component {
     this.resetState = this.resetState.bind(this)
     this.parseOutput = this.parseOutput.bind(this)
     this.passInput = this.passInput.bind(this)
+    this.restart = this.restart.bind(this)
   }
   resetState() {
     var question = {
@@ -61,6 +73,11 @@ class Setup extends Component {
     }
     this.setState({question: question})
     this.setState({output: output})
+  }
+  restart() {
+    this.resetState()
+    this.props.setupCallback()
+    this.setState({setup: setup.start(this.parseOutput)})
   }
   componentWillMount() {
     this.resetState()
@@ -126,11 +143,16 @@ class Setup extends Component {
             password={this.state.question.password}
             passInput={this.passInput}
             errors={this.state.output.errors}/>
-          : !this.state.output.terminated ? <div className="spinner"/> : null }
+          : !this.state.output.terminated ? <div>
+            <div className="spinner"/>
+            <CancelButton /></div> : null }
         {finished_error ?
-          <Message messages={this.state.output.errors}
-            type="danger"
-            icon="error-circle-o" />
+          <div>
+            <Message messages={this.state.output.errors}
+              type="danger"
+              icon="error-circle-o" />
+            <RestartButton restartCallback={this.restart} />
+          </div>
           : null }
       </div>
     )
@@ -191,8 +213,51 @@ class HostedEngineInput extends Component {
             onChange={this.handleInput}
             value={this.state.input} />
           {err_text}
+          <CancelButton />
         </div>
       </form>
+    )
+  }
+}
+
+class CancelButton extends Component {
+  constructor(props) {
+    super(props)
+    this.onClick = this.onClick.bind(this)
+  }
+  onClick() {
+    setup.close()
+  }
+  render() {
+    return (
+      <div>
+        <button
+          type="button"
+          className="btn btn-danger btn-spacer"
+          onClick={this.onClick}>
+          Cancel Setup
+        </button>
+      </div>
+    )
+  }
+}
+
+class RestartButton extends Component {
+  constructor(props) {
+    super(props)
+    this.onClick = this.onClick.bind(this)
+  }
+  onClick() {
+    this.props.restartCallback()
+  }
+  render() {
+    return (
+      <div>
+        <button className="btn btn-primary btn-spacer"
+          onClick={this.onClick}>
+          Restart Setup
+        </button>
+      </div>
     )
   }
 }
@@ -212,7 +277,14 @@ const HostedEngineOutput = ({output}) => {
   )
 }
 
-const Curtains = ({callback}) => {
+const Curtains = ({callback, cancelled}) => {
+  let message = cancelled ?
+    "Hosted engine setup was aborted" :
+    "Configure and install a highly-available virtual machine which will"
+    "run oVirt Engine to manage multiple compute nodes, or add this systemd"
+    "to an existing hosted engine cluster"
+  let button_text = cancelled ?
+    "Restart" : "Start"
   return (
     <div className="curtains curtains-ct blank-slate-pf">
       <div className="container-center">
@@ -223,14 +295,12 @@ const Curtains = ({callback}) => {
           Hosted Engine Setup
         </h1>
         <p>
-          Configure and install a highly-available virtual machine which will
-          run oVirt Engine to manage multiple compute nodes, or add this systemd
-          to an existing hosted engine cluster
+          {message}
         </p>
         <div className="blank-slate-pf-main-action">
           <button
             className="btn btn-lg btn-primary"
-            onClick={callback}>Start</button>
+            onClick={callback}>{button_text}</button>
         </div>
       </div>
     </div>

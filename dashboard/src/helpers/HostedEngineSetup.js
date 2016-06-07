@@ -1,8 +1,9 @@
 class RunSetup {
-  constructor() {
+  constructor(closeCallback) {
     this._callback = null
     this._found_question = false
     this._chomp_input = false
+    this.closeCallback = closeCallback
   }
 
   start(callback) {
@@ -32,6 +33,7 @@ class RunSetup {
     if (this.channel.valid) {
       this.channel.close()
     }
+    this.closeCallback()
   }
 
   handleOutput(ev, payload) {
