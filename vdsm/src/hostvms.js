@@ -227,7 +227,7 @@ function refreshMemoryChart (chartDivId, usageRecord) {
   var used = normalizePercentage(usageRecord.memory)
   var free = maximum - used
 
-  var labels = [used + '%']
+  var labels = [used + '%', 'of mem']
   refreshDonutChart(chartDivId, labels, [['Free', free], ['Used', used]], [['available', 'used']])
 }
 
