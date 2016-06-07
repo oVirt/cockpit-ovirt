@@ -24,6 +24,20 @@ export function printError (text, detail) {
   $('#error-msg').prepend(html)
 }
 
+export function printWarning (text, detail) {
+  var msg = _('Warning: {0}').format(text)
+  if (detail) {
+    msg += _(', Detail: ').format(detail)
+  }
+
+  console.log(msg)
+
+  var template = $('#warning-msg-template').html()
+  var html = Mustache.to_html(template, {msg: text})
+
+  $('#error-msg').prepend(html)
+}
+
 export function debugMsg (text) {
   if (typeof __DEV__ !== 'undefined') {
     console.log('Debug: ' + text)

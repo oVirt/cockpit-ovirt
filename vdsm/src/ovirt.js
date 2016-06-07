@@ -10,7 +10,7 @@ import '../node_modules/patternfly/dist/js/patternfly'
 import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
-import {debugMsg, printError, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh, confirmModal} from './helpers'
+import {debugMsg, printError, printWarning, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh, confirmModal} from './helpers'
 import {isLoggedInEngine, setEngineLoginTitle, setEngineFunctionalityVisibility, toggleEngineLoginVisibility, isAllVmsPath} from './engineLogin'
 import {readEngineVmsList, refreshEngineVmsList, hostToMaintenance} from './enginevms'
 import {readVmsList, shutdownAllHostVmsConfirm} from './hostvms'
@@ -33,8 +33,9 @@ function showEngineVmsScreen () {
     readEngineVmsList()
     $('#engine-vms-screen').show()
   } else { // should not happen, engine is not available
-    printError(_('No engine login is available'))
+    printWarning(_('Please login to Engine to see list of cluster VMs'))
     goTo('/vms')
+    // TODO: display engine login form
   }
 
   $('#main-btn-menu-allvms').addClass('active')

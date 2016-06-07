@@ -99,8 +99,6 @@
     </div>
 
     <br/>
-    <hr/>
-    <p>
     <div id="error-msg"></div>
 </div>
 
@@ -343,6 +341,16 @@
             <span class="pficon pficon-close"></span>
         </button>
         <span class="pficon pficon-error-circle-o"></span>
+        {{{msg}}}
+    </div>
+</script>
+
+<script id="warning-msg-template" type="x-template/mustache">
+    <div class="alert alert-info alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+            <span class="pficon pficon-close"></span>
+        </button>
+        <span class="pficon pficon-info"></span>
         {{{msg}}}
     </div>
 </script>
