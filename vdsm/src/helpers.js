@@ -21,7 +21,7 @@ function displayUserMessage (type, text) {
   console.log('GENERATED HTML: ' + html)
   $('#user-msg').prepend(html)
 
-  var nextUserMsgIdLocal = nextUserMsgId;
+  var nextUserMsgIdLocal = nextUserMsgId
   setTimeout(function () {
     try {
       var msg = $('#' + type + '-msg-' + nextUserMsgIdLocal)
