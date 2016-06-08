@@ -8,7 +8,7 @@ import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {downloadConsole, forceoff, shutdown, restart, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
-import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent, confirmModal} from './helpers'
+import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent, confirmModal, isHostVmsScreenDisplayed} from './helpers'
 
 import { gettext as _ } from './i18n'
 
@@ -57,14 +57,22 @@ function getAllVmStatsSuccess (vdsmDataVmsList) {
   if (vms != null) {
     if (vms.status.code === 0) {
       GLOBAL.latestHostVMSList = vms // cache for reuse i.e. in displayVMDetail()
-      renderHostVms(vms)
+
+      // among the others, update GLOBAL.vmUsage
+      var parsedVms = parseRetrievedHostVms(vms)
+
+      if (isHostVmsScreenDisplayed()) {
+        renderHostVms(parsedVms)
+      }
+
+      renderVmDetailActual()
     } else {
       printError(_('Error when reading VM stats ({0}): {1}').format(vms.status.code, vms.status.message))
     }
   }
 }
 
-function renderHostVms (vmsFull) {
+function parseRetrievedHostVms (vmsFull) {
   // the 'vmsFull' is parsed json result of getAllVmStats()
   if (vmsFull.hasOwnProperty('items') && vmsFull.items.length > 0) {
     $('#virtual-machines-novm-message').hide()
@@ -81,12 +89,30 @@ function renderHostVms (vmsFull) {
       var netRx = getVmDeviceRate(srcVm, 'network', 'rxRate')
       var netTx = getVmDeviceRate(srcVm, 'network', 'txRate')
 
-      var lastUsageRecord = addVmUsage(vm.id, vm.vcpuCount, timestamp, parseFloat(vm.cpuUser),
-        parseFloat(vm.cpuSys), parseFloat(vm.memUsage), diskRead, diskWrite, netRx, netTx)
+      // append GLOBAL.vmUsage
+      var lastUsageRecord = addVmUsage(vm.id, vm.vcpuCount, timestamp,
+        parseFloat(vm.cpuUser),
+        parseFloat(vm.cpuSys),
+        parseFloat(vm.memUsage),
+        diskRead, diskWrite, netRx, netTx)
+
+      // append local 'vm in vms'
       appendVmUsage(vm, lastUsageRecord)
     })
 
-    renderHostVmsList(vms)
+    return vms
+  }
+
+  return undefined
+}
+
+function renderHostVms (vmsParsed) {
+  $('#virtual-machines-loading-spinner').hide()
+
+  if (vmsParsed && vmsParsed.length > 0) {
+    $('#virtual-machines-novm-message').hide()
+
+    renderHostVmsList(vmsParsed)
 
     // register button event listeners
     setTimeout(function () {
@@ -96,8 +122,6 @@ function renderHostVms (vmsFull) {
       registerBtnOnClickListener('btn-restart-vm-', restart)
       registerBtnOnClickListener('host-vms-list-item-name-', onVmClick)
     }, 0)
-
-    renderVmDetailActual()
   } else {
     removeAllFromChartCache()
     $('#virtual-machines-list').html('')

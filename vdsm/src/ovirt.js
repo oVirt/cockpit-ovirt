@@ -102,7 +102,7 @@ function onLocationChanged () {
 
 function defaultScreen (errorText) {
   printError(errorText)
-  showVmsScreen()
+  goTo('/')
 }
 /*
 function jump (component) {

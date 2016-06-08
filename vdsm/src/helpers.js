@@ -182,6 +182,14 @@ export function confirmModal (title, text, onConfirm) {
   $('#modal-confirmation').modal('show')
 }
 
+/**
+ * Returns true if list of host vms is curently shown (see showVmsScreen())
+ */
+export function isHostVmsScreenDisplayed () {
+  var path = cockpit.location.path
+  return (path.length === 0 || path[0] === '/' || path[0] === 'vms')
+}
+
 /*eslint no-extend-native:0 */
 String.prototype.format = function () {
   var s = this
