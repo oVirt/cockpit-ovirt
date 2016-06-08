@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import HostedEngineSetup from './HostedEngineSetup'
-import {checkDeployed, getMetrics} from '../helpers/HostedEngineStatus'
+import {checkDeployed, getMetrics, getHostname, setMaintenance}
+  from '../helpers/HostedEngineStatus'
 var classNames = require('classnames')
 
 class HostedEngine extends Component {
@@ -95,7 +96,73 @@ class Status extends Component {
           <Engine
             status={this.state.vm}
           />
-        {rows}
+        <Buttons />
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <h3 className="panel-title">
+              Hosts in this cluster
+            </h3>
+          </div>
+          <div className="panel-body">
+            {rows}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+class Buttons extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      hostname: ""
+    }
+  }
+  componentWillMount() {
+    var self = this
+    getHostname(function(ret) {
+      self.setState({hostname: ret})
+    })
+  }
+  onClick(mode) {
+    setMaintenance(mode)
+  }
+  render() {
+    let actions = {
+      "Put this host into local maintenance" : "local",
+      "Remove this host from maintenance": "none",
+      "Put this cluster into global maintenance": "global",
+    }
+    let buttons = []
+    let i = 0
+    for (let action in actions) {
+      buttons.push(
+        <button
+          key={i}
+          className="btn btn-default"
+          onClick={() => this.onClick([actions[action])}>
+          {action}
+        </button>
+        )
+        i++
+      }
+      return (
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <h3 className="panel-title">
+              Status of this host ({this.state.hostname})
+            </h3>
+          </div>
+          <div className="panel-body">
+            <p>
+              {this.state.hostname} <span className="pficon
+              pficon-med pficon-ok" />
+          </p>
+          <div className="btn-group">
+            {buttons}
+          </div>
+        </div>
       </div>
     )
   }
@@ -123,18 +190,14 @@ const Engine = ({status}) => {
 // list-groups, so we can't shove the boilerplate up to Engine
 const NotRunning = () => {
   return (
-    <div className="list-group list-view-pf">
-      <div className="list-group-item">
-        <div className="list-view-pf-main-info">
-          <div className="list-view-pf-left">
-            <span className="pficon pficon-error-circle-o
-              list-view-pf-icon-lg" />
-          </div>
-          <div className="list-view-pf-body">
-            <div className="list-view-pf-description">
-              Hosted Engine is not running!
-            </div>
-          </div>
+    <div className="row pad-header">
+      <div className="col-md-3 list-view-pf-left">
+        <span className="pficon pficon-error-circle-o
+          list-view-pf-icon-lg" />
+      </div>
+      <div className="col-md-6">
+        <div className="vcenter">
+          Hosted Engine is not running!
         </div>
       </div>
     </div>
@@ -143,26 +206,22 @@ const NotRunning = () => {
 
 const Running = ({host}) => {
   return (
-    <div className="list-group list-view-pf">
-      <div className="list-group-item">
-        <div className="list-view-pf-main-info">
-          <div className="list-view-pf-left">
-            <span className="pficon pficon-ok list-view-pf-icon-lg
-              list-view-pf-icon-success" />
-          </div>
-          <div className="list-view-pf-body">
-            <div className="list-view-pf-description">
-              <div className="list-group-item-heading">
-                Hosted Engine is up!
-              </div>
-            </div>
-            <div className="list-group-item-text">
-              Hosted Engine is running on <strong>{host}</strong>
-          </div>
+    <div className="row pad-header">
+      <div className="col-md-3 list-view-pf-left">
+        <span className="pficon pficon-ok list-view-pf-icon-lg
+          list-view-pf-icon-success" />
+      </div>
+      <div className="col-md-4">
+        <div className="vcenter">
+          Hosted Engine is up!
         </div>
       </div>
+      <div className="col-md-4">
+        <div className="vcenter">
+          <p>Hosted Engine is running on <strong>{host}</strong></p>
+      </div>
+      </div>
     </div>
-  </div>
   )
 }
 
