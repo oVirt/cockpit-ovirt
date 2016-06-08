@@ -145,7 +145,11 @@ function renderHostVm (vm) {
 
   var usageRecords = GLOBAL.vmUsage[vm.id]
 
-  refreshVmUsageCharts(vm.id, usageRecords[usageRecords.length - 1])
+  if (isVmUp(vm)) {
+    refreshVmUsageCharts(vm.id, usageRecords[usageRecords.length - 1])
+  } else {
+    debugMsg(`VM ${vm.id} is not up, skipping for charts`)
+  }
 }
 
 function getVmDeviceRate (vm, device, rateName) {
@@ -297,6 +301,15 @@ function shutdownAllHostVms () {
 }
 
 // ----------------------------------------------------------------------
+export function isVmUp (vmDetail) {
+  var status = vmDetail['status']
+  if (vmDetail['status'] && vmDetail['status'].toLowerCase() === 'up') {
+    return true
+  }
+
+  return false
+}
+
 export function _getVmDetails (src) { // src is one item from parsed getAllVmStats
   if (!src) {
     return undefined
