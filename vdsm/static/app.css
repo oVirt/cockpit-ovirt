@@ -18,3 +18,11 @@
     position: fixed;
 }
 
+.watermark {
+    #position: absolute;
+    opacity: 0.25;
+    font-size: 1.5em;
+    #width: 100%;
+    text-align: center;
+    #z-index: 1000;
+}
