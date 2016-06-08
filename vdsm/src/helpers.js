@@ -11,7 +11,27 @@ export function goTo (locationPath) {
   cockpit.location.go(locationPath)
 }
 
-var nextErrorMsgId = 1
+var nextUserMsgId = 1
+function displayUserMessage (type, text) {
+  nextUserMsgId++
+
+  var template = $('#' + type + '-msg-template').html()
+  var html = Mustache.to_html(template, {msg: text, id: nextUserMsgId})
+
+  console.log('GENERATED HTML: ' + html)
+  $('#user-msg').prepend(html)
+
+  var nextUserMsgIdLocal = nextUserMsgId;
+  setTimeout(function () {
+    try {
+      var msg = $('#' + type + '-msg-' + nextUserMsgIdLocal)
+      msg.remove()
+    } catch (err) {
+      console.log(err)
+    }
+  }, CONFIG.reload.auto_clear_msg_delay)
+}
+
 export function printError (text, detail) {
   var msg = _('Error: {0}').format(text)
   if (detail) {
@@ -20,19 +40,7 @@ export function printError (text, detail) {
 
   console.log(msg)
 
-  nextErrorMsgId++
-  var template = $('#error-msg-template').html()
-  var html = Mustache.to_html(template, {msg: text, id: nextErrorMsgId})
-  $('#error-msg').prepend(html)
-
-  setTimeout(function () {
-    try {
-      var msg = $('#error-msg-' + nextErrorMsgId)
-      msg.remove()
-    } catch (err) {
-      console.log(err)
-    }
-  }, CONFIG.reload.auto_clear_msg_delay)
+  displayUserMessage('error', text)
 }
 
 export function printWarning (text, detail) {
@@ -43,10 +51,7 @@ export function printWarning (text, detail) {
 
   console.log(msg)
 
-  var template = $('#warning-msg-template').html()
-  var html = Mustache.to_html(template, {msg: text})
-
-  $('#error-msg').prepend(html)
+  displayUserMessage('warning', text)
 }
 
 export function debugMsg (text) {
