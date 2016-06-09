@@ -132,6 +132,8 @@ function _getEngineVmDetails (src, host) { // src is one item from parsed engine
   var cpuTopology = src.cpu.topology
   var totalCpus = cpuTopology.sockets * cpuTopology.cores * cpuTopology.threads
 
+  var state = getState(src)
+
   var vm = {
     id: src.id,
     name: src.name,
@@ -140,8 +142,8 @@ function _getEngineVmDetails (src, host) { // src is one item from parsed engine
     memoryHuman: formatHumanReadableBytes(src.memory, 0),
     vCPUs: totalCpus,
     type: src.type,
-    status: src.status.state,
-    statusHtml: vmStatusToHtml(src.status.state),
+    status: state,
+    statusHtml: vmStatusToHtml(state),
     osType: src.os.type,
     host: host,
 
@@ -155,8 +157,17 @@ function _getEngineVmDetails (src, host) { // src is one item from parsed engine
   return vm
 }
 
+/**
+ * Might vary among versions
+ */
+function getState (engineVm) {
+  return (engineVm['status']) ? (
+    engineVm['status']['state'] ? (engineVm['status']['state']) : (engineVm['status'])
+  ) : ''
+}
+
 function isRunActionAllowed (engineVm) {
-  var state = engineVm.status.state.toLowerCase()
+  var state = getState(engineVm).toLowerCase()
 
   return ['down', ''].includes(state)
 }
