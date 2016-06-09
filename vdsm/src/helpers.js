@@ -18,7 +18,6 @@ function displayUserMessage (type, text) {
   var template = $('#' + type + '-msg-template').html()
   var html = Mustache.to_html(template, {msg: text, id: nextUserMsgId})
 
-  console.log('GENERATED HTML: ' + html)
   $('#user-msg').prepend(html)
 
   var nextUserMsgIdLocal = nextUserMsgId
