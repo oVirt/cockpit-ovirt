@@ -116,7 +116,7 @@ function refreshActionClicked (ignore) {
 
   if (buttonRefresh.attr('data-pattern') === 'off') {
     startAutorefresher()
-    scheduleNextAutoRefresh()
+    setTimeout(refresh, CONFIG.reload.auto_refresh_interval_first)
 
     buttonRefreshText.text(_('Refresh: auto'))
     buttonRefresh.attr('data-pattern', 'on')

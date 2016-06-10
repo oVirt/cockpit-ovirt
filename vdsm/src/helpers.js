@@ -31,13 +31,17 @@ function displayUserMessage (type, text) {
   }, CONFIG.reload.auto_clear_msg_delay)
 }
 
-export function printError (text, detail) {
+export function printError (text, detail, shallBeUserMsgOmitted) {
   var msg = _('Error: {0}').format(text)
   if (detail) {
     msg += _(', Detail: ').format(detail)
   }
 
   console.log(msg)
+
+  if (shallBeUserMsgOmitted) {
+    return
+  }
 
   displayUserMessage('error', text)
 }
