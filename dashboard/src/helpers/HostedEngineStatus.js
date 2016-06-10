@@ -26,6 +26,20 @@ export function getMetrics(callback) {
   })
 }
 
+export function setMaintenance(mode) {
+  let proc = cockpit.spawn(
+    ["/usr/sbin/hosted-engine",
+     `--mode=${mode}`,
+     ]
+  )
+  .done(function() {
+    console.log(`Set hosted engine maintenance level to ${mode}`)
+  })
+  .fail(function() {
+    console.log(`Failed to set hosted engine maintenance level to ${mode}`)
+  })
+}
+
 export function getHostname(callback) {
   var client = cockpit.dbus('org.freedesktop.hostname1')
   var proxy = client.proxy('org.freedesktop.hostname1',

@@ -141,7 +141,7 @@ class Buttons extends Component {
         <button
           key={i}
           className="btn btn-default"
-          onClick={() => this.onClick([actions[action])}>
+          onClick={() => this.onClick(actions[action])}>
           {action}
         </button>
         )
