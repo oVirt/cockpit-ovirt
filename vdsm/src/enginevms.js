@@ -29,6 +29,7 @@ export function refreshEngineVmsList () {
   }
 }
 
+var getAllVmsListErrorFirst = true // ugly hack to avoid dummy error message
 function getAllVmsListSuccess (vdsmEngineAllVms) {
   debugMsg('getAllVmsListSuccess() called')
   var vms = parseVdsmJson(vdsmEngineAllVms)
@@ -37,7 +38,8 @@ function getAllVmsListSuccess (vdsmEngineAllVms) {
       GLOBAL.latestEngineVmsList = vms
       renderEngineVmsList(vms)
     } else {
-      printError(_('getAllVmsList() error: {0}').format(vms.status.code), vms.status.message)
+      printError(_('getAllVmsList() error: {0}').format(vms.status.code), vms.status.message, getAllVmsListErrorFirst)
+      getAllVmsListErrorFirst = false
     }
   }
 }
