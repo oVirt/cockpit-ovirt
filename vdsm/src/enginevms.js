@@ -114,13 +114,41 @@ function onEngineRunVmClick (vmId) {
       stdout += data
     },
     function () {
-      engineRunVmSuccess(vmId)
+      engineRunVmSuccess(vmId, stdout)
     },
     engineBridgeFail, 'runVm', vmId)
 }
 
-function engineRunVmSuccess (vmId) {}
+function engineRunVmSuccess (vmId, output) {
+  debugMsg(`engineRunVmSuccess(${vmId}): output: '${output}'`)
 
+  var resp = parseVdsmJson(output)
+  if (resp != null) {
+    if (resp.status.code === 0) {
+      debugMsg(`engineRunVmSuccess(${vmId}): success`)
+    } else {
+      printError(_('VM failed to start. Code: {0}, Reason: {1}').format(resp.status.code, engineRunVmFailureReason(resp)), resp.status.message)
+    }
+  }
+}
+
+function engineRunVmFailureReason (response) {
+  // response is already parsed JSON
+  try {
+    const xmlDoc = $.parseXML(response.status.message)
+
+    const actionElem = xmlDoc.getElementsByTagName('action')[0]
+    const faultElem = actionElem.getElementsByTagName('fault')[0]
+    const detailElem = faultElem.getElementsByTagName('detail')[0]
+
+    const reason = detailElem.childNodes[0].nodeValue
+
+    return reason
+  } catch (ex) {
+    debugMsg(`engineRunVmFailureReason() malformed response: '${JSON.stringify(response)}'`)
+  }
+  return ''
+}
 // --- Engine data transformation ---------------------------------------
 function _getEngineHostDetails (src) { // src are parsed host data retrieved from engine (via REST API)
   return {
