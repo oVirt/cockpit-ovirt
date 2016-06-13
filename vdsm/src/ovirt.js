@@ -11,7 +11,7 @@ import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {debugMsg, printError, printWarning, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh, confirmModal} from './helpers'
-import {isLoggedInEngine, setEngineLoginTitle, setEngineFunctionalityVisibility, toggleEngineLoginVisibility, isAllVmsPath} from './engineLogin'
+import {isLoggedInEngine, isAllVmsPath, initEngineLogin, showEngineLoginModal} from './engineLogin'
 import {readEngineVmsList, refreshEngineVmsList, hostToMaintenance} from './enginevms'
 import {readVmsList, shutdownAllHostVmsConfirm} from './hostvms'
 import {getVmIdFromPath, renderVmDetail} from './vmdetail'
@@ -111,19 +111,21 @@ function jump (component) {
 }
 */
 function refreshActionClicked (ignore) {
+  debugMsg(`refreshActionClicked(ignore=${ignore}) called`)
+
   var buttonRefresh = $('#action-refresh')
-  var buttonRefreshText = $('#action-refresh-text')
+  var buttonRefreshText = $('#auto-refresh-text')
 
   if (buttonRefresh.attr('data-pattern') === 'off') {
     startAutorefresher()
     setTimeout(refresh, CONFIG.reload.auto_refresh_interval_first)
 
-    buttonRefreshText.text(_('Refresh: auto'))
+    buttonRefreshText.html(_('Refresh: auto'))
     buttonRefresh.attr('data-pattern', 'on')
   } else {
     stopAutorefresher()
 
-    buttonRefreshText.text(_('Refresh: off'))
+    buttonRefreshText.html(_('Refresh: off'))
     buttonRefresh.attr('data-pattern', 'off')
   }
 }
@@ -178,14 +180,7 @@ function initNavigation () {
   registerBtnOnClickListener('editor-vdsm-btn-save', saveVdsmConf)
   registerBtnOnClickListener('editor-vdsm-btn-reload', reloadVdsmConf)
 
-  registerBtnOnClickListener('engine-login-title', toggleEngineLoginVisibility)
-}
-
-function initEngineLogin () {
-  if (isLoggedInEngine()) {
-    setEngineLoginTitle(_('Logged to Engine'))
-  }
-  setEngineFunctionalityVisibility()
+  registerBtnOnClickListener('action-login-to-engine', showEngineLoginModal)
 }
 
 // TODO: call i18nInit() before  $(document).ready(), handle inner translateHtml() call
