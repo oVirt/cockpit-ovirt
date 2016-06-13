@@ -36,7 +36,7 @@ export function i18nInit () {
 
       translateHtml()
     }).fail(function () {
-      printError('Failed to load i18n resource: ' + i18nFile)
+      printError(`Failed to load i18n resource: ${i18nFile}`, '', true)
     })
 }
 
