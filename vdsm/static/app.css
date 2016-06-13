@@ -23,3 +23,8 @@
     font-size: 1.5em;
     text-align: center;
 }
+
+#right-menu-list {
+    list-style-type: none;
+    padding-left: 0;
+}
