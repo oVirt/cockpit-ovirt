@@ -7,6 +7,7 @@
     "test": "eslint src --ext js,jsx",
     "fix": "eslint src --fix --ext js,jsx",
     "dev": "webpack -p --progress",
+    "watch": "webpack -d --watch --progress",
     "build": "npm test && NODE_ENV=production webpack -p --progress"
   },
   "repository": {
