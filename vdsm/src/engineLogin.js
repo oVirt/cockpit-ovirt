@@ -1,9 +1,8 @@
 // --- Engine login -----------------------------------------------------
 import $ from 'jquery'
 import cockpit from 'cockpit'
-import Mustache from 'mustache'
 
-import {debugMsg, spawnVdsm, parseVdsmJson, vdsmFail, registerBtnOnClickListener, goTo} from './helpers'
+import {debugMsg, printError, spawnVdsm, parseVdsmJson, vdsmFail, goTo} from './helpers'
 
 import { gettext as _ } from './i18n'
 
@@ -39,39 +38,18 @@ function engineLogin () { // get Engine token via host
 }
 
 function onEngineLoginStart () {
-  setEngineLoginErrorMsg('')
+  // TODO: show spinner
 }
 
 function onEngineLoginEnd () {
+  // TODO: hide spinner
 }
 
-export function engineLogout () {
+function engineLogout () {
   debugMsg('Engine logout')
   removeEngineToken()
 
-  setEngineLoginTitle('Login to Engine')
-  setEngineLoginButtonVisibility()
-  setEngineFunctionalityVisibility()
-  toggleEngineLoginVisibility()
-}
-
-export function toggleEngineLoginVisibility () {
-  var loginFormElement = $('#engine-login-content')
-  if (loginFormElement.is(':hidden')) {
-    var credentials = getEngineCredentials()
-    credentials['pwd'] = ''// for security
-
-    var template = $('#engine-login-form-templ').html()
-    var html = Mustache.to_html(template, credentials)
-    loginFormElement.html(html)
-    loginFormElement.show()
-
-    registerBtnOnClickListener('engine-login-button-login', engineLogin)
-    registerBtnOnClickListener('engine-login-button-logout', engineLogout)
-  } else {
-    loginFormElement.hide()
-  }
-  setEngineLoginButtonVisibility()
+  initEngineLogin()
 }
 
 function addEngineToken (token) {
@@ -123,18 +101,13 @@ function engineLoginSuccessful (vdsmLoginOut) {
   debugMsg('engineLoginSuccessful() called')
   var resp = parseVdsmJson(vdsmLoginOut)
   onEngineLoginEnd()
+
   if (resp != null) {
     if (resp.status.code === 0) {
       if (resp.hasOwnProperty('content') && resp.content.hasOwnProperty('access_token')) {
-        // TODO: make the title green
         debugMsg('Login successful, token received')
-        setEngineLoginTitle(_('Logged to Engine'))
-        toggleEngineLoginVisibility()
-
         addEngineToken(resp.content.access_token)
-
-        setEngineLoginButtonVisibility()
-        setEngineFunctionalityVisibility()
+        initEngineLogin()
       } else {
         engineLoginFailed(_('No token received'), resp.status.code)
       }
@@ -148,32 +121,27 @@ function engineLoginFailed (msg, statusCode) {
   debugMsg('Login error: ' + msg)
   onEngineLoginEnd()
 
-    // TODO: make the title red
-  setEngineLoginTitle(_('Engine login failed'))
-
   removeEngineToken()
-
   setEngineLoginErrorMsg('({0}) {1}'.format(statusCode, msg))
-  setEngineFunctionalityVisibility()
+  initEngineLogin()
 }
 
 function setEngineLoginErrorMsg (text) {
-  var errorMsgElement = $('#engine-login-error-msg')
-  if (errorMsgElement != null) {
-    $('#engine-login-error-msg-text').html(text)
-    errorMsgElement.show()
-  }
+  printError(text)
 }
 
-export function setEngineLoginTitle (message, detail) {
-  var msgData = {
-    message: message,
-    param1: detail
+export function initEngineLogin () {
+  if (isLoggedInEngine()) {
+    setEngineLoginTitle(_('Logout from Engine'))
+  } else {
+    setEngineLoginTitle(_('Login to Engine'))
   }
 
-  var template = $('#message-one-param-temp').html()
-  var html = Mustache.to_html(template, msgData)
-  $('#engine-login-title').html(html)
+  setEngineFunctionalityVisibility()
+}
+
+function setEngineLoginTitle (title) {
+  $('#engine-login-title').html(title)
 }
 
 export function isLoggedInEngine () {
@@ -181,21 +149,37 @@ export function isLoggedInEngine () {
 }
 
 export function setEngineFunctionalityVisibility () {
-  isLoggedInEngine()
-  ENGINE_RELATED_IDS.forEach(function (id) {
-  })
+  if (isLoggedInEngine()) {
+    ENGINE_RELATED_IDS.forEach(function (id) {
+      // TODO
+    })
+  } else {
+    // TODO
+  }
 
   if (isAllVmsPath()) {
     goTo('/')
   }
 }
 
-export function setEngineLoginButtonVisibility () {
-  if (isLoggedInEngine()) {
-    $('#engine-login-button-login').hide()
-    $('#engine-login-button-logout').show()
-  } else {
-    $('#engine-login-button-login').show()
-    $('#engine-login-button-logout').hide()
+export function showEngineLoginModal () {
+  if (!isLoggedInEngine()) {
+    var credentials = getEngineCredentials()
+
+    $('#engine-login-user').val(credentials.user)
+    $('#engine-login-pwd').val(credentials.pwd)
+    $('#engine-login-url').val(credentials.url)
+
+    $('#modal-engine-login-form-dologin').off('click')
+    $('#modal-engine-login-form-dologin').on('click',
+      function () {
+        $('#modal-engine-login-form').modal('hide')
+
+        engineLogin()
+      })
+
+    $('#modal-engine-login-form').modal('show')
+  } else { // Text 'Logout from Engine' clicked
+    engineLogout()
   }
 }

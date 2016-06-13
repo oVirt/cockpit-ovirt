@@ -17,99 +17,113 @@
 
 <div id="ovirt-content">
     <div class="ovirt-content-header-extra">
-        <table width="100%">
-            <tr>
-                <td valign="top" align="left" nowrap>
-                    <ul class="nav nav-tabs" id="main-btn-menu">
-                        <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a translatable="yes">Running VMs</a></li>
-                        <li data-pattern="/allVms" id="main-btn-menu-allvms"><a translatable="yes">VMs in Cluster</a></li>
-                        <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a translatable="yes">VDSM</a></li>
-                    </ul>
-                </td>
-                <td valign="top" width="50%">
-                    <div class="watermark">&nbsp;Technical&nbsp;Preview</div>
-                </td>
-                <td align="right" valign="top" nowrap>
-                    <div class="btn-group">
-                        <button id="action-host-to-maintenance" type="button" class="btn btn-default"
-                                translatable="yes">Host to Maintenance
-                        </button>
-                        <button id="action-refresh" type="button" class="btn btn-default" data-pattern="off"><span
-                                class="fa fa-refresh"></span><span id="action-refresh-text"></span></button>
-                    </div>
-                </td>
-                <td width="25%" align="right">
-                    <div id="engine-login">
-                        <div style="white-space: nowrap;">
-                            <a><div id="engine-login-title" translatable="yes">Login to Engine</div></a>
-                        </div>
-                        <div id="engine-login-content" hidden></div>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <ul class="nav nav-tabs" id="main-btn-menu">
+            <li class="active" data-pattern="/vms" id="main-btn-menu-hostvms"><a
+                    translatable="yes">Running VMs</a></li>
+            <li data-pattern="/allVms" id="main-btn-menu-allvms"><a translatable="yes">VMs in
+                Cluster</a></li>
+            <li data-pattern="/vdsm" id="main-btn-menu-vdsm"><a translatable="yes">VDSM</a></li>
+        </ul>
     </div>
 
-    <div class="container-fluid" style="margin-top: 5em">
-        <div id="vms-screen">
-            <div id="virtual-machines" class="panel panel-default">
-                <div class="panel-heading" translatable="yes">Virtual Machines</div>
+    <table width="100%">
+        <tr>
+            <td width="90%">
+                <div class="container-fluid" style="margin-top: 5em">
+                    <div id="vms-screen">
+                        <div id="virtual-machines" class="panel panel-default">
+                            <div class="panel-heading" translatable="yes">Virtual Machines</div>
 
-                <div id="virtual-machines-loading-spinner" class="cockpit-log-warning">
-                    <div class="blank-slate-pf">
-                        <div class="blank-slate-pf-icon">
-                            <i class="fa fa-refresh"></i>
-                        </div>
-                        <span translatable="yes"><h1>Loading VMs list ...</h1></span>
-                    </div>
-                </div>
+                            <div id="virtual-machines-loading-spinner" class="cockpit-log-warning">
+                                <div class="blank-slate-pf">
+                                    <div class="blank-slate-pf-icon">
+                                        <i class="fa fa-refresh"></i>
+                                    </div>
+                                    <span translatable="yes"><h1>Loading VMs list ...</h1></span>
+                                </div>
+                            </div>
 
-                <div class="list-group list-view-pf" id="virtual-machines-list"></div>
-                <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>
-                    <div class="blank-slate-pf">
-                        <div class="blank-slate-pf-icon">
-                            <i class="fa fa-rocket"></i>
-                        </div>
-                        <span translatable="yes"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
+                            <div class="list-group list-view-pf" id="virtual-machines-list"></div>
+                            <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>
+                                <div class="blank-slate-pf">
+                                    <div class="blank-slate-pf-icon">
+                                        <i class="fa fa-rocket"></i>
+                                    </div>
+                        <span translatable="yes"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change
+                            or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
                         </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div id="vm-detail-screen">
-            <div id="vm-detail-content" class="panel panel-default"></div>
-            <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>
-                <div class="spinner spinner-lg"></div>
-                <span translatable="yes">VM detail not available or being loaded</span>
-            </div>
-        </div>
-        <div id="engine-vms-screen">
-            <div id="engine-virtual-machines" class="panel panel-default">
-                <div class="panel-heading" translatable="yes">VMs available on the engine</div>
-                <div id="engine-virtual-machines-list"></div>
-                <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden translatable="yes">No VM is available</div>
-            </div>
-        </div>
-        <div id="vdsm-screen">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="pficon-settings"></span>
-                    <span translatable="yes">Edit vdsm.conf (or go to </span>
-                    <a href="/system/services#/vdsmd.service" target="_top">VDSM Service Management</a>)
+                    <div id="vm-detail-screen">
+                        <div id="vm-detail-content" class="panel panel-default"></div>
+                        <div id="vm-detail-not-available" class="cockpit-log-warning" hidden>
+                            <div class="spinner spinner-lg"></div>
+                            <span translatable="yes">VM detail not available or being loaded</span>
+                        </div>
+                    </div>
+                    <div id="engine-vms-screen">
+                        <div id="engine-virtual-machines" class="panel panel-default">
+                            <div class="panel-heading" translatable="yes">VMs available on the engine</div>
+                            <div id="engine-virtual-machines-list"></div>
+                            <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden
+                                 translatable="yes">No VM is available
+                            </div>
+                        </div>
+                    </div>
+                    <div id="vdsm-screen">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <span class="pficon-settings"></span>
+                                <span translatable="yes">Edit vdsm.conf (or go to </span>
+                                <a href="/system/services#/vdsmd.service" target="_top">VDSM Service Management</a>)
 
-                    <div style="float:right;">
-                        <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
-                        <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
-                            <button class="btn btn-default" id="editor-vdsm-btn-save" translatable="yes">Save</button>
-                            <button class="btn btn-default" id="editor-vdsm-btn-reload" translatable="yes">Reload</button>
+                                <div style="float:right;">
+                                    <div id="editor-vds-conf-msg" style="display: inline-block;"></div>
+                                    <div class="btn-group" id="editor-vdsm-btn-menu" style="display: inline-block;">
+                                        <button class="btn btn-default" id="editor-vdsm-btn-save" translatable="yes">
+                                            Save
+                                        </button>
+                                        <button class="btn btn-default" id="editor-vdsm-btn-reload" translatable="yes">
+                                            Reload
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea id="editor-vdsm-conf" style="width:100%;height:50%;" translatable="yes">Loading data ...</textarea>
                         </div>
                     </div>
                 </div>
-                <textarea id="editor-vdsm-conf" style="width:100%;height:50%;" translatable="yes">Loading data ...</textarea>
-            </div>
-        </div>
-    </div>
+            </td>
 
+            <td valign="top">
+                <div class="watermark" style="margin-top: 5em">&nbsp;Technical&nbsp;Preview</div>
+                <ul style="list-style-type: none;">
+                    <li>
+                        <a id="action-login-to-engine">
+                            <span class="pficon  pficon-user"></span>
+                            <span id="engine-login-title">Login to Engine</span>
+                        </a>
+                    </li>
+                    <li></li>
+                    <li>
+                        <a id="action-host-to-maintenance">
+                            <span class="pficon pficon-settings"></span>
+                            Host to Maintenance
+                        </a>
+                    </li>
+
+                    <li>
+                        <a id="action-refresh" data-pattern="off">
+                            <span class="fa fa-refresh"></span>
+                            <span id="auto-refresh-text"></span>
+                        </a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
     <br/>
     <div id="user-msg"></div>
 </div>
@@ -302,44 +316,6 @@
     </div>
 </script>
 
-<script id="engine-login-form-templ" type="x-template/mustache">
-    <table class="cockpit-form-table form-table-ct">
-        <tr>
-            <td>
-                <label class="control-label">User:</label>
-            </td>
-            <td>
-                <input id="engine-login-user" class="form-control" type="text" value="{{user}}"></input>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label class="control-label">Password:</label>
-            </td>
-            <td>
-                <input id="engine-login-pwd" class="form-control" type="password" value="{{pwd}}"></input>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label class="control-label">URL:</label>
-            </td>
-            <td>
-                <input id="engine-login-url" class="form-control" type="text" value="{{url}}"></input>
-            </td>
-        </tr>
-        <tr id="engine-login-error-msg" hidden>
-            <td>
-                <label class="control-label">Error:</label>
-            </td>
-            <td id="engine-login-error-msg-text">
-            </td>
-        </tr>
-    </table>
-    <button id="engine-login-button-login" class="btn btn-default">Login</button>
-    <button id="engine-login-button-logout" class="btn btn-default">Logout</button>
-</script>
-
 <script id="message-one-param-temp" type="x-template/mustache">
     {{message}} {{param1}}
 </script>
@@ -378,6 +354,58 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" translatable="yes">Cancel</button>
                 <button type="button" class="btn btn-primary" id="modal-confirmation-ok" translatable="yes">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-engine-login-form" tabindex="-1" role="dialog" aria-labelledby="modal-engine-login-form-title" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="pficon pficon-close"></span>
+                </button>
+                <h4 class="modal-title" id="modal-engine-login-form-title">Login to Engine</h4>
+            </div>
+            <div class="modal-body" id="modal-engine-login-form-text">
+                <table class="cockpit-form-table form-table-ct">
+                    <tr>
+                        <td>
+                            <label class="control-label">User:</label>
+                        </td>
+                        <td>
+                            <input id="engine-login-user" class="form-control" type="text" value="admin@internal">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="control-label">Password:</label>
+                        </td>
+                        <td>
+                            <input id="engine-login-pwd" class="form-control" type="password" value="admin">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="control-label">URL:</label>
+                        </td>
+                        <td>
+                            <input id="engine-login-url" class="form-control" type="text" value="https://engine.local/ovirt-engine">
+                        </td>
+                    </tr>
+                    <tr id="engine-login-error-msg" hidden>
+                        <td>
+                            <label class="control-label">Error:</label>
+                        </td>
+                        <td id="engine-login-error-msg-text">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" translatable="yes">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-engine-login-form-dologin" translatable="yes">Login</button>
             </div>
         </div>
     </div>
