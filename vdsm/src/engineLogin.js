@@ -79,7 +79,7 @@ export function getEngineCredentialsTokenOnly () {
 
 function getEngineCredentials () {
   var sessionStorage = window.sessionStorage
-  if (sessionStorage['engine-user'] != null) {
+  if (sessionStorage['engine-user']) {
     var credentials = {
       user: sessionStorage['engine-user'],
       pwd: sessionStorage['engine-pwd'],
