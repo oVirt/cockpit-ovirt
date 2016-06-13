@@ -66,7 +66,9 @@ function storeEngineCredentials (username, pwd, url, token) {
   sessionStorage['engine-user'] = username
   sessionStorage['engine-pwd'] = pwd
   sessionStorage['engine-url'] = url
-  sessionStorage['engine-token'] = token
+  if (token) {
+    sessionStorage['engine-token'] = token
+  }
 }
 
 export function getEngineCredentialsTokenOnly () {
