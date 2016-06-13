@@ -7,6 +7,7 @@
 /notes.txt
 /vdsm/transport/
 /vdsm/vdsm
+/vdsm/dist/
 /Wiki
 
 Makefile.in
