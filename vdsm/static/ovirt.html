@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html>
 <head>
     <title>oVirt</title>
     <meta charset="utf-8">
@@ -26,43 +28,44 @@
         </ul>
     </div>
 
-            <table width="100%">
-                <tr>
-                    <td width="90%">
-                        <div class="container-fluid" style="margin-top: 5em">
-                            <div id="vms-screen">
-                                <div id="virtual-machines" class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <div>
-                                            <div class="heading-onerow-left">
-                                                <h3 class="panel-title" translatable="yes">
-                                                    Virtual Machines
-                                                </h3>
-                                            </div>
-                                            <div class="heading-onerow-right">
-                                                <div style="display: block;">
-                                                    Total VMs:
-                                                    <span style="padding-left: 1.5em;" id="host-vms-total">0</span>
-                                                </div>
-                                                <div style="float: right; display: block;">
-                                                    <nav style="float: left;">
-                                                        <ul style="margin: 0px;" class="pagination ">
-                                                            <li>
-                                                                <a id="virtual-machines-pager-prev" href="#" aria-label="Previous">
-                                                                    <span aria-hidden="true">«</span>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a id="virtual-machines-pager-next" href="#" aria-label="Next">
-                                                                    <span aria-hidden="true">»</span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </nav>
-                                                </div>
-                                            </div>
+    <table width="100%">
+        <tr>
+            <td width="90%">
+                <div class="container-fluid" style="margin-top: 5em">
+                    <div id="vms-screen">
+                        <div id="virtual-machines" class="panel panel-default">
+                            <div class="panel-heading">
+                                <div>
+                                    <div class="heading-onerow-left">
+                                        <h3 class="panel-title" translatable="yes">
+                                            Virtual Machines
+                                        </h3>
+                                    </div>
+                                    <div class="heading-onerow-right">
+                                        <div style="display: block;">
+                                            Total VMs:
+                                            <span style="padding-left: 1.5em;" id="host-vms-total">0</span>
+                                        </div>
+                                        <div style="float: right; display: block;">
+                                            <nav style="float: left;">
+                                                <ul style="margin: 0px;" class="pagination ">
+                                                    <li>
+                                                        <a id="virtual-machines-pager-prev" href="#"
+                                                           aria-label="Previous">
+                                                            <span aria-hidden="true">«</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a id="virtual-machines-pager-next" href="#" aria-label="Next">
+                                                            <span aria-hidden="true">»</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
 
                             <div class="panel-body">
                                 <div id="virtual-machines-loading-spinner" class="cockpit-log-warning">
@@ -80,7 +83,8 @@
                                         <div class="blank-slate-pf-icon">
                                             <i class="fa fa-rocket"></i>
                                         </div>
-                                        <span translatable="yes"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change
+                                        <span translatable="yes"><h1>No VM is running on this host</h1><p>Let's keep
+                                            hoping in a change
                                             or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
                                         </span>
                                     </div>
@@ -277,78 +281,88 @@
     </div>
 </script>
 
-        <!-- TODO: move under list-view-pf-body once fully implemented
-        <div class="list-view-pf-actions">
-            <img width="30" src="images/vm_remote_console.png" title="Get remote console"
-                 id="btn-download-console-{{id}}" data-pattern="{{id}}" hidden>
-        </div>
-        -->
-        <script id="vms-list-templ" type="x-template/mustache">
-            <div class="list-group-item list-view-pf-stacked" id="vms-list-item-full-{{id}}">
-                <div class="list-view-pf-main-info">
-                    <div class="list-view-pf-left">
-                        {{{statusHtml}}}
+<!-- TODO: move under list-view-pf-body once fully implemented
+<div class="list-view-pf-actions">
+    <img width="30" src="images/vm_remote_console.png" title="Get remote console"
+         id="btn-download-console-{{id}}" data-pattern="{{id}}" hidden>
+</div>
+-->
+<script id="vms-list-templ" type="x-template/mustache">
+    <div class="list-group-item list-view-pf-stacked" id="vms-list-item-full-{{id}}">
+        <div class="list-view-pf-main-info">
+            <div class="list-view-pf-left">
+                {{{statusHtml}}}
+            </div>
+            <div class="list-view-pf-body">
+                <div class="list-view-pf-description" style="max-width: 250px;">
+                    <div class="list-group-item-heading" id="host-vms-list-item-name-" data-pattern="{{id}}">
+                        <a>{{name}}</a>
+                        <small>{{{guestIPsHtml}}}</small>
+                        <small>{{guestFQDN}}</small>
+                        <small>Up for: {{elapsedTimeHuman}}</small>
                     </div>
-                    <div class="list-view-pf-body">
-                        <div class="list-view-pf-description" style="max-width: 250px;">
-                            <div class="list-group-item-heading" id="host-vms-list-item-name-" data-pattern="{{id}}">
-                                <a>{{name}}</a>
-                                <small>{{{guestIPsHtml}}}</small>
-                                <small>{{guestFQDN}}</small>
-                                <small>Up for: {{elapsedTimeHuman}}</small>
-                            </div>
-                        </div>
-                        <div class="progress progress-label-top-right">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Read}}"
-                                 aria-valuemin="0" aria-valuemax="{{diskUsage.ReadMax}}"
-                                 style="width: {{diskUsage.ReadPercent}}%;">
-                                <span>Read <small>({{diskUsage.Read}} / {{diskUsage.ReadMax}})</small></span>
-                            </div>
-                        </div>
-                        <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
-                            <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Write}}"
-                                 aria-valuemin="0" aria-valuemax="{{diskUsage.WriteMax}}"
-                                 style="width: {{diskUsage.WritePercent}}%;line-height:40px;">
-                                <span>Write <small>({{diskUsage.Write}} / {{diskUsage.WriteMax}})</small></span>
-                            </div>
-                        </div>
+                </div>
+                <div class="progress progress-label-top-right">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Read}}"
+                         aria-valuemin="0" aria-valuemax="{{diskUsage.ReadMax}}"
+                         style="width: {{diskUsage.ReadPercent}}%;">
+                        <span>Read <small>({{diskUsage.Read}} / {{diskUsage.ReadMax}})</small></span>
                     </div>
-
-                    <div style="width: 200px;margin-right: 20px;">
-                        <div class="progress-description">
-                            <strong>Network:</strong>
-                        </div>
-                        <div class="progress progress-label-top-right">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}"
-                                 aria-valuemin="0" aria-valuemax="{{netUsage.RxMax}}"
-                                 style="width: {{netUsage.RxPercent}}%;">
-                                <span>Rx <small>({{netUsage.Rx}} / {{netUsage.RxMax}})</small></span>
-                            </div>
-                        </div>
-                        <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
-                            <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Tx}}"
-                                 aria-valuemin="0" aria-valuemax="{{netUsage.TxMax}}"
-                                 style="width: {{netUsage.TxPercent}}%;line-height:40px;">
-                                <span>Tx <small>({{netUsage.Tx}} / {{netUsage.TxMax}})</small></span>
-                            </div>
-
-                            <div class="dropdown dropdown-kebab-pf"> <!-- pull-right -->
-                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight-{{id}}"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    <span class="fa fa-ellipsis-v"></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight-{{id}}">
-                                    <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/shutdown.png" title="Shutdown gracefully">Shutdown gracefully</li>
-                                    <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/power_off.png" title="Force off">Force off</li>
-                                    <li id="btn-restart-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/vm_rebooting.png" title="Restart">Restart</li>
-                                </ul>
-                            </div>
-
-                        </div>
+                </div>
+                <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Write}}"
+                         aria-valuemin="0" aria-valuemax="{{diskUsage.WriteMax}}"
+                         style="width: {{diskUsage.WritePercent}}%;line-height:40px;">
+                        <span>Write <small>({{diskUsage.Write}} / {{diskUsage.WriteMax}})</small></span>
                     </div>
                 </div>
             </div>
+
+            <div style="width: 200px;margin-right: 20px;">
+                <div class="progress-description">
+                    <strong>Network:</strong>
+                </div>
+                <div class="progress progress-label-top-right">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}"
+                         aria-valuemin="0" aria-valuemax="{{netUsage.RxMax}}"
+                         style="width: {{netUsage.RxPercent}}%;">
+                        <span>Rx <small>({{netUsage.Rx}} / {{netUsage.RxMax}})</small></span>
+                    </div>
+                </div>
+                <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Tx}}"
+                         aria-valuemin="0" aria-valuemax="{{netUsage.TxMax}}"
+                         style="width: {{netUsage.TxPercent}}%;line-height:40px;">
+                        <span>Tx <small>({{netUsage.Tx}} / {{netUsage.TxMax}})</small></span>
+                    </div>
+
+                    <div class="dropdown dropdown-kebab-pf"> <!-- pull-right -->
+                        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight-{{id}}"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <span class="fa fa-ellipsis-v"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight-{{id}}">
+                            <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30"
+                                                                                       src="images/shutdown.png"
+                                                                                       title="Shutdown gracefully">Shutdown
+                                gracefully
+                            </li>
+                            <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30"
+                                                                                       src="images/power_off.png"
+                                                                                       title="Force off">Force off
+                            </li>
+                            <li id="btn-restart-vm-{{id}}" data-pattern="{{id}}"><img width="30"
+                                                                                      src="images/vm_rebooting.png"
+                                                                                      title="Restart">Restart
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
         </div>
+    </div>
+    </div>
     </div>
 </script>
 
@@ -395,7 +409,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal-engine-login-form" tabindex="-1" role="dialog" aria-labelledby="modal-engine-login-form-title" aria-hidden="false">
+<div class="modal fade" id="modal-engine-login-form" tabindex="-1" role="dialog"
+     aria-labelledby="modal-engine-login-form-title" aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -427,7 +442,8 @@
                             <label class="control-label">URL:</label>
                         </td>
                         <td>
-                            <input id="engine-login-url" class="form-control" type="text" value="https://engine.local/ovirt-engine">
+                            <input id="engine-login-url" class="form-control" type="text"
+                                   value="https://engine.local/ovirt-engine">
                         </td>
                     </tr>
                     <tr id="engine-login-error-msg" hidden>
@@ -441,10 +457,13 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" translatable="yes">Cancel</button>
-                <button type="button" class="btn btn-primary" id="modal-engine-login-form-dologin" translatable="yes">Login</button>
+                <button type="button" class="btn btn-primary" id="modal-engine-login-form-dologin" translatable="yes">
+                    Login
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 </body>
+</html>
