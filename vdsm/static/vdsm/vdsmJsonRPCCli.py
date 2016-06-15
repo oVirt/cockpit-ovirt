@@ -210,7 +210,7 @@ def restart_vm(vmId):
 def fake_vm(src, offset):
     fake = copy.deepcopy(src)
 
-    fake['vmName'] = "{0} - fake {1}".format(fake['vmName'], offset)
+    fake['vmName'] = "fake {0} - {1}".format(offset, fake['vmName'])
 
     strOffset = "f{0:05d}".format(offset)
     fake['vmId'] = strOffset + fake['vmId'][len(strOffset):]

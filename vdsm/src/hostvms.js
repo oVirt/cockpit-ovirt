@@ -8,7 +8,8 @@ import {CONFIG} from './constants'
 import {GLOBAL} from './globaldata'
 
 import {downloadConsole, forceoff, shutdown, restart, renderVmDetailActual, guestIPsToHtml, vmStatusToHtml} from './vmdetail'
-import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp, registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent, confirmModal, isHostVmsScreenDisplayed} from './helpers'
+import {debugMsg, normalizePercentage, spawnVdsm, vdsmFail, parseVdsmJson, printError, goTo, getActualTimeStamp,
+  registerBtnOnClickListener, pruneArray, formatHumanReadableSecsToTime, computePercent, confirmModal, isHostVmsScreenDisplayed, insertSorted} from './helpers'
 
 import { gettext as _ } from './i18n'
 
@@ -51,6 +52,7 @@ function readVmsListImpl () {
   // spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
 }
 
+var parsedHostVms = [] // to be reused by pager later
 function getAllVmStatsSuccess (vdsmDataVmsList) {
   debugMsg('readVmsList.succes(): <code>' + vdsmDataVmsList + '</code>')
   var vms = parseVdsmJson(vdsmDataVmsList)
@@ -59,10 +61,10 @@ function getAllVmStatsSuccess (vdsmDataVmsList) {
       GLOBAL.latestHostVMSList = vms // cache for reuse i.e. in displayVMDetail()
 
       // among the others, update GLOBAL.vmUsage
-      var parsedVms = parseRetrievedHostVms(vms)
+      parsedHostVms = parseRetrievedHostVms(vms)
 
       if (isHostVmsScreenDisplayed()) {
-        renderHostVms(parsedVms)
+        renderHostVms(parsedHostVms)
       }
 
       renderVmDetailActual()
@@ -83,7 +85,9 @@ function parseRetrievedHostVms (vmsFull) {
     var timestamp = getActualTimeStamp()
     vmsFull.items.forEach(function (srcVm) {
       var vm = _getVmDetails(srcVm)
-      vms.push(vm)
+
+      insertSorted(vms, vm, 'name')
+      // vms.push(vm)
 
       var diskRead = getVmDeviceRate(srcVm, 'disks', 'readRate')
       var diskWrite = getVmDeviceRate(srcVm, 'disks', 'writeRate')
@@ -131,7 +135,13 @@ function renderHostVms (vmsParsed) {
 }
 
 var ITEM_PREFIX = 'vms-list-item-full-'
-function renderHostVmsList (vms) {
+function renderHostVmsList (allVms) {
+  hostVmsPagerFirstRecordDisplayed = normalizePager(hostVmsPagerFirstRecordDisplayed, allVms.length)
+  debugMsg(`renderHostVmsList() paging from record ${hostVmsPagerFirstRecordDisplayed}`)
+  const vms = allVms.slice(hostVmsPagerFirstRecordDisplayed, hostVmsPagerFirstRecordDisplayed + CONFIG.vmsList.pageLength)
+
+  $('#host-vms-total').html(allVms.length)
+
   // remove all div which are missing in 'vms'
   $("[id^='" + ITEM_PREFIX + "']").each(function () {
     var divVmId = $(this).attr('id').replace(ITEM_PREFIX, '')
@@ -325,6 +335,41 @@ function shutdownAllHostVms () {
   if (vms.hasOwnProperty('items')) {
     vms.items.forEach(function (vm) { shutdown(vm.vmId) })
   }
+}
+
+// ----------------------------------------------------------------------
+var hostVmsPagerFirstRecordDisplayed = 0 // first VM to be displayed
+function normalizePager (toBeNormalized, totalCount) {
+  let firstRecordToDisplay = toBeNormalized
+
+  if (firstRecordToDisplay < 0) {
+    firstRecordToDisplay = 0
+  }
+
+  if (firstRecordToDisplay >= totalCount) {
+    firstRecordToDisplay = totalCount - (totalCount % CONFIG.vmsList.pageLength)
+  }
+
+  debugMsg(`normalizePager(${toBeNormalized}, total=${totalCount}) result: ${firstRecordToDisplay}`)
+  return firstRecordToDisplay
+}
+
+export function onHostVmsListPrev () {
+  hostVmsPagerFirstRecordDisplayed = normalizePager(
+    hostVmsPagerFirstRecordDisplayed - CONFIG.vmsList.pageLength,
+    parsedHostVms.length
+  )
+
+  renderHostVms(parsedHostVms)
+}
+
+export function onHostVmsListNext () {
+  hostVmsPagerFirstRecordDisplayed = normalizePager(
+    hostVmsPagerFirstRecordDisplayed + CONFIG.vmsList.pageLength,
+    parsedHostVms.length
+  )
+
+  renderHostVms(parsedHostVms)
 }
 
 // ----------------------------------------------------------------------

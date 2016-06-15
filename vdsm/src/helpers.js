@@ -193,6 +193,29 @@ export function isHostVmsScreenDisplayed () {
   return (path.length === 0 || path[0] === '/' || path[0] === 'vms')
 }
 
+/**
+ * Insert new 'item' element into 'arr' array while keeping
+ * the array sorted by 'sortedBy' property
+ *
+ * @param arr
+ * @param item
+ * @param sortedBy
+ */
+export function insertSorted (arr, item, sortedBy) {
+  // debugMsg(`insertSorted() sortedBy=${sortedBy}, item=${JSON.stringify(item)}\narray=${JSON.stringify(arr)}`)
+  let pred = arr.findIndex(e => {
+    const a = e[sortedBy].toLowerCase()
+    const b = item[sortedBy].toLowerCase()
+    const res = a.localeCompare(b) > 0
+//    debugMsg(`localeCompare(${a}, ${b}) = ${a.localeCompare(b)}, > 0: ${res}`)
+    return res
+  })
+  pred = (pred < 0) ? arr.length : pred
+
+  arr.splice(pred, 0, item)
+//  debugMsg(`insertSorted() after insert: array=${JSON.stringify(arr)}`)
+}
+
 /*eslint no-extend-native:0 */
 String.prototype.format = function () {
   var s = this

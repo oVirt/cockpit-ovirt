@@ -26,15 +26,39 @@
         </ul>
     </div>
 
-    <table width="100%">
-        <tr>
-            <td width="90%">
-                <div class="container-fluid" style="margin-top: 5em">
-                    <div id="vms-screen">
-                        <div id="virtual-machines" class="panel panel-default">
-                            <div class="panel-heading" translatable="yes">
-                                <h3 class="panel-title">Virtual Machines</h3>
-                            </div>
+            <table width="100%">
+                <tr>
+                    <td width="90%">
+                        <div class="container-fluid" style="margin-top: 5em">
+                            <div id="vms-screen">
+                                <div id="virtual-machines" class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <div class="onerow">
+                                            <div class="onerow-left">
+                                                <h3 class="panel-title" translatable="yes">
+                                                    Virtual Machines
+                                                </h3>
+                                            </div>
+                                            <div class="onerow-center"></div>
+                                            <div class="onerow-right">
+                                                Total VMs:<div id="host-vms-total"></div>
+                                                <nav>
+                                                    <ul class="pagination">
+                                                        <li>
+                                                            <a id="virtual-machines-pager-prev" href="#" aria-label="Previous">
+                                                                <span aria-hidden="true">&laquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a id="virtual-machines-pager-next" href="#" aria-label="Next">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                        </div>
+                                    </div>
 
                             <div class="panel-body">
                                 <div id="virtual-machines-loading-spinner" class="cockpit-log-warning">
