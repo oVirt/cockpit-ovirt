@@ -169,7 +169,8 @@ function renderHostVm (vm) {
 
   var usageRecords = GLOBAL.vmUsage[vm.id]
 
-  if (isVmUp(vm)) {
+  if (areChartsReady(vm)) {
+    debugMsg(`Refreshing usage charts for vm: ${JSON.stringify(vm)}\nwith usage record: ${JSON.stringify(usageRecords[usageRecords.length - 1])}`)
     refreshVmUsageCharts(vm.id, usageRecords[usageRecords.length - 1])
   } else {
     debugMsg(`VM ${vm.id} is not up, skipping for charts`)
@@ -233,7 +234,7 @@ function getUsageElementId (device, vmId) {
 }
 
 function refreshCpuChart (chartDivId, usageRecord) {
-  var maximum = usageRecord.vcpuCount * 100.0
+  var maximum = (usageRecord.vcpuCount) ? (usageRecord.vcpuCount * 100.0) : (100.0)
 
   var user = normalizePercentage(usageRecord.cpuUser)
   var sys = normalizePercentage(usageRecord.cpuSys)
@@ -270,6 +271,7 @@ function removeAllFromChartCache () {
 }
 
 function refreshDonutChart (chartDivId, labels, columns, groups) {
+  debugMsg(`refreshDonutChart(): chartDivId=${JSON.stringify(chartDivId)}, labels=${JSON.stringify(labels)},\ncolumns=${JSON.stringify(columns)}`)
   if (donutChartCache[chartDivId]) {
     var existingChart = donutChartCache[chartDivId]
     existingChart.load({columns: columns})
@@ -326,11 +328,14 @@ function shutdownAllHostVms () {
 
 // ----------------------------------------------------------------------
 export function isVmUp (vmDetail) {
-  if (vmDetail['status'] && vmDetail['status'].toLowerCase() === 'up') {
-    return true
-  }
+  return (vmDetail['status'] &&
+          vmDetail['status'].toLowerCase() === 'up')
+}
 
-  return false
+function areChartsReady (vmDetail) {
+  // TODO: fine-tune spinner until charts are ready
+  return (vmDetail['status'] &&
+          vmDetail['status'].toLowerCase() !== 'wait_for_launch_TODO')
 }
 
 export function _getVmDetails (src) { // src is one item from parsed getAllVmStats
