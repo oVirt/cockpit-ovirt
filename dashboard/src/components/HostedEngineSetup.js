@@ -227,12 +227,18 @@ class HostedEngineInput extends Component {
             htmlFor="input">
             {prompt}
           </label>
-          <input
-            autoFocus
-            type={type}
-            className="form-control"
-            onChange={this.handleInput}
-            value={this.state.input} />
+          <div className="form-inline">
+            <input
+              autoFocus
+              type={type}
+              className="form-control"
+              onChange={this.handleInput}
+              value={this.state.input} />
+            <button type="submit"
+              className="btn btn-default">
+              Next
+            </button>
+          </div>
           {err_text}
           <CancelButton />
         </div>
