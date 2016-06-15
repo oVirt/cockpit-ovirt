@@ -13,7 +13,7 @@ import {GLOBAL} from './globaldata'
 import {debugMsg, printError, printWarning, registerBtnOnClickListener, goTo, scheduleNextAutoRefresh, confirmModal} from './helpers'
 import {isLoggedInEngine, isAllVmsPath, initEngineLogin, showEngineLoginModal} from './engineLogin'
 import {readEngineVmsList, refreshEngineVmsList, hostToMaintenance} from './enginevms'
-import {readVmsList, shutdownAllHostVmsConfirm} from './hostvms'
+import {readVmsList, shutdownAllHostVmsConfirm, onHostVmsListPrev, onHostVmsListNext} from './hostvms'
 import {getVmIdFromPath, renderVmDetail} from './vmdetail'
 import {saveVdsmConf, reloadVdsmConf, loadVdsmConf} from './vdsmscreen'
 import {renderPing} from './ping'
@@ -181,6 +181,9 @@ function initNavigation () {
   registerBtnOnClickListener('editor-vdsm-btn-reload', reloadVdsmConf)
 
   registerBtnOnClickListener('action-login-to-engine', showEngineLoginModal)
+
+  registerBtnOnClickListener('virtual-machines-pager-prev', onHostVmsListPrev)
+  registerBtnOnClickListener('virtual-machines-pager-next', onHostVmsListNext)
 }
 
 // TODO: call i18nInit() before  $(document).ready(), handle inner translateHtml() call
