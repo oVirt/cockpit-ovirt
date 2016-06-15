@@ -62,13 +62,16 @@ function removeEngineToken () {
 
 function storeEngineCredentials (username, pwd, url, token) {
   var sessionStorage = window.sessionStorage
-
   sessionStorage['engine-user'] = username
   sessionStorage['engine-pwd'] = pwd
   sessionStorage['engine-url'] = url
   if (token) {
     sessionStorage['engine-token'] = token
   }
+
+  var localStorage = window.localStorage
+  localStorage['engine-user'] = username
+  localStorage['engine-url'] = url
 }
 
 export function getEngineCredentialsTokenOnly () {
@@ -82,18 +85,28 @@ export function getEngineCredentialsTokenOnly () {
 function getEngineCredentials () {
   var sessionStorage = window.sessionStorage
   if (sessionStorage['engine-user']) {
-    var credentials = {
+    debugMsg('getEngineCredentials() populating sessionStorage credentials')
+    return {
       user: sessionStorage['engine-user'],
       pwd: sessionStorage['engine-pwd'],
       url: sessionStorage['engine-url'],
       token: sessionStorage['engine-token']
     }
-    return credentials
   }
 
-  return {// populate initial dummy data
+  var localStorage = window.localStorage
+  if (localStorage['engine-user']) {
+    debugMsg('getEngineCredentials() populating localStorage credentials')
+    return {
+      user: localStorage['engine-user'],
+      url: localStorage['engine-url']
+    }
+  }
+
+  debugMsg('getEngineCredentials() populating dummy credentials')
+  return { // populate initial dummy data
     user: 'admin@internal',
-    pwd: 'admin',
+    pwd: '',
     url: 'https://engine.local/ovirt-engine',
     token: null
   }
@@ -147,7 +160,8 @@ function setEngineLoginTitle (title) {
 }
 
 export function isLoggedInEngine () {
-  return getEngineCredentials().token && getEngineCredentials().token.length > 0
+  const credentials = getEngineCredentials()
+  return credentials.token && credentials.token.length > 0
 }
 
 export function setEngineFunctionalityVisibility () {
@@ -169,7 +183,9 @@ export function showEngineLoginModal () {
     var credentials = getEngineCredentials()
 
     $('#engine-login-user').val(credentials.user)
-    $('#engine-login-pwd').val(credentials.pwd)
+    if (credentials.pwd) {
+      $('#engine-login-pwd').val(credentials.pwd)
+    }
     $('#engine-login-url').val(credentials.url)
 
     $('#modal-engine-login-form-dologin').off('click')
