@@ -52,6 +52,7 @@ class Setup extends Component {
       question: null,
       output: null,
       terminated: false,
+      denied: false,
       success: false
     }
     this.resetState = this.resetState.bind(this)
@@ -95,8 +96,9 @@ class Setup extends Component {
   componentWillUnmount() {
     setup.close()
   }
-  processExit(status) {
+  processExit(status, accessDenied = false) {
     this.setState({terminated: true})
+    this.setState({denied: accessDenied})
     this.setState({success: status == 0 ? true : false})
     console.log(this.state.success)
   }
@@ -144,36 +146,39 @@ class Setup extends Component {
       <div>
         {this.state.success ?
         <Success /> :
-          <div className="ovirt-input">
-            {this.state.output.infos.length > 0 ?
-              <Message messages={this.state.output.infos}
-                type="info"
-                icon="info"/>
-            : null }
-            {this.state.output.warnings.length > 0 ?
-              <Message messages={this.state.output.warnings}
-                type="warning"
-                icon="warning-triangle-o"/>
-            : null }
-            <HostedEngineOutput output={this.state.output}/>
-            {show_input ?
-              <HostedEngineInput
-                question={this.state.question}
-                password={this.state.question.password}
-                passInput={this.passInput}
-                errors={this.state.output.errors}/>
-              : !this.state.terminated ? <div>
-                <div className="spinner"/>
-                <CancelButton /></div> : null }
-            {finished_error ?
-              <div>
-                <Message messages={this.state.output.errors}
-                  type="danger"
-                  icon="error-circle-o" />
-                <RestartButton restartCallback={this.restart} />
-              </div>
+          {this.state.denied ?
+          <NoPermissions /> :
+            <div className="ovirt-input">
+              {this.state.output.infos.length > 0 ?
+                <Message messages={this.state.output.infos}
+                  type="info"
+                  icon="info"/>
               : null }
-          </div>
+              {this.state.output.warnings.length > 0 ?
+                <Message messages={this.state.output.warnings}
+                  type="warning"
+                  icon="warning-triangle-o"/>
+              : null }
+              <HostedEngineOutput output={this.state.output}/>
+              {show_input ?
+                <HostedEngineInput
+                  question={this.state.question}
+                  password={this.state.question.password}
+                  passInput={this.passInput}
+                  errors={this.state.output.errors}/>
+                : !this.state.terminated ? <div>
+                  <div className="spinner"/>
+                  <CancelButton /></div> : null }
+              {finished_error ?
+                <div>
+                  <Message messages={this.state.output.errors}
+                    type="danger"
+                    icon="error-circle-o" />
+                  <RestartButton restartCallback={this.restart} />
+                </div>
+                : null }
+            </div>
+          }
         }
       </div>
     )
@@ -313,6 +318,22 @@ const Success = () => {
         </div>
         <h1>
           Hosted Engine Setup successfully completed!
+        </h1>
+      </div>
+    </div>
+  )
+}
+
+const NoPermissions = () => {
+  return (
+    <div className="curtains curtains-ct blank-slate-pf">
+      <div className="container-center">
+        <div className="blank-slate-pf-icon">
+          <i className="pficon-error-circle-o" />
+        </div>
+        <h1>
+          Hosted Engine Setup exited with "Access Denied". Does this user have
+          permissions to run it?
         </h1>
       </div>
     </div>
