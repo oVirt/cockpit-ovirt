@@ -1,7 +1,7 @@
 {
     "dashboard": {
         "index": {
-            "label": "oVirt",
+            "label": "Virtualization",
             "order": 1
         }
     },
