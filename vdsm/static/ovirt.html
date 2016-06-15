@@ -32,26 +32,30 @@
                 <div class="container-fluid" style="margin-top: 5em">
                     <div id="vms-screen">
                         <div id="virtual-machines" class="panel panel-default">
-                            <div class="panel-heading" translatable="yes">Virtual Machines</div>
-
-                            <div id="virtual-machines-loading-spinner" class="cockpit-log-warning">
-                                <div class="blank-slate-pf">
-                                    <div class="blank-slate-pf-icon">
-                                        <i class="fa fa-refresh"></i>
-                                    </div>
-                                    <span translatable="yes"><h1>Loading VMs list ...</h1></span>
-                                </div>
+                            <div class="panel-heading" translatable="yes">
+                                <h3 class="panel-title">Virtual Machines</h3>
                             </div>
 
-                            <div class="list-group list-view-pf" id="virtual-machines-list"></div>
-                            <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>
-                                <div class="blank-slate-pf">
-                                    <div class="blank-slate-pf-icon">
-                                        <i class="fa fa-rocket"></i>
+                            <div class="panel-body">
+                                <div id="virtual-machines-loading-spinner" class="cockpit-log-warning">
+                                    <div class="blank-slate-pf">
+                                        <div class="blank-slate-pf-icon">
+                                            <i class="fa fa-refresh"></i>
+                                        </div>
+                                        <span translatable="yes"><h1>Loading VMs list ...</h1></span>
                                     </div>
-                        <span translatable="yes"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change
-                            or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
-                        </span>
+                                </div>
+
+                                <div class="list-group list-view-pf" id="virtual-machines-list"></div>
+                                <div id="virtual-machines-novm-message" class="cockpit-log-warning" hidden>
+                                    <div class="blank-slate-pf">
+                                        <div class="blank-slate-pf-icon">
+                                            <i class="fa fa-rocket"></i>
+                                        </div>
+                                        <span translatable="yes"><h1>No VM is running on this host</h1><p>Let's keep hoping in a change
+                                            or start a new one ...</p><p>(i.e. via oVirt's engine after login)</p>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -65,10 +69,16 @@
                     </div>
                     <div id="engine-vms-screen">
                         <div id="engine-virtual-machines" class="panel panel-default">
-                            <div class="panel-heading" translatable="yes">VMs available on the engine</div>
-                            <div id="engine-virtual-machines-list"></div>
-                            <div id="engine-virtual-machines-novm-message" class="cockpit-log-warning" hidden
-                                 translatable="yes">No VM is available
+                            <div class="panel-heading">
+                                <h3 class="panel-title" translatable="yes">VMs available on the engine</h3>
+                            </div>
+                            <div id="engine-virtual-machines-list">
+                                <div class="spinner spinner-lg"></div>
+                            </div>
+                            <div class="panel-body" id="engine-virtual-machines-novm-message" hidden>
+                                <div class="cockpit-log-warning" translatable="yes">
+                                    No VM is available
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -130,107 +140,113 @@
 
 <!-- --------------------------------------------------------------------------- -->
 <script id="vm-detail-templ" type="x-template/mustache">
-    <div class="panel-heading">{{{statusHtml}}} Detail of {{name}}</div>
-    <table width="100%">
-        <tr>
-            <td> <!-- left -->
-                <table width="100%">
-                    <tr>
-                        <td width="15%">Name:</td>
-                        <td>{{name}}</td>
+    <div class="panel-heading">
+        <h3 class="panel-title">{{{statusHtml}}} Detail of {{name}}</h3>
+    </div>
+    <div class="panel-body">
+        <table width="100%">
+            <tr>
+                <td> <!-- left -->
+                    <table width="100%">
+                        <tr>
+                            <td width="15%">Name:</td>
+                            <td>{{name}}</td>
 
-                        <td width="15%">Guest IPs:</td>
-                        <td>{{guestIPs}}</td>
-                    </tr>
-                    <tr>
-                        <td>ID:</td>
-                        <td id="vm-detail-id" data-pattern="{{id}}">{{id}}</td>
+                            <td width="15%">Guest IPs:</td>
+                            <td>{{guestIPs}}</td>
+                        </tr>
+                        <tr>
+                            <td>ID:</td>
+                            <td id="vm-detail-id" data-pattern="{{id}}">{{id}}</td>
 
-                        <td>vCPUs:</td>
-                        <td>{{vcpuCount}}</td>
-                    </tr>
-                    <tr>
-                        <td>Username:</td>
-                        <td>{{username}}</td>
+                            <td>vCPUs:</td>
+                            <td>{{vcpuCount}}</td>
+                        </tr>
+                        <tr>
+                            <td>Username:</td>
+                            <td>{{username}}</td>
 
-                        <td>Uptime:</td>
-                        <td>{{elapsedTimeHuman}}</td>
-                    </tr>
-                    <tr>
-                        <td>Display type:</td>
-                        <td>{{displayType}}</td>
+                            <td>Uptime:</td>
+                            <td>{{elapsedTimeHuman}}</td>
+                        </tr>
+                        <tr>
+                            <td>Display type:</td>
+                            <td>{{displayType}}</td>
 
-                        <td>Guest FQDN:</td>
-                        <td>{{guestFQDN}}</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
+                            <td>Guest FQDN:</td>
+                            <td>{{guestFQDN}}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
 
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Apps list:</td>
-                        <td colspan="3">{{appsList}}</td>
-                    </tr>
-                </table>
-            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Apps list:</td>
+                            <td colspan="3">{{appsList}}</td>
+                        </tr>
+                    </table>
+                </td>
 
-            <td width=40%"><!-- Usage graphs -->
-                <table width="100%">
-                    <tr>
-                        <td width="50%">CPU:
-                            <div id="cpuUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
-                        </td>
-                        <td width="50%">Memory:
-                            <div id="memUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Disk:
-                            <div id="diskioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
-                        </td>
-                        <td>Network:
-                            <div id="networkioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                <td width=40%"><!-- Usage graphs -->
+                    <table width="100%">
+                        <tr>
+                            <td width="50%">CPU:
+                                <div id="cpuUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                            </td>
+                            <td width="50%">Memory:
+                                <div id="memUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Disk:
+                                <div id="diskioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                            </td>
+                            <td>Network:
+                                <div id="networkioUsageChartDetail-{{id}}" class="chart-pf-sparkline"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
 </script>
 
 <script id="engine-vms-list-templ" type="x-template/mustache">
-    <table class="table table-hover">
-        <thead>
-        <th>Name</th>
-        <th>Running on</th>
-        <th>Type</th>
-        <th>Memory</th>
-        <th>vCPUs</th>
-        <th>OS Type</th>
-        <th>Origin</th>
-        <th>Actions</th>
-        </thead>
-        <tbody>
-        {{#units}}
-        <tr>
-            <td id="engine-vms-list-item-name-{{id}}" data-pattern="{{id}}">{{{statusHtml}}} {{name}}</td>
-            <td>{{host.name}}</td>
-            <td>{{type}}</td>
-            <td>{{memoryHuman}}</td>
-            <td>{{vCPUs}}</td>
-            <td>{{osType}}</td>
-            <td>{{origin}}</td>
-            <td>
-                <img width="30" src="images/vm_run.png" title="Run"
-                     id="btn-engine-vm-run-{{id}}" data-pattern="{{id}}" {{runActionHidden}}>
-            </td>
-        </tr>
-        {{/units}}
-        </tbody>
-    </table>
+    <div class="panel-body">
+        <table class="table table-hover">
+            <thead>
+            <th>Name</th>
+            <th>Running on</th>
+            <th>Type</th>
+            <th>Memory</th>
+            <th>vCPUs</th>
+            <th>OS Type</th>
+            <th>Origin</th>
+            <th>Actions</th>
+            </thead>
+            <tbody>
+            {{#units}}
+            <tr>
+                <td id="engine-vms-list-item-name-{{id}}" data-pattern="{{id}}">{{{statusHtml}}} {{name}}</td>
+                <td>{{host.name}}</td>
+                <td>{{type}}</td>
+                <td>{{memoryHuman}}</td>
+                <td>{{vCPUs}}</td>
+                <td>{{osType}}</td>
+                <td>{{origin}}</td>
+                <td>
+                    <img width="30" src="images/vm_run.png" title="Run"
+                         id="btn-engine-vm-run-{{id}}" data-pattern="{{id}}" {{runActionHidden}}>
+                </td>
+            </tr>
+            {{/units}}
+            </tbody>
+        </table>
+    </div>
 </script>
 
 <script id="vms-list-templ" type="x-template/mustache">
