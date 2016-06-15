@@ -20,13 +20,18 @@ class RunSetup {
       ],
       "spawn": ['hosted-engine', '--deploy',
                 '--otopi-environment="DIALOG/dialect=str:machine"'],
-      "pty": true
+      "pty": true,
+      "superuser": "require",
     })
 
     var self = this
     $(this.channel).on("close", function(ev, options) {
+      let denied = false
       if (!self._manual_close) {
-        self._exitCallback(options["exit-status"])
+        if (options["problem"] == "access-denied") {
+          denied = true
+        }
+        self._exitCallback(options["exit-status"], denied)
       }
       console.log("hosted-engine-setup exited")
       console.log(ev)
