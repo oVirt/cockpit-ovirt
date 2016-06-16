@@ -22,7 +22,7 @@ export const CONFIG = {
     usage_chart_max_points: 17
   },
   vmsList: {
-    pageLength: 15
+    pageLength: 10
   }
 }
 
