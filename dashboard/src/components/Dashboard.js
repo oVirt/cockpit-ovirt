@@ -7,9 +7,18 @@ export default class Dashboard extends Component {
   render() {
     return (
       <div>
-        <RunningVms />
-        <NICs />
-        <SshKey />
+        <h2>
+          Virtualization
+        </h2>
+        <div className="col-md-4 cockpit-info-table-container">
+          <table className="cockpit-info-table">
+            <Links />
+            <SshKey />
+          </table>
+        </div>
+        <div className="col-md-6">
+          <RunningVms />
+        </div>
       </div>
     )
   }
@@ -45,37 +54,27 @@ class RunningVms extends Component {
     return (
       <div>
         {this.state.vms != null ?
-          <div className="list-group list-view-pf">
-            <div className="list-group-item">
-              <div className="list-view-pf-main-info">
-                <div className="list-view-pf-left">
-                  <span className="pficon pficon-virtual-machine
-                    list-view-pf-icon-sm" />
-                </div>
-                <div className="list-view-pf-body">
-                  <div className="list-view-pf-description">
-                    <div className="list-group-item-heading">
-                      Virtual Machines
-                    </div>
-                  </div>
-                  <div className="list-view-pf-additional-info">
-                    <div className="list-view-pf-additional-info-item">
-                      <span className="pficon pficon-screen" />
-                      <strong>
-                        {this.state.vms.length}
-                      </strong> Running
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="row">
+            <div className="col-md-3 list-view-pf-left">
+              <span className="pficon pficon-virtual-machine
+                list-view-pf-icon-sm" />
             </div>
-          </div> : null}
+            <div className="col-md-4">
+              Virtual Machines
+            </div>
+            <div className="col-md-4">
+              <strong>
+                {this.state.vms.length}
+              </strong> Running
+            </div>
+          </div>
+        : null}
     </div>
     )
   }
 }
 
-class NICs extends Component {
+class Links extends Component {
   constructor(props) {
     super(props)
     this.onClick = this.onClick.bind(this)
@@ -87,23 +86,31 @@ class NICs extends Component {
   }
   render() {
     let urls = {
-      "View Networking Information": "/network",
-      "View System Logs": "/system/logs",
-      "View Storage": "/storage"
+      "Networking Information": "/network",
+      "System Logs": "/system/logs",
+      "Storage": "/storage"
     }
-    let buttons = []
+    let links = []
+    let id = 0
     for (let url in urls) {
-      buttons.push(<button
-        className="btn btn-default"
-        onClick={() => this.onClick(urls[url])}>
-        {url}
-      </button>
-    )}
-    return (
-      <div className="btn-group">
-        {buttons}
-      </div>
+      links.push(<tr key={id}>
+        <td>{url}: </td>
+        <td>
+          <button
+            className="btn btn-default"
+            onClick={() => this.onClick(urls[url])}>
+            View
+          </button>
+        </td>
+      </tr>
       )
+      id++
+    }
+    return (
+      <tbody>
+        {links}
+      </tbody>
+    )
   }
 }
 
@@ -127,23 +134,29 @@ class SshKey extends Component {
   }
   render() {
     return (
-      <div>
-        <button className="btn btn-default"
-          type="button"
-          onClick={this.onClick}>
-          Show SSH Host key
-        </button>
-        <div>
-          {this.state.dialog_open ?
-            <HostKeyModal
-              hostKey={this.state.host_key}
-              hide={this.onClick}
-            />
-            :
-            null
-          }
-        </div>
-      </div>
+      <tbody>
+        <tr>
+          <td>SSH Host Key: </td>
+          <td>
+            <button
+              className="btn btn-default"
+              type="button"
+              onClick={this.onClick}>
+              Show
+            </button>
+            <div>
+              {this.state.dialog_open ?
+                <HostKeyModal
+                  hostKey={this.state.host_key}
+                  hide={this.onClick}
+                  />
+                :
+                null
+              }
+            </div>
+          </td>
+        </tr>
+      </tbody>
     )
   }
 }
@@ -151,7 +164,6 @@ class SshKey extends Component {
 class HostKeyModal extends Component {
   constructor(props) {
     super(props)
-    console.log(this.props)
   }
   componentDidMount() {
     $(ReactDOM.findDOMNode(this)).modal('show')

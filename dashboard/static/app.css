@@ -173,3 +173,14 @@ path.line.highlight {
 .ovirt-content-header-extra .btn-group:not(:first-child) {
     padding-left: 20px;
 }
+
+.pad-header {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.vcenter {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+}

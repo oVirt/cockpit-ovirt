@@ -25,3 +25,15 @@ export function getMetrics(callback) {
     console.log("even though engine is deployed")
   })
 }
+
+export function getHostname(callback) {
+  var client = cockpit.dbus('org.freedesktop.hostname1')
+  var proxy = client.proxy('org.freedesktop.hostname1',
+                           '/org/freedesktop/hostname1')
+  proxy.wait(function() {
+    if (proxy.valid) {
+        var system_hostname = proxy.Hostname
+        callback(system_hostname)
+    }
+  })
+}
