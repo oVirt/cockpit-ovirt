@@ -143,8 +143,10 @@ class RunSetup {
         values.question.complete = true
       }
 
-      var match = line.match(/\*\*%QDefault: (.*)/)
-      values.question.suggested = match ? match[1] : ""
+      if (/\*\*%QDefault/.test(line)) {
+        var match = line.match(/\*\*%QDefault: (.*)/)
+        values.question.suggested = match ? match[1] : ""
+      }
     })
     return values
   }
