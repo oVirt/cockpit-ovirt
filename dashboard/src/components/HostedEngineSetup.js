@@ -146,7 +146,7 @@ class Setup extends Component {
       <div>
         {this.state.success ?
         <Success /> :
-          {this.state.denied ?
+          this.state.denied ?
           <NoPermissions /> :
             <div className="ovirt-input">
               {this.state.output.infos.length > 0 ?
@@ -178,7 +178,6 @@ class Setup extends Component {
                 </div>
                 : null }
             </div>
-          }
         }
       </div>
     )
