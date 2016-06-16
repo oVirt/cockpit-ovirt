@@ -29,24 +29,15 @@
     padding-left: 0;
 }
 
-.onerow:after {
-    content: "";
-    clear: both;
-    display: table;
+.heading-onerow-left {
+    width: 50%;
+    display: inline-block;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
-.onerow-left {
-    float: left;
-    white-space: nowrap;
-}
-
-.onerow-center {
-    margin: 0 auto;
-    white-space: nowrap;
-}
-
-.onerow-right {
+.heading-onerow-right {
+    display: inline-block;
+    margin: 0px;
     float: right;
-    width: 100px;
-    white-space: nowrap;
 }
