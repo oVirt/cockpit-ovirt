@@ -94,6 +94,8 @@ Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-le
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Thu Jun 16 2016 Marek Libra <mlibra@redhat.com> - 0.10.5
+- UI improvements
 * Wed Jun 08 2016 Marek Libra <mlibra@redhat.com> - 0.10.4
 - UI bugfixes and minor usability improvements
 * Tue Jun 07 2016 Ryan Barry <rbarry@redhat.com> - 0.10.3
