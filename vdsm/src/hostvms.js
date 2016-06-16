@@ -76,7 +76,6 @@ function getAllVmStatsSuccess (vdsmDataVmsList) {
 
 function parseRetrievedHostVms (vmsFull) {
   // the 'vmsFull' is parsed json result of getAllVmStats()
-  $('#virtual-machines-loading-spinner').hide()
   if (vmsFull.hasOwnProperty('items') && vmsFull.items.length > 0) {
     $('#virtual-machines-novm-message').hide()
     var vms = []
