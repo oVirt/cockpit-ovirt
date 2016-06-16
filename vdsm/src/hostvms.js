@@ -48,8 +48,8 @@ function readVmsListImpl () {
     // $.event.trigger({'type': 'readVmsListFinished'})
   }
 
-  // spawnVdsm('getAllVmStats', null, stdout, success, fail)
-  spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
+  spawnVdsm('getAllVmStats', null, stdout, success, fail)
+  // spawnVdsm('getAllVmStatsFakeExtend', null, stdout, success, fail)
 }
 
 var parsedHostVms = [] // to be reused by pager later
