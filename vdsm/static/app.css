@@ -41,3 +41,15 @@
     margin: 0px;
     float: right;
 }
+
+.vms-list-gauge {
+    width: 200px;
+    margin-right: 20px;
+}
+
+/* this query comes from patternfly - when list-view-pf-additional-info wraps under list-view-pf-description */
+@media (min-width: 992px) {
+    .vms-list-gauge-wrapping-group > div {
+        display: inline-block;
+    }
+}
