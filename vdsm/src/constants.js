@@ -11,6 +11,7 @@ export const CONFIG = {
   },
   reload: {
     delay_after_vdsm_action: 1000, // one second
+    delay_before_vmdetail_charts: 100,
     auto_refresh_interval: 30000,
     auto_refresh_interval_first: 2000,
     auto_clear_msg_delay: 5000
