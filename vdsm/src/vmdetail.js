@@ -124,6 +124,7 @@ function getUsageDataset (usageRecords, attr1, attr2, inclSum) {
     total: total
   }
 }
+
 function prefillDs (ds) {
   if (ds) {
     while (ds.length < 10) {
@@ -135,17 +136,16 @@ function prefillDs (ds) {
 function renderUsageDetailChart (chartDivId, timestamps, dsArray1, dsArray2) {
   prefillDs(dsArray1)
   prefillDs(dsArray2)
-//  renderSparklineChart(chartDivId, timestamps, dsArray1, dsArray2)
 
   // fire event to refresh chart asynchronously
-  setInterval(function () {
+  setTimeout(() => {
     $.event.trigger({
       'type': 'renderSparklineChartEvent',
       'chartDivId': chartDivId,
       'timestamps': timestamps,
       'dsArray1': dsArray1,
       'dsArray2': dsArray2
-    }) }, CONFIG.delay_after_vdsm_action)
+    }) }, CONFIG.reload.delay_before_vmdetail_charts)
 }
 
 $(document).on('renderSparklineChartEvent',
@@ -155,6 +155,7 @@ $(document).on('renderSparklineChartEvent',
 
 // TODO: add timestamps
 function renderSparklineChart (chartDivId, timestamps, dataArray1, dataArray2) {
+  debugMsg(`Rendering vmdetail chart: ${chartDivId}`)
   var chartConfig = $().c3ChartDefaults().getDefaultSparklineConfig()
   chartConfig.bindto = chartDivId
   chartConfig.data = {
