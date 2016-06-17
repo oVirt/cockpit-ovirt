@@ -292,6 +292,19 @@
         -->
         <script id="vms-list-templ" type="x-template/mustache">
             <div class="list-group-item list-view-pf-stacked" id="vms-list-item-full-{{id}}">
+                <div class="list-view-pf-actions">
+                    <div class="dropdown dropdown-kebab-pf"> <!-- pull-right -->
+                        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight-{{id}}"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <span class="fa fa-ellipsis-v"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight-{{id}}">
+                            <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/shutdown.png" title="Shutdown gracefully">Shutdown gracefully</li>
+                            <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/power_off.png" title="Force off">Force off</li>
+                            <li id="btn-restart-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/vm_rebooting.png" title="Restart">Restart</li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="list-view-pf-main-info">
                     <div class="list-view-pf-left">
                         {{{statusHtml}}}
@@ -306,65 +319,56 @@
                             </div>
                         </div>
                         <div class="list-view-pf-additional-info">
-                            <div class="list-view-pf-additional-info-item" style="width: 200px;margin-right: 20px;">
-                                <span id="cpuUsageChart-{{id}}"><div class="spinner"></div></span>
-                            </div>
-                            <div class="list-view-pf-additional-info-item" style="width: 200px;margin-right: 20px;">
-                                <span id="memUsageChart-{{id}}"><div class="spinner"></div></span>
-                            </div>
-
-                            <div style="width: 200px;margin-right: 20px;">
-                                <div class="progress-description">
-                                    <strong>Disk:</strong>
+                            <div class="vms-list-gauge-wrapping-group">
+                                <div class="list-view-pf-additional-info-item vms-list-gauge">
+                                    <span id="cpuUsageChart-{{id}}"><div class="spinner"></div></span>
                                 </div>
-                                <div class="progress progress-label-top-right">
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Read}}"
-                                         aria-valuemin="0" aria-valuemax="{{diskUsage.ReadMax}}"
-                                         style="width: {{diskUsage.ReadPercent}}%;">
-                                        <span>Read <small>({{diskUsage.Read}} / {{diskUsage.ReadMax}})</small></span>
-                                    </div>
-                                </div>
-                                <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Write}}"
-                                         aria-valuemin="0" aria-valuemax="{{diskUsage.WriteMax}}"
-                                         style="width: {{diskUsage.WritePercent}}%;line-height:40px;">
-                                        <span>Write <small>({{diskUsage.Write}} / {{diskUsage.WriteMax}})</small></span>
-                                    </div>
+                                <div class="list-view-pf-additional-info-item vms-list-gauge">
+                                    <span id="memUsageChart-{{id}}"><div class="spinner"></div></span>
                                 </div>
                             </div>
 
-                            <div style="width: 200px;margin-right: 20px;">
-                                <div class="progress-description">
-                                    <strong>Network:</strong>
-                                </div>
-                                <div class="progress progress-label-top-right">
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}"
-                                         aria-valuemin="0" aria-valuemax="{{netUsage.RxMax}}"
-                                         style="width: {{netUsage.RxPercent}}%;">
-                                        <span>Rx <small>({{netUsage.Rx}} / {{netUsage.RxMax}})</small></span>
+                            <div class="vms-list-gauge-wrapping-group">
+                                <div class="vms-list-gauge">
+                                    <div class="progress-description">
+                                        <strong>Disk:</strong>
+                                    </div>
+                                    <div class="progress progress-label-top-right">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Read}}"
+                                             aria-valuemin="0" aria-valuemax="{{diskUsage.ReadMax}}"
+                                             style="width: {{diskUsage.ReadPercent}}%;">
+                                            <span>Read <small>({{diskUsage.Read}} / {{diskUsage.ReadMax}})</small></span>
+                                        </div>
+                                    </div>
+                                    <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{diskUsage.Write}}"
+                                             aria-valuemin="0" aria-valuemax="{{diskUsage.WriteMax}}"
+                                             style="width: {{diskUsage.WritePercent}}%;line-height:40px;">
+                                            <span>Write <small>({{diskUsage.Write}} / {{diskUsage.WriteMax}})</small></span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Tx}}"
-                                         aria-valuemin="0" aria-valuemax="{{netUsage.TxMax}}"
-                                         style="width: {{netUsage.TxPercent}}%;line-height:40px;">
-                                        <span>Tx <small>({{netUsage.Tx}} / {{netUsage.TxMax}})</small></span>
+
+                                <div class="vms-list-gauge">
+                                    <div class="progress-description">
+                                        <strong>Network:</strong>
+                                    </div>
+                                    <div class="progress progress-label-top-right">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Rx}}"
+                                             aria-valuemin="0" aria-valuemax="{{netUsage.RxMax}}"
+                                             style="width: {{netUsage.RxPercent}}%;">
+                                            <span>Rx <small>({{netUsage.Rx}} / {{netUsage.RxMax}})</small></span>
+                                        </div>
+                                    </div>
+                                    <div class="progress progress-label-top-right"> <!-- style="margin-bottom: 30px;" -->
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{netUsage.Tx}}"
+                                             aria-valuemin="0" aria-valuemax="{{netUsage.TxMax}}"
+                                             style="width: {{netUsage.TxPercent}}%;line-height:40px;">
+                                            <span>Tx <small>({{netUsage.Tx}} / {{netUsage.TxMax}})</small></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="dropdown dropdown-kebab-pf"> <!-- pull-right -->
-                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight-{{id}}"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    <span class="fa fa-ellipsis-v"></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight-{{id}}">
-                                    <li id="btn-shutdown-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/shutdown.png" title="Shutdown gracefully">Shutdown gracefully</li>
-                                    <li id="btn-forceoff-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/power_off.png" title="Force off">Force off</li>
-                                    <li id="btn-restart-vm-{{id}}" data-pattern="{{id}}"><img width="30" src="images/vm_rebooting.png" title="Restart">Restart</li>
-                                </ul>
-                            </div>
-
                         </div>
                     </div>
                 </div>
