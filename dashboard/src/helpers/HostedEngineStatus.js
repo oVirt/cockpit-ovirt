@@ -29,6 +29,7 @@ export function getMetrics(callback) {
 export function setMaintenance(mode) {
   let proc = cockpit.spawn(
     ["/usr/sbin/hosted-engine",
+     "--set-maintenance",
      `--mode=${mode}`,
      ]
   )
