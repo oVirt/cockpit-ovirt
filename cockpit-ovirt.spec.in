@@ -94,6 +94,10 @@ Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-le
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Fri Jul 1 2016 Ryan Barry <rbarry@redhat.com> - 0.10.6
+- Run hosted-engine setup as a superuser if sudo is available
+- Rename the dashboard so branding isn't needed
+- UX improvements
 * Thu Jun 16 2016 Marek Libra <mlibra@redhat.com> - 0.10.5
 - UI improvements
 * Wed Jun 08 2016 Marek Libra <mlibra@redhat.com> - 0.10.4
