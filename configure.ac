@@ -21,7 +21,7 @@ define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [10])
 define([VERSION_FIX], [6])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_RELEASE], [1.0])
+define([VERSION_RELEASE], [1.1])
 define([VERSION_SUFFIX],[0])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER[-]VERSION_RELEASE[.]VERSION_SUFFIX, [devel@ovirt.org])

@@ -110,7 +110,9 @@ class Setup extends Component {
   }
   parseOutput(ret) {
     var question = this.state.question
-    question.suggested = ret.question.suggested
+    question.suggested = ret.question.suggested != '' ?
+                           ret.question.suggested :
+                           this.state.question.suggested
 
     question.prompt = question.prompt.concat(ret.question.prompt)
     question.password = ret.question.password
