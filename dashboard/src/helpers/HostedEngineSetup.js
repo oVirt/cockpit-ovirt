@@ -150,7 +150,7 @@ class RunSetup {
 
       if (/\*\*%QDefault/.test(line)) {
         var match = line.match(/\*\*%QDefault: (.*)/)
-        values.question.suggested = match ? match[1] : ""
+        values.question.suggested = match[1] != "False" ? match[1] : ""
       }
     })
     return values
