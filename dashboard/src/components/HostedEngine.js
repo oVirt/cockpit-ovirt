@@ -37,6 +37,7 @@ class Status extends Component {
     super(props)
     this.state = {
       status: null,
+      globalMaintenance: false,
       vm: null
     }
     this.updateStatus = this.updateStatus.bind(this)
@@ -46,6 +47,8 @@ class Status extends Component {
     this.setState({expanded: !this.state.expanded})
   }
   updateStatus(status) {
+    this.setState({globalMaintenance: status.global_maintenance})
+    delete status.global_maintenance
     this.setState({status: status})
     let found_running = false
     let running_host = {}
@@ -57,7 +60,7 @@ class Status extends Component {
     }
     this.setState({vm: found_running ? running_host : false})
   }
-  componentDidMount() {
+  componentWillMount() {
     var self = this
     var interval = setInterval(function() {
       getMetrics(self.updateStatus)
@@ -91,6 +94,7 @@ class Status extends Component {
       return tmp
     }
     var rows = split(hosts, 2)
+    console.log(this.state.globalMaintenance)
     return (
       <div className="container-fluid">
           <Engine
@@ -104,6 +108,13 @@ class Status extends Component {
             </h3>
           </div>
           <div className="panel-body">
+            {this.state.globalMaintenance ?
+              <div className="alert alert-warning">
+                <span className="pficon pficon-warning-triangle-o" />
+                The cluster is in global maintenance mode!
+              </div>
+              : null
+            }
             {rows}
           </div>
         </div>
