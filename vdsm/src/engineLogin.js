@@ -107,7 +107,7 @@ function getEngineCredentials () {
   return { // populate initial dummy data
     user: 'admin@internal',
     pwd: '',
-    url: 'https://engine.local/ovirt-engine',
+    url: 'https://[ENGINE_HOST]/ovirt-engine',
     token: null
   }
 }
