@@ -39,6 +39,44 @@ export class VirtualMachines {
   }
 }
 
+export class NodeStatus {
+  constructor() {
+  }
+  call(callback, args) {
+    let cmd = ["/usr/sbin/nodectl",
+               "--machine-readable"]
+    cmd = cmd.concat(args)
+    let proc = cockpit.spawn(
+       cmd,
+       {err: "message"}
+    )
+    .done(function(json) {
+      callback(JSON.parse(json))
+    })
+    .fail(function(err, resp) {
+      console.log("Failed to check 'nodectl check'")
+      let ret = {
+        failure: err.message
+      }
+      console.log(ret)
+    })
+  }
+  info(callback) {
+    this.call(callback, ["info"])
+  }
+  check(callback) {
+    this.call(callback, ["check"])
+  }
+  rollback(callback, layer) {
+    this.call(callback,
+      ["rollback",
+       "--nvr",
+        layer
+      ]
+    )
+  }
+}
+
 export class NetworkInterfaces {
   constructor() {
     this.client = cockpit.dbus('org.freedesktop.NetworkManager')
