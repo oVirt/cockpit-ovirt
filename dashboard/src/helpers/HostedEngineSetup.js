@@ -105,7 +105,9 @@ class RunSetup {
         test(message.replace(/^\*+L:/, ""));
       },
       "### ": function(message) {
-        values.output.lines.push(message.replace(/^###\s/, ""));
+        if (!/CTRL-D/.test(message)) {
+          values.output.lines.push(message.replace(/^###\s/, ""));
+        }
       },
     }
 
