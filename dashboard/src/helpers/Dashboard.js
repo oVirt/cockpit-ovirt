@@ -42,24 +42,32 @@ export class VirtualMachines {
 export class NodeStatus {
   constructor() {
   }
-  call(callback, args) {
+  call(callback, args, failOnly = false) {
     let cmd = ["/usr/sbin/nodectl",
                "--machine-readable"]
     cmd = cmd.concat(args)
     let proc = cockpit.spawn(
        cmd,
-       {err: "message"}
+       {err: "message",
+        superuser: "require"}
     )
     .done(function(json) {
-      callback(JSON.parse(json))
+      if (!failOnly) {
+        callback(JSON.parse(json))
+      } else {
+        callback({"success": true})
+      }
     })
     .fail(function(err, resp) {
-      console.log("Failed to check 'nodectl check'")
+      let msg = `Failed to check "nodectl ${args}"`
       let ret = {
         failure: err.message
       }
-      console.log(ret)
+      callback(ret)
     })
+  }
+  checkPermissions(callback) {
+    this.call(callback, ["--version"], true)
   }
   info(callback) {
     this.call(callback, ["info"])

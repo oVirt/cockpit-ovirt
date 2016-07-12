@@ -87,14 +87,23 @@ class Node extends Component {
     this.state = {
       info: null,
       health: null,
+      canRun: false,
     }
     this.helper = new NodeStatus()
+    this.checkPermissions = this.checkPermissions.bind(this)
     this.updateInfo = this.updateInfo.bind(this)
     this.updateHealth = this.updateHealth.bind(this)
   }
   componentWillMount() {
+    this.checkPermissions()
     this.updateInfo()
     this.updateHealth()
+  }
+  checkPermissions() {
+    let self = this
+    this.helper.checkPermissions(function(data) {
+      self.setState({canRun: "success" in data})
+    })
   }
   updateInfo() {
     let self = this
@@ -113,37 +122,42 @@ class Node extends Component {
       this.state.info != null)
     return (
       <div className="row pad-header">
-        { ready ?
-          <div>
-            <NodeIcon health={this.state.health}  />
-            <div className="col-md-4">
+        {this.state.canRun ?
+          ready ?
+            <div>
+              <NodeIcon health={this.state.health}  />
+              <div className="col-md-4">
+                  <div className="row">
+                    Current Layer
+                  </div>
+                  <div className="row">
+                    Health
+                  </div>
+              </div>
+              <div className="col-md-4">
                 <div className="row">
-                  Current Layer
+                  <strong>
+                    {this.state.info.current_layer}
+                  </strong>
                 </div>
                 <div className="row">
-                  Health
+                  <strong>
+                    {this.state.health.status}
+                  </strong>
                 </div>
-            </div>
-            <div className="col-md-4">
-              <div className="row">
-                <strong>
-                  {this.state.info.current_layer}
-                </strong>
               </div>
-              <div className="row">
-                <strong>
-                  {this.state.health.status}
-                </strong>
+              <div className="col-md-2">
+                <NodeButtons
+                  health={this.state.health}
+                  info={this.state.info}
+                  />
               </div>
             </div>
-            <div className="col-md-2">
-              <NodeButtons
-                health={this.state.health}
-                info={this.state.info}
-                />
-            </div>
+          : <div className="spinner" />
+        : <div className="alert alert-danger">
+            <span className="pficon pficon-warning-triangle-o" />
+            Can't check node status! Please run as an administrator!
           </div>
-        : <div className="spinner" />
         }
       </div>
     )
