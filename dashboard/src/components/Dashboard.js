@@ -87,7 +87,7 @@ class Node extends Component {
     this.state = {
       info: null,
       health: null,
-      canRun: false,
+      canRun: null,
     }
     this.helper = new NodeStatus()
     this.checkPermissions = this.checkPermissions.bind(this)
@@ -122,7 +122,7 @@ class Node extends Component {
       this.state.info != null)
     return (
       <div className="row pad-header">
-        {this.state.canRun ?
+        {(this.state.canRun != null && this.state.canRun) ?
           ready ?
             <div>
               <NodeIcon health={this.state.health}  />
@@ -154,10 +154,12 @@ class Node extends Component {
               </div>
             </div>
           : <div className="spinner" />
-        : <div className="alert alert-danger">
-            <span className="pficon pficon-warning-triangle-o" />
-            Can't check node status! Please run as an administrator!
-          </div>
+        : (this.state.canRun != null && !this.state.canRun) ?
+            <div className="alert alert-danger">
+              <span className="pficon pficon-warning-triangle-o" />
+              Can't check node status! Please run as an administrator!
+            </div> :
+            <div className="spinner" />
         }
       </div>
     )
@@ -378,10 +380,14 @@ class InfoModal extends Component {
     let content = <div className="container-fluid">
         {entries}
       </div>
+    let classes = {
+      "modal-lg": true,
+    }
     return (
       <Modal
         title={title}
         content={content}
+        classes={classes}
       />
     )
   }
@@ -526,7 +532,7 @@ const HealthEntry = ({field, fields}) => {
     return (
       <HealthRow
         title={humanize(field)}
-        status={fields}
+        status={fields[field]}
       />
     )
   }
@@ -536,6 +542,8 @@ const HealthRow = ({title, status}) => {
   let pStyle = {
     fontSize: "1.1em"
   }
+  console.log(title)
+  console.log(status)
   return (
     <div className="row">
         <div style={pStyle} className="col-md-8">
@@ -713,10 +721,14 @@ class HostKeyModal extends Component {
   }
 }
 
-const Modal = ({title, content}) => {
+const Modal = ({title, content, classes={}}) => {
+  let baseClasses = {
+    "modal-dialog": true,
+  }
+  let modalClasses = classNames($.extend({}, baseClasses, classes))
   return (
     <div className="modal fade">
-      <div className="modal-dialog">
+      <div className={modalClasses}>
         <div className="modal-content">
           <div className="modal-header">
             <button type="button"
