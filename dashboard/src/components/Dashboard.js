@@ -365,6 +365,9 @@ class InfoModal extends Component {
   componentDidMount() {
     $(ReactDOM.findDOMNode(this)).modal('show')
   }
+  componentWillUnmount() {
+    this.props.hide()
+  }
   render() {
     let fields = this.props.info
     let entries = []
@@ -449,6 +452,9 @@ class HealthModal extends Component {
   }
   componentDidMount() {
     $(ReactDOM.findDOMNode(this)).modal('show')
+  }
+  componentWillUnmount() {
+    this.props.hide()
   }
   render() {
     let fields = this.props.health
@@ -542,8 +548,6 @@ const HealthRow = ({title, status}) => {
   let pStyle = {
     fontSize: "1.1em"
   }
-  console.log(title)
-  console.log(status)
   return (
     <div className="row">
         <div style={pStyle} className="col-md-8">
@@ -594,6 +598,7 @@ class LayerModal extends Component {
     $(ReactDOM.findDOMNode(this)).modal('show')
   }
   componentWillUnmount() {
+    this.props.hide()
     this.resetState()
   }
   onClick(layer) {
@@ -706,6 +711,9 @@ class HostKeyModal extends Component {
   }
   componentDidMount() {
     $(ReactDOM.findDOMNode(this)).modal('show')
+  }
+  componentWillUnmount() {
+    this.props.hide()
   }
   render() {
     var self = this
