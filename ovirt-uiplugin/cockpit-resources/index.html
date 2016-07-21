@@ -44,7 +44,11 @@
                 // Update iframe URL
                 api.setTabContentUrl('cockpit', getCockpitUrl(arguments[0]));
             } else {
-                api.setTabContentUrl('cockpit', 'plugin/cockpit-plugin/noCockpit.html');
+                var cockpitUrl = (arguments.length > 0) ? 
+                    (getCockpitUrl(arguments[0]) + '/ping') :
+                    'https://[YOUR_HOST]:9090/ping';
+                var url = 'plugin/cockpit-plugin/noCockpit.html?' + cockpitUrl;
+                api.setTabContentUrl('cockpit', url);
             }
         },
     });
@@ -62,7 +66,7 @@
 
     // true if the Cockpit is running on a host and is accessible via recent URL configuration
     var isCockpitRunning = function (selectedHost) {
-        var url = getCockpitUrl(selectedHost, 'http') + '/ping';
+        var url = getCockpitUrl(selectedHost, 'https') + '/ping';
 
         try { // 200 OK: { "service": "cockpit" }
             var client = new XMLHttpRequest();
