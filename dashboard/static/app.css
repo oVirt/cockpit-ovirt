@@ -189,3 +189,58 @@ path.line.highlight {
     word-wrap: break-word;
     white-space: normal;
 }
+
+.health-icon {
+  float:right;
+  position: absolute;
+  right: 122px;
+}
+
+.accordion {
+  display: table;
+  width: 100%;
+}
+
+.accordion-row {
+  display: table-row;
+  line-height: 30px;
+}
+
+.accordion-header {
+  display: table-cell;
+  height: 30px;
+  vertical-align: middle;
+  text-align: left;
+  color: black;
+  font-size: 1.1em;
+}
+
+.accordion-icon {
+  display: inline-block;
+  margin-right: 50px;
+}
+
+.accordion-row:hover,
+.accordion-row.open {
+  background-color: #ededed;
+}
+
+.accordion-toggle {
+  display: table-cell;
+  width: 30px;
+}
+
+.accordion-toggle i {
+  width: 30px;
+  font-size: 24px;
+  visibility: hidden;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+.accordion-row.open i,
+.accordion-row:hover .accordion-toggle i{
+    color: #65bedf;
+    background-color: #ededed;
+    visibility: visible;
+}
