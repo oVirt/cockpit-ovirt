@@ -5,19 +5,46 @@ import { VirtualMachines, NetworkInterfaces, NodeStatus,
 var classNames = require('classnames')
 
 export default class Dashboard extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      showWarning: false
+    }
+    this.showPermissionWarning = this.showPermissionWarning.bind(this)
+  }
+  showPermissionWarning() {
+    this.setState({showWarning: true})
+  }
   render() {
     return (
       <div>
         <h2>
           Virtualization
         </h2>
-        <div className="container-fluid">
-          <h4>Node Status</h4>
-          <Node />
-        </div>
+        {this.state.showWarning ?
+          <div className="alert alert-danger">
+            <span className="pficon pficon-warning-triangle-o" />
+            Can't check node status! Please run as an administrator!
+          </div> : null}
         <div className="row">
           <div className="col-md-4 cockpit-info-table-container">
-            <table className="cockpit-info-table">
+            <table className="cockpit-info-table info-table-ct">
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Node Status</h4>
+                  </td>
+                </tr>
+              </tbody>
+              <NodeTable showWarning={this.showPermissionWarning}/>
+              <tbody>
+                <tr>
+                  <td>
+                    <br />
+                    <h4>System</h4>
+                  </td>
+                </tr>
+              </tbody>
               <Links />
               <SshKey />
             </table>
@@ -61,27 +88,31 @@ class RunningVms extends Component {
     return (
       <div>
         {this.state.vms != null ?
-          <div className="row">
-            <div className="col-md-3 list-view-pf-left">
-              <span className="pficon pficon-virtual-machine
-                list-view-pf-icon-sm" />
-            </div>
-            <div className="col-md-4">
-              Virtual Machines
-            </div>
-            <div className="col-md-4">
-              <strong>
-                {this.state.vms.length}
-              </strong> Running
-            </div>
-          </div>
+          <ul className="list-group">
+            <li className="list-group-item">
+              <div className="row">
+                <div className="col-md-3 list-view-pf-left">
+                  <span className="pficon pficon-virtual-machine
+                    list-view-pf-icon-sm" />
+                </div>
+                <div className="col-md-4">
+                  Virtual Machines
+                </div>
+                <div className="col-md-4">
+                  <strong>
+                    {this.state.vms.length}
+                  </strong> Running
+                </div>
+              </div>
+            </li>
+          </ul>
         : null}
     </div>
     )
   }
 }
 
-class Node extends Component {
+class NodeTable extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -120,60 +151,147 @@ class Node extends Component {
   render() {
     let ready = (this.state.health != null &&
       this.state.info != null)
+
+    let buttonMap = {
+      layer : {
+        content: ready ? this.state.info.current_layer: null,
+        button: <NodeButton
+          text="Rollback"
+          modal={LayerModal}
+          data={this.state.info}
+        />,
+        modal: InfoModal,
+        data: this.state.info
+      },
+      health: {
+        content: <NodeTableIcon health={this.state.health} />,
+        modal: HealthModal,
+        data: this.state.health
+      },
+    }
+
+    let infos = {
+      "Health": ready ?
+      <NodeTableLink
+        content={buttonMap.health.content}
+        modal={buttonMap.health.modal}
+        data={buttonMap.health.data}
+        />
+      : <td><div className="spinner" /></td>,
+    "Current Layer": ready ?
+      <NodeTableLink
+        content={buttonMap.layer.content}
+        modal={buttonMap.layer.modal}
+        data={buttonMap.layer.data}
+        button={buttonMap.layer.button}
+        />
+      : <td><div className="spinner" /></td>,
+    }
+
+    let infoLines = []
+    let id = 0
+    for (let i in infos) {
+      infoLines.push(
+        <tr key={i}>
+          <td>{i}</td>
+          {infos[i]}
+        </tr>
+      )
+      id++
+    }
+
+    if (this.state.canRun != null && !this.state.canRun) {
+      this.props.showWarning()
+    }
     return (
-      <div className="row pad-header">
-        {(this.state.canRun != null && this.state.canRun) ?
-          ready ?
-            <div>
-              <NodeIcon health={this.state.health}  />
-              <div className="col-md-4">
-                  <div className="row">
-                    Current Layer
-                  </div>
-                  <div className="row">
-                    Health
-                  </div>
-              </div>
-              <div className="col-md-4">
-                <div className="row">
-                  <strong>
-                    {this.state.info.current_layer}
-                  </strong>
-                </div>
-                <div className="row">
-                  <strong>
-                    {this.state.health.status}
-                  </strong>
-                </div>
-              </div>
-              <div className="col-md-2">
-                <NodeButtons
-                  health={this.state.health}
-                  info={this.state.info}
-                  />
-              </div>
-            </div>
-          : <div className="spinner" />
-        : (this.state.canRun != null && !this.state.canRun) ?
-            <div className="alert alert-danger">
-              <span className="pficon pficon-warning-triangle-o" />
-              Can't check node status! Please run as an administrator!
-            </div> :
-            <div className="spinner" />
-        }
-      </div>
+      <tbody>
+        {infoLines}
+      </tbody>
     )
   }
 }
 
-class NodeIcon extends Component {
+class NodeTableLink extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      dialog_open: false,
+    }
+    this.onClick = this.onClick.bind(this)
+  }
+  onClick() {
+    this.setState({dialog_open: !this.state.dialog_open})
+  }
+  render() {
+    return (
+      <td>
+        <div>
+          <a onClick={this.onClick}>
+            {this.props.content}
+          </a> {this.props.button}
+        </div>
+        <div>
+          {this.state.dialog_open ?
+            <this.props.modal
+              data={this.props.data}
+              hide={this.onClick}
+              />
+            :
+            null
+          }
+        </div>
+      </td>
+    )
+  }
+}
+
+class NodeButton extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      dialog_open: false,
+    }
+    this.onClick = this.onClick.bind(this)
+  }
+  onClick() {
+    this.setState({dialog_open: !this.state.dialog_open})
+  }
+  render() {
+    let style = {
+      "marginLeft": "2vw"
+    }
+    return (
+    <span>
+      <button
+        style={style}
+        className="btn btn-default"
+        type="button"
+        onClick={this.onClick}>
+        {this.props.text}
+      </button>
+      <div>
+        {this.state.dialog_open ?
+          <this.props.modal
+            data={this.props.data}
+            hide={this.onClick}
+            />
+          :
+          null
+        }
+      </div>
+    </span>
+    )
+  }
+}
+
+class NodeTableIcon extends Component {
   constructor(props) {
     super(props)
   }
   render() {
     let statusClass = classNames({
       "pficon": true,
-      "list-view-pf-icon-lg": true,
+      "list-view-pf-icon-md": true,
       "pficon-ok": this.props.health.status == "ok",
       "list-view-pf-icon-success": this.props.health.status == "ok",
       "pficon-warning-triangle-o": this.props.health.status != "ok",
@@ -181,91 +299,7 @@ class NodeIcon extends Component {
     })
     return (
       <div>
-        <div className="col-md-1 list-view-pf-left">
-          <span className={statusClass} />
-        </div>
-      </div>
-    )
-  }
-}
-
-class NodeButtons extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      health_dialog_open: false,
-      info_dialog_open: false,
-      layer_dialog_open: false,
-    }
-    this.onHealthClick = this.onHealthClick.bind(this)
-    this.onInfoClick = this.onInfoClick.bind(this)
-    this.onLayerClick = this.onLayerClick.bind(this)
-  }
-  onHealthClick() {
-    this.setState({health_dialog_open: !this.state.health_dialog_open})
-  }
-  onInfoClick() {
-    this.setState({info_dialog_open: !this.state.info_dialog_open})
-  }
-  onLayerClick() {
-    this.setState({layer_dialog_open: !this.state.layer_dialog_open})
-  }
-  render() {
-    return (
-      <div>
-        <div className="row">
-          <div className="btn-group">
-            <button
-              className="btn btn-default"
-              type="button"
-              onClick={this.onInfoClick}>
-              Information
-            </button>
-            <button
-              className="btn btn-default"
-              type="button"
-              onClick={this.onHealthClick}>
-              Health
-            </button>
-            <button
-              className="btn btn-default"
-              type="button"
-              onClick={this.onLayerClick}>
-              Layers
-            </button>
-          </div>
-          <div>
-            {this.state.info_dialog_open ?
-              <InfoModal
-                info={this.props.info}
-                hide={this.onInfoClick}
-                />
-              :
-              null
-            }
-          </div>
-          <div>
-            {this.state.health_dialog_open ?
-              <HealthModal
-                health={this.props.health}
-                hide={this.onHealthClick}
-                />
-              :
-              null
-            }
-          </div>
-          <div>
-            {this.state.layer_dialog_open ?
-              <LayerModal
-                layers={this.props.info.layers}
-                hide={this.onLayerClick}
-                currentLayer={this.props.info.current_layer}
-                />
-              :
-              null
-            }
-          </div>
-        </div>
+        {this.props.health.status} <span className={statusClass} />
       </div>
     )
   }
@@ -293,11 +327,10 @@ class Links extends Component {
       links.push(<tr key={id}>
         <td>{url}: </td>
         <td>
-          <button
-            className="btn btn-default"
+          <a
             onClick={() => this.onClick(urls[url])}>
             View
-          </button>
+          </a>
         </td>
       </tr>
       )
@@ -335,12 +368,10 @@ class SshKey extends Component {
         <tr>
           <td>SSH Host Key: </td>
           <td>
-            <button
-              className="btn btn-default"
-              type="button"
+            <a
               onClick={this.onClick}>
-              Show
-            </button>
+              View
+            </a>
             <div>
               {this.state.dialog_open ?
                 <HostKeyModal
@@ -369,7 +400,7 @@ class InfoModal extends Component {
     this.props.hide()
   }
   render() {
-    let fields = this.props.info
+    let fields = this.props.data
     let entries = []
     let id = 0
     for (let field in fields) {
@@ -435,11 +466,11 @@ const InfoEntry = ({field, fields}) => {
   } else {
     return (
       <div className="row">
-        <div className="col-md-6">
+        <div className="col-md-4">
           <strong>{field}:</strong>
         </div>
-        <div className="col-md-6">
-         {fields[field]}
+        <div className="col-md-6 entry">
+            {fields[field]}
         </div>
       </div>
     )
@@ -457,7 +488,7 @@ class HealthModal extends Component {
     this.props.hide()
   }
   render() {
-    let fields = this.props.health
+    let fields = this.props.data
     let entries = []
     let id = 0
     for (let field in fields) {
@@ -618,12 +649,12 @@ class LayerModal extends Component {
   }
   render() {
     let self = this
-    let layers = this.props.layers
+    let layers = this.props.data.layers
     let entries = []
     let id = 0
     for (let layer in layers) {
       layers[layer].map(function(l, i) {
-        let buttonEnabled = l == self.props.currentLayer ? true : false
+        let buttonEnabled = l == self.props.data.current_layer ? true : false
         entries.push(<div key={`${l}${i}`}>
           <LayerEntry
             layer={l}
@@ -693,7 +724,7 @@ const LayerEntry = ({layer, handler, buttonEnabled}) => {
         <div style={pStyle} className="col-md-8">
           {layer}
         </div>
-        <div className="col-md-2">
+        <div className="col-md-3">
           <button
             className={buttonClass}
             onClick={() => handler(layer)}
@@ -775,7 +806,9 @@ class Accordion extends Component {
     this.setState({show_children: !this.state.show_children})
   }
   render() {
-    let char = this.state.show_children ? '\u2296' : '\u2295'
+    let char = this.state.show_children ?
+      <span className="fa fa-angle-down" /> :
+      <span className="fa fa-angle-right" />
     let linkStyle = {
       color: "black",
       fontSize: "1.1em"
