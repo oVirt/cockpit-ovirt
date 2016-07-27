@@ -33,7 +33,7 @@ AC_SUBST([PLUGINNAME], ['oVirt Cockpit Plugin'])
 
 AC_SUBST([COMMIT],
          [$( git ls-remote http://gerrit.ovirt.org/cockpit-ovirt.git |
-             grep "$PACKAGE_TARNAME-PACKAGE_VERSION$" |
+             grep $PACKAGE_TARNAME-$PACKAGE_VERSION |
              awk '{print $1}' )])
 
 AC_ARG_WITH([vdsm], [AC_HELP_STRING([--with-vdsm],
