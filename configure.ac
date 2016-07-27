@@ -22,7 +22,7 @@ define([VERSION_MINOR], [10])
 define([VERSION_FIX], [6])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
 define([VERSION_RELEASE], [1.3])
-define([VERSION_SUFFIX],[2])
+define([VERSION_SUFFIX],[3])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER[-]VERSION_RELEASE[.]VERSION_SUFFIX, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
@@ -30,6 +30,11 @@ PACKAGE_RPM_RELEASE="VERSION_RELEASE.VERSION_SUFFIX"
 AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
 AC_SUBST([PLUGINNAME], ['oVirt Cockpit Plugin'])
+
+AC_SUBST([COMMIT],
+         [$( git ls-remote http://gerrit.ovirt.org/cockpit-ovirt.git |
+             grep "$PACKAGE_TARNAME-PACKAGE_VERSION$" |
+             awk '{print $1}' )])
 
 AC_ARG_WITH([vdsm], [AC_HELP_STRING([--with-vdsm],
             [enable the VDSM plugin for the dashboard])],
