@@ -46,6 +46,11 @@ path.line.highlight {
     position: fixed;
 }
 
+.curtains-message {
+    margin-left: 80px;
+    margin-right: 90px;
+}
+
 .container-fluid {
     margin-top: 0px;
     padding-left: 0px;

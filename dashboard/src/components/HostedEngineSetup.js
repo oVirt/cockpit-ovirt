@@ -344,9 +344,9 @@ const NoPermissions = () => {
 const Curtains = ({callback, cancelled}) => {
   let message = cancelled ?
     "Hosted engine setup was aborted" :
-    "Configure and install a highly-available virtual machine which will"
-    "run oVirt Engine to manage multiple compute nodes, or add this systemd"
-    "to an existing hosted engine cluster"
+    "Configure and install a highly-available virtual machine which will \
+    run oVirt Engine to manage multiple compute nodes, or add this system \
+    to an existing hosted engine cluster."
   let button_text = cancelled ?
     "Restart" : "Start"
   return (
@@ -358,7 +358,7 @@ const Curtains = ({callback, cancelled}) => {
         <h1>
           Hosted Engine Setup
         </h1>
-        <p>
+        <p className="curtains-message">
           {message}
         </p>
         <div className="blank-slate-pf-main-action">
