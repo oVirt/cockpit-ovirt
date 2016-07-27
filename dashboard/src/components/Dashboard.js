@@ -542,12 +542,6 @@ const HealthEntry = ({field, fields}) => {
     }
     let accordionid = Math.floor((Math.random() * 100) + 1)
     let link = field.replace(/\./g, '').replace(/\+/g, '')
-    let style = {
-      backgroundColor: {
-        selected: "#d4edfa",
-        idle : null
-      }
-    }
     return (
       <div>
         {entries.length ?
@@ -555,7 +549,6 @@ const HealthEntry = ({field, fields}) => {
             header={humanize(field)}
             key={`${link}${accordionid}`}
             icon={statusIcon}
-            style={style}
             >
             {entries}
           </Accordion>
@@ -598,10 +591,9 @@ const HealthIcon = ({status}) => {
     "pficon": true,
     "list-view-pf-icon-lg": true,
     "pficon-ok": status == "ok",
-    "text-right": true,
     "list-view-pf-icon-success": status == "ok",
     "pficon-warning-triangle-o": status != "ok",
-    "list-view-pf-icon-warning": status != "ok"
+    "list-view-pf-icon-warning": status != "ok",
   })
   return (
     <span className={icon} />
@@ -793,65 +785,51 @@ class Accordion extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      show_children: false,
+      expanded: false,
       hover: false
     }
     this.onClick = this.onClick.bind(this)
-    this.toggleHover = this.toggleHover.bind(this)
-  }
-  toggleHover() {
-    this.setState({hover: !this.state.hover})
   }
   onClick() {
-    this.setState({show_children: !this.state.show_children})
+    this.setState({expanded: !this.state.expanded})
   }
   render() {
-    let char = this.state.show_children ?
-      <span className="fa fa-angle-down" /> :
-      <span className="fa fa-angle-right" />
-    let linkStyle = {
-      color: "black",
-      fontSize: "1.1em"
+    let caretClasses = {
+      "fa": true,
+      "fa-angle-down" : this.state.expanded,
+      "fa-angle-right": !this.state.expanded,
     }
-    let defaultHeaderStyle = {
-      backgroundColor: {
-        selected: "#d4edfa",
-        idle: "#d1d1d1"
-      }
-    }
-    let style = this.props.style != null ?
-      this.props.style :
-      defaultHeaderStyle
-    let headerStyle = {
-      backgroundColor: this.state.hover ?
-      style.backgroundColor.selected :
-      style.backgroundColor.idle
-    }
+
+    let char = <div className="accordion-toggle">
+        <i className={classNames(caretClasses)} />
+      </div>
     let childStyle = {
       "marginLeft": "5px",
       "marginRight": "0px"
     }
+    let rowClasses = {
+      "accordion-row": true,
+      "open": this.state.expanded
+    }
     return (
       <div>
-        <div style={headerStyle} className="row">
-          <div className="col-md-8">
-            <a
-              style={linkStyle}
-              onClick={this.onClick}
-              onMouseEnter={this.toggleHover}
-              onMouseLeave={this.toggleHover}
-              >
-              {char} {this.props.header}
-            </a>
+        <div className="row">
+          <div className="accordion">
+            <div className={classNames(rowClasses)} onClick={this.onClick}>
+              {char}
+              <div className="accordion-header">
+                {this.props.header}
+              </div>
+              {this.props.icon != null ?
+                <div className="accordion-icon health-icon">
+                  {this.props.icon}
+                </div>
+              : null}
+            </div>
           </div>
-        {this.props.icon != null ?
-          <div className="col-md-2">
-            {this.props.icon}
-          </div>
-        : null}
         </div>
         <div className="row" style={childStyle}>
-          {this.state.show_children ?
+          {this.state.expanded ?
             this.props.children :
             null}
         </div>
