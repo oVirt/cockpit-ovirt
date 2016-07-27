@@ -3,11 +3,15 @@
 %global _plugindir %{_datarootdir}/cockpit/
 %global _ovirtenginedir %{_datarootdir}/ovirt-engine
 %global _uipluginsdir %{_ovirtenginedir}/ui-plugins
-%global source_basename @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 %global product oVirt
 # TODO: add autogen.sh --with-rhev
 %global use_rhev %( test -z @RHEV@ && echo 1 || echo 0)
 %define debug_package %{nil}
+
+# git ls-remote http://gerrit.ovirt.org/cockpit-ovirt.git | grep $tag"
+%global commit @COMMIT@
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global source_basename @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 Name:           cockpit-ovirt
 Version:        @PACKAGE_RPM_VERSION@
@@ -94,6 +98,8 @@ Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-le
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Wed Jul 27 2016 Ryan Barry <rbarry@redhat.com> - 0.10.6-1.3.2
+- UX improvements
 * Fri Jul 1 2016 Ryan Barry <rbarry@redhat.com> - 0.10.6
 - Run hosted-engine setup as a superuser if sudo is available
 - Rename the dashboard so branding isn't needed
