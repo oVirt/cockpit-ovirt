@@ -184,3 +184,8 @@ path.line.highlight {
     display: flex;
     align-items: center;
 }
+
+.modal-body .entry {
+    word-wrap: break-word;
+    white-space: normal;
+}
