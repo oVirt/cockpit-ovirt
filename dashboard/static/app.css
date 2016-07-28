@@ -192,8 +192,8 @@ path.line.highlight {
 
 .health-icon {
   float:right;
-  position: absolute;
-  right: 122px;
+  position: relative;
+  right: 107px;
 }
 
 .accordion {
