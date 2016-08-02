@@ -115,7 +115,7 @@ class Setup extends Component {
                            this.state.question.suggested
 
     question.prompt = question.prompt.concat(ret.question.prompt)
-    question.password = ret.question.password
+    question.password = ret.question.password || this.state.question.password
     question.complete = ret.question.complete || this.state.question.complete
 
     this.setState({question: question})
