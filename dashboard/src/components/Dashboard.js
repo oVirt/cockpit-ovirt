@@ -577,11 +577,11 @@ const HealthRow = ({title, status}) => {
         <div style={pStyle} className="col-md-8">
           {title}
         </div>
-        <div className="col-md-2">
+        <span className="accordion-icon health-icon">
           <HealthIcon
             status={status}
             />
-        </div>
+        </span>
     </div>
   )
 }
