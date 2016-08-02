@@ -51,10 +51,10 @@ This package provides a Cockpit dashboard for use with %{product}.
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
 
 # Copy the Node.js dependencies to the local "node_modules" directory
-ln -s "%{_datadir}/ovirt-engine-nodejs-modules/node_modules"
-ln -s "%{_datadir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/node_modules
+ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules"
+ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/node_modules
 %if 0%{?use_vdsm}
-ln -s "%{_datadir}/ovirt-engine-nodejs-modules/node_modules" ./vdsm/node_modules
+ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./vdsm/node_modules
 %endif
 
 
