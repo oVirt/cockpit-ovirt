@@ -31,8 +31,18 @@ BuildRequires: ovirt-engine-nodejs-modules
 %package dashboard
 Summary:        Dashboard for Cockpit based on %{product}.
 BuildArch:      noarch
-Requires: cockpit
-Requires: ovirt-hosted-engine-setup
+
+%if 0%{?rhel}
+#FIXME: don't pull in base cockpit until rhbz#1349375 is fixed
+Requires:       cockpit-bridge
+Requires:       cockpit-ws
+Requires:       cockpit-shell
+Requires:       cockpit-storaged
+%else
+Requires:       cockpit
+%endif
+
+Requires:       ovirt-hosted-engine-setup
 %if 0%{?use_vdsm}
 Requires: vdsm >= 4.17.999-610
 %else
