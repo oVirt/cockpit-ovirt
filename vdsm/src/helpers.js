@@ -101,10 +101,39 @@ export function parseVdsmJson (json) {
 }
 
 export function vdsmFail () {
-  printError('Vdsm execution failed! Please check that: <br/>\n' +
+  debugMsg('vdsm call failed')
+  handleInactiveVdsm(() => {
+    printError('Vdsm execution failed! Please check that: <br/>\n' +
     '- VDSM is set up properly (i.e. /etc/pki/vdsm/certs/cacert.pem is required)<br/>\n' +
     '- [path_to_cokcpit-ovirt-plugin]/vdsm/vdsm is executable,<br/><br/>\n' +
     'VDSM path: ' + CONFIG.vdsm.client_path)
+  }, () => { // vdsmd inactive
+    $('#vdsm-is-not-active').show()
+    $('#virtual-machines-loading-spinner').hide()
+    $('#virtual-machines-novm-message').hide()
+  })
+}
+
+function handleInactiveVdsm (printErrorMsg, printVdsmInactive) {
+  let stdout = ''
+  const proc = cockpit.spawn(['systemctl', 'is-active', 'vdsmd'])
+  proc.done(() => {
+    debugMsg('handleInactiveVdsm.done() stdout: ' + stdout)
+    if (stdout.trim() === 'active') {
+      debugMsg('vdsmd is active but it\'s call failed')
+      printErrorMsg()
+    } else {
+      debugMsg('vdsmd is not active according to systemctl: ' + stdout)
+      printVdsmInactive()
+    }
+  })
+  proc.stream(data => {
+    stdout += data
+  })
+  proc.fail(() => {
+    debugMsg('systemctl is-active vdsmd response: ' + stdout)
+    printVdsmInactive()
+  })
 }
 
 export function disableButton (name) {

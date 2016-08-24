@@ -55,6 +55,8 @@ function readVmsListImpl () {
 var parsedHostVms = [] // to be reused by pager later
 function getAllVmStatsSuccess (vdsmDataVmsList) {
   debugMsg('readVmsList.succes(): <code>' + vdsmDataVmsList + '</code>')
+  $('#vdsm-is-not-active').hide()
+
   var vms = parseVdsmJson(vdsmDataVmsList)
   if (vms != null) {
     if (vms.status.code === 0) {
@@ -127,10 +129,14 @@ function renderHostVms (vmsParsed) {
       registerBtnOnClickListener('host-vms-list-item-name-', onVmClick)
     }, 0)
   } else {
-    removeAllFromChartCache()
-    $('#virtual-machines-list').html('')
-    $('#virtual-machines-novm-message').show()
+    renderNoHostVm()
   }
+}
+
+function renderNoHostVm () {
+  removeAllFromChartCache()
+  $('#virtual-machines-list').html('')
+  $('#virtual-machines-novm-message').show()
 }
 
 var ITEM_PREFIX = 'vms-list-item-full-'
