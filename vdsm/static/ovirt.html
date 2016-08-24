@@ -67,6 +67,16 @@
                                     </div>
 
                                     <div class="panel-body">
+                                        <div id="vdsm-is-not-active" hidden>
+                                            <h2>The VDSM service is not responding on this host</h2>
+                                            <p>The host is not yet properly set. Please either
+                                            <ul><li>add the host to a cluster</li>
+                                                <li>or deploy the Hosted Engine.</li></ul>
+                                            </p>
+                                            <p>If the host is already added to a cluster but VDSM is still not running, please check it's status in <a href="/system/services#/vdsmd.service" target="_top">VDSM Service Management</a>
+                                            </p>
+                                        </div>
+
                                         <div id="virtual-machines-loading-spinner" class="cockpit-log-warning">
                                             <div class="blank-slate-pf">
                                                 <div class="blank-slate-pf-icon">
