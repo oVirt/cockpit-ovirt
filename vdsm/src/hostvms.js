@@ -324,7 +324,7 @@ function refreshVmUsageCharts (vmId, usageRecord) {
 
 export function shutdownAllHostVmsConfirm () {
   confirmModal(_('Engine not accessible'),
-    _('Login to Engine not available.<br/>Please confirm all VMs on this host will be shut down'),
+    _('Login to Engine not available.<br/><b>Please confirm all VMs on this host will be shut down.</b><br/><br/><i>Please consider the type of running VMs. Shutting down critical VMs like Hosted Engine can cause serious issues.</i>'),
     shutdownAllHostVms)
 }
 
