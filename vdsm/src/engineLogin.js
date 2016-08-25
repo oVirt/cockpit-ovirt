@@ -2,7 +2,7 @@
 import $ from 'jquery'
 import cockpit from 'cockpit'
 
-import {debugMsg, printError, spawnVdsm, parseVdsmJson, vdsmFail, goTo} from './helpers'
+import {debugMsg, printError, spawnVdsm, parseVdsmJson, vdsmFail, goTo, removeTrailingSlash} from './helpers'
 
 import { gettext as _ } from './i18n'
 
@@ -27,6 +27,7 @@ function engineLogin () { // get Engine token via host
   var userName = $('#engine-login-user').val()
   var pwd = $('#engine-login-pwd').val()
   var url = $('#engine-login-url').val()
+  url = removeTrailingSlash(url)
   debugMsg('Engine login for: ' + userName)
   storeEngineCredentials(userName, pwd, url)
 
