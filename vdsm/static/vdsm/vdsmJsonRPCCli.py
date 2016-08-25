@@ -35,6 +35,7 @@ def _set_logger():
 
     return logger
 
+
 def ensure_jsonrpcvdscli_compatibility():
     # vdsmapi-schema.json
     # jsonrpcvdscli.py
@@ -51,6 +52,7 @@ def get_vdsm_service():
 
     return _service
 
+
 def read_stdin():
     inData = sys.stdin.readline()
     line = ''
@@ -58,6 +60,7 @@ def read_stdin():
         inData += line
         line = sys.stdin.readline()
     return inData
+
 
 def build_result(code, message, content=None):
     logger.debug('build_result, code: {0}, message: "{1}", content: {2}'.format(code, message, content is not None))
@@ -68,6 +71,7 @@ def build_result(code, message, content=None):
         'content':content
     }
     return result
+
 
 # invoke engine REST API
 # TODO: use SSL certificates
@@ -91,6 +95,7 @@ def http_call(url, method, headers = {'Accept': 'application/json'}, user=None, 
     logger.debug('http_call status_code: {0}'.format(result.status_code))
     return result
 
+
 def get_engine_token():
     logger.debug('get_engine_token() called')
     credentials = read_credentials()
@@ -106,20 +111,31 @@ def get_engine_token():
     else:
         return build_result(resp.status_code, resp.text)
 
+
 def read_credentials():
     logger.debug('Reading token data from stdin');
     si=read_stdin()
-    logger.debug("stdin:{0}".format(si));
-    credentials = json.loads(si)
-    return credentials
+    try:
+        credentials = json.loads(si)
+        tolog = credentials.copy()
+        if 'pwd' in tolog:
+            tolog["pwd"] = "******"
+        logger.debug('credentials read from stdin: %s', tolog)
+        return credentials
+    except json.JSONDecodeError:
+        logger.warn("Failed to parse credentials, invalid input data: %s", si)
+        return None
+
 
 def get_default_headers(credentials):
     headers = {'Accept': 'application/json', 'Authorization': "Bearer {0}".format(credentials['token'])}
     return headers
 
+
 def get_default_post_headers(credentials):
     headers = {'Content-Type': 'application/xml', 'Authorization': "Bearer {0}".format(credentials['token'])}
     return headers
+
 
 def get_all_vms():
     logger.debug('get_all_vms() called')
@@ -135,6 +151,7 @@ def get_all_vms():
     else:
         return build_result(resp.status_code, resp.text)
 
+
 def get_host(hostId):
     logger.debug('get_host() called')
     credentials = read_credentials()
@@ -146,6 +163,7 @@ def get_host(hostId):
         return build_result(0, 'Done', content)
     else:
         return build_result(resp.status_code, resp.text)
+
 
 def get_running_host(credentials=None):
     logger.debug('get_running_host() called')
@@ -169,6 +187,7 @@ def get_running_host(credentials=None):
         return build_result(1, 'Not found', "VDSM ID '{0}' not found in engine's hosts list".format(vdsmId))
     return build_result(resp.status_code, resp.text)
 
+
 def run_engine_vm(vmId):
     logger.debug("run_engine_vm({0}) called".format(vmId))
     credentials = read_credentials()
@@ -183,6 +202,7 @@ def run_engine_vm(vmId):
         return build_result(0, 'Done', content_xml)
     else:
         return build_result(resp.status_code, resp.text)
+
 
 def host_to_maintenance():
     logger.debug('host_to_maintenance() called')
@@ -203,9 +223,11 @@ def host_to_maintenance():
     else:
         return build_result(resp.status_code, resp.text)
 
+
 def restart_vm(vmId):
     logger.debug("restart_vm({0}) called".format(vmId))
     return get_vdsm_service().shutdown(vmId, reboot=True)
+
 
 def fake_vm(src, offset):
     fake = copy.deepcopy(src)
@@ -235,6 +257,7 @@ def fake_vm(src, offset):
     logger.debug("Fake VM created: vmName: '{0}', vmId: '{1}', srcVmId: '{2}'".format(fake['vmName'], fake['vmId'], src['vmId']))
     return fake
 
+
 def get_all_vm_stats_fake_extend():
     FAKE_VMS_COUNT = 50
     logger.debug('get_all_vm_stats_fake_extend() called')
@@ -245,12 +268,14 @@ def get_all_vm_stats_fake_extend():
             result['items'].append(fake_vm(vm, offset))
     return result
 
+
 def parse_args(service):
     parser = argparse.ArgumentParser(description='Support utility for Cockpit oVirt plugin to invoke VDSM JSON RPC or Engine REST API.\n')
     parser.add_argument('vdsmCommand', help='VDSM command to be invoked',
                         choices=['getAllVmStats', 'shutdown', 'destroy', 'restart', 'ping', 'engineBridge', 'getAllVmStatsFakeExtend', 'getVdsCapabilities'])
     parser.add_argument('vdsmCommandArgs', help='VDSM command arguments', nargs='*')
     return parser.parse_args()
+
 
 def main():
     ensure_jsonrpcvdscli_compatibility()
@@ -288,6 +313,7 @@ def main():
     logger.debug('result: ' + json.dumps(result))
     print json.dumps(result)
     return 0
+
 
 if __name__ == "__main__":
     logger=_set_logger()
