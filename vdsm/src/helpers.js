@@ -245,6 +245,13 @@ export function insertSorted (arr, item, sortedBy) {
 //  debugMsg(`insertSorted() after insert: array=${JSON.stringify(arr)}`)
 }
 
+/**
+ * Remove all slashes '/' from the end of the string
+ */
+export function removeTrailingSlash (str) {
+  return str.replace(/\/*$/g, '')
+}
+
 /*eslint no-extend-native:0 */
 String.prototype.format = function () {
   var s = this
