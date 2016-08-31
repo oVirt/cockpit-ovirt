@@ -8,7 +8,7 @@ import {GLOBAL} from './globaldata'
 import {getVmDetailsVdsmToInternal, vmStatusToHtml} from './vmdetail'
 import {onVmClick, shutdownAllHostVmsConfirm} from './hostvms'
 import {getEngineCredentialsTokenOnly, isLoggedInEngine} from './engineLogin'
-import {printError, debugMsg, spawnVdsm, parseVdsmJson, registerBtnOnClickListener, formatHumanReadableBytes} from './helpers'
+import {printError, debugMsg, spawnVdsm, parseVdsmJson, registerBtnOnClickListener, formatHumanReadableBytes, arrayFind} from './helpers'
 
 import { gettext as _ } from './i18n'
 
@@ -197,9 +197,8 @@ function getState (engineVm) {
 }
 
 function isRunActionAllowed (engineVm) {
-  var state = getState(engineVm).toLowerCase()
-
-  return ['down', ''].includes(state)
+  const state = getState(engineVm).toLowerCase()
+  return (state === 'down') || (state === '')
 }
 
 // ------------------------------------------------------------
@@ -288,7 +287,7 @@ function hostToMaintenanceSuccess (vdsmOut) {
 }
 
 function getVmDetailsEngineToInternal (vmId, parsedEngineVms, inclHost = true) { // lookup cached VM detail
-  var s = parsedEngineVms.find(function (src) { return src.id === vmId })
+  var s = arrayFind(parsedEngineVms, src => { return src.id === vmId })
   if (!s) {
     debugMsg(`parsedEngineVms(${vmId}) not found`)
     return undefined

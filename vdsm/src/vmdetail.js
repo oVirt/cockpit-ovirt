@@ -8,10 +8,11 @@ import c3 from 'c3'
 import {CONFIG, VM_STATUS_ICONS, VM_STATUS_ICONS_PATH_PREFIX} from './constants'
 import {GLOBAL} from './globaldata'
 
-import {printError, spawnVdsm, vdsmFail, debugMsg} from './helpers'
+import {printError, spawnVdsm, vdsmFail, debugMsg, arrayFind} from './helpers'
 import {_getVmDetails, readVmsList} from './hostvms'
 
 import { gettext as _ } from './i18n'
+
 /*
 function consoleFileContent (vm) {
 // TODO: generate content of .vv file
@@ -214,9 +215,7 @@ function renderNetworkIOChartDetail (chartDivId, usageRecords) {
 // ----------------------------------------------------------------------
 export function getVmDetailsVdsmToInternal (vmId, parsedVdsmGetAllVMs) { // lookup cached VM detail
   if (parsedVdsmGetAllVMs.hasOwnProperty('items')) {
-    return _getVmDetails(parsedVdsmGetAllVMs.items.find(function (src) {
-      return src.vmId === vmId
-    }))
+    return _getVmDetails(arrayFind(parsedVdsmGetAllVMs.items, src => { return src.vmId === vmId }))
   }
 
   return undefined

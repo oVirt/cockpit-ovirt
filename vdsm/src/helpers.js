@@ -232,7 +232,7 @@ export function isHostVmsScreenDisplayed () {
  */
 export function insertSorted (arr, item, sortedBy) {
   // debugMsg(`insertSorted() sortedBy=${sortedBy}, item=${JSON.stringify(item)}\narray=${JSON.stringify(arr)}`)
-  let pred = arr.findIndex(e => {
+  let pred = arrayFindIndex(arr, e => {
     const a = e[sortedBy].toLowerCase()
     const b = item[sortedBy].toLowerCase()
     const res = a.localeCompare(b) > 0
@@ -261,4 +261,38 @@ String.prototype.format = function () {
     s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i])
   }
   return s
+}
+
+export function arrayFind (list, predicate) {
+  if (Array.prototype.find) {
+    return list.find(predicate)
+  } else {
+    var length = list.length >>> 0
+    var value
+
+    for (var i = 0; i < length; i++) {
+      value = list[i]
+      if (predicate(value, i, list)) {
+        return value
+      }
+    }
+    return undefined
+  }
+}
+
+export function arrayFindIndex (list, predicate) {
+  if (Array.prototype.findIndex) {
+    return list.findIndex(predicate)
+  } else {
+    var length = list.length >>> 0
+    var value
+
+    for (var i = 0; i < length; i++) {
+      value = list[i]
+      if (predicate(value, i, list)) {
+        return i
+      }
+    }
+    return -1
+  }
 }
