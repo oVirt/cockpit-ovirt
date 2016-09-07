@@ -49,6 +49,7 @@ Requires:       cockpit
 %endif
 
 Requires:       ovirt-hosted-engine-setup
+Requires:       otopi >= 1.5.2-1
 %if 0%{?use_vdsm}
 Requires: vdsm >= 4.17.999-610
 %endif
