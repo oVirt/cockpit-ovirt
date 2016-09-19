@@ -32,7 +32,7 @@ DISTCLEANDIRS = node_modules \
   ovirt-dashboard
 
 ovirt-dashboard:
-	npm run build
+	$(NPM) run build
 	mv dist ovirt-dashboard
 
 install-data-local:
@@ -45,8 +45,8 @@ distclean-local:
 all: ovirt-dashboard
 
 test:
-	npm i
-	npm test
+	$(NPM) i
+	$(NPM) test
 
 #.PHONY: all
 

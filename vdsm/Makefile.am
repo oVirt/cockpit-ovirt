@@ -33,7 +33,7 @@ DISTCLEANDIRS = node_modules \
 	vdsm
 
 vdsm:
-	npm run build
+	$(NPM) run build
 	chmod a+x dist/vdsm/vdsm
 	mv dist vdsm
 
@@ -47,8 +47,8 @@ distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
 test:
-	npm i
-	npm test
+	$(NPM) i
+	$(NPM) test
 
 .PHONY: all
 

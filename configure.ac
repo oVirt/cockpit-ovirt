@@ -49,6 +49,10 @@ AC_CHECK_PROGS([RPMBUILD], [rpmbuild])
 
 AM_PATH_PYTHON
 
+AC_ARG_VAR([NPM], [path to npm utility])
+AC_CHECK_PROGS([NPM], [npm])
+test -z "${NPM}" && AC_MSG_ERROR([NodeJS npm program not found])
+
 AM_COND_IF([VDSM],
            AC_CONFIG_FILES([vdsm/Makefile]))
 
