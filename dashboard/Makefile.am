@@ -41,7 +41,7 @@ distclean-local:
 
 all: ovirt-dashboard
 
-test:
+check-am:
 	$(NPM) i
 	$(NPM) test
 

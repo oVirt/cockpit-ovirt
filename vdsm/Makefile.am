@@ -43,7 +43,7 @@ install-data-local:
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
-test:
+check-am:
 	$(NPM) i
 	$(NPM) test
 

@@ -34,8 +34,6 @@ install-data-local:
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
-test:
-
 .PHONY: all
 
 # vim: ts=2

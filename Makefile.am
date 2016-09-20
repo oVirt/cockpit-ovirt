@@ -82,10 +82,10 @@ distclean-local:
 .PHONY: rpms publish srpms
 
 
-check: $(VDSM_CHECK)
+check-am: $(VDSM_CHECK)
 	@echo Passed $@
 
 vdsm-checks:
-	$(MAKE) -C vdsm/ test
+	$(MAKE) -C vdsm/ check
 
 # vim: ts=2
