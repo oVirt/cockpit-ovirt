@@ -1,5 +1,6 @@
 autoconf
 automake
 git
-npm
+ovirt-engine-nodejs
+ovirt-engine-nodejs-modules
 python

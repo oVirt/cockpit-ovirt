@@ -30,11 +30,12 @@ DISTCLEANDIRS = node_modules \
 	vdsm
 
 vdsm:
+	$(NPM) i
 	$(NPM) run build
 	chmod a+x dist/vdsm/vdsm
 	mv dist vdsm
 
-all: vdsm
+all-local: vdsm
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)/${plugindir}
@@ -43,8 +44,7 @@ install-data-local:
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
-check-am:
-	$(NPM) i
+check-local:
 	$(NPM) test
 
 .PHONY: all
