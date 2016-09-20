@@ -29,7 +29,20 @@ install and manage multiple Node.js versions side by side.
 
 A recent version of Node.js can be acquired via packages from [NodeSource](http://nodesource.com). See the [installation instructions](https://nodejs.org/en/download/package-manager/#enterprise-linux-and-fedora) on the Node.js website.
 
-#### Build
+
+#### Building
+
+Be sure to install nodejs package as it will be required by the build, then run
+
+./configure && make
+
+If you want to downlod required NodeJS libraries during the build instead of
+providing them as system libraries, you can add --with-npm-install flag to
+the configure command. If you want to build also the vdsm plugin add --with-vdsm
+to the configure command
+
+
+#### Building RPMs
 ./autogen.sh && make rpm
 
 The RPMs will be available under tmp.repos
