@@ -1,6 +1,6 @@
 {
   "name": "cockpit-ovirt",
-  "version": "0.0.1",
+  "version": "@PACKAGE_VERSION@",
   "description": "Virtual Machine Management plugin for Cockpit based on oVirt.",
   "main": "src/ovirt.js",
   "scripts": {

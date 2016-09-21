@@ -60,15 +60,21 @@ AC_CHECK_PROGS([NPM], [npm])
 test -z "${NPM}" && AC_MSG_ERROR([NodeJS npm program not found])
 
 AM_COND_IF([VDSM],
-           AC_CONFIG_FILES([vdsm/Makefile]))
+	AC_CONFIG_FILES([
+		vdsm/Makefile
+		vdsm/package.json
+	])
+)
 
-AC_CONFIG_FILES([Makefile
-                 dashboard/Makefile
-                 dashboard/src/routes/routes.js
-                 cockpit-ovirt.spec
-                 ovirt-uiplugin/Makefile])
+AC_CONFIG_FILES([
+	Makefile
+	dashboard/Makefile
+	dashboard/package.json
+	dashboard/src/routes/routes.js
+	cockpit-ovirt.spec
+	ovirt-uiplugin/Makefile
 
-dnl AM_COND_IF([VDSM],
-dnl            [AC_CONFIG_FILES([vdsm/Makefile])])
+])
+
 
 AC_OUTPUT

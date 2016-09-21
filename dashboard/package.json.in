@@ -1,6 +1,6 @@
 {
   "name": "cockpit-ovirt-dashboard",
-  "version": "0.0.1",
+  "version": "@PACKAGE_VERSION@",
   "description": "oVirt Cockpit Dashboard",
   "main": "src/app.js",
   "scripts": {
