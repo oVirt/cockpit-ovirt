@@ -29,12 +29,15 @@ SHELL := /bin/bash
 
 SUBDIRS = \
 	dashboard \
-  ovirt-uiplugin \
+	ovirt-uiplugin \
 	$(BUILD_VDSM)
 
 EXTRA_DIST = \
-  cockpit-ovirt.spec \
-  cockpit-ovirt.spec.in \
+	.bowerrc \
+	autogen.sh \
+	cockpit-ovirt.spec \
+	cockpit-ovirt.spec.in \
+	README.md \
 	LICENSE
 
 DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \

@@ -18,12 +18,14 @@ export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
 
 EXTRA_DIST = \
 	README.md \
+	.babelrc \
 	.eslintrc \
 	package.json \
 	webpack.config.js \
 	GenerateI18N.js \
 	src \
 	static \
+	tools \
 	po
 
 DISTCLEANDIRS = node_modules \
