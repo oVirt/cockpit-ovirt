@@ -30,7 +30,7 @@ DISTCLEANDIRS = node_modules \
 	vdsm
 
 vdsm:
-	$(NPM) i
+	test -z "$(NPMINSTALL)" || $(NPM) i
 	$(NPM) run build
 	chmod a+x dist/vdsm/vdsm
 	mv dist vdsm

@@ -38,6 +38,13 @@ AC_SUBST([COMMIT],
 AC_ARG_WITH([vdsm], [AC_HELP_STRING([--with-vdsm],
             [enable the VDSM plugin for the dashboard])],
             [VDSM=""], [VDSM="//"])
+
+AC_ARG_WITH([npm-install], [AC_HELP_STRING([--with-npm-install],
+            [enable the installation of needed dependencies using npm])],
+            [NPMINSTALL="//"], [NPMINSTALL=""])
+
+AC_SUBST([NPMINSTALL])
+
 AC_SUBST([VDSM])
 AM_CONDITIONAL([VDSM], [test -z "$VDSM"])
 

@@ -29,7 +29,7 @@ DISTCLEANDIRS = node_modules \
   ovirt-dashboard
 
 ovirt-dashboard:
-	$(NPM) i
+	test -z "$(NPMINSTALL)" || $(NPM) i
 	$(NPM) run build
 	mv dist ovirt-dashboard
 
