@@ -23,10 +23,6 @@ endif
 
 SHELL := /bin/bash
 
-#DIST_SUBDIRS = \
-#	dashboard \
-#	vdsm
-
 SUBDIRS = \
 	dashboard \
 	ovirt-uiplugin \

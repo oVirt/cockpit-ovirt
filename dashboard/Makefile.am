@@ -17,7 +17,7 @@ cockpitdir=$(datarootdir)/cockpit
 export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
 
 EXTRA_DIST = \
-  README.md \
+	README.md \
 	.bowerrc \
 	.eslintrc \
 	src \
@@ -25,8 +25,9 @@ EXTRA_DIST = \
 	package.json \
 	webpack.config.js
 
-DISTCLEANDIRS = node_modules \
-  ovirt-dashboard
+DISTCLEANDIRS = \
+	node_modules \
+	ovirt-dashboard
 
 ovirt-dashboard:
 	test -z "$(NPMINSTALL)" || $(NPM) i
