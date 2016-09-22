@@ -15,6 +15,7 @@ mkdir exported-artifacts
 
 # create rpm
 make rpm
+cp *.tar.gz tmp.repos/
 
 for file in $(find tmp.repos/ -iregex ".*\.\(tar\.gz\|rpm\)$"); do
     echo "Archiving $file"
