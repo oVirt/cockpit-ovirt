@@ -16,12 +16,18 @@
 Name:           cockpit-ovirt
 Version:        @PACKAGE_RPM_VERSION@
 Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?checkout}%{?dist}
-Summary:        Dashboard for Cockpit based on %{product}.
-License:        ASL 2
-URL:            https://gerrit.ovirt.org/cockpit-ovirt
-Source0:        %{source_basename}.tar.gz
-BuildArch:      x86_64
+Summary:        Dashboard for Cockpit based on %{product}
+License:        ASL 2.0
+URL:            https://gerrit.ovirt.org/gitweb?p=cockpit-ovirt.git;a=summary
+Source0:        http://resources.ovirt.org/pub/ovirt-master-snapshot/src/%{name}/%{source_basename}.tar.gz
+
+
+%if 0%{?rhel}
 ExclusiveArch:  x86_64
+%else
+BuildRequires: nodejs-packaging
+ExclusiveArch: %{nodejs_arches} noarch
+%endif
 
 #This is a hack for copr, but why is it needed?
 BuildRequires: python
@@ -29,7 +35,7 @@ BuildRequires: ovirt-engine-nodejs
 BuildRequires: ovirt-engine-nodejs-modules
 
 %package dashboard
-Summary:        Dashboard for Cockpit based on %{product}.
+Summary:        Dashboard for Cockpit based on %{product}
 BuildArch:      noarch
 
 %if 0%{?rhel}
@@ -45,7 +51,6 @@ Requires:       cockpit
 Requires:       ovirt-hosted-engine-setup
 %if 0%{?use_vdsm}
 Requires: vdsm >= 4.17.999-610
-%else
 %endif
 
 %description
@@ -82,6 +87,7 @@ make
 make install DESTDIR=%{buildroot}
 %if 0%{?use_vdsm}
 chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsm
+chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsmJsonRPCCli.py
 %endif
 
 %files dashboard
@@ -101,9 +107,12 @@ Requires: ovirt-engine-webadmin-portal
 BuildArch: noarch
 
 %description uiplugin
-Optional UI plugin embedding Cockpit in oVirt's Administration Portal for low-level host management.
+Optional UI plugin embedding Cockpit in oVirt's Administration Portal
+for low-level host management.
 
 %files uiplugin
+%doc ovirt-uiplugin/README.cockpit
+%license LICENSE
 %{_uipluginsdir}/cockpit.json
 %{_uipluginsdir}/cockpit-resources
 
