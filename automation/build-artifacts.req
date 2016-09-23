@@ -6,3 +6,4 @@ ovirt-engine-nodejs
 ovirt-engine-nodejs-modules
 python
 rpmbuild
+yum-utils

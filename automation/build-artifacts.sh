@@ -11,9 +11,11 @@ echo '{ "allow_root": true }' > ~/.bowerrc
 mkdir exported-artifacts
 
 # generate automake/autoconf files
+export PATH=/usr/share/ovirt-engine-nodejs/bin:${PATH}
 ./autogen.sh --with-vdsm
 
 # create rpm
+yum-builddep cockpit-ovirt.spec
 make rpm
 cp *.tar.gz tmp.repos/
 
