@@ -12,6 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+
+include $(top_srcdir)/build/python.inc
+
 plugindir=$(datarootdir)/cockpit/ovirt-dashboard
 
 export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
@@ -46,7 +49,7 @@ install-data-local:
 distclean-local:
 	rm -rf ${DISTCLEANDIRS}
 
-check-local:
+check-local: python-syntax-check
 	$(NPM) test
 
 .PHONY: all

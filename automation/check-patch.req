@@ -3,4 +3,6 @@ automake
 git
 ovirt-engine-nodejs
 ovirt-engine-nodejs-modules
+pyflakes
 python
+python-pep8
