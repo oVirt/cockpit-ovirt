@@ -1,19 +1,30 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { VirtualMachines, NetworkInterfaces, NodeStatus,
-  SshHostKey } from '../helpers/Dashboard'
+  SshHostKey, CheckIfNode } from '../helpers/Dashboard'
 var classNames = require('classnames')
 
 export default class Dashboard extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      node: false,
       showWarning: false
     }
     this.showPermissionWarning = this.showPermissionWarning.bind(this)
+    this.checkIfNode = this.checkIfNode.bind(this)
+  }
+  componentWillMount() {
+    this.checkIfNode()
   }
   showPermissionWarning() {
     this.setState({showWarning: true})
+  }
+  checkIfNode() {
+    let self = this
+    CheckIfNode(function(result) {
+      self.setState({node: result})
+    })
   }
   render() {
     return (
@@ -29,14 +40,18 @@ export default class Dashboard extends Component {
         <div className="row">
           <div className="col-md-4 cockpit-info-table-container">
             <table className="cockpit-info-table info-table-ct">
-              <tbody>
-                <tr>
-                  <td>
-                    <h4>Node Status</h4>
-                  </td>
-                </tr>
-              </tbody>
-              <NodeTable showWarning={this.showPermissionWarning}/>
+              {this.state.node ?
+                <tbody>
+                  <tr>
+                    <td>
+                      <h4>Node Status</h4>
+                    </td>
+                  </tr>
+                </tbody>
+              : null }
+              {this.state.node ?
+                <NodeTable showWarning={this.showPermissionWarning}/>
+              : null }
               <tbody>
                 <tr>
                   <td>

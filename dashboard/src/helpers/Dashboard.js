@@ -6,6 +6,22 @@ const wait_valid = (proxy, callback) => {
   });
 }
 
+export function CheckIfNode(callback) {
+  let cmd = ["which",
+            "nodectl"]
+  let proc = cockpit.spawn(
+     cmd,
+     {err: "message"}
+  )
+  .done(function() {
+      callback(true)
+  })
+  .fail(function(err, resp) {
+    console.log("nodectl is not installed. Disabling node functionality")
+    callback(false)
+  })
+}
+
 export function SshHostKey(type, callback) {
   let path = `/etc/ssh/ssh_host_${type}_key`
   let host_key = cockpit.file(path, {superuser: 'try'})
