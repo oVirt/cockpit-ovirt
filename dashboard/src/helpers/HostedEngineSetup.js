@@ -142,7 +142,7 @@ class RunSetup {
 
       // This is a hack until https://bugzilla.redhat.com/show_bug.cgi?id=1336250
       // is merged: https://gerrit.ovirt.org/#/c/56955/
-      if (line.match(/password/i || /\*\*%QHidden: TRUE/.test(line))) {
+      if (line.match(/\*\*%QHidden: TRUE/.test(line))) {
         values.question.password = true
       }
 
