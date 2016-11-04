@@ -140,9 +140,7 @@ class RunSetup {
         values.question.prompt.push(line.replace(/###/, ""))
       }
 
-      // This is a hack until https://bugzilla.redhat.com/show_bug.cgi?id=1336250
-      // is merged: https://gerrit.ovirt.org/#/c/56955/
-      if (line.match(/\*\*%QHidden: TRUE/.test(line))) {
+      if (/\*\*%QHidden:\s*TRUE/.test(line)) {
         values.question.password = true
       }
 
