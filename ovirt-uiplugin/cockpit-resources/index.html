@@ -21,11 +21,11 @@
 
     api.register({
         UiInit : function() {
-            // Add 'Cockpit' sub-tab under 'Hosts' main-tab
-            api.addSubTab('Host', 'Cockpit', 'cockpit', '');
+            // Add 'Web Console' sub-tab under 'Hosts' main-tab
+            api.addSubTab('Host', 'Web Console', 'cockpit', '');
 
-            // Add 'Cockpit' button (+ context menu) to 'Hosts' main-tab
-            api.addMainTabActionButton('Host', 'Cockpit', {
+            // Add 'Web Console' button (+ context menu) to 'Hosts' main-tab
+            api.addMainTabActionButton('Host', 'Web Console', {
                 onClick : function() {
                     var win = window.open(getCockpitUrl(arguments[0]), '_blank');
                     win.focus();
