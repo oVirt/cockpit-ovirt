@@ -45,7 +45,8 @@ module.exports = {
       {from: 'README.md'},
       {from: 'static/manifest.json'},
       {from: 'static/index.html'},
-      {from: 'static/app.css'}
+      {from: 'static/app.css'},
+      {from: 'static/gdeploy-templates', to: 'gdeploy-templates'},
     ])
   ]
 };

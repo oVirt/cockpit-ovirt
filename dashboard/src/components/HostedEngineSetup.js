@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import RunSetup from '../helpers/HostedEngineSetup'
+import GdeploySetup from './gdeploy/GdeploySetup'
+
 var classNames = require('classnames')
 
 var setup = null
@@ -7,36 +9,57 @@ var setup = null
 class HostedEngineSetup extends Component {
   constructor(props) {
     super(props)
-      this.state = {
-        hidden: true,
-        cancelled: false
-      }
+    this.state = {
+      cancelled: false,
+      deploymentOption: 'regular',
+      state: 'empty'
+    }
     this.onClick = this.onClick.bind(this)
     this.abortCallback = this.abortCallback.bind(this)
     this.startSetup = this.startSetup.bind(this)
+    this.startGdeploy = this.startGdeploy.bind(this)
+    this.handleOptionChange = this.handleOptionChange.bind(this);
   }
-  onClick () {
-    this.setState({hidden: false})
-    this.setState({cancelled: false})
-    this.startSetup()
+  onClick() {
+    this.setState({ cancelled: false })
+    if (this.state.deploymentOption === 'regular') {
+      this.startSetup()
+    } else if (this.state.deploymentOption === 'hci') {
+      this.startGdeploy();
+    }
   }
-  startSetup() {
-    setup = new RunSetup(this.abortCallback)
+  startSetup(answerFiles) {
+    this.setState({ state: 'he' })
+    setup = new RunSetup(this.abortCallback, answerFiles)
+  }
+  startGdeploy() {
+    this.setState({ state: 'gdeploy' })
   }
   abortCallback() {
-    this.setState({cancelled: true})
-    this.setState({hidden: true})
+    this.setState({ cancelled: true })
+    this.setState({ state: 'empty' })
+  }
+  handleOptionChange(changeEvent) {
+    this.setState({
+      deploymentOption: changeEvent.target.value
+    });
   }
   render() {
     return (
       <div>
-        {this.state.hidden ?
+        {this.state.state === 'empty' &&
           <Curtains
             callback={this.onClick}
             cancelled={this.state.cancelled}
+            deploymentOption={this.state.deploymentOption}
+            selectionChangeCallback={this.handleOptionChange}
             />
-          :
-          <Setup setupCallback={this.startSetup}/>
+        }
+        {this.state.state === 'he' && <Setup setupCallback={this.startSetup} />}
+        {this.state.state === 'gdeploy' &&
+          <GdeploySetup onSuccess={this.startSetup}
+            onClose={this.abortCallback}
+            />
         }
       </div>
     )
@@ -341,7 +364,7 @@ const NoPermissions = () => {
   )
 }
 
-const Curtains = ({callback, cancelled}) => {
+const Curtains = ({callback, cancelled, deploymentOption, selectionChangeCallback}) => {
   let message = cancelled ?
     "Hosted engine setup was aborted" :
     "Configure and install a highly-available virtual machine which will \
@@ -361,6 +384,24 @@ const Curtains = ({callback, cancelled}) => {
         <p className="curtains-message">
           {message}
         </p>
+        <form>
+          <div className="radio">
+            <label>
+              <input type="radio" value="regular"
+                checked={deploymentOption === 'regular'}
+                onChange={selectionChangeCallback} />
+              Standard
+              </label>
+          </div>
+          <div className="radio">
+            <label>
+              <input type="radio" value="hci"
+                checked={deploymentOption === 'hci'}
+                onChange={selectionChangeCallback} />
+              Hosted Engine with Gluster
+              </label>
+          </div>
+        </form>
         <div className="blank-slate-pf-main-action">
           <button
             className="btn btn-lg btn-primary"

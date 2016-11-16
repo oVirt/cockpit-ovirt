@@ -1,25 +1,31 @@
 class RunSetup {
-  constructor(abortCallback) {
+  constructor(abortCallback, answerFiles) {
     this._outputCallback = null
     this._exitCallback = null
     this._manual_close = false
     this._found_question = false
     this._chomp_input = false
     this.abortCallback = abortCallback
+    this.answerFiles = answerFiles
   }
 
   start(outputCallback, exitCallback) {
     this._outputCallback = outputCallback
     this._exitCallback = exitCallback
-
+    var cmd = ['hosted-engine', '--deploy',
+               '--otopi-environment="DIALOG/dialect=str:machine"']
+    if (this.answerFiles != null){
+      this.answerFiles.forEach(function(file){
+        cmd.push(`--config-append=${file}`)
+      })
+    }
     this.channel = cockpit.channel({
       "payload": "stream",
       "environ": [
           "TERM=xterm-256color",
           "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
       ],
-      "spawn": ['hosted-engine', '--deploy',
-                '--otopi-environment="DIALOG/dialect=str:machine"'],
+      "spawn": cmd,
       "pty": true,
       "superuser": "require",
     })
