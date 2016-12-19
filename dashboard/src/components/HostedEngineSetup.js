@@ -128,7 +128,7 @@ class Setup extends Component {
           // Pop off the beginning of the box if it gets too long, since
           // otopi has a lot of informational messages for some steps,
           // and it pushes everything down the screen
-          if (value[key].length > 10) {
+          if (key != "lines" && value[key].length > 10) {
             value[key].shift()
           }
           value[key] = value[key].concat(ret.output[key])
