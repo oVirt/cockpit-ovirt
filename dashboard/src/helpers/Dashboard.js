@@ -62,6 +62,7 @@ export class NodeStatus {
     let cmd = ["/usr/sbin/nodectl",
                "--machine-readable"]
     cmd = cmd.concat(args)
+    var self = this
     let proc = cockpit.spawn(
        cmd,
        {err: "message",
@@ -69,7 +70,7 @@ export class NodeStatus {
     )
     .done(function(json) {
       if (!failOnly) {
-        callback(JSON.parse(json))
+        callback(self.sortObjectJSON.parse(json))
       } else {
         callback({"success": true})
       }
@@ -98,6 +99,27 @@ export class NodeStatus {
         layer
       ]
     )
+  }
+  sortObject(object) {
+    var sortedObj = {},
+        keys = Object.keys(object);
+
+    keys.sort(function(key1, key2){
+        key1 = key1.toLowerCase(), key2 = key2.toLowerCase();
+        if(key1 < key2) return -1;
+        if(key1 > key2) return 1;
+        return 0;
+    });
+
+    for(var index in keys){
+        var key = keys[index];
+        if(typeof object[key] == 'object' && !(object[key] instanceof Array)){
+            sortedObj[key] = this.sortObject(object[key]);
+        } else {
+            sortedObj[key] = object[key];
+        }
+    }
+    return sortedObj;
   }
 }
 
