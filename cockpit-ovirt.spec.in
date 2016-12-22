@@ -119,7 +119,9 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
-* Tue Dec 22 2016 Ryan Barry <rbarry@redhat.com> - 0.10.6-1.4.333
+* Wed Dec 21 2016 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.0
+- Add gdeploy to hosted engine
+* Tue Dec 20 2016 Ryan Barry <rbarry@redhat.com> - 0.10.6-1.4.3
 - Keep all of the hosted-engine output
 * Fri Nov 4 2016 Ryan Barry <rbarry@redhat.com> - 0.10.6-1.4.2
 - Fix a regression with the last patch where the password was
