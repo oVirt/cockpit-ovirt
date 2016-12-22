@@ -7,7 +7,6 @@ import WizardPreviewStep from './Gdeploy-Wizard-Preview'
 import Wizard from './Wizard'
 import GdeployUtil from '../../helpers/GdeployUtil'
 import { CONFIG_FILES } from './constants'
-import ini from 'ini'
 
 class GdeploySetup extends Component {
     constructor(props) {
@@ -19,25 +18,9 @@ class GdeploySetup extends Component {
         };
         this.handleFinish = this.handleFinish.bind(this)
         this.onStepChange = this.onStepChange.bind(this)
-        this.createGdeployConfig = this.createGdeployConfig.bind(this)
-    }
-    createGdeployConfig() {
-        if (this.state.glusterModel.volumes.length > 0 && this.state.glusterModel.hosts.length > 0) {
-            const that = this
-            cockpit.file(CONFIG_FILES.gdeployTemplate).read()
-                .done(function(template) {
-                    if (template != null) {
-                        const configTemplate = ini.parse(template)
-                        GdeployUtil.createGdeployConfig(that.state.glusterModel, configTemplate, CONFIG_FILES.gdeployConfigFile)
-                    }
-                })
-            GdeployUtil.createHEAnswerFileForGlusterStorage(this.state.glusterModel.volumes[0].name, this.state.glusterModel.hosts, CONFIG_FILES.heAnsfileFile)
-        }
     }
     onStepChange(activeStep) {
-        if (activeStep == 4) {
-            this.createGdeployConfig()
-        }
+
     }
     handleFinish() {
         this.setState({ isDeploymentStarted: true })

@@ -43,6 +43,20 @@ class Wizard extends Component {
         this.setState({ activeStep: step })
     }
     render() {
+        const steps = []
+        const that = this
+        this.props.children.forEach(function(step, index) {
+            const stepElement = React.cloneElement(step, {
+                activeStep: that.state.activeStep
+            })
+            const comp = classNames(
+                { "hidden": index != that.state.activeStep }
+            )
+            steps.push(
+                <div key={index} className={comp}>
+                    {stepElement}
+                </div>)
+        })
         return (
             <div className="modal fade">
                 <div className="modal-dialog modal-lg wizard-pf">
@@ -65,7 +79,7 @@ class Wizard extends Component {
                             <div className="wizard-pf-row">
                                 <div className="wizard-pf-main gdeploy-wizard-row">
                                     <div className="wizard-pf-contents">
-                                        {this.props.children[this.state.activeStep]}
+                                        {steps}
                                     </div>
                                 </div>
                             </div>
@@ -95,7 +109,7 @@ Wizard.propTypes = {
 const WizardSteps = ({steps, activeStep, callBack}) => {
     //Create the Navigation steps with active step
     const stepItems = []
-    steps.forEach(function (step, index) {
+    steps.forEach(function(step, index) {
         const stepClass = classNames(
             "wizard-pf-step",
             { "active": activeStep == index }
@@ -131,7 +145,7 @@ const WizardFooter = ({activeStep, stepCount, isFinished,
         ),
         finishButton = classNames(
             "btn", "btn-primary", "wizard-pf-finish",
-            { "hidden": (( activeStep != stepCount - 1) || isFinished) }
+            { "hidden": ((activeStep != stepCount - 1) || isFinished) }
         ),
         closeButton = classNames(
             "btn", "btn-primary", "wizard-pf-close", "wizard-pf-dismiss",
