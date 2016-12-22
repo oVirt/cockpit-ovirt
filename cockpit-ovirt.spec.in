@@ -75,6 +75,7 @@ ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./vdsm/node_
 
 
 %build
+export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
 %if 0%{?use_vdsm}
 %configure --with-vdsm
 %else
