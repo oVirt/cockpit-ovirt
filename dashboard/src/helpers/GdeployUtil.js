@@ -62,8 +62,7 @@ var GdeployUtil = {
             yumConfig
         )
         const configString = this.convertToString(gdeployConfig)
-        this.writeConfigFile(filePath, configString)
-        return configString
+        return this.writeConfigFile(filePath, configString)
     },
     createYumConfig(subscription) {
         //Required only if we have to install some packages
@@ -238,7 +237,7 @@ var GdeployUtil = {
     },
     writeConfigFile(filePath, configString) {
         const file = cockpit.file(filePath)
-        file.replace(configString)
+        return file.replace(configString)
             .always(function(tag) {
                 file.close()
             })
@@ -249,7 +248,7 @@ var GdeployUtil = {
         if (glusterServers.length > 1) {
             configString = this.appendLine(configString, `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}`)
         }
-        this.writeConfigFile(filePath, configString)
+        return this.writeConfigFile(filePath, configString)
     },
     runGdeploy(configFile, stdoutCallback, successCallback, failCallback) {
         //gdeploy -c /cockpit-gluster/src/gdeploy-templat.conf

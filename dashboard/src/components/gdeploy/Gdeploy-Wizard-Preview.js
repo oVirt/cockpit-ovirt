@@ -1,34 +1,73 @@
 import React, { Component } from 'react'
 import WizardExecutionStep from './Gdeploy-Wizard-Execution'
 import GdeployUtil from '../../helpers/GdeployUtil'
+import ini from 'ini'
 
 class WizardPreviewStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            gdeployConfig: "Loading the configuration...",
-            isEditing: false
+            gdeployConfig: "",
+            isEditing: false,
+            isChanged: false
         }
         this.handleConfigChange = this.handleConfigChange.bind(this)
         this.handleEdit = this.handleEdit.bind(this)
         this.handleSave = this.handleSave.bind(this)
         this.readGdeployConfig = this.readGdeployConfig.bind(this)
+        this.createGdeployConfig = this.createGdeployConfig.bind(this)
+    }
+    createGdeployConfig() {
+        if (this.props.glusterModel.volumes.length > 0 && this.props.glusterModel.hosts.length > 0) {
+            this.setState({
+                gdeployConfig: "Creating Gdeploy configuration...",
+                isChanged: false
+            })
+            const that = this
+            cockpit.file(this.props.templatePath).read()
+            .done(function(template) {
+                if (template != null) {
+                    const configTemplate = ini.parse(template)
+                    GdeployUtil.createGdeployConfig(that.props.glusterModel,
+                        configTemplate,
+                        that.props.configFilePath
+                    )
+                    .done(function() {
+                        console.log(`Gdeploy configuration saved successfully to ${that.props.configFilePath}`)
+                        that.readGdeployConfig()
+                    })
+                }
+            })
+            GdeployUtil.createHEAnswerFileForGlusterStorage(this.props.glusterModel.volumes[0].name,
+                this.props.glusterModel.hosts,
+                this.props.heAnsweFilePath
+            )
+            .done(function() {
+                console.log(`Hosted Engine configuration saved successfully to ${that.props.heAnsweFilePath}`)
+            })
+        }
     }
     readGdeployConfig() {
         const that = this
+        this.setState({ gdeployConfig: "Loading Gdeploy configuration..." })
         cockpit.file(that.props.configFilePath).read()
         .done(function(gdeployConfig) {
             that.setState({ gdeployConfig })
         })
-        .fail(function (error) {
+        .fail(function(error) {
             that.setState({ gdeployConfig: `Failed to load the config file ${that.props.configFilePath} \n ${error}` })
         })
     }
-    componentDidMount() {
-        this.readGdeployConfig()
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.activeStep == 4 && !this.state.isChanged && !this.props.isDeploymentStarted) {
+            this.createGdeployConfig()
+        }
     }
     handleConfigChange(e) {
-        this.setState({ gdeployConfig: e.target.value })
+        this.setState({
+            gdeployConfig: e.target.value,
+            isChanged: true
+        })
     }
     handleEdit() {
         this.setState({ isEditing: true })
