@@ -52,7 +52,7 @@ class WizardBricksStep extends Component {
                                     <th>Mount Point</th>
                                     <th>Thinp</th>
                                     <th>RAID</th>
-                                    <th>Strip Size</th>
+                                    <th>Stripe Size</th>
                                     <th>Disk Count</th>
                                 </tr>
                                 {bricksRow}
@@ -116,8 +116,8 @@ const BrickRow = ({brick, index, changeCallBack, deleteCallBack}) => {
             </td>
             <td className="col-md-1">
                 <input type="text" className="form-control"
-                    value={brick.stripSize}
-                    onChange={(e) => changeCallBack(index, "stripSize", e.target.value)}
+                    value={brick.stripeSize}
+                    onChange={(e) => changeCallBack(index, "stripeSize", e.target.value)}
                     />
             </td>
             <td className="col-md-1">

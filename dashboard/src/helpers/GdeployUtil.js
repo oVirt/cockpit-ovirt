@@ -29,18 +29,18 @@ var GdeployUtil = {
             bricks: [
                 { name: "engine", device: "vdb",
                     brick_dir: "/gluster_bricks/engine", size: "150",
-                    thinp: true, raidType: "RAID6", stripSize: "256",
+                    thinp: true, raidType: "raid6", stripeSize: "256",
                     diskCount: "12"
                 },
                 { name: "data", device: "vdb",
                     brick_dir: "/gluster_bricks/data", size: "500",
-                    thinp: true, raidType: "RAID6",
-                    stripSize: "256", diskCount: "12"
+                    thinp: true, raidType: "raid6",
+                    stripeSize: "256", diskCount: "12"
                 },
                 { name: "vmstore", device: "vdc",
                     brick_dir: "/gluster_bricks/vmstore", size: "500",
-                    thinp: true, raidType: "RAID6",
-                    stripSize: "256", diskCount: "12"
+                    thinp: true, raidType: "raid6",
+                    stripeSize: "256", diskCount: "12"
                 },
             ]
         }
@@ -65,20 +65,26 @@ var GdeployUtil = {
         return this.writeConfigFile(filePath, configString)
     },
     createYumConfig(subscription) {
-        //Required only if we have to install some packages
-        if (subscription.rpms != null && subscription.rpms.length > 0) {
-            return {
+        //Required only if we have to install some packages.
+        if (subscription.rpms.length > 0) {
+            const yumConfig = {
                 action: 'install',
                 packages: subscription.rpms,
                 update: subscription.yumUpdate ? 'yes' : 'no',
                 gpgcheck: subscription.gpgCheck ? 'yes' : 'no'
             }
+            //Required only if we have to add yum repos. if we have a cdn
+            //username then its treated as cdn repo and we should not add here.
+            if (subscription.repos.length > 0 && subscription.username.trim().length === 0) {
+                yumConfig.repos = subscription.repos
+            }
+            return yumConfig
         }
         return null
     },
     createRedhatSubscription(subscription) {
         //RedHat Subscription can be done only if cdn username is specified
-        if (subscription.username != null && subscription.username.length > 0) {
+        if (subscription.username.length > 0) {
             return {
                 action: 'register',
                 username: subscription.username,
@@ -92,6 +98,15 @@ var GdeployUtil = {
     createBrickConfig(glusterModel) {
         const brickConfig = { pvConfig: {}, vgConfig: {}, lvConfig: [], thinPoolConfig: {} }
         glusterModel.bricks.forEach(function(brick, index) {
+            //If there is a raid param for any brick then add it. Though RAID param is defined for all the bricks
+            //Gdeploy takes only one gloabl RAID param for all the devices
+            if(!brickConfig.hasOwnProperty("raidParam") && brick.hasOwnProperty('raidType') && brick.raidType.length){
+                brickConfig.raidParam = {
+                    disktype: brick.raidType,
+                    diskcount: brick.diskCount,
+                    stripesize: brick.stripeSize
+                }
+            }
             //If there is no PV added for the given device, add it now.
             if (!brickConfig.pvConfig.hasOwnProperty(brick.device)) {
                 brickConfig.pvConfig[brick.device] = { action: 'create', devices: brick.device }
@@ -115,7 +130,6 @@ var GdeployUtil = {
                     thinpool.vgname = VG_NAME + brick.device
                     thinpool.lvtype = 'thinpool'
                     thinpool.poolmetadatasize = '10MB'
-                    thinpool.chunksize = '1024k'
                     thinpool.size = parseInt(brick.size)
                     brickConfig.thinPoolConfig[brick.device] = thinpool
                 }
@@ -138,6 +152,18 @@ var GdeployUtil = {
                 //Replace the host sections in template with real hosts
                 if (section === 'hosts') {
                     gdeployConfig['hosts'] = hosts
+                    if (brickConfig.hasOwnProperty("raidParam")) {
+                        //Not truly ini format. But we need RAID params in the following format.
+                        // [disktype]
+                        // raid6
+                        // [diskcount]
+                        // 4
+                        // [stripesize]
+                        // 256
+                        gdeployConfig.disktype = [brickConfig.raidParam.disktype]
+                        gdeployConfig.diskcount = [brickConfig.raidParam.diskcount]
+                        gdeployConfig.stripesize = [brickConfig.raidParam.stripesize]
+                    }
                     if (redhatSubscription != null) {
                         gdeployConfig['RH-subscription'] = redhatSubscription
                     }
@@ -215,7 +241,6 @@ var GdeployUtil = {
                 } else {
                     for (var key in config[section]) {
                         if (config[section].hasOwnProperty(key)) {
-                            Number.isInteger
                             let value = config[section][key]
                             if (typeof value === 'string' || value instanceof String || Number.isInteger(value)) {
                                 configString = this.appendLine(configString, key + "=" + value)
