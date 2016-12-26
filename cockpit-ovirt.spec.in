@@ -4,7 +4,6 @@
 %global _ovirtenginedir %{_datarootdir}/ovirt-engine
 %global _uipluginsdir %{_ovirtenginedir}/ui-plugins
 %global product oVirt
-# TODO: add autogen.sh --with-rhev
 %global use_rhev %( test -z @RHEV@ && echo 1 || echo 0)
 %define debug_package %{nil}
 
@@ -77,10 +76,18 @@ ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./vdsm/node_
 %build
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
 %if 0%{?use_vdsm}
+%if 0%{?use_rhev}
+%configure --with-vdsm --with-rhev
+%else
 %configure --with-vdsm
+%endif #END RHEV
+%else
+%if 0%{?use_rhev}
+%configure --with-rhev
 %else
 %configure
-%endif
+%endif  #END RHEV
+%endif  #END VDSM
 
 export PATH="./node_modules/.bin:${PATH}"
 make
