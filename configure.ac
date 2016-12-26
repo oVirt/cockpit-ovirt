@@ -39,6 +39,10 @@ AC_ARG_WITH([vdsm], [AC_HELP_STRING([--with-vdsm],
             [enable the VDSM plugin for the dashboard])],
             [VDSM=""], [VDSM="//"])
 
+AC_ARG_WITH([rhev], [AC_HELP_STRING([--with-rhev],
+            [Build cockpit-ovirt for RHEV])],
+            [RHEV=""], [RHEV="//"])
+
 AC_ARG_WITH([npm-install], [AC_HELP_STRING([--with-npm-install],
             [enable the installation of needed dependencies using npm])],
             [NPMINSTALL="//"], [NPMINSTALL=""])
@@ -46,7 +50,9 @@ AC_ARG_WITH([npm-install], [AC_HELP_STRING([--with-npm-install],
 AC_SUBST([NPMINSTALL])
 
 AC_SUBST([VDSM])
+AC_SUBST([RHEV])
 AM_CONDITIONAL([VDSM], [test -z "$VDSM"])
+AM_CONDITIONAL([RHEV], [test -z "$RHEV"])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 
@@ -84,6 +90,7 @@ AC_CONFIG_FILES([
 	dashboard/Makefile
 	dashboard/package.json
 	dashboard/src/routes/routes.js
+	dashboard/src/components/gdeploy/constants.js
 	cockpit-ovirt.spec
 	ovirt-uiplugin/Makefile
 

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { CONFIG_FILES } from './constants'
 
 class WizardPackageStep extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class WizardPackageStep extends Component {
     render() {
         return (
             <form className="form-horizontal">
-                <Subscription subscription={this.state.subscription} onUpdate={this.handleUpdate} />
+                {CONFIG_FILES.showCDN && <Subscription subscription={this.state.subscription} onUpdate={this.handleUpdate} />}
                 <div className="form-group">
                     <label className="col-md-2 control-label">Yum Repos</label>
                     <div className="col-md-6">
