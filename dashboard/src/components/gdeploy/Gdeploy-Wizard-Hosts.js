@@ -29,7 +29,7 @@ class WizardHostStep extends Component {
         const hostRows = [];
         this.state.hosts.forEach(function (host, index) {
             hostRows.push(
-                <HostRow host={host} key={index} hostNo={index+1}
+                <HostRow host={host} key={index} hostNo={index + 1}
                     deleteCallBack={() => this.handleDelete(index)}
                     changeCallBack={(e) => this.updateHost(index, e.target.value)}
                     />
@@ -43,6 +43,13 @@ class WizardHostStep extends Component {
                         <strong> Add Host</strong>
                     </span>
                 </a>
+                <div className="col-md-offset-2 col-md-8 alert alert-info alert-dismissable gdeploy-wizard-host-ssh-info">
+                    <span className="pficon pficon-info"></span>
+                    <strong>
+                        gdeploy will login to gluster hosts as root user using passwordless ssh connections.
+                        Make sure, passwordless ssh is configured for all gluster hosts.
+                    </strong>
+                </div>
             </form>
         )
     }

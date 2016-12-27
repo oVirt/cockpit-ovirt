@@ -272,6 +272,10 @@ path.line.highlight {
     height: 270px;
 }
 
+.gdeploy-wizard-host-ssh-info{
+    margin-top:  30px;
+}
+
 .gdeploy-wizard-bricks-row td,
 .gdeploy-wizard-bricks-row th{
     padding-left: 0px;
