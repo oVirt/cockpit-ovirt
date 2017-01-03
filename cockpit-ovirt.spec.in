@@ -119,7 +119,7 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
-* Tue Jan 03 2016 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.2
+* Tue Jan 03 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.2
 - gdeploy bug fixes
 * Wed Dec 21 2016 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.1
 - gdeploy bug fixes
