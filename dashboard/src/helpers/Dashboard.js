@@ -70,7 +70,7 @@ export class NodeStatus {
     )
     .done(function(json) {
       if (!failOnly) {
-        callback(self.sortObjectJSON.parse(json))
+        callback(self.sortObject(JSON.parse(json)))
       } else {
         callback({"success": true})
       }
