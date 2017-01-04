@@ -3,6 +3,7 @@ import ini from 'ini'
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
 const LV_NAME = "gluster_lv_"
+const DEFAULT_POOL_METADATA_SIZE = '16GB'
 var GdeployUtil = {
     getDefaultGedeployModel() {
         return {
@@ -129,7 +130,7 @@ var GdeployUtil = {
                     const thinpool = { action: 'create', poolname: POOL_NAME + brick.device }
                     thinpool.vgname = VG_NAME + brick.device
                     thinpool.lvtype = 'thinpool'
-                    thinpool.poolmetadatasize = '10MB'
+                    thinpool.poolmetadatasize = DEFAULT_POOL_METADATA_SIZE
                     thinpool.size = parseInt(brick.size)
                     brickConfig.thinPoolConfig[brick.device] = thinpool
                 }
@@ -200,10 +201,11 @@ var GdeployUtil = {
                     volumeConfigs.forEach(function(volumeConfig, index) {
                         gdeployConfig['volume' + (index + 1)] = volumeConfig
                     })
-                } else if (section === 'yum2:host1') {
-                    volumeConfigs.forEach(function(volumeConfig, index) {
-                        gdeployConfig['yum2:' + hosts[0]] = template[section]
-                    })
+                } else if (section.indexOf(":host") >= 0) {
+                    //If there is a host variable then replace that with the actual host
+                    const index = section.indexOf(":host")
+                    const secName = section.substring(0, index + 1) + hosts[parseInt(section.substring(index + 5)) - 1]
+                    gdeployConfig[secName] = template[section]
                 } else {
                     gdeployConfig[section] = template[section]
                 }
