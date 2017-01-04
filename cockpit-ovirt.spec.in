@@ -119,6 +119,8 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Wed Jan 04 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.3
+- Fix syntax in dashboard helper
 * Tue Jan 03 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.2
 - gdeploy bug fixes
 * Wed Dec 21 2016 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.1
