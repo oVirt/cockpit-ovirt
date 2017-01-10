@@ -72,7 +72,8 @@ var GdeployUtil = {
                 action: 'install',
                 packages: subscription.rpms,
                 update: subscription.yumUpdate ? 'yes' : 'no',
-                gpgcheck: subscription.gpgCheck ? 'yes' : 'no'
+                gpgcheck: subscription.gpgCheck ? 'yes' : 'no',
+                ignore_yum_errors: 'no'
             }
             //Required only if we have to add yum repos. if we have a cdn
             //username then its treated as cdn repo and we should not add here.
@@ -91,7 +92,10 @@ var GdeployUtil = {
                 username: subscription.username,
                 password: subscription.password,
                 pool: subscription.poolId,
-                repos: subscription.repos
+                repos: subscription.repos,
+                ignore_register_errors: 'no',
+                ignore_attach_pool_errors: 'no',
+                ignore_enable_errors: 'no'
             }
         }
         return null
@@ -110,16 +114,26 @@ var GdeployUtil = {
             }
             //If there is no PV added for the given device, add it now.
             if (!brickConfig.pvConfig.hasOwnProperty(brick.device)) {
-                brickConfig.pvConfig[brick.device] = { action: 'create', devices: brick.device }
+                brickConfig.pvConfig[brick.device] = {
+                    action: 'create',
+                    devices: brick.device,
+                    ignore_pv_errors: 'no'
+                }
             }
             //If there is no VG added for the given device, add it now.
             if (!brickConfig.vgConfig.hasOwnProperty(brick.device)) {
-                brickConfig.vgConfig[brick.device] = { action: 'create', vgname: VG_NAME + brick.device, pvname: brick.device }
+                brickConfig.vgConfig[brick.device] = {
+                    action: 'create',
+                    vgname: VG_NAME + brick.device,
+                    pvname: brick.device,
+                    ignore_vg_errors: 'no'
+                }
             }
             //Create the lv configuration for the brick
             const lvConfig = {
                 action: 'create',
-                lvname: LV_NAME + brick.name
+                lvname: LV_NAME + brick.name,
+                ignore_lv_errors: 'no'
             }
             lvConfig.vgname = VG_NAME + brick.device
             lvConfig.mount = brick.brick_dir
@@ -130,7 +144,11 @@ var GdeployUtil = {
                     brickConfig.thinPoolConfig[brick.device].size += parseInt(brick.size)
                 } else {
                     //Create a thinpool if it is not created already
-                    const thinpool = { action: 'create', poolname: POOL_NAME + brick.device }
+                    const thinpool = {
+                        action: 'create',
+                        poolname: POOL_NAME + brick.device,
+                        ignore_lv_errors: 'no'
+                    }
                     thinpool.vgname = VG_NAME + brick.device
                     thinpool.lvtype = 'thinpool'
                     thinpool.poolmetadatasize = DEFAULT_POOL_METADATA_SIZE
