@@ -252,7 +252,7 @@ export function removeTrailingSlash (str) {
   return str.replace(/\/*$/g, '')
 }
 
-/*eslint no-extend-native:0 */
+/* eslint no-extend-native:0 */
 String.prototype.format = function () {
   var s = this
   var i = arguments.length
