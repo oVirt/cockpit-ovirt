@@ -49,17 +49,4 @@ export const VM_STATUS_ICONS = {
   'powering down': 'powering_down.png',
   'powering_down': 'powering_down.png',
   'rebootinprogress': 'vm_rebooting.png'
-    // "Paused":""
-    /*    MigratingFrom = 5,
-     MigratingTo = 6,
-     Unknown = 7,
-     NotResponding = 8,
-     WaitForLaunch = 9,
-     RebootInProgress = 10,
-     SavingState = 11,
-     RestoringState = 12,
-     Suspended = 13,
-     ImageIllegal = 14,
-     ImageLocked = 15,
-     PoweringDown = 16*/
 }
