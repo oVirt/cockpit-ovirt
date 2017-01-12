@@ -226,9 +226,15 @@ class HostedEngineInput extends Component {
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleInput = this.handleInput.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
   }
   handleInput(e) {
     this.setState({input: e.target.value})
+  }
+  handleKeyPress(e) {
+    if (e.key == "Enter") {
+      this.handleSubmit(e)
+    }
   }
   handleSubmit(e) {
     e.preventDefault()
@@ -257,8 +263,7 @@ class HostedEngineInput extends Component {
     var type = this.props.password ? 'password' : 'text'
 
     return (
-      <form
-        onSubmit={this.handleSubmit}>
+      <div>
         <div className={inputClass}>
           <label
             className="control-label he-input"
@@ -267,12 +272,15 @@ class HostedEngineInput extends Component {
           </label>
           <div className="form-inline">
             <input
-              autoFocus
-              type={type}
-              className="form-control"
-              onChange={this.handleInput}
-              value={this.state.input} />
-            <button type="submit"
+                autoFocus
+                autoComplete="new-password"
+                type={type}
+                onChange={this.handleInput}
+                onKeyPress={this.handleKeyPress}
+                value={this.state.input}
+            />
+            <button
+              onClick={this.handleSubmit}
               className="btn btn-default">
               Next
             </button>
@@ -280,7 +288,7 @@ class HostedEngineInput extends Component {
           {err_text}
           <CancelButton />
         </div>
-      </form>
+      </div>
     )
   }
 }
