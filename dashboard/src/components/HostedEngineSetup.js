@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import RunSetup from '../helpers/HostedEngineSetup'
+import RunSetup, {CheckIfRegistered} from '../helpers/HostedEngineSetup'
 import GdeploySetup from './gdeploy/GdeploySetup'
 import GdeployUtil from '../helpers/GdeployUtil'
 
@@ -13,14 +13,20 @@ class HostedEngineSetup extends Component {
     this.state = {
       cancelled: false,
       deploymentOption: 'regular',
-      state: 'empty',
-      gdeployAvailable: false
+      state: 'polling',
+      gdeployAvailable: false,
+      registered: false,
+      registeredTo: "",
     }
+    this.registeredCallback = this.registeredCallback.bind(this)
     this.onClick = this.onClick.bind(this)
     this.abortCallback = this.abortCallback.bind(this)
     this.startSetup = this.startSetup.bind(this)
     this.startGdeploy = this.startGdeploy.bind(this)
     this.handleOptionChange = this.handleOptionChange.bind(this);
+    this.redeploy = this.redeploy.bind(this)
+
+    CheckIfRegistered(this.registeredCallback)
   }
   componentDidMount() {
     const that = this
@@ -35,6 +41,17 @@ class HostedEngineSetup extends Component {
     } else if (this.state.deploymentOption === 'hci') {
       this.startGdeploy();
     }
+  }
+  registeredCallback(isRegistered, engine) {
+    if (isRegistered) {
+      this.setState({state: 'registered',
+                     registeredTo: engine})
+    } else {
+      this.setState({state: 'empty'})
+    }
+  }
+  redeploy() {
+    this.setState({state: 'empty'})
   }
   startSetup(answerFiles) {
     this.setState({ state: 'he' })
@@ -55,6 +72,15 @@ class HostedEngineSetup extends Component {
   render() {
     return (
       <div>
+        {this.state.state == 'polling' &&
+          <div classname="spinner" />
+        }
+        {this.state.state === "registered" &&
+          <Registered
+            callback={this.redeploy}
+            engine={this.state.registeredTo}
+          />
+        }
         {this.state.state === 'empty' &&
           <Curtains
             callback={this.onClick}
@@ -426,6 +452,31 @@ const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, sele
               </label>
           </div>
         </form>
+        <div className="blank-slate-pf-main-action">
+          <button
+            className="btn btn-lg btn-primary"
+            onClick={callback}>{button_text}</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Registered = ({callback, engine}) => {
+  let message = `This system is already registered to ${engine}!`
+  let button_text = "Redeploy"
+  return (
+    <div className="curtains curtains-ct blank-slate-pf">
+      <div className="container-center">
+        <div className="blank-slate-pf-icon">
+          <i className="pficon-cluster" />
+        </div>
+        <h1>
+          Hosted Engine Setup
+        </h1>
+        <p className="curtains-message">
+          {message}
+        </p>
         <div className="blank-slate-pf-main-action">
           <button
             className="btn btn-lg btn-primary"
