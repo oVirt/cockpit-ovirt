@@ -171,4 +171,36 @@ class RunSetup {
   }
 }
 
+export function CheckIfRegistered(callback) {
+  let path = "/etc/pki/vdsm/certs/cacert.pem"
+  let cert = cockpit.file(path, {superuser: 'try'})
+
+  cert.read()
+  .done(function() {
+    let cmd = ["openssl", "x509",
+      "-in", path,
+      "-noout", "-text"]
+
+    let proc = cockpit.spawn(
+      cmd,
+      {err: "message"}
+    )
+    .done(function(output) {
+      let issuer = output.match(/.*^\s*Issuer:.*?CN=(.*?)\.\d+/m)[1]
+      callback(true, issuer)
+    })
+    .fail(function() {
+      console.log("Failed to read certificate")
+    })
+  })
+  .fail(function(error) {
+    console.log(`${path} does not exist. Not registered?`)
+    console.log(error)
+    callback(false, "")
+  })
+  .always(function() {
+    cert.close()
+  })
+}
+
 export default RunSetup
