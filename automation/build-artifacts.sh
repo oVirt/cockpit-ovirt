@@ -1,5 +1,8 @@
 #!/bin/bash -xe
 
+npm install eslint babel-eslint webpack copy-webpack-plugin clean-webpack-plugin
+export PATH=$PWD/node_modules/.bin:$PATH
+
 shopt -s nullglob
 
 # cleanup
