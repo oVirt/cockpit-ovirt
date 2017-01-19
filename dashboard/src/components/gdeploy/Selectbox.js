@@ -17,7 +17,7 @@ const Selectbox = ({optionList, selectedOption, callBack}) => {
         <div className="btn-group bootstrap-select dropdown form-control">
             <button className="btn btn-default dropdown-toggle" type="button"
                 data-toggle="dropdown" aria-expanded="false">
-                <span className="pull-left">{selected.title}</span>
+                {selected && <span className="pull-left">{selected.title}</span>}
                 <span className="caret"></span>
             </button>
             <ul className="dropdown-menu">{options}</ul>
