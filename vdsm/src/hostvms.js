@@ -137,6 +137,22 @@ function renderNoHostVm () {
   removeAllFromChartCache()
   $('#virtual-machines-list').html('')
   $('#virtual-machines-novm-message').show()
+
+  $('#virtual-machines-pager-button-next').addClass('disabled')
+  $('#virtual-machines-pager-button-prev').addClass('disabled')
+}
+
+function togglePagination (firstRecordIndex, allRecordsCount) {
+  if (firstRecordIndex + CONFIG.vmsList.pageLength < allRecordsCount) {
+    $('#virtual-machines-pager-button-next').removeClass('disabled')
+  } else {
+    $('#virtual-machines-pager-button-next').addClass('disabled')
+  }
+  if (firstRecordIndex > 0) {
+    $('#virtual-machines-pager-button-prev').removeClass('disabled')
+  } else {
+    $('#virtual-machines-pager-button-prev').addClass('disabled')
+  }
 }
 
 var ITEM_PREFIX = 'vms-list-item-full-'
@@ -146,6 +162,7 @@ function renderHostVmsList (allVms) {
   const vms = allVms.slice(hostVmsPagerFirstRecordDisplayed, hostVmsPagerFirstRecordDisplayed + CONFIG.vmsList.pageLength)
 
   $('#host-vms-total').html(allVms.length)
+  togglePagination(hostVmsPagerFirstRecordDisplayed, allVms.length)
 
   // remove all div which are missing in 'vms'
   $("[id^='" + ITEM_PREFIX + "']").each(function () {
@@ -353,6 +370,7 @@ function normalizePager (toBeNormalized, totalCount) {
 
   if (firstRecordToDisplay >= totalCount) {
     firstRecordToDisplay = totalCount - (totalCount % CONFIG.vmsList.pageLength)
+    firstRecordToDisplay = firstRecordToDisplay === totalCount ? firstRecordToDisplay - 1 : firstRecordToDisplay;
   }
 
   debugMsg(`normalizePager(${toBeNormalized}, total=${totalCount}) result: ${firstRecordToDisplay}`)
@@ -360,21 +378,25 @@ function normalizePager (toBeNormalized, totalCount) {
 }
 
 export function onHostVmsListPrev () {
-  hostVmsPagerFirstRecordDisplayed = normalizePager(
-    hostVmsPagerFirstRecordDisplayed - CONFIG.vmsList.pageLength,
-    parsedHostVms.length
-  )
+  if (parsedHostVms && parsedHostVms.length > 0) {
+    hostVmsPagerFirstRecordDisplayed = normalizePager(
+      hostVmsPagerFirstRecordDisplayed - CONFIG.vmsList.pageLength,
+      parsedHostVms.length
+    )
 
-  renderHostVms(parsedHostVms)
+    renderHostVms(parsedHostVms)
+  }
 }
 
 export function onHostVmsListNext () {
-  hostVmsPagerFirstRecordDisplayed = normalizePager(
-    hostVmsPagerFirstRecordDisplayed + CONFIG.vmsList.pageLength,
-    parsedHostVms.length
-  )
+  if (parsedHostVms && parsedHostVms.length > 0) {
+    hostVmsPagerFirstRecordDisplayed = normalizePager(
+      hostVmsPagerFirstRecordDisplayed + CONFIG.vmsList.pageLength,
+      parsedHostVms.length
+    )
 
-  renderHostVms(parsedHostVms)
+    renderHostVms(parsedHostVms)
+  }
 }
 
 // ----------------------------------------------------------------------
