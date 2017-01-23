@@ -15,15 +15,15 @@ var GdeployUtil = {
             },
             volumes: [
                 { name: "engine", type: "replicate",
-                    is_arbiter: true,
+                    is_arbiter: false,
                     brick_dir: "/gluster_bricks/engine/engine"
                 },
                 { name: "data", type: "replicate",
-                    is_arbiter: true,
+                    is_arbiter: false,
                     brick_dir: "/gluster_bricks/data/data"
                 },
                 { name: "vmstore", type: "replicate",
-                    is_arbiter: true,
+                    is_arbiter: false,
                     brick_dir: "/gluster_bricks/vmstore/vmstore"
                 },
             ],
