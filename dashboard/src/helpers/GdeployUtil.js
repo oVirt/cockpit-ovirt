@@ -310,6 +310,19 @@ var GdeployUtil = {
         .fail(failCallback)
         .stream(stdoutCallback)
         return proc
+    },
+    isGdeployAvailable(callBack){
+        let proc = cockpit.spawn(
+            ["gdeploy",
+                "--version"
+            ]
+        )
+        .done(function(code) {
+            callBack(true)
+        })
+        .fail(function(code) {
+            callBack(false)
+        })
     }
 }
 
