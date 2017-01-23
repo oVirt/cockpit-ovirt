@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import RunSetup from '../helpers/HostedEngineSetup'
 import GdeploySetup from './gdeploy/GdeploySetup'
+import GdeployUtil from '../helpers/GdeployUtil'
 
 var classNames = require('classnames')
 
@@ -12,13 +13,20 @@ class HostedEngineSetup extends Component {
     this.state = {
       cancelled: false,
       deploymentOption: 'regular',
-      state: 'empty'
+      state: 'empty',
+      gdeployAvailable: false
     }
     this.onClick = this.onClick.bind(this)
     this.abortCallback = this.abortCallback.bind(this)
     this.startSetup = this.startSetup.bind(this)
     this.startGdeploy = this.startGdeploy.bind(this)
     this.handleOptionChange = this.handleOptionChange.bind(this);
+  }
+  componentDidMount() {
+    const that = this
+    GdeployUtil.isGdeployAvailable(function (isAvailable) {
+      that.setState({ gdeployAvailable: isAvailable })
+    })
   }
   onClick() {
     this.setState({ cancelled: false })
@@ -52,6 +60,7 @@ class HostedEngineSetup extends Component {
             callback={this.onClick}
             cancelled={this.state.cancelled}
             deploymentOption={this.state.deploymentOption}
+            gdeployAvailable={this.state.gdeployAvailable}
             selectionChangeCallback={this.handleOptionChange}
             />
         }
@@ -364,7 +373,7 @@ const NoPermissions = () => {
   )
 }
 
-const Curtains = ({callback, cancelled, deploymentOption, selectionChangeCallback}) => {
+const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, selectionChangeCallback}) => {
   let message = cancelled ?
     "Hosted engine setup was aborted" :
     "Configure and install a highly-available virtual machine which will \
@@ -372,6 +381,13 @@ const Curtains = ({callback, cancelled, deploymentOption, selectionChangeCallbac
     to an existing hosted engine cluster."
   let button_text = cancelled ?
     "Restart" : "Start"
+  const gdeployClass = classNames({
+    radio: true,
+    "disabled": !gdeployAvailable
+  })
+  const gdeployTitle = gdeployAvailable ?
+    "Gluster volume will be provisioned using gdeploy and hosted engine will be deployed on gluster" :
+    "Gdeploy utility is not installed. Install gdeploy to enable gluster deployment"
   return (
     <div className="curtains curtains-ct blank-slate-pf">
       <div className="container-center">
@@ -393,9 +409,9 @@ const Curtains = ({callback, cancelled, deploymentOption, selectionChangeCallbac
               Standard
               </label>
           </div>
-          <div className="radio">
+          <div className={gdeployClass}  data-placement="top" title={gdeployTitle}>
             <label>
-              <input type="radio" value="hci"
+              <input type="radio" value="hci" disabled={!gdeployAvailable}
                 checked={deploymentOption === 'hci'}
                 onChange={selectionChangeCallback} />
               Hosted Engine with Gluster
