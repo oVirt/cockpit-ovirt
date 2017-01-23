@@ -48,12 +48,12 @@ class WizardBricksStep extends Component {
                                 <tr className="gdeploy-wizard-bricks-row">
                                     <th>LV Name</th>
                                     <th>Device</th>
-                                    <th>Size</th>
+                                    <th>Size(GB)</th>
                                     <th>Mount Point</th>
                                     <th>Thinp</th>
                                     <th>RAID</th>
-                                    <th>Stripe Size</th>
-                                    <th>Disk Count</th>
+                                    <th>Stripe Size(KB)</th>
+                                    <th>Data Disks</th>
                                 </tr>
                                 {bricksRow}
                             </tbody>
@@ -84,7 +84,7 @@ const BrickRow = ({brick, index, changeCallBack, deleteCallBack}) => {
                     onChange={(e) => changeCallBack(index, "name", e.target.value)}
                     />
             </td>
-            <td className="col-md-2">
+            <td className="col-md-1">
                 <input type="text" className="form-control"
                     value={brick.device}
                     onChange={(e) => changeCallBack(index, "device", e.target.value)}
@@ -96,7 +96,7 @@ const BrickRow = ({brick, index, changeCallBack, deleteCallBack}) => {
                     onChange={(e) => changeCallBack(index, "size", e.target.value)}
                     />
             </td>
-            <td className="col-md-3">
+            <td className="col-md-2">
                 <input type="text" className="form-control"
                     value={brick.brick_dir}
                     onChange={(e) => changeCallBack(index, "brick_dir", e.target.value)}
@@ -114,7 +114,7 @@ const BrickRow = ({brick, index, changeCallBack, deleteCallBack}) => {
                     onChange={(e) => changeCallBack(index, "raidType", e.target.value)}
                     />
             </td>
-            <td className="col-md-1">
+            <td className="col-md-2">
                 <input type="text" className="form-control"
                     value={brick.stripeSize}
                     onChange={(e) => changeCallBack(index, "stripeSize", e.target.value)}
