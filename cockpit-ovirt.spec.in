@@ -126,6 +126,8 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Mon Jan 23 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.5
+- Disable uiplugin again
 * Mon Jan 23 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.4
 - Disable node dashboard on non-node systems
 - Some vdsm fixes
