@@ -117,7 +117,10 @@ var GdeployUtil = {
                 brickConfig.vgConfig[brick.device] = { action: 'create', vgname: VG_NAME + brick.device, pvname: brick.device }
             }
             //Create the lv configuration for the brick
-            const lvConfig = { action: 'create', poolname: LV_NAME + brick.name }
+            const lvConfig = {
+                action: 'create',
+                lvname: LV_NAME + brick.name
+            }
             lvConfig.vgname = VG_NAME + brick.device
             lvConfig.mount = brick.brick_dir
             if (brick.thinp) {
