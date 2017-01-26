@@ -73,9 +73,7 @@ WizardVolumesStep.propTypes = {
 
 const VolumeRow = ({volume, index, changeCallBack, deleteCallBack}) => {
     const volumeTypes = [
-        { key: "distribute", title: "Distribute" },
-        { key: "replicate", title: "Replicate" },
-        { key: "distribute-repliacte", title: "Distribute Replicate" }
+        { key: "replicate", title: "Replicate" }
     ]
     return (
         <tr>
