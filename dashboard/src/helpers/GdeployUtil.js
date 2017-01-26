@@ -30,7 +30,7 @@ var GdeployUtil = {
             bricks: [
                 { name: "engine", device: "vdb",
                     brick_dir: "/gluster_bricks/engine", size: "150",
-                    thinp: true, raidType: "raid6", stripeSize: "256",
+                    thinp: false, raidType: "raid6", stripeSize: "256",
                     diskCount: "12"
                 },
                 { name: "data", device: "vdb",
