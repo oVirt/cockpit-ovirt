@@ -58,7 +58,7 @@ class Wizard extends Component {
                 </div>)
         })
         return (
-            <div className="modal fade">
+            <div className="modal" data-backdrop="static" role="dialog">
                 <div className="modal-dialog modal-lg wizard-pf">
                     <div className="modal-content">
                         <div className="modal-header">
