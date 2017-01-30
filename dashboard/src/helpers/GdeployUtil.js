@@ -9,7 +9,7 @@ var GdeployUtil = {
         return {
             hosts: ['', '', ''],
             subscription: {
-                username: "", password: "", poolId: "", yumUpdate: true, gpgCheck: true,
+                username: "", password: "", poolId: "", yumUpdate: true,
                 rpms: "vdsm-gluster,ovirt-hosted-engine-setup",
                 repos: ""
             },
@@ -72,7 +72,7 @@ var GdeployUtil = {
                 action: 'install',
                 packages: subscription.rpms,
                 update: subscription.yumUpdate ? 'yes' : 'no',
-                gpgcheck: subscription.gpgCheck ? 'yes' : 'no',
+                gpgcheck: 'yes',
                 ignore_yum_errors: 'no'
             }
             //Required only if we have to add yum repos. if we have a cdn

@@ -19,7 +19,7 @@ class WizardPackageStep extends Component {
             <form className="form-horizontal">
                 {CONFIG_FILES.showCDN && <Subscription subscription={this.state.subscription} onUpdate={this.handleUpdate} />}
                 <div className="form-group">
-                    <label className="col-md-2 control-label">Yum Repos</label>
+                    <label className="col-md-2 control-label">Repositories</label>
                     <div className="col-md-6">
                         <input type="text" className="form-control"
                             value={this.state.subscription.repos}
@@ -42,16 +42,7 @@ class WizardPackageStep extends Component {
                             checked={this.state.subscription.yumUpdate}
                             onChange={(e) => this.handleUpdate("yumUpdate", e.target.checked)}
                             />
-                        <label className="control-label">Yum Update</label>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-md-offset-2 col-md-2">
-                        <input type="checkbox"
-                            checked={this.state.subscription.gpgCheck}
-                            onChange={(e) => this.handleUpdate("gpgCheck", e.target.checked)}
-                            />
-                        <label className="control-label">GPG Check</label>
+                        <label className="control-label">Update Hosts</label>
                     </div>
                 </div>
             </form>
