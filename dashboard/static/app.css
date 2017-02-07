@@ -263,6 +263,10 @@ path.line.highlight {
     margin: auto;
 }
 
+.gdeploy-wizard-bricks-table {
+    margin-left: 60px;
+}
+
 .gdeploy-wizard-table th{
     text-align: center;
 }
@@ -276,8 +280,27 @@ path.line.highlight {
     margin-top:  30px;
 }
 
+.gdeploy-wizard-section-title{
+    background: transparent;
+}
+
+.gdeploy-wizard-table tr,
+.gdeploy-wizard-bricks-table tr
+{
+    vertical-align: top;
+}
+
+.gdeploy-wizard-thinp-checkbox{
+    height: 26px;
+    width: 18px;
+}
+
+.gdeploy-wizard-bricks-delete{
+    text-align: left !important;
+}
 .gdeploy-wizard-bricks-row td,
 .gdeploy-wizard-bricks-row th{
     padding-left: 0px;
     padding-right: 0px;
+    text-align: center;
 }

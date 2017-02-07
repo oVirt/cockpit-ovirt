@@ -8,12 +8,15 @@ class Wizard extends Component {
         this.state = {
             activeStep: 0,
             isFinished: false,
+            validating: false,
+            nextStep: -1
         };
         this.moveNext = this.moveNext.bind(this)
         this.moveBack = this.moveBack.bind(this)
         this.cancel = this.cancel.bind(this)
         this.finish = this.finish.bind(this)
         this.moveToStep = this.moveToStep.bind(this)
+        this.validationCallBack = this.validationCallBack.bind(this)
     }
     componentDidMount() {
         $(ReactDOM.findDOMNode(this)).modal('show')
@@ -26,28 +29,48 @@ class Wizard extends Component {
     }
     moveBack() {
         if (this.state.activeStep > 0) {
-            this.moveToStep(--this.state.activeStep)
+            this.moveToStep(this.state.activeStep-1)
         }
     }
     moveNext() {
         if (this.state.activeStep < this.props.children.length - 1) {
-            this.moveToStep(++this.state.activeStep)
+            this.moveToStep(this.state.activeStep+1)
         }
     }
     finish() {
         this.props.onFinish()
         this.setState({ isFinished: true })
     }
+    validationCallBack(isValid) {
+        const newState = {
+            validating: false,
+            nextStep: -1
+        }
+        if (isValid && this.state.nextStep > -1) {
+            this.props.onStepChange(this.state.nextStep)
+            newState.activeStep = this.state.nextStep
+        }
+        this.setState(newState)
+    }
     moveToStep(step) {
-        this.props.onStepChange(step)
-        this.setState({ activeStep: step })
+        if (step < this.state.activeStep) {
+            this.props.onStepChange(step)
+            this.setState({ activeStep: step })
+        } else {
+            this.setState({
+                validating: true,
+                nextStep: step
+            })
+        }
     }
     render() {
         const steps = []
         const that = this
         this.props.children.forEach(function(step, index) {
             const stepElement = React.cloneElement(step, {
-                activeStep: that.state.activeStep
+                activeStep: that.state.activeStep,
+                validationCallBack: that.validationCallBack,
+                validating: that.state.validating && index === that.state.activeStep
             })
             const comp = classNames(
                 { "hidden": index != that.state.activeStep }
