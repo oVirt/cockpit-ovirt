@@ -32,7 +32,11 @@ class GdeploySetup extends Component {
                 <WizardHostStep stepName="Hosts" hosts={this.state.glusterModel.hosts} />
                 <WizardPackageStep stepName="Packages" subscription={this.state.glusterModel.subscription} />
                 <WizardVolumesStep stepName="Volumes" volumes={this.state.glusterModel.volumes} />
-                <WizardBricksStep stepName="Bricks" bricks={this.state.glusterModel.bricks} />
+                <WizardBricksStep stepName="Bricks"
+                    glusterModel={this.state.glusterModel}
+                    bricks={this.state.glusterModel.bricks}
+                    raidConfig={this.state.glusterModel.raidConfig}
+                    />
                 <WizardPreviewStep stepName="Review" glusterModel={this.state.glusterModel}
                     configFilePath={CONFIG_FILES.gdeployConfigFile}
                     heAnsweFilePath={CONFIG_FILES.heAnsfileFile}

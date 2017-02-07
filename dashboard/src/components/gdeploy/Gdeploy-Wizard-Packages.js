@@ -14,6 +14,15 @@ class WizardPackageStep extends Component {
         subscription[property] = value
         this.setState({ subscription })
     }
+    validate(){
+        return true
+    }
+    shouldComponentUpdate(nextProps, nextState){
+        if(!this.props.validating && nextProps.validating){
+            this.props.validationCallBack(this.validate())
+        }
+        return true;
+    }
     render() {
         return (
             <form className="form-horizontal">

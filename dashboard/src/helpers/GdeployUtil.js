@@ -13,6 +13,9 @@ var GdeployUtil = {
                 rpms: "",
                 repos: ""
             },
+            raidConfig: {
+                raidType: "raid6", stripeSize: "256", diskCount: "12"
+            },
             volumes: [
                 { name: "engine", type: "replicate",
                     is_arbiter: false,
@@ -28,20 +31,17 @@ var GdeployUtil = {
                 },
             ],
             bricks: [
-                { name: "engine", device: "vdb",
-                    brick_dir: "/gluster_bricks/engine", size: "150",
-                    thinp: false, raidType: "raid6", stripeSize: "256",
-                    diskCount: "12"
+                { name: "engine", device: "sdb",
+                    brick_dir: "/gluster_bricks/engine", size: "100",
+                    thinp: false
                 },
-                { name: "data", device: "vdb",
+                { name: "data", device: "sdb",
                     brick_dir: "/gluster_bricks/data", size: "500",
-                    thinp: true, raidType: "raid6",
-                    stripeSize: "256", diskCount: "12"
+                    thinp: true
                 },
-                { name: "vmstore", device: "vdc",
+                { name: "vmstore", device: "sdb",
                     brick_dir: "/gluster_bricks/vmstore", size: "500",
-                    thinp: true, raidType: "raid6",
-                    stripeSize: "256", diskCount: "12"
+                    thinp: true
                 },
             ]
         }
@@ -108,16 +108,17 @@ var GdeployUtil = {
     },
     createBrickConfig(glusterModel) {
         const brickConfig = { pvConfig: {}, vgConfig: {}, lvConfig: [], thinPoolConfig: {} }
+        brickConfig.raidParam = {
+            disktype: glusterModel.raidConfig.raidType,
+            diskcount: glusterModel.raidConfig.diskCount,
+            stripesize: glusterModel.raidConfig.stripeSize
+        }
+        //performance configuration for RAID-6 and RAID-5 are same and
+        //gdeploy accepts only RAID-6
+        if(brickConfig.raidParam.disktype === 'raid5'){
+            brickConfig.raidParam.disktype = 'raid6'
+        }
         glusterModel.bricks.forEach(function(brick, index) {
-            //If there is a raid param for any brick then add it. Though RAID param is defined for all the bricks
-            //Gdeploy takes only one gloabl RAID param for all the devices
-            if(!brickConfig.hasOwnProperty("raidParam") && brick.hasOwnProperty('raidType') && brick.raidType.length){
-                brickConfig.raidParam = {
-                    disktype: brick.raidType,
-                    diskcount: brick.diskCount,
-                    stripesize: brick.stripeSize
-                }
-            }
             //If there is no PV added for the given device, add it now.
             if (!brickConfig.pvConfig.hasOwnProperty(brick.device)) {
                 brickConfig.pvConfig[brick.device] = {
@@ -171,7 +172,7 @@ var GdeployUtil = {
             }
             brickConfig.lvConfig.push(lvConfig)
         })
-        return brickConfig;
+        return brickConfig
     },
     mergeConfigWithTemplate(template, hosts, volumeConfigs, brickConfig, redhatSubscription, yumConfig) {
         const gdeployConfig = {}
