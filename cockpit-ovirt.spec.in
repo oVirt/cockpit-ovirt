@@ -126,6 +126,10 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Wed Jan 25 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.7
+- gdeploy fixes
+- Don't prompt for a password in Firefox during HE setup
+- Block HE setup if the host is already registered
 * Wed Jan 25 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.6
 - gdeploy fixes
 * Mon Jan 23 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.5
