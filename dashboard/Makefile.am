@@ -23,6 +23,7 @@ EXTRA_DIST = \
 	src \
 	static \
 	package.json \
+	yarn.lock \
 	webpack.config.js
 
 DISTCLEANDIRS = \

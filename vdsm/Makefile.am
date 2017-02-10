@@ -24,6 +24,7 @@ EXTRA_DIST = \
 	.babelrc \
 	.eslintrc \
 	package.json \
+	yarn.lock \
 	webpack.config.js \
 	GenerateI18N.js \
 	src \

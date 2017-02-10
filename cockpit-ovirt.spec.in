@@ -64,6 +64,12 @@ This package provides a Cockpit dashboard for use with %{product}.
 
 # Use the ovirt-engine nodejs installation
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
+for d in dashboard vdsm; do
+  pushd .
+  cd ${d}
+  %{_datadir}/ovirt-engine-nodejs-modules/setup-env.sh
+  popd
+done
 
 # Copy the Node.js dependencies to the local "node_modules" directory
 ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules"

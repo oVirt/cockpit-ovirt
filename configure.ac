@@ -68,7 +68,6 @@ test -z "${NPM}" && AC_MSG_ERROR([NodeJS npm program not found])
 AM_COND_IF([VDSM],
 	AC_CONFIG_FILES([
 		vdsm/Makefile
-		vdsm/package.json
 	])
 )
 
