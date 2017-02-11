@@ -370,7 +370,7 @@ function normalizePager (toBeNormalized, totalCount) {
 
   if (firstRecordToDisplay >= totalCount) {
     firstRecordToDisplay = totalCount - (totalCount % CONFIG.vmsList.pageLength)
-    firstRecordToDisplay = firstRecordToDisplay === totalCount ? firstRecordToDisplay - 1 : firstRecordToDisplay;
+    firstRecordToDisplay = firstRecordToDisplay === totalCount ? firstRecordToDisplay - 1 : firstRecordToDisplay
   }
 
   debugMsg(`normalizePager(${toBeNormalized}, total=${totalCount}) result: ${firstRecordToDisplay}`)

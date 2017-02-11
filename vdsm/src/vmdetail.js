@@ -146,7 +146,8 @@ function renderUsageDetailChart (chartDivId, timestamps, dsArray1, dsArray2) {
       'timestamps': timestamps,
       'dsArray1': dsArray1,
       'dsArray2': dsArray2
-    }) }, CONFIG.reload.delay_before_vmdetail_charts)
+    })
+  }, CONFIG.reload.delay_before_vmdetail_charts)
 }
 
 $(document).on('renderSparklineChartEvent',

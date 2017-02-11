@@ -25,16 +25,16 @@ var config = module.exports = {
         }
     }, {
       test: /\.css$/,
-      loader: 'style!css'
+      loader: 'style-loader!css-loader'
     }, {
       test: /\.(png|jpg|jpeg|gif|svg)$/,
-      loader: 'url?limit=10000'
+      loader: 'url-loader?limit=10000'
     }, {
       test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/,
-      loader: 'url?mimetype=application/font-woff'
+      loader: 'url-loader?mimetype=application/font-woff'
     }, {
       test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?$/,
-      loader: 'file?name=[name].[ext]'
+      loader: 'file-loader?name=[name].[ext]'
     }]
   },
   externals: {
@@ -48,9 +48,8 @@ var config = module.exports = {
     new CleanWebpackPlugin(['dist']),
     new GenerateI18N(['dist/i18n/', 'po/LOCALES']),
     new CopyWebpackPlugin([
-      {from: 'LICENSE'},
+      {from: '../LICENSE'},
       {from: 'README.md'},
-      {from: 'static/manifest.json'},
       {from: 'static/ovirt.html'},
       {from: 'static/app.css'},
       {from: 'static/vdsm', to: 'vdsm'},
