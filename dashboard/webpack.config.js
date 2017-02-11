@@ -26,7 +26,7 @@ module.exports = {
         }
       }, {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        loader: 'url?limit=10000'
+        loader: 'url-loader?limit=10000'
       }, {
         test: /\.css$/,
         loader: "style-loader!css-loader"
@@ -35,7 +35,7 @@ module.exports = {
         loader: 'file-loader'
       }, {
         test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?$/,
-        loader: 'file?name=[name].[ext]'
+        loader: 'file-loader?name=[name].[ext]'
       }
     ]
   },
