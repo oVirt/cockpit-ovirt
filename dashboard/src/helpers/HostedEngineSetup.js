@@ -7,6 +7,8 @@ class RunSetup {
     this._chomp_input = false
     this.abortCallback = abortCallback
     this.answerFiles = answerFiles
+    this.confirm_otopi = false
+    this.otopi_value = null
   }
 
   start(outputCallback, exitCallback) {
@@ -27,6 +29,7 @@ class RunSetup {
       ],
       "spawn": cmd,
       "pty": true,
+      "err": "out",
       "superuser": "require",
     })
 
@@ -111,7 +114,16 @@ class RunSetup {
         test(message.replace(/^\*+L:/, ""));
       },
       "### ": function(message) {
-        if (!/CTRL-D/.test(message)) {
+        if (/GPG_KEY/.test(message)) {
+          if (/Response is/.test(message)) {
+            let question = `${values.question.prompt.pop()} (yes,no)`
+            values.question.prompt.push(question)
+            values.question.suggested = "yes"
+            values.question.complete = true
+          } else {
+            values.output.lines.push(message.replace(/^###\s/, ""));
+          }
+        } else if (!/CTRL-D/.test(message)) {
           values.output.lines.push(message.replace(/^###\s/, ""));
         }
       },
@@ -124,14 +136,25 @@ class RunSetup {
         this._chomp_input = false
     }
 
+    let self = this
+
     payload.forEach(function(line) {
       if (actions[line.slice(0,4)]) {
         actions[line.slice(0,4)](line);
       } else if (line.indexOf('TERMINATE') > 0) {
         values.output.terminated = true
       } else {
-        console.log("Found an unknown/blank line:");
-        console.log(line);
+        if (/###\s*$/.test(line)) {
+        } else if (/\*\*\*CONFIRM/.test(line)) {
+          let match = line.match(/CONFIRM\s(.*?)\s/)
+          self.confirm_otopi = true
+          self.otopi_value = match[1]
+
+          values.question.prompt.push(line.replace(/\*\*\*CON.*?\s(GPG_KEY\s)?/, ""))
+        } else {
+          console.log("Found an unknown/blank line:");
+          console.log(line);
+        }
       }
     })
 
@@ -164,6 +187,9 @@ class RunSetup {
 
   handleInput(input) {
     if (this.channel && this.channel.valid) {
+      if (this.confirm_otopi) {
+        input = `CONFIRM ${this.otopi_value}=${input}`
+      }
       this.channel.send(input + "\n")
       this._found_question = false
       this._chomp_input = true
@@ -190,6 +216,7 @@ export function CheckIfRegistered(callback) {
       callback(true, issuer)
     })
     .fail(function() {
+      callback(false, null)
       console.log("Failed to read certificate")
     })
   })
