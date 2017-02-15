@@ -73,7 +73,7 @@ class HostedEngineSetup extends Component {
     return (
       <div>
         {this.state.state == 'polling' &&
-          <div classname="spinner" />
+          <div className="spinner" />
         }
         {this.state.state === "registered" &&
           <Registered
