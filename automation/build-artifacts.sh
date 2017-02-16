@@ -2,6 +2,10 @@
 
 shopt -s nullglob
 
+dependencies="$(sed -e '/^[ \t]*$/d' -e '/^#/d' automation/packages.force)"
+yum-deprecated clean metadata || yum clean metadata
+yum-deprecated -y install ${dependencies} || yum -y install ${dependencies}
+
 # cleanup
 rm -Rf \
     exported-artifacts \
