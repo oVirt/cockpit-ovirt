@@ -2,9 +2,6 @@ autoconf
 automake
 gcc-c++
 git
-ovirt-engine-nodejs
-ovirt-engine-nodejs-modules
-ovirt-engine-yarn
 pyflakes
 python
 python-pep8
