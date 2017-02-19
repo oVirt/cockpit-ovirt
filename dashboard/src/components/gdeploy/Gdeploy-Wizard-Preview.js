@@ -83,6 +83,7 @@ class WizardPreviewStep extends Component {
                     heAnsweFilePath={this.props.heAnsweFilePath}
                     heCommanAnswer={this.props.heCommanAnswer}
                     onSuccess={this.props.onSuccess}
+                    reDeployCallback={this.props.reDeployCallback}
                     />
             )
         } else {
@@ -134,7 +135,8 @@ WizardPreviewStep.propTypes = {
     configFilePath: React.PropTypes.string.isRequired,
     heCommanAnswer: React.PropTypes.string.isRequired,
     isDeploymentStarted: React.PropTypes.bool.isRequired,
-    onSuccess: React.PropTypes.func.isRequired
+    onSuccess: React.PropTypes.func.isRequired,
+    reDeployCallback: React.PropTypes.func.isRequired
 }
 
 export default WizardPreviewStep
