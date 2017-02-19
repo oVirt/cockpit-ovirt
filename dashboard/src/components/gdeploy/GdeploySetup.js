@@ -18,6 +18,7 @@ class GdeploySetup extends Component {
         };
         this.handleFinish = this.handleFinish.bind(this)
         this.onStepChange = this.onStepChange.bind(this)
+        this.handleReDeploy = this.handleReDeploy.bind(this)
     }
     onStepChange(activeStep) {
 
@@ -25,10 +26,14 @@ class GdeploySetup extends Component {
     handleFinish() {
         this.setState({ isDeploymentStarted: true })
     }
+    handleReDeploy(){
+        this.setState({ isDeploymentStarted: false })
+    }
     render() {
         return (
             <Wizard title="Gluster Deployment" onClose={this.props.onClose}
-                onFinish={this.handleFinish} onStepChange={this.onStepChange}>
+                onFinish={this.handleFinish} onStepChange={this.onStepChange}
+                isDeploymentStarted={this.state.isDeploymentStarted}>
                 <WizardHostStep stepName="Hosts" hosts={this.state.glusterModel.hosts} />
                 <WizardPackageStep stepName="Packages" subscription={this.state.glusterModel.subscription} />
                 <WizardVolumesStep stepName="Volumes" volumes={this.state.glusterModel.volumes} />
@@ -43,6 +48,7 @@ class GdeploySetup extends Component {
                     heCommanAnswer={CONFIG_FILES.heCommonAnsFile}
                     templatePath={CONFIG_FILES.gdeployTemplate}
                     onSuccess={this.props.onSuccess}
+                    reDeployCallback={this.handleReDeploy}
                     isDeploymentStarted={this.state.isDeploymentStarted}
                     />
             </Wizard>

@@ -7,7 +7,6 @@ class Wizard extends Component {
         super(props)
         this.state = {
             activeStep: 0,
-            isFinished: false,
             validating: false,
             nextStep: -1
         };
@@ -39,7 +38,6 @@ class Wizard extends Component {
     }
     finish() {
         this.props.onFinish()
-        this.setState({ isFinished: true })
     }
     validationCallBack(isValid) {
         const newState = {
@@ -109,7 +107,7 @@ class Wizard extends Component {
                         </div>
                         <WizardFooter activeStep={this.state.activeStep}
                             stepCount={this.props.children.length}
-                            isFinished={this.state.isFinished}
+                            isDeploymentStarted={this.props.isDeploymentStarted}
                             moveBack={this.moveBack} moveNext={this.moveNext}
                             cancel={this.cancel} finish={this.finish}
                             close={this.props.onClose}
@@ -126,7 +124,8 @@ Wizard.propTypes = {
     onClose: React.PropTypes.func.isRequired,
     onFinish: React.PropTypes.func.isRequired,
     onStepChange: React.PropTypes.func.isRequired,
-    children: React.PropTypes.array.isRequired
+    children: React.PropTypes.array.isRequired,
+    isDeploymentStarted: React.PropTypes.bool.isRequired
 }
 
 const WizardSteps = ({steps, activeStep, callBack}) => {
@@ -156,7 +155,7 @@ const WizardSteps = ({steps, activeStep, callBack}) => {
     )
 }
 
-const WizardFooter = ({activeStep, stepCount, isFinished,
+const WizardFooter = ({activeStep, stepCount, isDeploymentStarted,
     moveBack, moveNext, cancel, finish, close}) => {
     const backButton = classNames(
         "btn", "btn-default", "wizard-pf-back",
@@ -168,11 +167,11 @@ const WizardFooter = ({activeStep, stepCount, isFinished,
         ),
         finishButton = classNames(
             "btn", "btn-primary", "wizard-pf-finish",
-            { "hidden": ((activeStep != stepCount - 1) || isFinished) }
+            { "hidden": ((activeStep != stepCount - 1) || isDeploymentStarted) }
         ),
         closeButton = classNames(
             "btn", "btn-primary", "wizard-pf-close", "wizard-pf-dismiss",
-            { "hidden": ((activeStep != stepCount - 1) || !isFinished) }
+            { "hidden": ((activeStep != stepCount - 1) || !isDeploymentStarted) }
         )
     return (
         <div className="modal-footer wizard-pf-footer">

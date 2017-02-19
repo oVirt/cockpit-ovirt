@@ -45,7 +45,7 @@ class WizardExecutionStep extends Component {
             <div className="col-sm-12">
                 <div className="panel panel-default">
                     <div className="panel-heading">
-                        <Status status={this.state.gdeployStatus} />
+                        <Status status={this.state.gdeployStatus} reDeployCallback={this.props.reDeployCallback}/>
                     </div>
                     <div className="list-group">
                         <div className="list-group-item">
@@ -62,10 +62,11 @@ class WizardExecutionStep extends Component {
 
 WizardExecutionStep.propTypes = {
     configFilePath: React.PropTypes.string.isRequired,
-    onSuccess: React.PropTypes.func.isRequired
+    onSuccess: React.PropTypes.func.isRequired,
+    reDeployCallback: React.PropTypes.func.isRequired
 }
 
-const Status = ({ status }) => {
+const Status = ({ status, reDeployCallback }) => {
     let msg = "Deployment in progress"
     let statusIcon = <div className="spinner spinner-lg blank-slate-pf-icon"></div>
     if (status === -1) {
@@ -76,6 +77,14 @@ const Status = ({ status }) => {
         <div>
             {statusIcon}
             <span>{msg}</span>
+            <div className="pull-right">
+                {status === -1 &&
+                    <button className="btn btn-primary" onClick={reDeployCallback}>
+                        <span className="pficon pficon-restart">&nbsp;</span>
+                        Redeploy
+                     </button>
+                }
+            </div>
         </div>
     )
 }
