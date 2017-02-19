@@ -4,6 +4,7 @@ const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
 const LV_NAME = "gluster_lv_"
 const DEFAULT_POOL_METADATA_SIZE = '16GB'
+const PRE_FLIGHT_CHECK_SCRIPT = '/usr/share/ansible/gdeploy/scripts/grafton-sanity-check.sh'
 var GdeployUtil = {
     getDefaultGedeployModel() {
         return {
@@ -51,12 +52,14 @@ var GdeployUtil = {
         const volumeTemplate = template.volume
         const volumeConfigs = this.createVolumeConfigs(glusterModel.volumes, volumeTemplate)
         const brickConfig = this.createBrickConfig(glusterModel)
+        const preFlightCheck = this.createPreFlightCheck(glusterModel.hosts, brickConfig.pvConfig)
         const redhatSubscription = this.createRedhatSubscription(glusterModel.subscription)
         const yumConfig = this.createYumConfig(glusterModel.subscription)
         // We will keep everything in the template except hosts, volumes and brick configurations
         const gdeployConfig = this.mergeConfigWithTemplate(
             template,
             glusterModel.hosts,
+            preFlightCheck,
             volumeConfigs,
             brickConfig,
             redhatSubscription,
@@ -64,6 +67,15 @@ var GdeployUtil = {
         )
         const configString = this.convertToString(gdeployConfig)
         return this.writeConfigFile(filePath, configString)
+    },
+    createPreFlightCheck(hosts, pvConfig) {
+        const preFlightCheck = {
+            action: 'execute',
+            ignore_script_errors: 'no'
+        }
+        let disks = Object.keys(pvConfig).join()
+        preFlightCheck.file = `${PRE_FLIGHT_CHECK_SCRIPT} -d ${disks} -h ${hosts.join()}`
+        return preFlightCheck
     },
     createYumConfig(subscription) {
         //Required only if we have to install some packages.
@@ -174,13 +186,17 @@ var GdeployUtil = {
         })
         return brickConfig
     },
-    mergeConfigWithTemplate(template, hosts, volumeConfigs, brickConfig, redhatSubscription, yumConfig) {
+
+    mergeConfigWithTemplate(template, hosts, preFlightCheck, volumeConfigs, brickConfig, redhatSubscription, yumConfig) {
         const gdeployConfig = {}
         for (var section in template) {
             if (template.hasOwnProperty(section)) {
                 //Replace the host sections in template with real hosts
                 if (section === 'hosts') {
                     gdeployConfig['hosts'] = hosts
+                    if(preFlightCheck != null){
+                        gdeployConfig['script1'] = preFlightCheck
+                    }
                     if (brickConfig.hasOwnProperty("raidParam")) {
                         //Not truly ini format. But we need RAID params in the following format.
                         // [disktype]
