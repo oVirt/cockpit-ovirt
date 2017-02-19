@@ -86,18 +86,24 @@ var GdeployUtil = {
     },
     createRedhatSubscription(subscription) {
         //RedHat Subscription can be done only if cdn username is specified
-        if (subscription.username.length > 0) {
-            return {
-                action: 'register',
-                username: subscription.username,
-                password: subscription.password,
-                pool: subscription.poolId,
-                repos: subscription.repos,
+        if (subscription.username.trim().length > 0 && subscription.password.length > 0) {
+            const config = {
                 ignore_register_errors: 'no',
                 ignore_attach_pool_errors: 'no',
                 ignore_enable_errors: 'no'
             }
+            config.action = 'register'
+            config.username = subscription.username.trim()
+            config.password = subscription.password
+            if (subscription.poolId.trim().length > 0) {
+                config.pool = subscription.poolId.trim()
+            }
+            if (subscription.repos.trim().length > 0) {
+                config.repos = subscription.repos.trim()
+            }
+            return config
         }
+
         return null
     },
     createBrickConfig(glusterModel) {
