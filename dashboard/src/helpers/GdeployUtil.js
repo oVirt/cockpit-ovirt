@@ -9,8 +9,8 @@ var GdeployUtil = {
         return {
             hosts: ['', '', ''],
             subscription: {
-                username: "", password: "", poolId: "", yumUpdate: true,
-                rpms: "vdsm-gluster,ovirt-hosted-engine-setup",
+                username: "", password: "", poolId: "", yumUpdate: false,
+                rpms: "",
                 repos: ""
             },
             volumes: [
@@ -189,8 +189,10 @@ var GdeployUtil = {
                     if (redhatSubscription != null) {
                         gdeployConfig['RH-subscription'] = redhatSubscription
                     }
-                } else if (section === 'yum1' && yumConfig != null) {
-                    gdeployConfig['yum1'] = yumConfig
+                } else if (section === 'yum1') {
+                    if (yumConfig != null) {
+                        gdeployConfig['yum1'] = yumConfig
+                    }
                 } else if (section === 'pv') {
                     //Add all brick related configurations in the place of 'pv' section
 
