@@ -6,7 +6,7 @@ import '../node_modules/patternfly/dist/css/patternfly.css'
 import '../node_modules/patternfly/dist/css/patternfly-additions.css'
 import { createHashHistory } from 'history'
 
-const appHistory = useRouterHistory(createHashHistory)({ queryKey: false })
+const appHistory = useRouterHistory(createHashHistory)()
 
 render((
   <Router history={appHistory} routes={routes} />
