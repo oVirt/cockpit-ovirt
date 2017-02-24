@@ -48,8 +48,12 @@ export class VirtualMachines {
   getVms(callback) {
     var proxy = this.proxy
     wait_valid(proxy, function() {
+      var filter_host = (value) => {
+        return value[0] != '.host'
+      }
       proxy.ListMachines().done(function(result) {
-        callback(result)
+        console.log(result.filter(filter_host))
+        callback(result.filter(filter_host))
       })
     })
   }
