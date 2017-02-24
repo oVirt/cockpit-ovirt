@@ -3,7 +3,6 @@ import ini from 'ini'
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
 const LV_NAME = "gluster_lv_"
-const DEFAULT_POOL_METADATA_SIZE = '16GB'
 const PRE_FLIGHT_CHECK_SCRIPT = '/usr/share/ansible/gdeploy/scripts/grafton-sanity-check.sh'
 var GdeployUtil = {
     getDefaultGedeployModel() {
@@ -170,7 +169,6 @@ var GdeployUtil = {
                     }
                     thinpool.vgname = VG_NAME + brick.device
                     thinpool.lvtype = 'thinpool'
-                    thinpool.poolmetadatasize = DEFAULT_POOL_METADATA_SIZE
                     thinpool.size = parseInt(brick.size)
                     brickConfig.thinPoolConfig[brick.device] = thinpool
                 }
