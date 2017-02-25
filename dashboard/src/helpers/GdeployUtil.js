@@ -348,6 +348,22 @@ var GdeployUtil = {
         .fail(function(code) {
             callBack(false)
         })
+    },
+    isRhelSystem(callBack){
+        let proc = cockpit.spawn(
+            ["grep",
+             'Red Hat Enterprise Linux',
+             '/etc/redhat-release'
+            ]
+        )
+        .done(function(code) {
+            console.log("True")
+            callBack(true)
+        })
+        .fail(function(code) {
+            console.log("false")
+            callBack(false)
+        })
     }
 }
 
