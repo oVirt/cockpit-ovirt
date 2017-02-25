@@ -1,13 +1,20 @@
 import React, { Component } from 'react'
-import { CONFIG_FILES } from './constants'
+import GdeployUtil from '../../helpers/GdeployUtil'
 
 class WizardPackageStep extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            subscription: props.subscription
+            subscription: props.subscription,
+            isRhelSystem: false
         }
         this.handleUpdate = this.handleUpdate.bind(this)
+    }
+    componentDidMount() {
+        const that = this
+        GdeployUtil.isRhelSystem(function (isAvailable) {
+            that.setState({ isRhelSystem: isAvailable })
+        })
     }
     handleUpdate(property, value) {
         const subscription = this.state.subscription
@@ -26,7 +33,7 @@ class WizardPackageStep extends Component {
     render() {
         return (
             <form className="form-horizontal">
-                {CONFIG_FILES.showCDN && <Subscription subscription={this.state.subscription} onUpdate={this.handleUpdate} />}
+                {this.state.isRhelSystem && <Subscription subscription={this.state.subscription} onUpdate={this.handleUpdate} />}
                 <div className="form-group">
                     <label className="col-md-2 control-label">Repositories</label>
                     <div className="col-md-6">
