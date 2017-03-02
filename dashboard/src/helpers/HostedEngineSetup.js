@@ -213,7 +213,7 @@ export function CheckIfRegistered(callback) {
     )
     .done(function(output) {
       let issuer = output.match(/.*^\s*Issuer:.*?CN=(.*?)\.\d+/m)
-      issuer = issuer != null ? match[1] : null
+      issuer = issuer != null ? issuer[1] : null
       if (issuer == null) {
           callback(false, null)
       } else {
