@@ -32,6 +32,7 @@ ExclusiveArch: %{nodejs_arches} noarch
 BuildRequires: python
 BuildRequires: ovirt-engine-nodejs
 BuildRequires: ovirt-engine-nodejs-modules
+BuildRequires: ovirt-engine-yarn
 
 %package dashboard
 Summary:        Dashboard for Cockpit based on %{product}
