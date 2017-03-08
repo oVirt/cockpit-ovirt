@@ -4,7 +4,9 @@ const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
 const LV_NAME = "gluster_lv_"
 const DEFAULT_POOL_METADATA_SIZE = '16GB'
+const DEFAULT_ARBITER_BRICK_SIZE = 10 //GB
 const PRE_FLIGHT_CHECK_SCRIPT = '/usr/share/ansible/gdeploy/scripts/grafton-sanity-check.sh'
+
 var GdeployUtil = {
     getDefaultGedeployModel() {
         return {
@@ -119,7 +121,11 @@ var GdeployUtil = {
         return null
     },
     createBrickConfig(glusterModel) {
-        const brickConfig = { pvConfig: {}, vgConfig: {}, lvConfig: [], thinPoolConfig: {} }
+        const brickConfig = {
+            pvConfig: {}, vgConfig: {},
+            lvConfig: [], thinPoolConfig: {},
+            arbiterLvConfig: {}, arbiterThinPoolConfig: {}
+        }
         brickConfig.raidParam = {
             disktype: glusterModel.raidConfig.raidType,
             diskcount: glusterModel.raidConfig.diskCount,
@@ -148,6 +154,8 @@ var GdeployUtil = {
                     ignore_vg_errors: 'no'
                 }
             }
+            //Find if the brick is used for arbiter volume.
+            const is_arbiter = glusterModel.volumes[index].is_arbiter
             //Create the lv configuration for the brick
             const lvConfig = {
                 action: 'create',
@@ -160,6 +168,18 @@ var GdeployUtil = {
                 //If it is a thinlv, check if there is a thinpool already created for the device.
                 //If it is already created then increase the thinpool size by brick size.
                 if (brickConfig.thinPoolConfig.hasOwnProperty(brick.device)) {
+                    //If thinpool configuration is already seperated because of previous arbiter brick then
+                    //we have to increment that with the current brick size regardless of it is arbiter or not.
+                    if(brickConfig.arbiterThinPoolConfig.hasOwnProperty(brick.device)){
+                        brickConfig.arbiterThinPoolConfig[brick.device].size += is_arbiter ?
+                            DEFAULT_ARBITER_BRICK_SIZE : parseInt(brick.size)
+                    }else if(is_arbiter){
+                        //If it is arbiter brick but thinpool configuration is not yet seperated then
+                        //seperate now. Clone the regular thinpool and increase the size by arbiter size
+                        const thinpool_arbiter = JSON.parse(JSON.stringify(brickConfig.thinPoolConfig[brick.device]))
+                        thinpool_arbiter.size = thinpool_arbiter.size + DEFAULT_ARBITER_BRICK_SIZE
+                        brickConfig.arbiterThinPoolConfig[brick.device] = thinpool_arbiter
+                    }
                     brickConfig.thinPoolConfig[brick.device].size += parseInt(brick.size)
                 } else {
                     //Create a thinpool if it is not created already
@@ -173,16 +193,32 @@ var GdeployUtil = {
                     thinpool.poolmetadatasize = DEFAULT_POOL_METADATA_SIZE
                     thinpool.size = parseInt(brick.size)
                     brickConfig.thinPoolConfig[brick.device] = thinpool
+                    if(is_arbiter){
+                        //For arbiter brick, just clone the regular thinpool and modify the size
+                        const thinpool_arbiter = JSON.parse(JSON.stringify(thinpool))
+                        thinpool_arbiter.size = DEFAULT_ARBITER_BRICK_SIZE
+                        brickConfig.arbiterThinPoolConfig[brick.device] = thinpool_arbiter
+                    }
                 }
                 //If thinlv, then we need to add the thinpoolname, virtualsize and lvtype as 'thinlv'
                 lvConfig.lvtype = 'thinlv'
                 lvConfig.poolname = POOL_NAME + brick.device
-                lvConfig.virtualsize = brick.size
+                lvConfig.virtualsize = brick.size + "GB"
             } else {
-                lvConfig.size = brick.size
+                lvConfig.size = brick.size + "GB"
                 lvConfig.lvtype = 'thick'
             }
             brickConfig.lvConfig.push(lvConfig)
+
+            if(is_arbiter){
+                const lv_arbiter = JSON.parse(JSON.stringify(lvConfig))
+                if (brick.thinp) {
+                    lv_arbiter.virtualsize = DEFAULT_ARBITER_BRICK_SIZE + "GB"
+                }else{
+                    lv_arbiter.size = DEFAULT_ARBITER_BRICK_SIZE + "GB"
+                }
+                brickConfig.arbiterLvConfig[lvConfig.lvname] = lv_arbiter
+            }
         })
         return brickConfig
     },
@@ -228,20 +264,31 @@ var GdeployUtil = {
                         gdeployConfig['vg' + (index + 1)] = brickConfig.vgConfig[vg]
                     })
                     //Create all thinpools before creating lvs
+                    //thinpools and lvs will use lv module in gdeploy. So we need to keep unique numbering
+                    //for each lv section.
+                    let lvIndex = 1
                     Object.keys(brickConfig.thinPoolConfig).forEach(function(thinpool, index) {
                         brickConfig.thinPoolConfig[thinpool].size = brickConfig.thinPoolConfig[thinpool].size + "GB"
-                        gdeployConfig['lv' + (index + 1)] = brickConfig.thinPoolConfig[thinpool]
-                    })
-                    //Create all lvs. thinpool also created using lv section. So we need to include thinpool
-                    //size to calculate the numbering for lvs.
-                    const thinpoolCount = Object.keys(brickConfig.thinPoolConfig).length
-                    brickConfig.lvConfig.forEach(function(lv, index) {
-                        if (lv.lvtype === 'thinlv') {
-                            lv.virtualsize = lv.virtualsize + "GB"
+                        //If there is an thinpool with the same name, then we have to
+                        //create regular thinpool in first two hosts and arbiter thinpool in last host.
+                        if (brickConfig.arbiterThinPoolConfig.hasOwnProperty(thinpool)) {
+                            gdeployConfig['lv' + (lvIndex++) + `:{${hosts[0]},${hosts[1]}}`] = brickConfig.thinPoolConfig[thinpool]
+                            brickConfig.arbiterThinPoolConfig[thinpool].size = brickConfig.arbiterThinPoolConfig[thinpool].size + "GB"
+                            gdeployConfig['lv' + (lvIndex++) + `:${hosts[2]}`] = brickConfig.arbiterThinPoolConfig[thinpool]
                         } else {
-                            lv.size = lv.size + "GB"
+                            gdeployConfig['lv' + lvIndex++] = brickConfig.thinPoolConfig[thinpool]
                         }
-                        gdeployConfig['lv' + (index + 1 + thinpoolCount)] = lv
+                    })
+                    //Create all lvs.
+                    brickConfig.lvConfig.forEach(function(lv, index) {
+                        //If there is an arbiter lv with the same lvname, then we have to
+                        //create regular size lv in first two hosts and arbiter lv in last host.
+                        if(brickConfig.arbiterLvConfig.hasOwnProperty(lv.lvname)){
+                            gdeployConfig['lv' + (lvIndex++) + `:{${hosts[0]},${hosts[1]}}`] = lv
+                            gdeployConfig['lv' + (lvIndex++) + `:${hosts[2]}`] = brickConfig.arbiterLvConfig[lv.lvname]
+                        }else{
+                            gdeployConfig['lv' + lvIndex++] = lv
+                        }
                     })
                 } else if (section === 'volume') {
                     volumeConfigs.forEach(function(volumeConfig, index) {
