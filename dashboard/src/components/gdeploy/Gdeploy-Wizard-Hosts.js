@@ -9,19 +9,7 @@ class WizardHostStep extends Component {
             errorMsg: "",
             errorMsgs: {}
         }
-        this.handleDelete = this.handleDelete.bind(this)
-        this.handleAdd = this.handleAdd.bind(this)
         this.updateHost = this.updateHost.bind(this);
-    }
-    handleDelete(index) {
-        const hosts = this.state.hosts
-        hosts.splice(index, 1);
-        this.setState({ hosts, errorMsgs: {} })
-    }
-    handleAdd() {
-        const hosts = this.state.hosts
-        hosts.push("")
-        this.setState({ hosts })
     }
     updateHost(index, hostaddress) {
         const hosts = this.state.hosts;
@@ -59,6 +47,9 @@ class WizardHostStep extends Component {
         }
         return true;
     }
+    componentDidMount(){
+        $('[data-toggle=popover]').popovers()
+    }
     render() {
         const hostRows = [];
         const that = this
@@ -80,11 +71,6 @@ class WizardHostStep extends Component {
                 }
             <form className="form-horizontal">
                 {hostRows}
-                <a onClick={this.handleAdd} className="col-md-offset-3">
-                    <span className="pficon pficon-add-circle-o">
-                        <strong> Add Host</strong>
-                    </span>
-                </a>
                 <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
                     <span className="pficon pficon-info"></span>
                     <strong>
@@ -111,7 +97,13 @@ const HostRow = ({host, hostNo, errorMsg, changeCallBack, deleteCallBack}) => {
     return (
         <div>
             <div className={hostClass}>
-                <label className="col-md-2 control-label">Host{hostNo}</label>
+                <label className="col-md-2 control-label">Host{hostNo} {hostNo == 3 && <a tabIndex="0" role="button" data-toggle="popover"
+                        data-trigger="focus" data-html="true" title="" data-placement="right"
+                        data-content="This host will be used as arbiter node while creating arbiter volumes" >
+                            <span className="fa fa-info-circle"></span>
+                    </a>
+                }
+                </label>
                 <div className="col-md-6">
                     <input type="text" placeholder="Gluster network address"
                         title="Enter the address of gluster network which will be used for gluster data traffic."
@@ -121,10 +113,6 @@ const HostRow = ({host, hostNo, errorMsg, changeCallBack, deleteCallBack}) => {
                         />
                     {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
                 </div>
-                <a onClick={deleteCallBack}>
-                    <span className="pficon pficon-delete gdeploy-wizard-delete-icon">
-                    </span>
-                </a>
             </div>
         </div>
     )

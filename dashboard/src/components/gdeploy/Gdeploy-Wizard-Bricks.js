@@ -214,6 +214,12 @@ class WizardBricksStep extends Component {
                         <strong> Add Bricks</strong>
                     </span>
                 </a>
+                <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
+                    <span className="pficon pficon-info"></span>
+                    <strong>
+                        Arbiter bricks will be created on the third host in the host list.
+                    </strong>
+                </div>
             </div>
         )
     }
