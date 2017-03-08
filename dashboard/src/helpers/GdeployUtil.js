@@ -245,11 +245,6 @@ var GdeployUtil = {
                     volumeConfigs.forEach(function(volumeConfig, index) {
                         gdeployConfig['volume' + (index + 1)] = volumeConfig
                     })
-                } else if (section.indexOf(":host") >= 0) {
-                    //If there is a host variable then replace that with the actual host
-                    const index = section.indexOf(":host")
-                    const secName = section.substring(0, index + 1) + hosts[parseInt(section.substring(index + 5)) - 1]
-                    gdeployConfig[secName] = template[section]
                 } else {
                     gdeployConfig[section] = template[section]
                 }
