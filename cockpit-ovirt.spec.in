@@ -65,7 +65,11 @@ This package provides a Cockpit dashboard for use with %{product}.
 
 # Use the ovirt-engine nodejs installation
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
+%if 0%{?use_vdsm}
 for d in dashboard vdsm; do
+%else
+for d in dashboard ; do
+%endif
   pushd .
   cd ${d}
   %{_datadir}/ovirt-engine-nodejs-modules/setup-env.sh
