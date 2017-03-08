@@ -156,7 +156,7 @@ const VolumeRow = ({volume, index, errorMsgs, changeCallBack, deleteCallBack}) =
                     />
             </td>
             <td className="col-md-1">
-                <input type="checkbox" className="form-control"
+                <input type="checkbox" className="form-control" title="Third host in the host list will be used for creating arbiter bricks"
                     checked={volume.is_arbiter}
                     onChange={(e) => changeCallBack(index, "is_arbiter", e.target.checked)}
                     />
