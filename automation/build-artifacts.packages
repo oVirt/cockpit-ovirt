@@ -3,5 +3,5 @@ automake
 gcc-c++
 git
 python
-rpmbuild
+rpm-build
 yum-utils
