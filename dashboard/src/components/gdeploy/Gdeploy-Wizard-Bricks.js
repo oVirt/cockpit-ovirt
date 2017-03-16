@@ -82,7 +82,7 @@ class WizardBricksStep extends Component {
         errorMsgs[index] = {}
         if(brick.name.trim().length <1){
             valid = false
-            errorMsgs[index].name = "Brick name cannot be empty"
+            errorMsgs[index].name = "LV name cannot be empty"
         }
         if(brick.device.trim().length<3){
             errorMsgs[index].device = "Enter correct device name for brick"
@@ -93,7 +93,7 @@ class WizardBricksStep extends Component {
             valid = false;
         }
         if(brick.brick_dir.trim().length <1){
-            errorMsgs[index].brick_dir = "Brick directory cannot be empty"
+            errorMsgs[index].brick_dir = "Mount point cannot be empty"
             valid = false;
         }
         return valid
