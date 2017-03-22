@@ -3,8 +3,11 @@ import ini from 'ini'
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
 const LV_NAME = "gluster_lv_"
-const DEFAULT_POOL_METADATA_SIZE = '16GB'
-const DEFAULT_ARBITER_BRICK_SIZE = 10 //GB
+const DEFAULT_POOL_METADATA_SIZE_GB = 16
+const POOL_METADATA_SIZE_PERCENT = 0.005
+const MIN_ARBITER_BRICK_SIZE_KB = 20 * 1024 * 1024
+const MAX_ARBITER_BRICK_SIZE_KB = 200 * 1024 * 1024
+const DEFAULT_SHARD_SIZE_KB = 4096
 const PRE_FLIGHT_CHECK_SCRIPT = '/usr/share/ansible/gdeploy/scripts/grafton-sanity-check.sh'
 
 var GdeployUtil = {
@@ -173,15 +176,20 @@ var GdeployUtil = {
                     //we have to increment that with the current brick size regardless of it is arbiter or not.
                     if(brickConfig.arbiterThinPoolConfig.hasOwnProperty(brick.device)){
                         brickConfig.arbiterThinPoolConfig[brick.device].size += is_arbiter ?
-                            DEFAULT_ARBITER_BRICK_SIZE : parseInt(brick.size)
+                            this.getArbiterBrickSize(parseInt(brick.size)) : parseInt(brick.size)
+                        brickConfig.arbiterThinPoolConfig[brick.device].poolmetadatasize =
+                            this.getPoolMetadataSize(brickConfig.arbiterThinPoolConfig[brick.device].size) + "GB"
                     }else if(is_arbiter){
                         //If it is arbiter brick but thinpool configuration is not yet seperated then
                         //seperate now. Clone the regular thinpool and increase the size by arbiter size
                         const thinpool_arbiter = JSON.parse(JSON.stringify(brickConfig.thinPoolConfig[brick.device]))
-                        thinpool_arbiter.size = thinpool_arbiter.size + DEFAULT_ARBITER_BRICK_SIZE
+                        thinpool_arbiter.size = thinpool_arbiter.size + this.getArbiterBrickSize(parseInt(brick.size))
+                        thinpool_arbiter.poolmetadatasize = this.getPoolMetadataSize(thinpool_arbiter.size) + "GB"
                         brickConfig.arbiterThinPoolConfig[brick.device] = thinpool_arbiter
                     }
                     brickConfig.thinPoolConfig[brick.device].size += parseInt(brick.size)
+                    brickConfig.thinPoolConfig[brick.device].poolmetadatasize =
+                        this.getPoolMetadataSize(brickConfig.thinPoolConfig[brick.device].size) + "GB"
                 } else {
                     //Create a thinpool if it is not created already
                     const thinpool = {
@@ -191,13 +199,14 @@ var GdeployUtil = {
                     }
                     thinpool.vgname = VG_NAME + brick.device
                     thinpool.lvtype = 'thinpool'
-                    thinpool.poolmetadatasize = DEFAULT_POOL_METADATA_SIZE
                     thinpool.size = parseInt(brick.size)
+                    thinpool.poolmetadatasize = this.getPoolMetadataSize(thinpool.size) + "GB"
                     brickConfig.thinPoolConfig[brick.device] = thinpool
                     if(is_arbiter){
                         //For arbiter brick, just clone the regular thinpool and modify the size
                         const thinpool_arbiter = JSON.parse(JSON.stringify(thinpool))
-                        thinpool_arbiter.size = DEFAULT_ARBITER_BRICK_SIZE
+                        thinpool_arbiter.size = this.getArbiterBrickSize(parseInt(brick.size))
+                        thinpool_arbiter.poolmetadatasize = this.getPoolMetadataSize(thinpool_arbiter.size) + "GB"
                         brickConfig.arbiterThinPoolConfig[brick.device] = thinpool_arbiter
                     }
                 }
@@ -223,7 +232,19 @@ var GdeployUtil = {
         })
         return brickConfig
     },
-
+    getPoolMetadataSize(poolSize){
+        return Math.min(DEFAULT_POOL_METADATA_SIZE_GB, Math.ceil(poolSize * POOL_METADATA_SIZE_PERCENT))
+    },
+    getArbiterBrickSize(brickSize) {
+        //Calculate the size of arbiter brick based on the Brick Size.
+        //Formula: max (min_arbiter_size, min (max_arbiter_size, 2 * (brick-size/shard-size) * 4KB) )
+        const brickSizeKB = brickSize * 1024 * 1024
+        const shardSizeKB = DEFAULT_SHARD_SIZE_KB
+        const arbiterSizeKB = Math.max(MIN_ARBITER_BRICK_SIZE_KB,
+            Math.min(MAX_ARBITER_BRICK_SIZE_KB, 2 * (brickSizeKB / shardSizeKB) * 4))
+        //Return size in GBs
+        return Math.ceil(arbiterSizeKB / (1024 * 1024))
+    },
     mergeConfigWithTemplate(template, hosts, preFlightCheck, volumeConfigs, brickConfig, redhatSubscription, yumConfig) {
         const gdeployConfig = {}
         for (var section in template) {
