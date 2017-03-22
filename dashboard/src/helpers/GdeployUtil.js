@@ -52,7 +52,7 @@ var GdeployUtil = {
     createGdeployConfig(glusterModel, templateModel, filePath) {
         const template = JSON.parse(JSON.stringify(templateModel));
         const volumeTemplate = template.volume
-        const volumeConfigs = this.createVolumeConfigs(glusterModel.volumes, volumeTemplate)
+        const volumeConfigs = this.createVolumeConfigs(glusterModel.volumes, glusterModel.hosts, volumeTemplate)
         const brickConfig = this.createBrickConfig(glusterModel)
         const preFlightCheck = this.createPreFlightCheck(glusterModel.hosts, brickConfig.pvConfig)
         const redhatSubscription = this.createRedhatSubscription(glusterModel.subscription)
@@ -301,12 +301,13 @@ var GdeployUtil = {
         }
         return gdeployConfig
     },
-    createVolumeConfigs(volumesList, volumeTemplate) {
+    createVolumeConfigs(volumesList, hostList, volumeTemplate) {
         const volumeConfigs = []
         volumesList.map(function(volume) {
             const config = JSON.parse(JSON.stringify(volumeTemplate))
             config.volname = volume.name;
-            config.brick_dirs = volume.brick_dir
+            //We need to specify the hostnames because of a bug in gdeploy rhbz#1434774
+            config.brick_dirs = `${hostList[0]}:${volume.brick_dir},${hostList[1]}:${volume.brick_dir},${hostList[2]}:${volume.brick_dir}`
             if (volume.type === "distribute") {
                 config.replica = "no"
                 delete config.replica_count
