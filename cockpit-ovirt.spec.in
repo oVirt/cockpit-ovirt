@@ -133,6 +133,8 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Thu Mar 30 2017 Ryan Barry <rbarry@redhat.com> - 0.11.0-0.0.2
+- Add hostnames to brick_dir for gluster
 * Thu Mar 02 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.13
 - Fix a misnamed variable
 * Wed Mar 01 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.12
