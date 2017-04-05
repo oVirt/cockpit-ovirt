@@ -191,6 +191,7 @@ class RunSetup {
         input = `CONFIRM ${this.otopi_value}=${input}`
       }
       this.channel.send(input + "\n")
+      this.confirm_otopi = false
       this._found_question = false
       this._chomp_input = true
     }
