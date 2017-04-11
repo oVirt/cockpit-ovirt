@@ -223,13 +223,13 @@ var GdeployUtil = {
             if(is_arbiter){
                 const lv_arbiter = JSON.parse(JSON.stringify(lvConfig))
                 if (brick.thinp) {
-                    lv_arbiter.virtualsize = DEFAULT_ARBITER_BRICK_SIZE + "GB"
+                    lv_arbiter.virtualsize = this.getArbiterBrickSize(parseInt(brick.size)) + "GB"
                 }else{
-                    lv_arbiter.size = DEFAULT_ARBITER_BRICK_SIZE + "GB"
+                    lv_arbiter.size = this.getArbiterBrickSize(parseInt(brick.size)) + "GB"
                 }
                 brickConfig.arbiterLvConfig[lvConfig.lvname] = lv_arbiter
             }
-        })
+        }, this)
         return brickConfig
     },
     getPoolMetadataSize(poolSize){
@@ -240,8 +240,7 @@ var GdeployUtil = {
         //Formula: max (min_arbiter_size, min (max_arbiter_size, 2 * (brick-size/shard-size) * 4KB) )
         const brickSizeKB = brickSize * 1024 * 1024
         const shardSizeKB = DEFAULT_SHARD_SIZE_KB
-        const arbiterSizeKB = Math.max(MIN_ARBITER_BRICK_SIZE_KB,
-            Math.min(MAX_ARBITER_BRICK_SIZE_KB, 2 * (brickSizeKB / shardSizeKB) * 4))
+        const arbiterSizeKB = Math.max(MIN_ARBITER_BRICK_SIZE_KB, 2 * (brickSizeKB / shardSizeKB) * 4)
         //Return size in GBs
         return Math.ceil(arbiterSizeKB / (1024 * 1024))
     },
