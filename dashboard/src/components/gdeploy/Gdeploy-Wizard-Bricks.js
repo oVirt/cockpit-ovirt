@@ -9,12 +9,12 @@ const raidTypes = [
     { key: "raid10", title: "RAID 10" }
 ]
 class WizardBricksStep extends Component {
+
     constructor(props) {
         super(props)
         this.state = {
             bricks: props.bricks,
             raidConfig: props.raidConfig,
-            availableDisks: [],
             errorMsg: "",
             errorMsgs: {}
         }
@@ -22,35 +22,6 @@ class WizardBricksStep extends Component {
         this.handleAdd = this.handleAdd.bind(this)
         this.handleUpdate = this.handleUpdate.bind(this)
         this.handleRaidConfigUpdate = this.handleRaidConfigUpdate.bind(this)
-        this.updateDisks = this.updateDisks.bind(this)
-    }
-    componentDidMount() {
-        this.getDisks(this.updateDisks)
-    }
-    updateDisks(availableDisks) {
-        this.setState({ availableDisks })
-    }
-    getDisks(callBack) {
-        var service = cockpit.dbus('org.storaged.Storaged')
-        var drives = service.proxies('org.storaged.Storaged.Drive', '/');
-        var blocks = service.proxies('org.storaged.Storaged.Block', '/');
-        drives.wait(function() {
-            getBlockDevices();
-        })
-        function getBlockDevices() {
-            blocks.wait(function() {
-                filterDisks()
-            })
-        }
-        function filterDisks() {
-            let deviceList = []
-            for (var block in blocks) {
-               const disk =  cockpit.utf8_decoder().decode(cockpit.base64_decode(blocks[block].PreferredDevice).slice(0,-1))
-               //TODO: This lists the block devices. We have to filterout the used ones and list only the free block devices.
-               deviceList.push({key: disk, title: disk})
-            }
-            callBack(deviceList)
-        }
     }
     handleDelete(index) {
         const bricks = this.state.bricks
@@ -159,7 +130,7 @@ class WizardBricksStep extends Component {
         const that = this
         this.state.bricks.forEach(function (brick, index) {
             bricksRow.push(
-                <BrickRow availableDisks={this.state.availableDisks} brick={brick} key={index} index={index}
+                <BrickRow brick={brick} key={index} index={index}
                     errorMsgs = {that.state.errorMsgs[index]}
                     changeCallBack={this.handleUpdate}
                     deleteCallBack={() => this.handleDelete(index)}
@@ -261,7 +232,7 @@ WizardBricksStep.propTypes = {
     bricks: React.PropTypes.array.isRequired
 }
 
-const BrickRow = ({availableDisks, brick, index, errorMsgs, changeCallBack, deleteCallBack}) => {
+const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => {
     const name = classNames(
         { "has-error": errorMsgs && errorMsgs.name }
     )
@@ -287,9 +258,11 @@ const BrickRow = ({availableDisks, brick, index, errorMsgs, changeCallBack, dele
             </td>
             <td className="col-md-1">
                 <div className={device}>
-                    <Selectbox optionList={availableDisks}
-                        selectedOption={brick.device}
-                        callBack={(e) => changeCallBack(index, "device", e)}
+                    <input type="text" placeholder="device name"
+                        title="Name of the storage device (e.g sdb) which will be used to create brick"
+                        className="form-control"
+                        value={brick.device}
+                        onChange={(e) => changeCallBack(index, "device", e.target.value)}
                         />
                     {errorMsgs && errorMsgs.device && <span className="help-block">{errorMsgs.device}</span>}
                 </div>
