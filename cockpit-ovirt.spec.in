@@ -133,6 +133,13 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Thu May 04 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.10.7-0.0.18
+- gdeploy: calculate arbiter brick size
+- gdeploy: restart glusterd instead of start.
+- gdeploy: calculate thinpoolMetadata size dynamically.
+- gdeploy: Add option disable repos while generating gdeploy config file
+- gdeploy: Remove text message when mount point is empty
+- gdeploy: include gdeploy multipath disable script
 * Fri Apr 14 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.17
 - Unset confirm_otopi after passing
 * Thu Mar 23 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.15
