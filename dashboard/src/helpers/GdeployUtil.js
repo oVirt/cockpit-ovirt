@@ -110,7 +110,7 @@ var GdeployUtil = {
                 ignore_enable_errors: 'no'
             }
             config.action = 'register'
-            config.disable_repos = 'yes'
+            config["disable-repos"] = 'yes'
             config.username = subscription.username.trim()
             config.password = subscription.password
             if (subscription.poolId.trim().length > 0) {
