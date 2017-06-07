@@ -133,6 +133,10 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Wed Jun 07 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.19
+- gdeploy: use chrony instead of ntpd
+- gdeploy: disable repos when deploying
+
 * Thu May 04 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.10.7-0.0.18
 - gdeploy: calculate arbiter brick size
 - gdeploy: restart glusterd instead of start.
