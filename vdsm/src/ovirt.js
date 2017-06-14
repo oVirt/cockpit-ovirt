@@ -197,6 +197,8 @@ function initialize () {
   onLocationChanged()
 
   refreshActionClicked()// start auto-refresher
+
+  console.log('App initialized')
 }
 
 $(document).ready(initialize)
