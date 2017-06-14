@@ -1,7 +1,7 @@
 // --- vms-screen -------------------------------------------------------
 import $ from 'jquery'
 import c3 from 'c3'
-import d3 from 'd3'
+import * as d3 from 'd3'
 import Mustache from 'mustache'
 
 import {CONFIG} from './constants'
@@ -330,7 +330,8 @@ function refreshDonutChart (chartDivId, labels, columns, groups) {
   }
 
   // add labels
-  var donutChartTitle = d3.select(chartDivId).select('text.c3-chart-arcs-title')
+  var chartDiv = d3.select(chartDivId)
+  var donutChartTitle = chartDiv.select('text.c3-chart-arcs-title')
   donutChartTitle.text('')
   donutChartTitle.insert('tspan').text(labels[0]).classed('donut-title-small-pf', true).attr('dy', 0).attr('x', 0)
   if (labels.length > 1) {
