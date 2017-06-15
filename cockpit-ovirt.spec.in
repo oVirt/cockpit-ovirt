@@ -133,6 +133,11 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Thu Jun 15 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.20
+- vdsm: fix d3 import
+- gdeploy: add qemu user to gluster group
+- gdeploy: move multipath-disable before brick creation
+
 * Wed Jun 07 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.19
 - gdeploy: use chrony instead of ntpd
 - gdeploy: disable repos when deploying
