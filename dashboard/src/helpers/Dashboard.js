@@ -52,7 +52,6 @@ export class VirtualMachines {
         return value[0] != '.host'
       }
       proxy.ListMachines().done(function(result) {
-        console.log(result.filter(filter_host))
         callback(result.filter(filter_host))
       })
     })

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import HostedEngineSetup from './HostedEngineSetup'
-import {checkDeployed, getMetrics, getHostname, setMaintenance}
+import {checkDeployed, checkInstalled, getMetrics, getHostname, setMaintenance}
   from '../helpers/HostedEngineStatus'
 var classNames = require('classnames')
 
@@ -11,22 +11,47 @@ class HostedEngine extends Component {
       deployed: null
     }
     this.deployedCallback = this.deployedCallback.bind(this)
+    this.determineComponent = this.determineComponent.bind(this)
+    this.installedCallback = this.installedCallback.bind(this)
   }
   deployedCallback(value) {
     this.setState({deployed: value})
   }
+  installedCallback(value) {
+    this.setState({installed: value})
+  }
+  determineComponent() {
+    if (this.state.installed == null || this.state.deployed == null) {
+      return (
+        <div className="spinner" />
+      )
+    }
+    else if (!this.state.installed) {
+      return (
+        <NotInstalled />
+      )
+    }
+    else {
+      if (!this.state.deployed) {
+        return (
+          <HostedEngineSetup />
+        )
+      }
+      else {
+        return (
+          <Status />
+        )
+      }
+    }
+  }
   componentWillMount() {
     checkDeployed(this.deployedCallback)
+    checkInstalled(this.installedCallback)
   }
   render() {
     return (
       <div>
-        {(this.state.deployed == null) ?
-          <div className="spinner" /> :
-          this.state.deployed ?
-            <Status /> :
-            <HostedEngineSetup />
-        }
+        {this.determineComponent()}
       </div>
     )
   }
@@ -192,6 +217,22 @@ const Engine = ({status}) => {
           <Running host={status.hostname} /> :
           <NotRunning />
       }
+    </div>
+  )
+}
+
+const NotInstalled = () => {
+  return (
+    <div className="curtains curtains-ct blank-slate-pf">
+      <div className="container-center">
+        <div className="blank-slate-pf-icon">
+          <i className="pficon-error-circle-o" />
+        </div>
+        <h1>
+          Hosted Engine is not installed. Please install to enable
+          Cockpit-based setup and management of Hosted Engine.
+        </h1>
+      </div>
     </div>
   )
 }
