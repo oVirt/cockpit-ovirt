@@ -11,6 +11,23 @@ export function checkDeployed(callback) {
   })
 }
 
+export function checkInstalled(callback) {
+  let cmd = ["which",
+            "hosted-engine"]
+  let proc = cockpit.spawn(
+     cmd,
+     {err: "message"}
+  )
+  .done(function() {
+      callback(true)
+  })
+  .fail(function(err, resp) {
+    console.log("hosted-engine is not installed. Disabling functionality")
+    callback(false)
+  })
+}
+
+
 export function getMetrics(callback) {
   let proc = cockpit.spawn(
     ["/usr/sbin/hosted-engine",
