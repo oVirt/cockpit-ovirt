@@ -133,6 +133,10 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Wed Jul 05 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.21
+- hosted-engine: make the page optional by checking for the hosted-engine
+  binary before enabling anything
+- gdeploy: re-calculate thinpoolMetadata size dynamically
 * Thu Jun 15 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.20
 - vdsm: fix d3 import
 - gdeploy: add qemu user to gluster group
