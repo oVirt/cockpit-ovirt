@@ -60,11 +60,17 @@ var config = module.exports = {
 
 if (isProd) {
   config.plugins.push(
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.UglifyJsPlugin({
+    new webpack.optimize.DedupePlugin()
+    /*
+    Quick fix of https://bugzilla.redhat.com/show_bug.cgi?id=1460614
+    Recent UglifyJSPlugin and D3 library seem to be no friends.
+    Let's use this quick workaround since the bug is blocker now. More general fix needs provided later.
+
+    , new webpack.optimize.UglifyJsPlugin({
       minimize: true
     })
-  )
+*/
+)
 } else {// isDev
   config.plugins.push(
     new webpack.DefinePlugin({
