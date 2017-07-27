@@ -417,8 +417,8 @@ var GdeployUtil = {
     isRhelSystem(callBack){
         let proc = cockpit.spawn(
             ["grep",
-             'Red Hat Enterprise Linux',
-             '/etc/redhat-release'
+             'PRETTY_NAME="Red Hat Enterprise Linux"',
+             '/etc/os-release'
             ]
         )
         .done(function(code) {
