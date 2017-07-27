@@ -20,7 +20,7 @@ class WizardVolumesStep extends Component {
         this.setState({ volumes, errorMsgs: {} })
     }
     getEmptyRow() {
-        return { name: "", type: "replicate", is_arbiter: true, brick_dir: "" }
+        return { name: "", type: "replicate", is_arbiter: false, brick_dir: "" }
     }
     handleAdd() {
         const volumes = this.state.volumes
