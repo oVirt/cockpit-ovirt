@@ -29,7 +29,7 @@ class WizardBricksStep extends Component {
         this.setState({ bricks, errorMsgs: {} })
     }
     getEmptyRow() {
-        return { name: "", device: "", brick_dir: "", size:"1" }
+        return { name: "", device: "", brick_dir: "", thinp: true, size:"1" }
     }
     handleAdd() {
         const bricks = this.state.bricks
