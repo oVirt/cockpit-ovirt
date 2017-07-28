@@ -19,6 +19,10 @@ class GdeploySetup extends Component {
         this.handleFinish = this.handleFinish.bind(this)
         this.onStepChange = this.onStepChange.bind(this)
         this.handleReDeploy = this.handleReDeploy.bind(this)
+        this.onSuccess = this.onSuccess.bind(this)
+    }
+    onSuccess() {
+        console.log("gdeploy config file is being generated");
     }
     onStepChange(activeStep) {
 
