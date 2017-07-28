@@ -422,11 +422,9 @@ var GdeployUtil = {
             ]
         )
         .done(function(code) {
-            console.log("True")
             callBack(true)
         })
         .fail(function(code) {
-            console.log("false")
             callBack(false)
         })
     }
