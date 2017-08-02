@@ -190,7 +190,9 @@ var GdeployUtil = {
                     }
                     brickConfig.thinPoolConfig[brick.device].size += parseInt(brick.size)
                     brickConfig.thinPoolConfig[brick.device].poolmetadatasize =
-                        that.getPoolMetadataSize(brickConfig.thinPoolConfig[brick.device].size) + "GB"
+                       that.getPoolMetadataSize(brickConfig.thinPoolConfig[brick.device].size)
+                    brickConfig.thinPoolConfig[brick.device].size += brickConfig.thinPoolConfig[brick.device].poolmetadatasize
+                    brickConfig.thinPoolConfig[brick.device].poolmetadatasize += "GB"
                 } else {
                     //Create a thinpool if it is not created already
                     const thinpool = {
@@ -207,7 +209,9 @@ var GdeployUtil = {
                         //For arbiter brick, just clone the regular thinpool and modify the size
                         const thinpool_arbiter = JSON.parse(JSON.stringify(thinpool))
                         thinpool_arbiter.size = that.getArbiterBrickSize(parseInt(brick.size))
-                        thinpool_arbiter.poolmetadatasize = that.getPoolMetadataSize(thinpool_arbiter.size) + "GB"
+                        thinpool_arbiter.poolmetadatasize = that.getPoolMetadataSize(thinpool_arbiter.size)
+                        thinpool_arbiter.size += thinpool_arbiter.poolmetadatasize
+                        thinpool_arbiter.poolmetadatasize += "GB"
                         brickConfig.arbiterThinPoolConfig[brick.device] = thinpool_arbiter
                     }
                 }
