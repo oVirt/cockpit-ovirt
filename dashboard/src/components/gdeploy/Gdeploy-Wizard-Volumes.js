@@ -34,6 +34,14 @@ class WizardVolumesStep extends Component {
         this.validateVolume(volumes[index], index, errorMsgs)
         this.setState({ volumes, errorMsgs })
     }
+    // Trim "Name" and "Brick Dirs" values
+    trimVolumeProperties(){
+      const inVolumes = this.state.volumes
+      for(var i=0; i< inVolumes.length; i++){
+        this.state.volumes[i].name = inVolumes[i].name.trim()
+        this.state.volumes[i].brick_dir = inVolumes[i].brick_dir.trim()
+      }
+    }
     validateVolume(volume, index, errorMsgs){
         let valid = true
         errorMsgs[index] = {}
@@ -48,6 +56,7 @@ class WizardVolumesStep extends Component {
         return valid
     }
     validate(){
+        this.trimVolumeProperties()
         let valid = true
         const that = this
         let errorMsg = ""
