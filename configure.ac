@@ -89,8 +89,6 @@ AC_CONFIG_FILES([
 	dashboard/Makefile
 	dashboard/src/routes/routes.js
 	cockpit-ovirt.spec
-	ovirt-uiplugin/Makefile
-
 ])
 
 

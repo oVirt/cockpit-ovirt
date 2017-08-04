@@ -1,9 +1,0 @@
-{
-  "name": "cockpit-plugin",
-  "url": "plugin/cockpit-plugin/index.html",
-  "resourcePath": "cockpit-resources",
-  "config": {
-    "allowedOrigins": ["http://127.0.0.1:8080"],
-    "cockpitPort": "9090"
-  }
-}

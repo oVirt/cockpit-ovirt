@@ -2,7 +2,6 @@
 %define use_vdsm %( test -z @VDSM@ && echo 1 || echo 0)
 %global _plugindir %{_datarootdir}/cockpit/
 %global _ovirtenginedir %{_datarootdir}/ovirt-engine
-%global _uipluginsdir %{_ovirtenginedir}/ui-plugins
 %global product oVirt
 %global use_rhev %( test -z @RHEV@ && echo 1 || echo 0)
 %define debug_package %{nil}
@@ -116,25 +115,6 @@ chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsmJsonRPCCli.py
 %endif
 %license LICENSE
 %{_plugindir}/ovirt-dashboard
-
-%package uiplugin
-Summary: UI Plugin embedding Cockpit in oVirt's Administration Portal
-%if 0%{?use_rhev}
-Requires: rhev-engine-webadmin-portal
-%else
-Requires: ovirt-engine-webadmin-portal
-%endif
-BuildArch: noarch
-
-%description uiplugin
-Optional UI plugin embedding Cockpit in oVirt's Administration Portal
-for low-level host management.
-
-%files uiplugin
-%doc ovirt-uiplugin/README.cockpit
-%license LICENSE
-%{_uipluginsdir}/cockpit.json
-%{_uipluginsdir}/cockpit-resources
 
 %changelog
 * Thu Mar 30 2017 Ryan Barry <rbarry@redhat.com> - 0.11.0-0.0.2
