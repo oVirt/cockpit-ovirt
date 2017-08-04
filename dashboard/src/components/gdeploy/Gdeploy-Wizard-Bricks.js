@@ -77,6 +77,15 @@ class WizardBricksStep extends Component {
         }
         return valid
     }
+    // Trim "LV Name","Device Name" and "Mount Point" values
+    trimBrickProperties(){
+      const inBricks = this.state.bricks
+      for(var i =0; i< inBricks.length; i++){
+        this.state.bricks[i].name = inBricks[i].name.trim()
+        this.state.bricks[i].device = inBricks[i].device.trim()
+        this.state.bricks[i].brick_dir = inBricks[i].brick_dir.trim()
+      }
+    }
     validateBrick(brick, index, errorMsgs){
         let valid  = true
         errorMsgs[index] = {}
@@ -99,6 +108,7 @@ class WizardBricksStep extends Component {
         return valid
     }
     validate(){
+        this.trimBrickProperties()
         let valid = true
         const errorMsgs= {}
         let errorMsg = ""
