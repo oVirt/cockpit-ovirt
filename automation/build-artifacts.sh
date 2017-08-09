@@ -16,7 +16,7 @@ mkdir exported-artifacts
 
 # generate automake/autoconf files
 export PATH=/usr/share/ovirt-engine-nodejs/bin:${PATH}
-./autogen.sh --with-vdsm
+./autogen.sh
 
 # create rpm
 yum-builddep cockpit-ovirt.spec

@@ -10,10 +10,10 @@ export PATH=/usr/share/ovirt-engine-nodejs/bin:${PATH}
 # Test rpm building, avoiding to discover it doesn't build only after merge.
 # Doing this before make check because npm install may add missing deps at
 # rpm level
-./autogen.sh --with-vdsm
+./autogen.sh
 yum-builddep cockpit-ovirt.spec
 make rpm
 
-./autogen.sh --with-vdsm --with-npm-install && make -j8 check
+./autogen.sh --with-npm-install && make -j8 check
 
 

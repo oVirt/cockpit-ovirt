@@ -2,7 +2,6 @@ import React from 'react'
 import App from '../components/App'
 import Dashboard from '../components/Dashboard'
 import HostedEngine from '../components/HostedEngine'
-import Management from '../components/Management'
 
 let root = {
   path: '/',
@@ -25,12 +24,6 @@ export let paths = {
     icon: "fa-cubes",
     component: HostedEngine,
     indexRoute: false
-@VDSM@  },
-@VDSM@  "Virtual Machines": {
-@VDSM@    path: "/management",
-@VDSM@    icon: "fa-database",
-@VDSM@    component: Management,
-@VDSM@    indexRoute: false
   }
 }
 

@@ -13,19 +13,11 @@
 #    limitations under the License.
 
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
-if VDSM
-	BUILD_VDSM = vdsm
-	VDSM_CHECK = vdsm-checks
-else
-	BUILD_VDSM =
-	VDSM_CHECK =
-endif
 
 SHELL := /bin/bash
 
 SUBDIRS = \
-	dashboard \
-	$(BUILD_VDSM)
+	dashboard 
 
 EXTRA_DIST = \
 	.bowerrc \
@@ -78,12 +70,5 @@ distclean-local:
 
 
 .PHONY: rpms publish srpms
-
-
-check-am: $(VDSM_CHECK)
-	@echo Passed $@
-
-vdsm-checks:
-	$(MAKE) -C vdsm/ check
 
 # vim: ts=2

@@ -1,5 +1,4 @@
 # Used for rpm-packaging of pre-bundled application with already resolved JS dependencies
-%define use_vdsm %( test -z @VDSM@ && echo 1 || echo 0)
 %global _plugindir %{_datarootdir}/cockpit/
 %global _ovirtenginedir %{_datarootdir}/ovirt-engine
 %global product oVirt
@@ -64,11 +63,7 @@ This package provides a Cockpit dashboard for use with %{product}.
 
 # Use the ovirt-engine nodejs installation
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
-%if 0%{?use_vdsm}
-for d in dashboard vdsm; do
-%else
 for d in dashboard ; do
-%endif
   pushd .
   cd ${d}
   %{_datadir}/ovirt-engine-nodejs-modules/setup-env.sh
@@ -78,41 +73,23 @@ done
 # Copy the Node.js dependencies to the local "node_modules" directory
 ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules"
 ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/node_modules
-%if 0%{?use_vdsm}
-ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./vdsm/node_modules
-%endif
 
 
 %build
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
-%if 0%{?use_vdsm}
-%if 0%{?use_rhev}
-%configure --with-vdsm --with-rhev
-%else
-%configure --with-vdsm
-%endif #END RHEV
-%else
 %if 0%{?use_rhev}
 %configure --with-rhev
 %else
 %configure
 %endif  #END RHEV
-%endif  #END VDSM
 
 export PATH="./node_modules/.bin:${PATH}"
 make
 
 %install
 make install DESTDIR=%{buildroot}
-%if 0%{?use_vdsm}
-chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsm
-chmod a+x %{buildroot}/%{_plugindir}/ovirt-dashboard/vdsm/vdsm/vdsmJsonRPCCli.py
-%endif
 
 %files dashboard
-%if 0%{?use_vdsm}
-%doc vdsm/README.md 
-%endif
 %license LICENSE
 %{_plugindir}/ovirt-dashboard
 

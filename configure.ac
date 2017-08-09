@@ -35,10 +35,6 @@ AC_SUBST([COMMIT],
              grep $PACKAGE_TARNAME-$PACKAGE_VERSION |
              awk '{print $1}' )])
 
-AC_ARG_WITH([vdsm], [AC_HELP_STRING([--with-vdsm],
-            [enable the VDSM plugin for the dashboard])],
-            [VDSM=""], [VDSM="//"])
-
 AC_ARG_WITH([rhev], [AC_HELP_STRING([--with-rhev],
             [Build cockpit-ovirt for RHEV])],
             [RHEV=""], [RHEV="//"])
@@ -49,9 +45,7 @@ AC_ARG_WITH([npm-install], [AC_HELP_STRING([--with-npm-install],
 
 AC_SUBST([NPMINSTALL])
 
-AC_SUBST([VDSM])
 AC_SUBST([RHEV])
-AM_CONDITIONAL([VDSM], [test -z "$VDSM"])
 AM_CONDITIONAL([RHEV], [test -z "$RHEV"])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
@@ -64,12 +58,6 @@ AM_PATH_PYTHON
 AC_ARG_VAR([NPM], [path to npm utility])
 AC_CHECK_PROGS([NPM], [npm])
 test -z "${NPM}" && AC_MSG_ERROR([NodeJS npm program not found])
-
-AM_COND_IF([VDSM],
-	AC_CONFIG_FILES([
-		vdsm/Makefile
-	])
-)
 
 AC_ARG_ENABLE(
 	[python-syntax-check],

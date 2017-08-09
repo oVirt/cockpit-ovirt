@@ -38,8 +38,7 @@ Be sure to install nodejs package as it will be required by the build, then run
 
 If you want to downlod required NodeJS libraries during the build instead of
 providing them as system libraries, you can add --with-npm-install flag to
-the configure command. If you want to build also the vdsm plugin add --with-vdsm
-to the configure command
+the configure command. 
 
 
 #### Building RPMs
@@ -47,8 +46,6 @@ to the configure command
 
 The RPMs will be available under tmp.repos
 
-## TODO:
-Please note, the plugin is in early development.
 
 ## More Info
 * About [oVirt](http://www.ovirt.org/Home)
