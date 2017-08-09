@@ -133,6 +133,9 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Mon Jul 21 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.23
+- More Gdeploy fixes
+
 * Mon Jul 21 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.22
 - Gdeploy fixes
 
