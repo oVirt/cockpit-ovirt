@@ -159,7 +159,7 @@ const WizardFooter = ({activeStep, stepCount, isDeploymentStarted,
     moveBack, moveNext, cancel, finish, close}) => {
     const backButton = classNames(
         "btn", "btn-default", "wizard-pf-back",
-        { "disabled": activeStep == 0 }
+        { "disabled": activeStep == 0 || isDeploymentStarted}
     ),
         nextButton = classNames(
             "btn", "btn-primary", "wizard-pf-next",

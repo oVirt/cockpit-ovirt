@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Selectbox from './Selectbox'
+import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
 
 const raidTypes = [

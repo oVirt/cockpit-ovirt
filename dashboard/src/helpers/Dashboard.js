@@ -133,6 +133,7 @@ export class NetworkInterfaces {
     this.seen = {}
     this.refresh()
     this.promises = {}
+    this.modelCallbacks = new Set()
   }
   call(iface, prop, method, args, callback) {
     this.client.call(iface, prop, method, args)
@@ -164,12 +165,27 @@ export class NetworkInterfaces {
   }
   buildModel(active_nics) {
     var self = this
+    self.model = {}
+    var objList = []
     active_nics.forEach(function (nic) {
       var obj = self.buildObject(nic)
       obj.then((val) => {
         self.model[val.Id] = val
       })
+        objList.push(obj)
     })
+    Promise.all(objList).then(() => {
+      // model is now ready for consumption
+      this.modelCallbacks.forEach((callback) => {
+        callback(this.model)
+      })
+    })
+  }
+  addModelCallback(callback) {
+    this.modelCallbacks.add(callback)
+      return() => {
+        this.modelCallbacks.delete(callback)
+      }
   }
   buildObject(path) {
     var self = this
@@ -222,5 +238,17 @@ export class NetworkInterfaces {
   }
   listNics() {
     return this.model
+  }
+  refreshNics() {
+    return new Promise((resolve, reject) => {
+      let model = this.model;
+      this.refresh();
+
+      if (model !== {}) {
+        resolve(this.model);
+      } else {
+        reject(Error("There was an error retrieving the list of network interfaces."));
+      }
+    })
   }
 }
