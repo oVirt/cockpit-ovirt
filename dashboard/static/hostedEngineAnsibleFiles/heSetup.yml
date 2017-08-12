@@ -1,0 +1,31 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+
+  tasks:
+  - name: Get hostname
+    shell: hostname
+    register: name
+    when: true
+  - debug: msg={{ name.stdout | to_json }}
+
+  - name: Get appliance files
+    shell: ls /usr/share/ovirt-engine-appliance
+    register: appliance_name
+    when: true
+  - debug: msg={{ appliance_name.stdout_lines | to_json }}
+
+  - name: Debug print interface names
+    debug: msg={{ ansible_interfaces | to_json }}
+
+  - name: Get CPU model
+    shell: virsh -r capabilities | grep -m 1 "<model>"
+    register: cpu_model
+    when: true
+  - debug: msg={{ cpu_model | to_json }}
+
+  - name: Get CPU vendor
+    shell: virsh -r capabilities | grep -m 1 "<vendor>"
+    register: cpu_vendor
+    when: true
+  - debug: msg={{ cpu_vendor | to_json }}
