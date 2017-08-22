@@ -22,7 +22,17 @@ class WizardHostStep extends Component {
         }
         this.setState({ hosts, errorMsgs })
     }
+    // Trim "Host1","Host2" and "Host3" values
+    trimHostProperties(){
+      const inHosts = this.state.hosts
+      if(inHosts.length > 0){
+        for(var i =0; i< inHosts.length; i++){
+          this.state.hosts[i] = inHosts[i].trim()
+        }
+      }
+    }
     validate(){
+        this.trimHostProperties()
         let errorMsg = ""
         const errorMsgs= {}
         let valid = true
