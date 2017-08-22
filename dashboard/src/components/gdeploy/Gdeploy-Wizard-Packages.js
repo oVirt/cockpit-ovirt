@@ -21,7 +21,29 @@ class WizardPackageStep extends Component {
         subscription[property] = value
         this.setState({ subscription })
     }
+    // Trim "Repositories" and "Packages" values
+    trimPackageProperties(){
+      if(this.state.subscription.repos.indexOf(",") != -1){
+        const inRepos = this.state.subscription.repos.split(",")
+        for(var i=0; i<inRepos.length; i++){
+          inRepos[i] = inRepos[i].trim()
+        }
+        this.state.subscription.repos = inRepos.join(",")
+      }else{
+        this.state.subscription.repos = this.state.subscription.repos.trim()
+      }
+      if(this.state.subscription.rpms.indexOf(",") != -1){
+        const inRpms = this.state.subscription.rpms.split(",")
+        for(var i=0; i<inRpms.length; i++){
+          inRpms[i] = inRpms[i].trim()
+        }
+        this.state.subscription.rpms = inRpms.join(",")
+      }else{
+        this.state.subscription.rpms = this.state.subscription.rpms.trim()
+      }
+    }
     validate(){
+        this.trimPackageProperties()
         return true
     }
     shouldComponentUpdate(nextProps, nextState){
