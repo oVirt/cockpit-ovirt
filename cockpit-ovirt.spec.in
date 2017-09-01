@@ -5,9 +5,7 @@
 %global use_rhev %( test -z @RHEV@ && echo 1 || echo 0)
 %define debug_package %{nil}
 
-# git ls-remote http://gerrit.ovirt.org/cockpit-ovirt.git | grep $tag"
-%global commit @COMMIT@
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
+
 %global source_basename @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 Name:           cockpit-ovirt
