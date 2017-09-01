@@ -14,7 +14,7 @@ Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?checkout}%{?dist}
 Summary:        Dashboard for Cockpit based on %{product}
 License:        ASL 2.0
 URL:            https://gerrit.ovirt.org/gitweb?p=cockpit-ovirt.git;a=summary
-Source0:        http://resources.ovirt.org/pub/ovirt-master-snapshot/src/%{name}/%{source_basename}.tar.gz
+Source0:        http://resources.ovirt.org/pub/src/%{name}/%{source_basename}.tar.gz
 
 
 %if 0%{?rhel}
@@ -88,12 +88,47 @@ make
 make install DESTDIR=%{buildroot}
 
 %files dashboard
+%doc README.md
 %license LICENSE
 %{_plugindir}/ovirt-dashboard
 
 %changelog
-* Thu Mar 30 2017 Ryan Barry <rbarry@redhat.com> - 0.11.0-0.0.2
-- Add hostnames to brick_dir for gluster
+* Fri Sep  1 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.0-1
+- Rebase on upstream 0.11.0
+
+* Wed Aug  9 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.23
+- More Gdeploy fixes
+
+* Mon Jul 31 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.22
+- Gdeploy fixes
+
+* Wed Jul 05 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.21
+- hosted-engine: make the page optional by checking for the hosted-engine
+  binary before enabling anything
+- gdeploy: re-calculate thinpoolMetadata size dynamically
+
+* Thu Jun 15 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.20
+- vdsm: fix d3 import
+- gdeploy: add qemu user to gluster group
+- gdeploy: move multipath-disable before brick creation
+
+* Wed Jun 07 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.19
+- gdeploy: use chrony instead of ntpd
+- gdeploy: disable repos when deploying
+
+* Thu May 04 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.10.7-0.0.18
+- gdeploy: calculate arbiter brick size
+- gdeploy: restart glusterd instead of start.
+- gdeploy: calculate thinpoolMetadata size dynamically.
+- gdeploy: Add option disable repos while generating gdeploy config file
+- gdeploy: Remove text message when mount point is empty
+- gdeploy: include gdeploy multipath disable script
+* Fri Apr 14 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.17
+- Unset confirm_otopi after passing
+* Thu Mar 23 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.15
+- Add hostnames to brick_dir in gluster config
+* Wed Mar 08 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.10.7-0.0.14
+- Various gdeploy fixes
 * Thu Mar 02 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.13
 - Fix a misnamed variable
 * Wed Mar 01 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.12
