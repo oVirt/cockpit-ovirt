@@ -16,7 +16,7 @@ Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?checkout}%{?dist}
 Summary:        Dashboard for Cockpit based on %{product}
 License:        ASL 2.0
 URL:            https://gerrit.ovirt.org/gitweb?p=cockpit-ovirt.git;a=summary
-Source0:        http://resources.ovirt.org/pub/ovirt-master-snapshot/src/%{name}/%{source_basename}.tar.gz
+Source0:        http://resources.ovirt.org/pub/src/%{name}/%{source_basename}.tar.gz
 
 
 %if 0%{?rhel}
@@ -131,6 +131,9 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Fri Sep  1 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.10.8-1
+- Rebase on upstream 0.10.8
+
 * Wed Aug  9 2017 Ryan Barry <rbarry@redhat.com> - 0.10.7-0.0.23
 - More Gdeploy fixes
 
