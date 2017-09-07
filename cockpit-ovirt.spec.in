@@ -39,9 +39,6 @@ Requires:       cockpit
 Requires:       cockpit-storaged
 Requires:       ovirt-hosted-engine-setup
 Requires:       otopi >= 1.5.2-1
-%if 0%{?use_vdsm}
-Requires: vdsm >= 4.17.999-610
-%endif
 
 %description
 This package provides a Cockpit dashboard for use with %{product}.
