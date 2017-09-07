@@ -34,16 +34,9 @@ BuildRequires: ovirt-engine-yarn
 Summary:        Dashboard for Cockpit based on %{product}
 BuildArch:      noarch
 
-%if 0%{?rhel}
-#FIXME: don't pull in base cockpit until rhbz#1349375 is fixed
-Requires:       cockpit-bridge
-Requires:       cockpit-ws
-Requires:       cockpit-shell
-Requires:       cockpit-storaged
-%else
-Requires:       cockpit
-%endif
 
+Requires:       cockpit
+Requires:       cockpit-storaged
 Requires:       ovirt-hosted-engine-setup
 Requires:       otopi >= 1.5.2-1
 %if 0%{?use_vdsm}
