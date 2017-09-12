@@ -135,11 +135,6 @@ var GdeployUtil = {
             diskcount: glusterModel.raidConfig.diskCount,
             stripesize: glusterModel.raidConfig.stripeSize
         }
-        //performance configuration for RAID-6 and RAID-5 are same and
-        //gdeploy accepts only RAID-6
-        if(brickConfig.raidParam.disktype === 'raid5'){
-            brickConfig.raidParam.disktype = 'raid6'
-        }
         const that = this
         glusterModel.bricks.forEach(function(brick, index) {
             //If there is no PV added for the given device, add it now.
