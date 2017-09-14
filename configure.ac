@@ -21,7 +21,7 @@ define([VERSION_MINOR], [10])
 define([VERSION_FIX], [8])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
 define([VERSION_RELEASE], [2.1])
-define([VERSION_SUFFIX],[])
+define([VERSION_SUFFIX],[ovirt41])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
@@ -32,7 +32,7 @@ AC_SUBST([PLUGINNAME], ['oVirt Cockpit Plugin'])
 
 AC_SUBST([COMMIT],
          [$( git ls-remote http://gerrit.ovirt.org/cockpit-ovirt.git |
-             grep $PACKAGE_TARNAME-$PACKAGE_VERSION |
+             grep $PACKAGE_TARNAME-$PACKAGE_VERSION-$VERSION_RELEASE |
              awk '{print $1}' )])
 
 AC_ARG_WITH([vdsm], [AC_HELP_STRING([--with-vdsm],
