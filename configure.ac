@@ -20,8 +20,8 @@ define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [10])
 define([VERSION_FIX], [8])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_RELEASE], [2.0])
-define([VERSION_SUFFIX],[ovirt41])
+define([VERSION_RELEASE], [2.1])
+define([VERSION_SUFFIX],[])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"

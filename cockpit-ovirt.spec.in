@@ -131,6 +131,9 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Thu Sep  14 2017 Ryan Barry <rbarry@redhat.com> - 0.10.8-2.1
+- Revert gdeploy fixes which are not yet ready for release
+
 * Wed Sep  6 2017 Ryan Barry <rbarry@redhat.com> - 0.10.8-2.0
 - More Gdeploy fixes
 
