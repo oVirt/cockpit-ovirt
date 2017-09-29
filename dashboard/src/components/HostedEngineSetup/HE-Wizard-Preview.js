@@ -31,7 +31,7 @@ class WizardPreviewStep extends Component {
                             return;
                         }
 
-                        let previewRow = <PreviewRow property={prop.name} value={prop.value.toString()} key={idx++} />;
+                        let previewRow = <PreviewRow property={prop.description} value={prop.value.toString()} key={idx++} />;
 
                         switch (prop.uiStage) {
                             case "Storage":
@@ -91,7 +91,7 @@ const PreviewRow = ({property, value}) => {
     return (
         <div className="row">
             <label className="he-preview-field col-md-6">{property}</label>
-            <label className="he-preview-value col-md-6">{value === "" ? "(None)" : value}</label>
+            <label className="he-preview-value col-md-6">{value === "" ? <em>(None)</em> : value}</label>
         </div>
     )
 };

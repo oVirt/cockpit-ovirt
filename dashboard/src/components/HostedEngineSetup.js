@@ -27,7 +27,7 @@ class HostedEngineSetup extends Component {
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.redeploy = this.redeploy.bind(this);
 
-    CheckIfRegistered(this.registeredCallback)
+    CheckIfRegistered(this.registeredCallback);
   }
 
   componentDidMount() {

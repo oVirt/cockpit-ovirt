@@ -312,8 +312,10 @@ path.line.highlight {
 }
 
 label.he-preview-value {
+    width: 300px;
     text-align: left;
     padding-left: 0px;
+    overflow-wrap: break-word;
 }
 
 .he-form-container {
@@ -335,8 +337,9 @@ div.he-text-with-units {
 }
 
 .he-stage-header {
+    height: 40px;
     text-align: center;
-    padding-top: 15px;
+    margin-bottom: -10px;
 }
 
 h3.he-first-preview-header {
