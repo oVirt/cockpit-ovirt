@@ -13,6 +13,7 @@
 Makefile.in
 .npm
 dashboard/ovirt-dashboard
+dashboard/src/routes/routes.js
 
 config.*
 *.spec
@@ -25,3 +26,4 @@ autom4te.cache
 install-sh
 tmp.repos
 *node_modules
+
