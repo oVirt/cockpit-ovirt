@@ -38,3 +38,13 @@ export const deploymentOption = {
     REGULAR: "regular",
     HYPERCONVERGED: "hci"
 };
+
+export const resourceConstants = {
+    VDSM_HOST_OVERHEAD_MB: 256,
+    VDSM_VM_OVERHEAD_MB: 64
+};
+
+export const messages = {
+    GENERAL_ERROR_MSG: "Please correct errors before moving to the next step.",
+    PASSWORD_MISMATCH: "Passwords do not match"
+};

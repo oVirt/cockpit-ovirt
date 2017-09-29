@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
-import { pingGateway } from '../../helpers/HostedEngineSetupUtil'
-import { AnsibleUtil } from '../../helpers/HostedEngineSetupUtil'
+import { AnsibleUtil, pingGateway, isEmptyObject, getClassNames } from '../../helpers/HostedEngineSetupUtil'
+import { validatePropsForUiStage, getErrorMsgForProperty } from './Validation'
+import { messages } from './constants'
 
 class WizardHostNetworkStep extends Component {
     constructor(props) {
@@ -22,14 +23,40 @@ class WizardHostNetworkStep extends Component {
     }
 
     checkGatewayPingability(address) {
-        pingGateway(address);
+        let errorMsg = this.state.errorMsg;
+        errorMsg = "";
+
+        let self = this;
+        pingGateway(address)
+            .done(function() {
+                self.setState({ errorMsg });
+            })
+            .fail(function() {
+                errorMsg = "The gateway address is not pingable.";
+                console.log(errorMsg);
+                self.setState({ errorMsg });
+            });
     }
 
     setDefaultValues() {
-        if (this.props.systemData !== null) {
-            let data = this.ansible.getTaskData(this.props.systemData, "Gathering Facts");
-            this.setInterfaces(data);
-            this.setGateway(data);
+        if (this.props.systemData === null) {
+            return;
+        }
+
+        let systemData = this.ansible.getTaskData(this.props.systemData, "Gathering Facts");
+        this.setInterfaces(systemData);
+
+        const ipv4Data = systemData["ansible_facts"]["ansible_default_ipv4"];
+
+        if (!isEmptyObject(ipv4Data)) {
+            this.setDefaultInterface(ipv4Data);
+            this.setGateway(ipv4Data);
+        } else {
+            const ipv6Data = systemData["ansible_facts"]["ansible_default_ipv6"];
+            if (!isEmptyObject(ipv6Data)) {
+                this.setDefaultInterface(ipv6Data);
+                this.setGateway(ipv6Data);
+            }
         }
     }
 
@@ -47,62 +74,86 @@ class WizardHostNetworkStep extends Component {
             interfaces = ifaceObjectsArray;
         }
 
-        this.handleNetworkConfigUpdate("bridgeName", interfaces[0].key);
-
         this.setState({ interfaces });
     }
 
-    setGateway(ansibleData) {
-        let gateway = "";
-        const ipv4Data = ansibleData["ansible_facts"]["ansible_default_ipv4"];
+    setDefaultInterface(defaultIpData) {
+        const defaultInterface = defaultIpData["alias"];
+        this.handleNetworkConfigUpdate("bridgeName", defaultInterface);
+    }
 
-        if (ipv4Data.hasOwnProperty("gateway")) {
-            gateway = ipv4Data["gateway"];
-        } else {
-            const ipv6Data = ansibleData["ansible_facts"]["ansible_default_ipv6"];
-            if (ipv6Data.hasOwnProperty("gateway")) {
-                gateway = ipv6Data["gateway"];
-            }
-        }
-
+    setGateway(defaultIpData) {
+        const gateway = defaultIpData["gateway"];
         this.handleNetworkConfigUpdate("gateway", gateway);
     }
 
     handleNetworkConfigUpdate(property, value) {
         const networkConfig = this.state.networkConfig;
         networkConfig[property].value = value;
-        const errorMsgs= this.state.errorMsgs;
-        this.setState({ networkConfig, errorMsgs });
+        this.setState({ networkConfig });
+        this.validateConfigUpdate(property, networkConfig);
     }
 
-    validate() {
-        return true
+    validateConfigUpdate(propName, config) {
+        let errorMsg = this.state.errorMsg;
+        const errorMsgs = {};
+        const prop = config[propName];
+        const propErrorMsg = getErrorMsgForProperty(prop);
+
+        if (propErrorMsg !== "") {
+            errorMsgs[propName] = propErrorMsg;
+        } else {
+            errorMsg = "";
+        }
+
+        this.setState({ errorMsg, errorMsgs });
+    }
+
+    validateAllInputs() {
+        let errorMsg = "";
+        let errorMsgs = {};
+        let propsAreValid = validatePropsForUiStage("Network", this.props.heSetupModel, errorMsgs);
+
+        if (!propsAreValid) {
+            errorMsg = messages.GENERAL_ERROR_MSG;
+        }
+
+        this.setState({ errorMsg, errorMsgs });
+        return propsAreValid;
     }
 
     shouldComponentUpdate(nextProps, nextState){
         if(!this.props.validating && nextProps.validating){
-            this.props.validationCallBack(this.validate())
+            this.props.validationCallBack(this.validateAllInputs())
         }
 
         return true;
     }
 
     render() {
+        const errorMsgs = this.state.errorMsgs;
+
         return (
             <div>
-                {this.state.errorMsg && <div className="alert alert-danger">
-                    <span className="pficon pficon-error-circle-o"></span>
-                    <strong>{this.state.errorMsg}</strong>
-                </div>
-                }
                 <form className="form-horizontal he-form-container">
+                    {this.state.errorMsg &&
+                        <div className="row" style={{marginLeft: "40px"}}>
+                            <div className="alert alert-danger col-sm-8">
+                                <span className="pficon pficon-error-circle-o" />
+                                <strong>{this.state.errorMsg}</strong>
+                            </div>
+                        </div>
+                    }
+
                     <div className="form-group">
                         <label className="col-md-3 control-label">Bridge Interface</label>
-                        <div className="col-md-2">
-                            <Selectbox optionList={this.state.interfaces}
-                                       selectedOption={this.state.networkConfig.bridgeName.value}
-                                       callBack={(e) => this.handleNetworkConfigUpdate("bridgeName", e)}
-                            />
+                        <div className="col-md-6">
+                            <div style={{width: "120px"}}>
+                                <Selectbox optionList={this.state.interfaces}
+                                           selectedOption={this.state.networkConfig.bridgeName.value}
+                                           callBack={(e) => this.handleNetworkConfigUpdate("bridgeName", e)}
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -117,17 +168,17 @@ class WizardHostNetworkStep extends Component {
                             </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className={getClassNames("gateway", errorMsgs)}>
                         <label className="col-md-3 control-label">Gateway Address</label>
-                        <div className="col-md-3">
-                            <input type="text"
+                        <div className="col-md-6">
+                            <input type="text" style={{width: "110px"}}
                                    title="Enter a pingable gateway address."
                                    className="form-control"
                                    value={this.state.networkConfig.gateway.value}
                                    onChange={(e) => this.handleNetworkConfigUpdate("gateway", e.target.value)}
                                    onBlur={(e) => this.checkGatewayPingability(e.target.value)}
                             />
-                            {this.errorMsg && this.errorMsg.length > 0 && <span className="help-block">{this.errorMsg}</span>}
+                            {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
                         </div>
                     </div>
                 </form>

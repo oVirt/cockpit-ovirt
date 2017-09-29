@@ -5,7 +5,7 @@ import WizardVmConfigStep from './HE-Wizard-VM'
 import WizardEngineStep from './HE-Wizard-Engine'
 import WizardPreviewStep from './HE-Wizard-Preview'
 import Wizard from '../common/Wizard'
-import { AnsibleUtil, HeSetupModel } from '../../helpers/HostedEngineSetupUtil'
+import { AnsibleUtil, HeSetupModel, checkVirtSupport } from '../../helpers/HostedEngineSetupUtil'
 import { configValues } from './constants'
 
 class HeSetupWizard extends Component {
@@ -22,6 +22,9 @@ class HeSetupWizard extends Component {
         this.state.heSetupModel = new HeSetupModel();
         this.ansible = new AnsibleUtil();
 
+        this.virtSupported = 0;
+        this.systemDataRetrieved = 0;
+
         this.handleFinish = this.handleFinish.bind(this);
         this.onStepChange = this.onStepChange.bind(this);
         this.handleReDeploy = this.handleReDeploy.bind(this);
@@ -37,12 +40,45 @@ class HeSetupWizard extends Component {
     getSystemData() {
         let cmd = "ansible-playbook " + configValues.ANSIBLE_PLAYBOOK_PATH;
         let options = { "environ": ["ANSIBLE_STDOUT_CALLBACK=json"] };
-        this.ansible.runAnsibleCommand(cmd, options, this.setSystemData, this.ansible.logDone, this.ansible.logError);
+        let self = this;
+        this.ansible.runAnsibleCommand(cmd, options)
+            .done(function() {
+                self.systemDataRetrieved = 1;
+                self.completeChecks();
+            })
+            .fail(function() {
+                self.systemDataRetrieved = -1;
+                self.completeChecks();
+            })
+            .stream(this.setSystemData);
     }
 
     setSystemData(output) {
         this.setState({ systemData: this.ansible.getOutputAsJson(output) });
         this.setState({ state: 'ready' });
+    }
+
+    checkVirtSupport() {
+        let self = this;
+        checkVirtSupport()
+            .done(function() {
+                self.virtSupported = 1;
+                self.completeChecks();
+            })
+            .fail(function() {
+                self.virtSupported = -1;
+                self.completeChecks();
+            });
+    }
+
+    completeChecks() {
+        if (this.virtSupported !== 0 && this.systemDataRetrieved !== 0) {
+            if (this.virtSupported === -1 || this.systemDataRetrieved === -1) {
+                this.setState({ state: 'error' });
+            } else {
+                this.setState({ state: 'ready'})
+            }
+        }
     }
 
     handleFinish() {
@@ -60,6 +96,7 @@ class HeSetupWizard extends Component {
 
     componentWillMount() {
         this.getSystemData();
+        this.checkVirtSupport();
     }
 
     componentDidMount() {
@@ -92,11 +129,12 @@ class HeSetupWizard extends Component {
                             onFinish={this.handleFinish}
                             onStepChange={this.onStepChange}
                             isDeploymentStarted={this.state.isDeploymentStarted}>
-                        <WizardStorageStep stepName="Storage" heSetupModel={this.state.heSetupModel.model}/>
+                        <WizardStorageStep stepName="Storage" model={this.state.heSetupModel}/>
                         <WizardHostNetworkStep stepName="Network" heSetupModel={this.state.heSetupModel.model}
                                                systemData={this.state.systemData}
                         />
-                        <WizardVmConfigStep stepName="VM" heSetupModel={this.state.heSetupModel.model}
+                        <WizardVmConfigStep stepName="VM"
+                                            model={this.state.heSetupModel}
                                             systemData={this.state.systemData}
                         />
                         <WizardEngineStep stepName="Engine" heSetupModel={this.state.heSetupModel.model}/>
@@ -108,6 +146,14 @@ class HeSetupWizard extends Component {
                                            abortCallback={this.abortCallback}
                         />
                     </Wizard>
+                }
+
+                {this.state.state === 'error' && this.virtSupported === -1 &&
+                    <div>Error! Hardware virtualization not supported on this host!</div>
+                }
+
+                {this.state.state === 'error' && this.systemDataRetrieved === -1 &&
+                    <div>Error! System data could not be retrieved!</div>
                 }
             </div>
         )

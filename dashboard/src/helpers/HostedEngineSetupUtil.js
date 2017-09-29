@@ -1,4 +1,6 @@
 import { configValues, configFileTypes as types, answerFilePrefixes } from "../components/HostedEngineSetup/constants"
+import classNames from 'classnames'
+import Validation from '../components/HostedEngineSetup/Validation'
 
 export class HeSetupModel {
     constructor() {
@@ -7,430 +9,569 @@ export class HeSetupModel {
         this.getBaseHeSetupModel = this.getBaseHeSetupModel.bind(this);
         this.addGlusterValues = this.addGlusterValues.bind(this);
         this.addValuesToModel = this.addValuesToModel.bind(this);
+        this.setBooleanValues = this.setBooleanValues.bind(this);
+        this.setBooleanValue = this.setBooleanValue.bind(this);
+        this.getAnsFileProperty = this.getAnsFileProperty.bind(this);
     }
 
     getBaseHeSetupModel() {
         return {
             core: {
                 rollbackProceed: {
-                    name: "Rollback Proceed",
+                    name: "rollbackProceed",
+                    description: "Rollback Proceed",
                     value: "None",
                     type: types.NONE,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 screenProceed: {
-                    name: "Screen Proceed",
+                    name: "screenProceed",
+                    description: "Screen Proceed",
                     value: "None",
                     type: types.NONE,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 deployProceed: {
-                    name: "Deploy Proceed",
+                    name: "deployProceed",
+                    description: "Deploy Proceed",
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 upgradeProceed: {
-                    name: "Rollback Proceed",
+                    name: "upgradeProceed",
+                    description: "Rollback Proceed",
                     value: "None",
                     type: types.NONE,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 confirmSettings: {
-                    name: "Confirm Settings",
+                    name: "confirmSettings",
+                    description: "Confirm Settings",
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 }
             },
             storage: {
                 domainType: {
-                    name: "Storage Type",
+                    name: "domainType",
+                    description: "Storage Type",
                     value: "nfs3",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Storage",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 imgSizeGB: {
-                    name: "Disk Size",
+                    name: "imgSizeGB",
+                    description: "Disk Size (GB)",
                     value: "50",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: true
                 },
                 storagePath: {
-                    name: "Storage Path",
+                    name: "storagePath",
+                    description: "Storage Path",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Storage",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: true
                 },
                 storageDomain: {
-                    name: "Storage Domain",
+                    name: "storageDomain",
+                    description: "Storage Domain",
                     value: "hosted_storage",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Storage",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 storageDomainConnection: {
-                    name: "Storage Domain Connection",
+                    name: "storageDomainConnection",
+                    description: "Storage Domain Connection",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Storage",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 mntOptions: {
-                    name: "Mount Options",
+                    name: "mntOptions",
+                    description: "Mount Options",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Storage",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 iSCSIPortalUser: {
-                    name: "Portal User",
+                    name: "iSCSIPortalUser",
+                    description: "Portal User",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Storage",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 iSCSIPortalIPAddress: {
-                    name: "Portal IP Address",
+                    name: "iSCSIPortalIPAddress",
+                    description: "Portal IP Address",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Storage",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false,
+                    regex: Validation.ipAddress,
+                    errorMsg: "Invalid format for IP address"
                 },
                 iSCSIPortalPort: {
-                    name: "Portal Port",
+                    name: "iSCSIPortalPort",
+                    description: "Portal Port",
                     value: "3260",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Storage",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false,
+                    range: {min: 0, max: 65535},
+                    errorMsg: "Port numbers must be between 0 and 65,535"
                 },
                 iSCSITargetName: {
-                    name: "Target Name",
+                    name: "iSCSITargetName",
+                    description: "Target Name",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Storage",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 LunID: {
-                    name: "Destination LUN",
+                    name: "LunID",
+                    description: "Destination LUN",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Storage",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 }
             },
             network: {
                 bridgeName: {
-                    name: "Bridge Interface",
+                    name: "bridgeName",
+                    description: "Bridge Interface",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Network",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 firewallManager: {
-                    name: "Firewall",
+                    name: "firewallManager",
+                    description: "Firewall",
                     value: false,
                     type: types.BOOLEAN,
                     showInReview: true,
                     uiStage: "Network",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 gateway: {
-                    name: "Gateway Address",
+                    name: "gateway",
+                    description: "Gateway Address",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Network",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: true,
+                    regex: Validation.ipAddress,
+                    errorMsg: "Invalid format for IP address"
                 },
                 fqdn: {
-                    name: "Engine FQDN",
+                    name: "fqdn",
+                    description: "Engine FQDN",
                     value: "ovirt-engine.localdomain",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: true
                 }
             },
             vm: {
                 bootDevice: {
-                    name: "Boot Device",
+                    name: "bootDevice",
+                    description: "Boot Device",
                     value: "cdrom",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 installationFile: {
-                    name: "Appliance File Path",
+                    name: "installationFile",
+                    description: "Appliance File Path",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 vmVCpus: {
-                    name: "Number of Virtual CPUs",
+                    name: "vmVCpus",
+                    description: "Number of Virtual CPUs",
                     value: "2",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: true,
+                    range: {min: 2, max: 2}
                 },
                 vmMACAddr: {
-                    name: "MAC Address",
+                    name: "vmMACAddr",
+                    description: "MAC Address",
                     value: "00:16:3E:6A:7A:F9",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false,
+                    regex: Validation.macAddress,
+                    errorMsg: "Invalid format for MAC address"
                 },
                 vmMemSizeMB: {
-                    name: "Memory Size",
+                    name: "vmMemSizeMB",
+                    description: "Memory Size (MB)",
                     value: "4096",
                     type: types.INTEGER,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: true,
+                    range: {min: 4096, max: 4096}
                 },
                 networkConfigType: {
-                    name: "Network Configuration",
+                    name: "networkConfigType",
+                    description: "Network Configuration",
                     value: "dhcp",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 cloudinitVMStaticCIDR: {
-                    name: "IP Address",
+                    name: "cloudinitVMStaticCIDR",
+                    description: "IP Address",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false,
+                    regex: Validation.ipAddress,
+                    errorMsg: "Invalid format for IP address"
                 },
                 cloudinitVMDNS: {
-                    name: "DNS Servers",
+                    name: "cloudinitVMDNS",
+                    description: "DNS Servers",
                     value: [""],
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 cloudInitCustomize: {
-                    name: "Use Cloud-Init",
+                    name: "cloudInitCustomize",
+                    description: "Use Cloud-Init",
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: false,
                     uiStage: "VM",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 cloudinitVMTZ: {
-                    name: "Host Time Zone",
+                    name: "cloudinitVMTZ",
+                    description: "Host Time Zone",
                     value: "America/New_York",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 cloudInitISO: {
-                    name: "Cloud-Init Image",
+                    name: "cloudInitISO",
+                    description: "Cloud-Init Image",
                     value: "generate",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 ovfArchive: {
-                    name: "OVF Archive",
+                    name: "ovfArchive",
+                    description: "OVF Archive",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 cloudinitInstanceDomainName: {
-                    name: "Engine VM Domain",
+                    name: "cloudinitInstanceDomainName",
+                    description: "Engine VM Domain",
                     value: "localdomain",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 cloudinitExecuteEngineSetup: {
-                    name: "Engine Setup",
+                    name: "cloudinitExecuteEngineSetup",
+                    description: "Engine Setup",
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 automateVMShutdown: {
-                    name: "Engine Restart",
+                    name: "automateVMShutdown",
+                    description: "Engine Restart",
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 rootPassword: {
-                    name: "Root password",
+                    name: "rootPassword",
+                    description: "Root password",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "VM",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
+                },
+                confirmRootPassword: {
+                    name: "confirmRootPassword",
+                    description: "Confirm Root password",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
                 },
                 rootSshPubkey: {
-                    name: "Root User SSH Public Key",
+                    name: "rootSshPubkey",
+                    description: "Root User SSH Public Key",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 rootSshAccess: {
-                    name: "Root User SSH Access",
+                    name: "rootSshAccess",
+                    description: "Root User SSH Access",
                     value: "yes",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 cloudinitVMETCHOSTS: {
-                    name: "Add Lines to /etc/hosts",
+                    name: "cloudinitVMETCHOSTS",
+                    description: "Add Lines to /etc/hosts",
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 }
             },
             engine: {
                 hostIdentifier: {
-                    name: "Host Identifier",
+                    name: "hostIdentifier",
+                    description: "Host Identifier",
                     value: "hosted_engine_1",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: true
                 },
                 adminUsername: {
-                    name: "Admin Username",
-                    value: "admin",
+                    name: "adminUsername",
+                    description: "Admin Username",
+                    value: "admin@internal",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: true
                 },
                 adminPortalPassword: {
-                    name: "Admin Portal Password",
+                    name: "adminPortalPassword",
+                    description: "Admin Portal Password",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Engine",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
+                },
+                confirmAdminPortalPassword: {
+                    name: "confirmAdminPortalPassword",
+                    description: "Confirm Admin Portal Password",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Engine",
+                    useInAnswerFile: false,
+                    required: false
                 }
             },
             vdsm: {
                 consoleType: {
-                    name: "Console Type",
+                    name: "consoleType",
+                    description: "Console Type",
                     value: "vnc",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 cpu: {
-                    name: "CPU Type",
-                    value: "",
+                    name: "cpu",
+                    description: "CPU Type",
+                    value: "Conroe",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 spicePkiSubject: {
-                    name: "Spice PKI Subject",
+                    name: "spicePkiSubject",
+                    description: "Spice PKI Subject",
                     value: "C=EN, L=Test, O=Test, CN=Test",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 pkiSubject: {
-                    name: "PKI Subject",
+                    name: "pkiSubject",
+                    description: "PKI Subject",
                     value: "/C=EN/L=Test/O=Test/CN=Test",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 },
                 caSubject: {
-                    name: "Certificate Authority Subject",
+                    name: "caSubject",
+                    description: "Certificate Authority Subject",
                     value: "/C=EN/L=Test/O=Test/CN=TestCA",
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "",
-                    useInAnswerFile: false
+                    useInAnswerFile: false,
+                    required: false
                 }
             },
             notifications: {
                 smtpServer: {
-                    name: "Notifications SMTP Server",
+                    name: "smtpServer",
+                    description: "Notifications SMTP Server",
                     value: "localhost",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 smtpPort: {
-                    name: "SMTP Port Number",
+                    name: "smtpPort",
+                    description: "SMTP Port Number",
                     value: "25",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false,
+                    range: {min: 0, max: 65535},
+                    errorMsg: "Port numbers must be between 0 and 65,535"
                 },
                 sourceEmail: {
-                    name: "SMTP Sender E-Mail Address",
+                    name: "sourceEmail",
+                    description: "SMTP Sender E-Mail Address",
                     value: "root@localhost",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 },
                 destEmail: {
-                    name: "SMTP Recipient E-Mail Addresses",
-                    value: [],
+                    name: "destEmail",
+                    description: "SMTP Recipient E-Mail Addresses",
+                    value: ["root@localhost"],
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: true
+                    useInAnswerFile: true,
+                    required: false
                 }
             }
         }
@@ -477,6 +618,42 @@ export class HeSetupModel {
             .fail(function(error) {
                 console.log("Failed to read the gluster answer file. " + error);
             })
+    }
+
+    setBooleanValues(ansFileFields, fieldProps, desiredValue) {
+        let self = this;
+        ansFileFields.forEach(function(ansFileField) {
+            self.setBooleanValue(ansFileField, fieldProps, desiredValue);
+        })
+    }
+
+    setBooleanValue(fieldName, propNames, desiredValue) {
+        let ansFileField = this.getAnsFileProperty(fieldName);
+
+        if (ansFileField !== null) {
+            propNames.forEach(function(propName) {
+                if (ansFileField.hasOwnProperty(propName)) {
+                    ansFileField[propName] = desiredValue;
+                }
+            });
+        }
+    }
+
+    getAnsFileProperty(propName) {
+        let prop = null;
+        let model = this.model;
+
+        Object.getOwnPropertyNames(model).some(
+            function(sectionName) {
+                let section = model[sectionName];
+                if(section.hasOwnProperty(propName)) {
+                    prop = section[propName];
+                    return true;
+                }
+            }
+        );
+
+        return prop;
     }
 }
 
@@ -546,11 +723,18 @@ export class AnswerFileGenerator {
 
 export class AnsibleUtil {
 
-    runAnsibleCommand(cmd, options, stdoutCallback, successCallback, failCallback) {
+    constructor() {
+        this.runAnsibleCommand = this.runAnsibleCommand.bind(this);
+        this.logDone = this.logDone.bind(this);
+        this.logStdout = this.logStdout.bind(this);
+        this.logError = this.logError.bind(this);
+    }
+
+    runAnsibleCommand(cmd, options) {
         return cockpit.spawn(cmd.split(" "), options)
-            .done(successCallback)
-            .fail(failCallback)
-            .stream(stdoutCallback);
+            .done(this.logDone)
+            .fail(this.logError)
+            .stream(this.logStdout);
     };
 
     runPlaybook(filePath, stdoutCallback, successCallback, failCallback) {
@@ -617,9 +801,6 @@ export class TimeZone {
 
 export function pingGateway(gatewayAddress) {
     return cockpit.spawn(["ping", "-c", "1", gatewayAddress])
-        .done(function(result) {
-            console.log("Success! " + result);
-        })
         .fail(function(result) {
             console.log("Error: " + result);
         });
@@ -631,4 +812,27 @@ export function checkDns(fqdn) {
 
 export function checkReverseDns(ipAddress) {
     return cockpit.spawn(["dig", "-x", ipAddress, "+short"]);
+}
+
+export function checkVirtSupport() {
+    return cockpit.spawn(["egrep", "vmx|svm", "/proc/cpuinfo"])
+        .fail(function(result) {
+            console.log("Error: " + result);
+        });
+}
+
+export function isEmptyObject(obj) {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+
+export function getClassNames(propertyName, errorMsgs) {
+    let classes = "";
+
+    if (errorMsgs[propertyName]) {
+        classes = classNames("form-group", { "has-error": errorMsgs[propertyName] });
+    } else {
+        classes = classNames("form-group");
+    }
+
+    return classes;
 }
