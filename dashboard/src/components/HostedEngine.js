@@ -63,6 +63,7 @@ class Status extends Component {
     this.state = {
       status: null,
       globalMaintenance: false,
+      is_single_host: false,
       vm: null
     }
     this.updateStatus = this.updateStatus.bind(this)
@@ -74,7 +75,10 @@ class Status extends Component {
   updateStatus(status) {
     this.setState({globalMaintenance: status.global_maintenance})
     delete status.global_maintenance
+
     this.setState({status: status})
+    this.setState({is_single_host: Object.keys(status).length == 1})
+
     let found_running = false
     let running_host = {}
     for (var key in status) {
@@ -119,13 +123,12 @@ class Status extends Component {
       return tmp
     }
     var rows = split(hosts, 2)
-    console.log(this.state.globalMaintenance)
     return (
       <div className="container-fluid">
           <Engine
             status={this.state.vm}
           />
-        <Buttons />
+        <Buttons single_host={this.state.is_single_host} />
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">
@@ -166,16 +169,28 @@ class Buttons extends Component {
   }
   render() {
     let actions = {
-      "Put this host into local maintenance" : "local",
+      "Put this host into local maintenance": "local",
       "Remove this host from maintenance": "none",
       "Put this cluster into global maintenance": "global",
+    }
+    if (!this.props.single_host) {
+      actions["Put this host into local maintenance"] = "local"
     }
     let buttons = []
     let i = 0
     for (let action in actions) {
+      let disabled = (actions[action] == "local" && this.props.single_host) ? true : false
+      if (disabled) {
+          buttons.push(
+              <div className="alert alert-warning">
+                Local maintenance cannot be enabled with a single host
+              </div>
+         )
+      }
       buttons.push(
         <button
           key={i}
+          disabled={disabled}
           className="btn btn-default"
           onClick={() => this.onClick(actions[action])}>
           {action}
