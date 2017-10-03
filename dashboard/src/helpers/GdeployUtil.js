@@ -8,7 +8,7 @@ const POOL_METADATA_SIZE_PERCENT = 0.005
 const MIN_ARBITER_BRICK_SIZE_KB = 20 * 1024 * 1024
 const MAX_ARBITER_BRICK_SIZE_KB = 200 * 1024 * 1024
 const DEFAULT_SHARD_SIZE_KB = 4096
-const PRE_FLIGHT_CHECK_SCRIPT = '/usr/share/ansible/gdeploy/scripts/grafton-sanity-check.sh'
+const PRE_FLIGHT_CHECK_SCRIPT = '/usr/share/gdeploy/scripts/grafton-sanity-check.sh'
 
 var GdeployUtil = {
     getDefaultGedeployModel() {
