@@ -330,6 +330,7 @@ label.he-input-label {
 
 .he-input-row {
     display: inline-block;
+    width: 100%;
 }
 
 div.he-text-with-units {
@@ -369,4 +370,25 @@ h3.he-preview-header {
     max-height: 150px;
     overflow: auto;
     padding-left: 15px;
+}
+
+.multi-row-text-box-button {
+    width: 20px;
+    border: solid 1px black;
+    text-align: center;
+    display: inline-block;
+}
+
+.multi-row-text-box-add-button {
+    margin-left: 5px;
+}
+
+div.multi-row-text-box-button-container {
+    width: 70px;
+    padding-left: 10px;
+    padding-right: 0px;
+}
+
+div.multi-row-text-box-input {
+    width: calc(100% - 70px);
 }

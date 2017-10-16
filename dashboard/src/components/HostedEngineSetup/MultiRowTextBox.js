@@ -23,36 +23,38 @@ class MultiRowTextBox extends Component {
         const that = this;
         const values = this.state.values;
         const valueRows = [];
-
-        const addRowLabel = " Add " + this.props.itemType;
+        let disableDeleteButton = false;
 
         const rowLimitProvided = typeof this.props.rowLimit !== "undefined";
-        let limitRows = rowLimitProvided && (values.length < this.props.rowLimit);
+        let limitRows = rowLimitProvided && (values.length === this.props.rowLimit);
 
-        values.forEach(function (value, index) {
+        if (values.length === 0) {
+            values.push("");
+            disableDeleteButton = true;
+        } else if (values.length === 1 && values[0] === "") {
+            disableDeleteButton = true;
+        }
+
+        for (let i = 0; i < values.length; i++) {
+            let isLastValue = i === (values.length - 1);
+            let hideAddButton = !isLastValue || (isLastValue && limitRows);
+            let disableAddButton = values[i] === "" || disableDeleteButton;
+
             valueRows.push(
-                <InputRow value={value} key={index} index={index}
-                          errorMsgs={that.state.errorMsgs[index]}
+                <InputRow value={values[i]} key={i} index={i}
+                          errorMsgs={that.state.errorMsgs[i]}
                           changeCallBack={that.props.handleValueUpdate}
                           deleteCallBack={that.props.handleValueDelete}
+                          hideAddButton={hideAddButton}
+                          disableDeleteButton={disableDeleteButton}
+                          disableAddButton={disableAddButton}
+                          handleAdd={that.handleAdd}
                 />
-            );
-        }, this);
+            )
+        }
 
         return (
-            <div>
                 <div>{valueRows}</div>
-
-                {limitRows &&
-                    <div>
-                        <a onClick={this.handleAdd}>
-                            <span className="pficon pficon-add-circle-o">
-                                <strong>{addRowLabel}</strong>
-                            </span>
-                        </a>
-                    </div>
-                }
-            </div>
         )
     }
 }
@@ -85,30 +87,42 @@ class InputRow extends Component {
     render () {
         const input = classNames(
             "form-group",
+            "col-md-8",
+            "multi-row-text-box-input",
             { "has-error": this.props.errorMsgs && this.props.errorMsgs.value }
+        );
+
+        const addButton = classNames(
+            "btn", "btn-primary", "wizard-pf-next", "multi-row-text-box-add-button",
+            {"hidden": this.props.hideAddButton, "disabled": this.props.disableAddButton}
         );
 
         return (
             <div className="he-input-row">
-                <div className="col-md-8">
-                    <div className={input}>
-                        <input type="text" className="form-control"
-                               value={this.props.value}
-                               onChange={(e) => this.onValueChange(e.target.value)}
-                        />
-                        {this.props.errorMsgs && this.props.errorMsgs.name &&
-                            <span className="help-block">
-                                {this.props.errorMsgs.name}
-                            </span>}
-                    </div>
+                <div className={input}>
+                    <input type="text" className="form-control"
+                           value={this.props.value}
+                           onChange={(e) => this.onValueChange(e.target.value)}
+                    />
+                    {this.props.errorMsgs && this.props.errorMsgs.name &&
+                        <span className="help-block">
+                            {this.props.errorMsgs.name}
+                        </span>
+                    }
                 </div>
 
-                <div className="col-sm-1">
-                    <a onClick={(e) => this.onValueDelete()}>
-                        <span className="pficon pficon-delete gdeploy-wizard-delete-icon">
-                        </span>
-                    </a>
+                <div className="col-sm-3 multi-row-text-box-button-container">
+                    <button type="button" className="btn btn-default" disabled={this.props.disableDeleteButton}
+                            onClick={(e) => this.onValueDelete()}>
+                        <span className="i fa fa-minus" />
+                    </button>
+
+                    <button type="button" className={addButton}
+                            onClick={this.props.handleAdd}>
+                        <span className="i fa fa-plus" />
+                    </button>
                 </div>
+
                 <br />
             </div>
         )
