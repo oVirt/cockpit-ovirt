@@ -613,6 +613,7 @@ export class HeSetupModel {
         cockpit.file(gdeployHeAnsFilePath).read()
             .done(function(gDeployAnswerFile) {
                 self.addValuesToModel(gDeployAnswerFile, model);
+                model.storage.domainType.value = "glusterfs";
                 console.log("Gluster values successfully added.");
             })
             .fail(function(error) {

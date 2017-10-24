@@ -626,7 +626,7 @@ class WizardVmConfigStep extends Component {
                             <div className={getClassNames("cloudinitVMDNS", errorMsgs)}>
                                 <label className="col-md-3 control-label">DNS Servers</label>
                                 <div className="col-md-6">
-                                    <div style={{width: "200px"}}>
+                                    <div style={{width: "220px"}}>
                                         <MultiRowTextBox values={vmConfig.cloudinitVMDNS.value}
                                                          itemType={"Address"}
                                                          rowLimit={3}
