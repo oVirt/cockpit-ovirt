@@ -144,9 +144,9 @@ class WizardStorageStep extends Component {
                         <div className="col-md-6">
                             <div style={{width: "120px"}}>
                                 <Selectbox optionList={storageTypes}
-                                    selectedOption={this.state.storageConfig.domainType.value}
-                                    callBack={(e) => this.handleStorageConfigUpdate("domainType", e)}
-                                    />
+                                           selectedOption={this.state.storageConfig.domainType.value}
+                                           callBack={(e) => this.handleStorageConfigUpdate("domainType", e)}
+                                />
                             </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@ class WizardStorageStep extends Component {
                                        className="form-control"
                                        value={this.state.storageConfig.storagePath.value}
                                        onChange={(e) => this.handleStorageConfigUpdate("storagePath", e.target.value)}
-                                        />
+                                />
                                 {errorMsgs.storagePath && <span className="help-block">{errorMsgs.storagePath}</span>}
                             </div>
                         </div>
@@ -174,7 +174,7 @@ class WizardStorageStep extends Component {
                                        className="form-control"
                                        value={this.state.storageConfig.storageDomain.value}
                                        onChange={(e) => this.handleStorageConfigUpdate("storageDomain", e.target.value)}
-                                        />
+                                />
                                 {errorMsgs.storageDomain && <span className="help-block">{errorMsgs.storageDomain}</span>}
                             </div>
                         </div>
@@ -184,13 +184,26 @@ class WizardStorageStep extends Component {
                         <div className={getClassNames("iSCSIPortalUser", errorMsgs)}>
                             <label className="col-md-3 control-label">Portal User</label>
                             <div className="col-md-6">
-                                <input type="text" style={{width: "250px"}}
+                                <input type="text" style={{width: "150px"}}
                                        title="Enter the user for the iSCSI portal you wish to use."
                                        className="form-control"
                                        value={this.state.storageConfig.iSCSIPortalUser.value}
                                        onChange={(e) => this.handleStorageConfigUpdate("iSCSIPortalUser", e.target.value)}
                                 />
                                 {this.errorMsg && this.errorMsg.length > 0 && <span className="help-block">{this.errorMsg}</span>}
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("iSCSIPortalPassword", errorMsgs)}>
+                            <label className="col-md-3 control-label">Portal Password</label>
+                            <div className="col-md-6">
+                                <input type="text" style={{width: "150px"}}
+                                       title="Enter the user for the iSCSI portal you wish to use."
+                                       className="form-control"
+                                       value={this.state.storageConfig.iSCSIPortalPassword.value}
+                                       onChange={(e) => this.handleStorageConfigUpdate("iSCSIPortalPassword", e.target.value)}
+                                />
+                                {errorMsgs.iSCSIPortalPassword && <span className="help-block">{errorMsgs.iSCSIPortalPassword}</span>}
                             </div>
                         </div>
 

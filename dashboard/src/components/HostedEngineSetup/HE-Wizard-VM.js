@@ -5,12 +5,6 @@ import { AnsibleUtil, TimeZone, checkDns, checkReverseDns, getClassNames } from 
 import { getErrorMsgForProperty, validatePropsForUiStage } from "./Validation";
 import { resourceConstants, messages } from "./constants"
 
-const bootDevices = [
-    { key: "cdrom", title: "cdrom" },
-    { key: "disk", title: "disk" },
-    { key: "network", title: "network" }
-];
-
 const intelCpuTypes = [
     { key: "Broadwell", title: "Intel Broadwell Family" },
     { key: "Broadwell-noTSX", title: "Intel Broadwell-noTSX Family" },
@@ -196,13 +190,13 @@ class WizardVmConfigStep extends Component {
     handleVmConfigUpdate(propName, value, configType) {
         const heSetupModel = this.state.heSetupModel;
 
-        if (propName === "installationFileSelect" && value === "Manually Select") {
-            heSetupModel.vm.installationFile.value = "";
+        if (propName === "ovfArchiveSelect" && value === "Manually Select") {
+            heSetupModel.vm.ovfArchive.value = "";
             this.setState({ showApplPath: true, applPathSelection: value, heSetupModel });
             return;
-        } else if (propName === "installationFileSelect" && value !== "Manually Select") {
+        } else if (propName === "ovfArchiveSelect" && value !== "Manually Select") {
             this.setState({ showApplPath: false, applPathSelection: value });
-            propName = "installationFile";
+            propName = "ovfArchive";
         }
 
         heSetupModel[configType][propName].value = value;
@@ -341,35 +335,25 @@ class WizardVmConfigStep extends Component {
                     }
 
                     <div className="form-group">
-                        <label className="col-md-3 control-label">Boot Device</label>
-                        <div className="col-md-2">
-                            <Selectbox optionList={bootDevices}
-                                       selectedOption={vmConfig.bootDevice.value}
-                                       callBack={(e) => this.handleVmConfigUpdate("bootDevice", e, "vm")}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
                         <label className="col-md-3 control-label">Appliance File</label>
                         <div className="col-md-4">
                             <Selectbox optionList={this.state.appliances}
                                        selectedOption={this.state.applPathSelection}
-                                       callBack={(e) => this.handleVmConfigUpdate("installationFileSelect", e, "vm")}
+                                       callBack={(e) => this.handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
                             />
                         </div>
                     </div>
 
-                    <div className={getClassNames("installationFile", errorMsgs)} style={this.state.showApplPath ? {} : { display: 'none' }}>
+                    <div className={getClassNames("ovfArchive", errorMsgs)} style={this.state.showApplPath ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">Appliance File Path</label>
                         <div className="col-md-6">
                             <input type="text" placeholder="Installation File Path"
                                    title="Enter the path for the installation file to install."
                                    className="form-control"
-                                   value={vmConfig.installationFile.value}
-                                   onChange={(e) => this.handleVmConfigUpdate("installationFile", e.target.value, "vm")}
+                                   value={vmConfig.ovfArchive.value}
+                                   onChange={(e) => this.handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
                             />
-                            {errorMsgs.installationFile && <span className="help-block">{errorMsgs.installationFile}</span>}
+                            {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
                         </div>
                     </div>
 
@@ -564,9 +548,9 @@ class WizardVmConfigStep extends Component {
                             <label className="col-md-3 control-label">Root SSH Public Key</label>
                             <div className="col-md-6">
                                 <textarea className="form-control" style={{width: "250px"}}
-                                       rows={"2"}
-                                       value={vmConfig.rootSshPubkey.value}
-                                       onChange={(e) => this.handleVmConfigUpdate("rootSshPubkey", e.target.value, "vm")}
+                                          rows={"2"}
+                                          value={vmConfig.rootSshPubkey.value}
+                                          onChange={(e) => this.handleVmConfigUpdate("rootSshPubkey", e.target.value, "vm")}
                                 />
                                 {errorMsgs.rootSshPubkey && <span className="help-block">{errorMsgs.rootSshPubkey}</span>}
                             </div>
@@ -577,7 +561,7 @@ class WizardVmConfigStep extends Component {
                                 <i className="pficon pficon-info" rel="tooltip" id="hosts_file"
                                    title="Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?
                                           Note: ensuring that this host could resolve the engine VM hostname is still up to you."
-                                    />
+                                />
                             </label>
                             <div className="col-md-5">
                                 <input type="checkbox"
