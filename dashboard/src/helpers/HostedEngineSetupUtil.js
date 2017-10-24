@@ -139,6 +139,16 @@ export class HeSetupModel {
                     useInAnswerFile: false,
                     required: false
                 },
+                iSCSIPortalPassword: {
+                    name: "iSCSIPortalPassword",
+                    description: "Portal Password",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 iSCSIPortalIPAddress: {
                     name: "iSCSIPortalIPAddress",
                     description: "Portal IP Address",
@@ -160,8 +170,8 @@ export class HeSetupModel {
                     uiStage: "Storage",
                     useInAnswerFile: false,
                     required: false,
-                    range: {min: 0, max: 65535},
-                    errorMsg: "Port numbers must be between 0 and 65,535"
+                    range: {min: 0, max: 65536},
+                    errorMsg: "Port numbers must be between 0 and 65,536"
                 },
                 iSCSITargetName: {
                     name: "iSCSITargetName",
@@ -232,21 +242,11 @@ export class HeSetupModel {
                 bootDevice: {
                     name: "bootDevice",
                     description: "Boot Device",
-                    value: "cdrom",
+                    value: "disk",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
-                    useInAnswerFile: false,
-                    required: false
-                },
-                installationFile: {
-                    name: "installationFile",
-                    description: "Appliance File Path",
-                    value: "",
-                    type: types.STRING,
-                    showInReview: true,
-                    uiStage: "VM",
-                    useInAnswerFile: false,
+                    useInAnswerFile: true,
                     required: false
                 },
                 vmVCpus: {
@@ -347,10 +347,10 @@ export class HeSetupModel {
                 },
                 ovfArchive: {
                     name: "ovfArchive",
-                    description: "OVF Archive",
+                    description: "Appliance File Path",
                     value: "",
                     type: types.STRING,
-                    showInReview: false,
+                    showInReview: true,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -550,8 +550,8 @@ export class HeSetupModel {
                     uiStage: "Engine",
                     useInAnswerFile: true,
                     required: false,
-                    range: {min: 0, max: 65535},
-                    errorMsg: "Port numbers must be between 0 and 65,535"
+                    range: {min: 0, max: 65536},
+                    errorMsg: "Port numbers must be between 0 and 65,536"
                 },
                 sourceEmail: {
                     name: "sourceEmail",
@@ -788,7 +788,7 @@ export class TimeZone {
     constructor() {
         let client = cockpit.dbus('org.freedesktop.timedate1');
         this.proxy = client.proxy('org.freedesktop.timedate1',
-                                  '/org/freedesktop/timedate1');
+            '/org/freedesktop/timedate1');
     }
 
     getTimeZone(callback) {
