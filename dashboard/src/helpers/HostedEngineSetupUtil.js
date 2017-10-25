@@ -350,9 +350,9 @@ export class HeSetupModel {
                     description: "Appliance File Path",
                     value: "",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
-                    useInAnswerFile: true,
+                    useInAnswerFile: false,
                     required: false
                 },
                 cloudinitInstanceDomainName: {

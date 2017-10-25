@@ -3,7 +3,7 @@ import Selectbox from '../common/Selectbox'
 import MultiRowTextBox from './MultiRowTextBox'
 import { AnsibleUtil, TimeZone, checkDns, checkReverseDns, getClassNames } from '../../helpers/HostedEngineSetupUtil'
 import { getErrorMsgForProperty, validatePropsForUiStage } from "./Validation";
-import { resourceConstants, messages } from "./constants"
+import { configValues, resourceConstants, messages } from "./constants"
 
 const intelCpuTypes = [
     { key: "Broadwell", title: "Intel Broadwell Family" },
@@ -52,6 +52,7 @@ class WizardVmConfigStep extends Component {
         this.state = {
             model: props.model,
             heSetupModel: props.model.model,
+            importAppliance: true,
             showApplPath: false,
             applPathSelection: "",
             appliances: [],
@@ -131,7 +132,7 @@ class WizardVmConfigStep extends Component {
             });
         }
 
-        appliances.push({key: "Manually Select", title: "Manually Select" });
+        appliances.push({ key: "Manually Select", title: "Manually Select" });
 
         if (appliances[0].key === "Manually Select") {
             this.setState({ showApplPath: true });
@@ -190,13 +191,9 @@ class WizardVmConfigStep extends Component {
     handleVmConfigUpdate(propName, value, configType) {
         const heSetupModel = this.state.heSetupModel;
 
-        if (propName === "ovfArchiveSelect" && value === "Manually Select") {
-            heSetupModel.vm.ovfArchive.value = "";
-            this.setState({ showApplPath: true, applPathSelection: value, heSetupModel });
+        if (propName === "ovfArchiveSelect") {
+            this.handleApplianceFileUpdate(value);
             return;
-        } else if (propName === "ovfArchiveSelect" && value !== "Manually Select") {
-            this.setState({ showApplPath: false, applPathSelection: value });
-            propName = "ovfArchive";
         }
 
         heSetupModel[configType][propName].value = value;
@@ -211,6 +208,31 @@ class WizardVmConfigStep extends Component {
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
         this.setState({ heSetupModel });
+    }
+
+    handleApplianceFileUpdate(value) {
+        const heSetupModel = this.state.heSetupModel;
+        let showApplPath = this.state.showApplPath;
+        let applPathSelection = value;
+
+        if (value === "Manually Select") {
+            showApplPath = true;
+            heSetupModel.vm.ovfArchive.value = "";
+        } else if (value !== "Manually Select") {
+            showApplPath = false;
+            heSetupModel.vm.ovfArchive.value = configValues.APPLIANCE_PATH_PREFIX + value;
+        }
+
+        this.setState({ showApplPath, applPathSelection, heSetupModel });
+    }
+
+    handleImportApplianceUpdate(importAppliance) {
+        const heSetupModel = this.state.heSetupModel;
+
+        heSetupModel.vm.ovfArchive.useInAnswerFile = !importAppliance;
+        heSetupModel.vm.ovfArchive.showInReview = !importAppliance;
+
+        this.setState({ importAppliance, heSetupModel });
     }
 
     setNetworkConfigDisplaySettings(networkConfigType) {
@@ -335,29 +357,40 @@ class WizardVmConfigStep extends Component {
                     }
 
                     <div className="form-group">
-                        <label className="col-md-3 control-label">Appliance File</label>
-                        <div className="col-md-4">
-                            <Selectbox optionList={this.state.appliances}
-                                       selectedOption={this.state.applPathSelection}
-                                       callBack={(e) => this.handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
+                        <label className="col-md-3 control-label">Auto-import Appliance</label>
+                        <div className="col-md-3">
+                            <input type="checkbox"
+                                   checked={this.state.importAppliance}
+                                   onChange={(e) => this.handleImportApplianceUpdate(e.target.checked)}
                             />
                         </div>
                     </div>
 
-                    <div className={getClassNames("ovfArchive", errorMsgs)} style={this.state.showApplPath ? {} : { display: 'none' }}>
-                        <label className="col-md-3 control-label">Appliance File Path</label>
-                        <div className="col-md-6">
-                            <input type="text" placeholder="Installation File Path"
-                                   title="Enter the path for the installation file to install."
-                                   className="form-control"
-                                   value={vmConfig.ovfArchive.value}
-                                   onChange={(e) => this.handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
-                            />
-                            {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
+                    <div style={this.state.importAppliance ? {display: 'none'} : {}}>
+                        <div className="form-group">
+                            <label className="col-md-3 control-label">Appliance File</label>
+                            <div className="col-md-6">
+                                <Selectbox optionList={this.state.appliances}
+                                           selectedOption={this.state.applPathSelection}
+                                           callBack={(e) => this.handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
+                                />
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("ovfArchive", errorMsgs)}
+                             style={this.state.showApplPath ? {} : { display: 'none' }}>
+                            <label className="col-md-3 control-label">Appliance File Path</label>
+                            <div className="col-md-6">
+                                <input type="text" placeholder="Installation File Path"
+                                       title="Enter the path for the installation file to install."
+                                       className="form-control"
+                                       value={vmConfig.ovfArchive.value}
+                                       onChange={(e) => this.handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
+                                />
+                                {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
+                            </div>
                         </div>
                     </div>
-
-                    <br />
 
                     <div className={getClassNames("cpu", errorMsgs)}>
                         <label className="col-md-3 control-label">CPU Type</label>
