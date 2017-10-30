@@ -392,3 +392,15 @@ div.multi-row-text-box-button-container {
 div.multi-row-text-box-input {
     width: calc(100% - 70px);
 }
+
+.gateway-message-container {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+
+.gateway-message {
+    display: table-cell;
+    vertical-align: middle
+}
+

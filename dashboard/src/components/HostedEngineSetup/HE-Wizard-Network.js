@@ -2,7 +2,11 @@ import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import { AnsibleUtil, pingGateway, isEmptyObject, getClassNames } from '../../helpers/HostedEngineSetupUtil'
 import { validatePropsForUiStage, getErrorMsgForProperty } from './Validation'
-import { messages } from './constants'
+import { messages, gatewayValidationState as gwState } from './constants'
+
+const interfaces = [
+    { key: "loopback", title: "loopback" }
+];
 
 class WizardHostNetworkStep extends Component {
     constructor(props) {
@@ -11,7 +15,8 @@ class WizardHostNetworkStep extends Component {
             networkConfig: props.heSetupModel.network,
             errorMsg: "",
             errorMsgs: {},
-            interfaces: []
+            gatewayState: gwState.EMPTY,
+            interfaces: interfaces
         };
 
         this.ansible = new AnsibleUtil();
@@ -26,15 +31,25 @@ class WizardHostNetworkStep extends Component {
         let errorMsg = this.state.errorMsg;
         errorMsg = "";
 
+        let errorMsgs = this.state.errorMsgs;
+        errorMsgs.gateway = "";
+
+        let gatewayState = this.state.gatewayState;
+        gatewayState = gwState.POLLING;
+
+        this.setState({ gatewayState, errorMsg, errorMsgs });
+
         let self = this;
         pingGateway(address)
             .done(function() {
-                self.setState({ errorMsg });
+                gatewayState = gwState.SUCCESS;
+                self.setState({ errorMsg, gatewayState });
             })
             .fail(function() {
-                errorMsg = "The gateway address is not pingable.";
-                console.log(errorMsg);
-                self.setState({ errorMsg });
+                errorMsg = messages.GENERAL_ERROR_MSG;
+                errorMsgs.gateway = messages.IP_NOT_PINGABLE;
+                gatewayState = gwState.FAILED;
+                self.setState({ errorMsg, errorMsgs, gatewayState });
             });
     }
 
@@ -56,6 +71,8 @@ class WizardHostNetworkStep extends Component {
             if (!isEmptyObject(ipv6Data)) {
                 this.setDefaultInterface(ipv6Data);
                 this.setGateway(ipv6Data);
+            } else {
+                this.setDefaultInterface("");
             }
         }
     }
@@ -106,13 +123,19 @@ class WizardHostNetworkStep extends Component {
             errorMsg = "";
         }
 
+        debugger;
+        if (propName === "gateway" && propErrorMsg === "") {
+            this.checkGatewayPingability(prop.value);
+        }
+
         this.setState({ errorMsg, errorMsgs });
     }
 
     validateAllInputs() {
         let errorMsg = "";
         let errorMsgs = {};
-        let propsAreValid = validatePropsForUiStage("Network", this.props.heSetupModel, errorMsgs);
+        let propsAreValid = validatePropsForUiStage("Network", this.props.heSetupModel, errorMsgs) ||
+            this.state.gatewayState === gwState.FAILED;
 
         if (!propsAreValid) {
             errorMsg = messages.GENERAL_ERROR_MSG;
@@ -132,6 +155,7 @@ class WizardHostNetworkStep extends Component {
 
     render() {
         const errorMsgs = this.state.errorMsgs;
+        const gatewayPingPending = this.state.gatewayState === gwState.POLLING;
 
         return (
             <div>
@@ -176,9 +200,15 @@ class WizardHostNetworkStep extends Component {
                                    className="form-control"
                                    value={this.state.networkConfig.gateway.value}
                                    onChange={(e) => this.handleNetworkConfigUpdate("gateway", e.target.value)}
-                                   onBlur={(e) => this.checkGatewayPingability(e.target.value)}
+                                   // onBlur={(e) => this.checkGatewayPingability(e.target.value)}
                             />
                             {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
+                            {gatewayPingPending &&
+                                <div className="gateway-message-container">
+                                    <span><div className="spinner" /></span>
+                                    <span className="gateway-message">Verifying IP address...</span>
+                                </div>
+                            }
                         </div>
                     </div>
                 </form>
