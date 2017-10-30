@@ -30,6 +30,10 @@ const consoleTypes = [
     { key: "spice", title: "Spice" }
 ];
 
+const defaultAppliances = [
+    { key: "Manually Select", title: "Manually Select" }
+];
+
 const networkConfigTypes = [
     { key: "dhcp", title: "DHCP" },
     { key: "static", title: "Static" }
@@ -55,7 +59,7 @@ class WizardVmConfigStep extends Component {
             importAppliance: true,
             showApplPath: false,
             applPathSelection: "",
-            appliances: [],
+            appliances: defaultAppliances,
             cpuArch: {},
             errorMsg: "",
             errorMsgs: {}
@@ -121,7 +125,7 @@ class WizardVmConfigStep extends Component {
     }
 
     setApplianceFiles() {
-        let appliances = [];
+        let appliances = defaultAppliances;
 
         let applData = this.ansible.getTaskData(this.props.systemData, "Get appliance files");
         const applList = applData["stdout_lines"];
@@ -131,8 +135,6 @@ class WizardVmConfigStep extends Component {
                 appliances.push({key: appliance, title: appliance});
             });
         }
-
-        appliances.push({ key: "Manually Select", title: "Manually Select" });
 
         if (appliances[0].key === "Manually Select") {
             this.setState({ showApplPath: true });
