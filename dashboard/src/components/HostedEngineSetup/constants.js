@@ -35,6 +35,13 @@ export const heSetupState = {
     HOSTED_ENGINE: "he"
 };
 
+export const gatewayValidationState = {
+    EMPTY: "empty",
+    POLLING: "polling",
+    SUCCESS: "success",
+    FAILED: "failed"
+};
+
 export const deploymentOption = {
     REGULAR: "regular",
     HYPERCONVERGED: "hci"
@@ -47,5 +54,6 @@ export const resourceConstants = {
 
 export const messages = {
     GENERAL_ERROR_MSG: "Please correct errors before moving to the next step.",
-    PASSWORD_MISMATCH: "Passwords do not match"
+    PASSWORD_MISMATCH: "Passwords do not match",
+    IP_NOT_PINGABLE: "Unable to ping address. Please enter a pingable address."
 };
