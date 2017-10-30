@@ -62,17 +62,17 @@ class WizardHostNetworkStep extends Component {
         this.setInterfaces(systemData);
 
         const ipv4Data = systemData["ansible_facts"]["ansible_default_ipv4"];
-
+        
         if (!isEmptyObject(ipv4Data)) {
-            this.setDefaultInterface(ipv4Data);
+            this.setDefaultInterface(ipv4Data, systemData);
             this.setGateway(ipv4Data);
         } else {
             const ipv6Data = systemData["ansible_facts"]["ansible_default_ipv6"];
             if (!isEmptyObject(ipv6Data)) {
-                this.setDefaultInterface(ipv6Data);
+                this.setDefaultInterface(ipv6Data, systemData);
                 this.setGateway(ipv6Data);
             } else {
-                this.setDefaultInterface("");
+                this.setDefaultInterface("", systemData);
             }
         }
     }
@@ -94,8 +94,14 @@ class WizardHostNetworkStep extends Component {
         this.setState({ interfaces });
     }
 
-    setDefaultInterface(defaultIpData) {
-        const defaultInterface = defaultIpData["alias"];
+    setDefaultInterface(defaultIpData, systemData) {
+        let defaultInterface = defaultIpData["alias"];
+
+        if (defaultInterface === "" || defaultInterface === undefined) {
+            const ansibleInterfaces = systemData["ansible_facts"]["ansible_interfaces"];
+            defaultInterface = ansibleInterfaces[0];
+        }
+
         this.handleNetworkConfigUpdate("bridgeName", defaultInterface);
     }
 
@@ -182,14 +188,14 @@ class WizardHostNetworkStep extends Component {
                     </div>
 
                     <div className="form-group">
-                            <label className="col-md-3 control-label">Firewall</label>
-                            <div className="col-md-5">
-                                <input type="checkbox"
-                                       checked={this.state.networkConfig.firewallManager.value}
-                                       onChange={(e) => this.handleNetworkConfigUpdate("firewallManager", e.target.checked)}
-                                />
-                                <label className="control-label he-input-label">Configure IPTables</label>
-                            </div>
+                        <label className="col-md-3 control-label">Firewall</label>
+                        <div className="col-md-5">
+                            <input type="checkbox"
+                                   checked={this.state.networkConfig.firewallManager.value}
+                                   onChange={(e) => this.handleNetworkConfigUpdate("firewallManager", e.target.checked)}
+                            />
+                            <label className="control-label he-input-label">Configure IPTables</label>
+                        </div>
                     </div>
 
                     <div className={getClassNames("gateway", errorMsgs)}>
