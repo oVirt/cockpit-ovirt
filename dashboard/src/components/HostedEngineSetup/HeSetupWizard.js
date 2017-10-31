@@ -5,7 +5,7 @@ import WizardVmConfigStep from './HE-Wizard-VM'
 import WizardEngineStep from './HE-Wizard-Engine'
 import WizardPreviewStep from './HE-Wizard-Preview'
 import Wizard from '../common/Wizard'
-import { AnsibleUtil, HeSetupModel, checkVirtSupport } from '../../helpers/HostedEngineSetupUtil'
+import { HeSetupModel, checkVirtSupport } from '../../helpers/HostedEngineSetupUtil'
 import { configValues } from './constants'
 
 class HeSetupWizard extends Component {
@@ -20,8 +20,6 @@ class HeSetupWizard extends Component {
         };
 
         this.state.heSetupModel = new HeSetupModel();
-        this.ansible = new AnsibleUtil();
-
         this.virtSupported = 0;
         this.systemDataRetrieved = 0;
 
@@ -41,20 +39,22 @@ class HeSetupWizard extends Component {
         let cmd = "ansible-playbook " + configValues.ANSIBLE_PLAYBOOK_PATH;
         let options = { "environ": ["ANSIBLE_STDOUT_CALLBACK=json"] };
         let self = this;
-        this.ansible.runAnsibleCommand(cmd, options)
-            .done(function() {
+
+        cockpit.spawn(cmd.split(" "), options)
+            .done(function(json) {
+                self.setSystemData(json);
                 self.systemDataRetrieved = 1;
                 self.completeChecks();
             })
-            .fail(function() {
+            .fail(function(error) {
+                console.log(error);
                 self.systemDataRetrieved = -1;
                 self.completeChecks();
-            })
-            .stream(this.setSystemData);
+            });
     }
 
     setSystemData(output) {
-        this.setState({ systemData: this.ansible.getOutputAsJson(output) });
+        this.setState({ systemData: JSON.parse(output) });
         this.setState({ state: 'ready' });
     }
 

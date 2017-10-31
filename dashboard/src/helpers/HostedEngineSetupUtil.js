@@ -722,61 +722,6 @@ export class AnswerFileGenerator {
     }
 }
 
-export class AnsibleUtil {
-
-    constructor() {
-        this.runAnsibleCommand = this.runAnsibleCommand.bind(this);
-        this.logDone = this.logDone.bind(this);
-        this.logStdout = this.logStdout.bind(this);
-        this.logError = this.logError.bind(this);
-    }
-
-    runAnsibleCommand(cmd, options) {
-        return cockpit.spawn(cmd.split(" "), options)
-            .done(this.logDone)
-            .fail(this.logError)
-            .stream(this.logStdout);
-    };
-
-    runPlaybook(filePath, stdoutCallback, successCallback, failCallback) {
-        let cmd = ["ansible-playbook", filePath];
-        return this.runAnsibleCommand(cmd, stdoutCallback, successCallback, failCallback);
-    };
-
-    runAdHocCommand(cmdStr, stdoutCallback, successCallback, failCallback) {
-        let cmd = cmdStr.split(" ");
-        return this.runAnsibleCommand(cmd, stdoutCallback, successCallback, failCallback);
-    };
-
-    getTaskData(ansibleData, taskName) {
-        let tasks = ansibleData["plays"][0]["tasks"];
-        let data = null;
-        tasks.forEach(function(task) {
-            if (task["task"]["name"] === taskName) {
-                data = task["hosts"]["127.0.0.1"];
-            }
-        });
-
-        return data;
-    };
-
-    getOutputAsJson(output) {
-        return JSON.parse(output);
-    };
-
-    logDone() {
-        console.log("Ansible command ran successfully.");
-    };
-
-    logStdout(data) {
-        console.log("Ansible command output: " + data);
-    };
-
-    logError(error) {
-        console.log("There was an error running the Ansible command: " + error);
-    };
-}
-
 const wait_valid = (proxy, callback) => {
     proxy.wait(function() {
         if (proxy.valid) {
@@ -836,4 +781,20 @@ export function getClassNames(propertyName, errorMsgs) {
     }
 
     return classes;
+}
+
+export function getTaskData(ansibleData, taskName) {
+    let tasks = ansibleData["plays"][0]["tasks"];
+    let data = null;
+    tasks.forEach(function(task) {
+        if (task["task"]["name"] === taskName) {
+            if (task["hosts"].hasOwnProperty("127.0.0.1")) {
+                data = task["hosts"]["127.0.0.1"];
+            } else if (task["hosts"].hasOwnProperty("localhost")) {
+                data = task["hosts"]["localhost"];
+            }
+        }
+    });
+
+    return data;
 }
