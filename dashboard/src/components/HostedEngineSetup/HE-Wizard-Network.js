@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
-import { AnsibleUtil, pingGateway, isEmptyObject, getClassNames } from '../../helpers/HostedEngineSetupUtil'
+import { getTaskData, pingGateway, isEmptyObject, getClassNames } from '../../helpers/HostedEngineSetupUtil'
 import { validatePropsForUiStage, getErrorMsgForProperty } from './Validation'
 import { messages, gatewayValidationState as gwState } from './constants'
 
@@ -19,7 +19,6 @@ class WizardHostNetworkStep extends Component {
             interfaces: interfaces
         };
 
-        this.ansible = new AnsibleUtil();
         this.setDefaultValues = this.setDefaultValues.bind(this);
     }
 
@@ -58,7 +57,7 @@ class WizardHostNetworkStep extends Component {
             return;
         }
 
-        let systemData = this.ansible.getTaskData(this.props.systemData, "Gathering Facts");
+        let systemData = getTaskData(this.props.systemData, "Gathering Facts");
         this.setInterfaces(systemData);
 
         const ipv4Data = systemData["ansible_facts"]["ansible_default_ipv4"];
@@ -82,7 +81,7 @@ class WizardHostNetworkStep extends Component {
 
         const ansibleInterfaces = ansibleData["ansible_facts"]["ansible_interfaces"];
 
-        if (typeof ansibleInterfaces !== 'undefined' && ansibleInterfaces.length > 0) {
+        if (typeof ansibleInterfaces !== "undefined" && ansibleInterfaces.length > 0) {
             let ifaceObjectsArray = [];
             ansibleInterfaces.forEach(function (iface) {
                 ifaceObjectsArray.push({key: iface, title: iface});
@@ -97,7 +96,7 @@ class WizardHostNetworkStep extends Component {
     setDefaultInterface(defaultIpData, systemData) {
         let defaultInterface = defaultIpData["alias"];
 
-        if (defaultInterface === "" || defaultInterface === undefined) {
+        if (defaultInterface === "" || defaultInterface === "undefined") {
             const ansibleInterfaces = systemData["ansible_facts"]["ansible_interfaces"];
             defaultInterface = ansibleInterfaces[0];
         }

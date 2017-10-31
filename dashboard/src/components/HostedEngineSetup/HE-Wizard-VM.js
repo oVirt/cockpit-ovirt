@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import MultiRowTextBox from './MultiRowTextBox'
-import { AnsibleUtil, TimeZone, checkDns, checkReverseDns, getClassNames } from '../../helpers/HostedEngineSetupUtil'
+import { getTaskData, TimeZone, checkDns, checkReverseDns, getClassNames } from '../../helpers/HostedEngineSetupUtil'
 import { getErrorMsgForProperty, validatePropsForUiStage } from "./Validation";
 import { configValues, resourceConstants, messages } from "./constants"
 
@@ -65,7 +65,6 @@ class WizardVmConfigStep extends Component {
             errorMsgs: {}
         };
 
-        this.ansible = new AnsibleUtil();
         this.handleDnsAddressDelete = this.handleDnsAddressDelete.bind(this);
         this.handleDnsAddressUpdate = this.handleDnsAddressUpdate.bind(this);
         this.verifyDns = this.verifyDns.bind(this);
@@ -127,7 +126,7 @@ class WizardVmConfigStep extends Component {
     setApplianceFiles() {
         let appliances = defaultAppliances;
 
-        let applData = this.ansible.getTaskData(this.props.systemData, "Get appliance files");
+        let applData = getTaskData(this.props.systemData, "Get appliance files");
         const applList = applData["stdout_lines"];
 
         if (typeof applList !== 'undefined' && applList.length > 0) {
@@ -144,10 +143,10 @@ class WizardVmConfigStep extends Component {
     }
 
     setCpuArchitecture() {
-        let modelData = this.ansible.getTaskData(this.props.systemData, "Get CPU model")["stdout"];
+        let modelData = getTaskData(this.props.systemData, "Get CPU model")["stdout"];
         let cpuModel = modelData.replace("\<model\>", "").replace("\</model\>", "").trim();
 
-        let vendorData = this.ansible.getTaskData(this.props.systemData, "Get CPU vendor")["stdout"];
+        let vendorData = getTaskData(this.props.systemData, "Get CPU vendor")["stdout"];
         let cpuVendor = vendorData.replace("\<vendor\>", "").replace("\</vendor\>", "").trim();
 
         let cpuArch = {
@@ -162,7 +161,7 @@ class WizardVmConfigStep extends Component {
 
     setValidationValues() {
         const heSetupModel = this.state.heSetupModel;
-        let systemData = this.ansible.getTaskData(this.props.systemData, "Gathering Facts");
+        let systemData = getTaskData(this.props.systemData, "Gathering Facts");
 
         heSetupModel.vm.vmVCpus.range.max = systemData["ansible_facts"]["ansible_processor_vcpus"];
         heSetupModel.vm.vmMemSizeMB.range.max = this.getMaxMemAvailable(systemData);
