@@ -6,7 +6,7 @@ import WizardEngineStep from './HE-Wizard-Engine'
 import WizardPreviewStep from './HE-Wizard-Preview'
 import Wizard from '../common/Wizard'
 import { HeSetupModel, checkVirtSupport } from '../../helpers/HostedEngineSetupUtil'
-import { configValues } from './constants'
+import { configValues, messages } from './constants'
 
 class HeSetupWizard extends Component {
     constructor(props) {
@@ -111,6 +111,9 @@ class HeSetupWizard extends Component {
     }
 
     render() {
+        const virtNotSupported = this.virtSupported === -1;
+        const systemDataNotRetrievable = this.systemDataRetrieved === -1;
+
         return (
             <div>
                 {this.state.state === 'polling' &&
@@ -148,13 +151,29 @@ class HeSetupWizard extends Component {
                     </Wizard>
                 }
 
-                {this.state.state === 'error' && this.virtSupported === -1 &&
-                    <div>Error! Hardware virtualization not supported on this host!</div>
-                }
+                <div style={this.state.state === 'error' ? {} : {display: 'none'}}
+                     className="he-error-msg-container-outer">
 
-                {this.state.state === 'error' && this.systemDataRetrieved === -1 &&
-                    <div>Error! System data could not be retrieved!</div>
-                }
+                    <div className="he-error-msg-container-inner">
+                    {virtNotSupported &&
+                        <div className="container">
+                            <div className="alert alert-danger he-error-msg">
+                                <span className="pficon pficon-error-circle-o" />
+                                <strong>{ messages.VIRT_NOT_SUPPORTED }</strong>
+                            </div>
+                        </div>
+                    }
+
+                    {systemDataNotRetrievable &&
+                        <div className="container">
+                            <div className="alert alert-danger he-error-msg">
+                                <span className="pficon pficon-error-circle-o" />
+                                <strong>{ messages.SYS_DATA_UNRETRIEVABLE }</strong>
+                            </div>
+                        </div>
+                    }
+                    </div>
+                </div>
             </div>
         )
     }

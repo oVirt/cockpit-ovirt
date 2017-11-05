@@ -55,5 +55,7 @@ export const resourceConstants = {
 export const messages = {
     GENERAL_ERROR_MSG: "Please correct errors before moving to the next step.",
     PASSWORD_MISMATCH: "Passwords do not match",
-    IP_NOT_PINGABLE: "Unable to ping address. Please enter a pingable address."
+    IP_NOT_PINGABLE: "Unable to ping address. Please enter a pingable address.",
+    VIRT_NOT_SUPPORTED: "Error! Hardware virtualization not supported on this host!",
+    SYS_DATA_UNRETRIEVABLE: "Error! System data could not be retrieved!"
 };
