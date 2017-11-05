@@ -404,3 +404,20 @@ div.multi-row-text-box-input {
     vertical-align: middle
 }
 
+.he-error-msg {
+    width: 415px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.he-error-msg-container-outer {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+}
+
+.he-error-msg-container-inner {
+    margin-top: 100px;
+}
+
+
