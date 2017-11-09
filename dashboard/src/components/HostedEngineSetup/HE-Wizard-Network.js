@@ -127,8 +127,7 @@ class WizardHostNetworkStep extends Component {
         } else {
             errorMsg = "";
         }
-
-        debugger;
+        
         if (propName === "gateway" && propErrorMsg === "") {
             this.checkGatewayPingability(prop.value);
         }
