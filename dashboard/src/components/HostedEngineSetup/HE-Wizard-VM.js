@@ -6,10 +6,13 @@ import { getErrorMsgForProperty, validatePropsForUiStage } from "./Validation";
 import { configValues, resourceConstants, messages } from "./constants"
 
 const intelCpuTypes = [
+    { key: "Skylake-Client", title: "Intel Skylake Family" },
+    { key: "Skylake", title: "Intel Skylake Family" },
     { key: "Broadwell", title: "Intel Broadwell Family" },
     { key: "Broadwell-noTSX", title: "Intel Broadwell-noTSX Family" },
     { key: "Haswell", title: "Intel Haswell Family" },
     { key: "Haswell-noTSX", title: "Intel Haswell-noTSX Family" },
+    { key: "IvyBridge", title: "Intel SandyBridge Family" },
     { key: "SandyBridge", title: "Intel SandyBridge Family" },
     { key: "Westmere", title: "Intel Westmere Family" },
     { key: "Nehalem", title: "Intel Nehalem Family" },
