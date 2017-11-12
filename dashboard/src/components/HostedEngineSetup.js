@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {CheckIfRegistered} from '../helpers/HostedEngineSetup'
-import HeSetupWizard from './HostedEngineSetup/HeSetupWizard'
+import HeSetupWizardContainer from './HostedEngineSetup/HeSetupWizard/HeSetupWizardContainer'
 import GdeploySetup from './gdeploy/GdeploySetup'
 import GdeployUtil from '../helpers/GdeployUtil'
 import { heSetupState, deploymentOption } from './HostedEngineSetup/constants'
@@ -82,16 +82,16 @@ class HostedEngineSetup extends Component {
   render() {
     return (
       <div>
-        {this.state.state === heSetupState.POLLING &&
+        { this.state.state === heSetupState.POLLING &&
           <div className="spinner" />
         }
-        {this.state.state === heSetupState.REGISTERED &&
+        { this.state.state === heSetupState.REGISTERED &&
           <Registered
             callback={this.redeploy}
             engine={this.state.registeredTo}
           />
         }
-        { (this.state.state === heSetupState.EMPTY) &&
+        { this.state.state === heSetupState.EMPTY &&
           <Curtains
             callback={this.onClick}
             cancelled={this.state.cancelled}
@@ -101,11 +101,13 @@ class HostedEngineSetup extends Component {
             />
         }
         {this.state.state === heSetupState.HOSTED_ENGINE &&
-          <HeSetupWizard gDeployAnswerFilePaths={this.state.answerFiles}
-            onSuccess={this.startSetup}
-            onClose={this.abortCallback}
-            />}
-        {this.state.state === heSetupState.GDEPLOY &&
+          <HeSetupWizardContainer
+              gDeployAnswerFilePaths={this.state.answerFiles}
+              onSuccess={this.startSetup}
+              onClose={this.abortCallback}
+          />
+        }
+        { this.state.state === heSetupState.GDEPLOY &&
           <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} />
         }
       </div>

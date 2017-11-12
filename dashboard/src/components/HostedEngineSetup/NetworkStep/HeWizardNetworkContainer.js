@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
-import Selectbox from '../common/Selectbox'
-import { getTaskData, pingGateway, isEmptyObject, getClassNames } from '../../helpers/HostedEngineSetupUtil'
-import { validatePropsForUiStage, getErrorMsgForProperty } from './Validation'
-import { messages, gatewayValidationState as gwState } from './constants'
+import { getTaskData, pingGateway, isEmptyObject } from '../../../helpers/HostedEngineSetupUtil'
+import { validatePropsForUiStage, getErrorMsgForProperty } from '../Validation'
+import { messages, gatewayValidationState as gwState } from '../constants'
+import HeWizardNetwork from './HeWizardNetwork'
 
-const interfaces = [
-    { key: "loopback", title: "loopback" }
+export const defaultInterfaces = [
+    { key: "None Found", title: "None Found" }
 ];
 
-class WizardHostNetworkStep extends Component {
+class HeWizardNetworkContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -16,10 +16,12 @@ class WizardHostNetworkStep extends Component {
             errorMsg: "",
             errorMsgs: {},
             gatewayState: gwState.EMPTY,
-            interfaces: interfaces
+            interfaces: defaultInterfaces
         };
 
         this.setDefaultValues = this.setDefaultValues.bind(this);
+        this.handleNetworkConfigUpdate = this.handleNetworkConfigUpdate.bind(this);
+        this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
     }
 
     componentWillMount() {
@@ -61,7 +63,7 @@ class WizardHostNetworkStep extends Component {
         this.setInterfaces(systemData);
 
         const ipv4Data = systemData["ansible_facts"]["ansible_default_ipv4"];
-        
+
         if (!isEmptyObject(ipv4Data)) {
             this.setDefaultInterface(ipv4Data, systemData);
             this.setGateway(ipv4Data);
@@ -77,7 +79,7 @@ class WizardHostNetworkStep extends Component {
     }
 
     setInterfaces(ansibleData) {
-        let interfaces = [{ key: "None Found", title: "None Found" }];
+        let interfaces = defaultInterfaces;
 
         const ansibleInterfaces = ansibleData["ansible_facts"]["ansible_interfaces"];
 
@@ -127,7 +129,7 @@ class WizardHostNetworkStep extends Component {
         } else {
             errorMsg = "";
         }
-        
+
         if (propName === "gateway" && propErrorMsg === "") {
             this.checkGatewayPingability(prop.value);
         }
@@ -158,74 +160,20 @@ class WizardHostNetworkStep extends Component {
     }
 
     render() {
-        const errorMsgs = this.state.errorMsgs;
-        const gatewayPingPending = this.state.gatewayState === gwState.POLLING;
-
-        return (
-            <div>
-                <form className="form-horizontal he-form-container">
-                    {this.state.errorMsg &&
-                        <div className="row" style={{marginLeft: "40px"}}>
-                            <div className="alert alert-danger col-sm-8">
-                                <span className="pficon pficon-error-circle-o" />
-                                <strong>{this.state.errorMsg}</strong>
-                            </div>
-                        </div>
-                    }
-
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Bridge Interface</label>
-                        <div className="col-md-6">
-                            <div style={{width: "120px"}}>
-                                <Selectbox optionList={this.state.interfaces}
-                                           selectedOption={this.state.networkConfig.bridgeName.value}
-                                           callBack={(e) => this.handleNetworkConfigUpdate("bridgeName", e)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Firewall</label>
-                        <div className="col-md-5">
-                            <input type="checkbox"
-                                   checked={this.state.networkConfig.firewallManager.value}
-                                   onChange={(e) => this.handleNetworkConfigUpdate("firewallManager", e.target.checked)}
-                            />
-                            <label className="control-label he-input-label">Configure IPTables</label>
-                        </div>
-                    </div>
-
-                    <div className={getClassNames("gateway", errorMsgs)}>
-                        <label className="col-md-3 control-label">Gateway Address</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "110px"}}
-                                   title="Enter a pingable gateway address."
-                                   className="form-control"
-                                   value={this.state.networkConfig.gateway.value}
-                                   onChange={(e) => this.handleNetworkConfigUpdate("gateway", e.target.value)}
-                                   // onBlur={(e) => this.checkGatewayPingability(e.target.value)}
-                            />
-                            {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
-                            {gatewayPingPending &&
-                                <div className="gateway-message-container">
-                                    <span><div className="spinner" /></span>
-                                    <span className="gateway-message">Verifying IP address...</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </form>
-
-
-            </div>
-        )
+        return <HeWizardNetwork
+                errorMsg={this.state.errorMsg}
+                errorMsgs={this.state.errorMsgs}
+                gatewayState={this.state.gatewayState}
+                interfaces={this.state.interfaces}
+                networkConfig={this.state.networkConfig}
+                handleNetworkConfigUpdate={this.handleNetworkConfigUpdate}
+                />
     }
 }
 
-WizardHostNetworkStep.propTypes = {
+HeWizardNetworkContainer.propTypes = {
     stepName: React.PropTypes.string.isRequired,
     heSetupModel: React.PropTypes.object.isRequired
 };
 
-export default WizardHostNetworkStep
+export default HeWizardNetworkContainer
