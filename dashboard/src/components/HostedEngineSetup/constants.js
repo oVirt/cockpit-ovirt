@@ -35,17 +35,11 @@ export const heSetupState = {
     HOSTED_ENGINE: "he"
 };
 
-export const loadingState = {
-    POLLING: "polling",
-    READY: "ready",
-    ERROR: "error"
-};
-
-export const gatewayValidationState = {
+export const status = {
     EMPTY: "empty",
     POLLING: "polling",
     SUCCESS: "success",
-    FAILED: "failed"
+    FAILURE: "failure"
 };
 
 export const deploymentOption = {
@@ -72,7 +66,7 @@ export const messages = {
 };
 
 export const intelCpuTypes = [
-    { key: "Skylake-Client", title: "Intel Skylake Family" },
+    { key: "Skylake-Client", title: "Intel Skylake-Client Family" },
     { key: "Skylake", title: "Intel Skylake Family" },
     { key: "Broadwell", title: "Intel Broadwell Family" },
     { key: "Broadwell-noTSX", title: "Intel Broadwell-noTSX Family" },
@@ -92,4 +86,8 @@ export const amdCpuTypes = [
     { key: "Opteron_G3", title: "AMD Opteron G3" },
     { key: "Opteron_G2", title: "AMD Opteron G2" },
     { key: "Opteron_G1", title: "AMD Opteron G1" }
+];
+
+export const defaultInterfaces = [
+    { key: "None Found", title: "None Found" }
 ];

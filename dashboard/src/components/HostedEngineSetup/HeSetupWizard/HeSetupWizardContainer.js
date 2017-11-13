@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import HeSetupWizard from './HeSetupWizard'
-import { HeSetupModel, checkVirtSupport } from '../../../helpers/HostedEngineSetupUtil'
-import { configValues, loadingState as state, messages } from '../constants'
+import { HeSetupModel } from '../../../helpers/HostedEngineSetupUtil'
+import { messages, status } from '../constants'
+import DefaultValueProvider from '../../../helpers/HostedEngineSetup/DefaultValueProvider'
 
 class HeSetupWizardContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loadingState: state.POLLING,
+            loadingState: status.POLLING,
             isDeploymentStarted: false,
             heSetupModel: null,
             gDeployAnswerFilePaths: this.props.gDeployAnswerFilePaths,
@@ -15,65 +16,39 @@ class HeSetupWizardContainer extends Component {
         };
 
         this.state.heSetupModel = new HeSetupModel();
-        this.virtSupported = 0;
-        this.systemDataRetrieved = 0;
+        this.virtSupported = status.EMPTY;
+        this.systemDataRetrieved = status.EMPTY;
+        this.defaultsProvider = null;
 
         this.handleFinish = this.handleFinish.bind(this);
         this.onStepChange = this.onStepChange.bind(this);
         this.handleReDeploy = this.handleReDeploy.bind(this);
         this.abortCallback = this.abortCallback.bind(this);
-        this.getSystemData = this.getSystemData.bind(this);
-        this.setSystemData = this.setSystemData.bind(this);
+        this.init = this.init.bind(this);
     }
 
     onStepChange(activeStep) {
 
     }
 
-    getSystemData() {
-        let cmd = "ansible-playbook " + configValues.ANSIBLE_PLAYBOOK_PATH;
-        let options = { "environ": ["ANSIBLE_STDOUT_CALLBACK=json"] };
-        let self = this;
+    init(initStatus) {
+        let loadingStatus = status.EMPTY;
+        let systemData = null;
 
-        cockpit.spawn(cmd.split(" "), options)
-            .done(function(json) {
-                self.setSystemData(json);
-                self.systemDataRetrieved = 1;
-                self.completeChecks();
-            })
-            .fail(function(error) {
-                console.log(error);
-                self.systemDataRetrieved = -1;
-                self.completeChecks();
-            });
-    }
-
-    setSystemData(output) {
-        this.setState({ systemData: JSON.parse(output) });
-        this.setState({ loadingState: state.READY });
-    }
-
-    checkVirtSupport() {
-        let self = this;
-        checkVirtSupport()
-            .done(function() {
-                self.virtSupported = 1;
-                self.completeChecks();
-            })
-            .fail(function() {
-                self.virtSupported = -1;
-                self.completeChecks();
-            });
-    }
-
-    completeChecks() {
-        if (this.virtSupported !== 0 && this.systemDataRetrieved !== 0) {
-            if (this.virtSupported === -1 || this.systemDataRetrieved === -1) {
-                this.setState({ loadingState: state.ERROR });
-            } else {
-                this.setState({ loadingState: state.READY })
-            }
+        if (initStatus === status.FAILURE) {
+            this.systemDataRetrieved = status.FAILURE;
+            loadingStatus = status.FAILURE;
+        } else if (!this.defaultsProvider.virtSupported()) {
+            this.virtSupported = status.FAILURE;
+            loadingStatus = status.FAILURE;
+        } else {
+            this.virtSupported = status.SUCCESS;
+            this.systemDataRetrieved = status.SUCCESS;
+            systemData = this.defaultsProvider.systemData;
+            loadingStatus = status.SUCCESS;
         }
+
+        this.setState({ loadingState: loadingStatus, systemData: systemData });
     }
 
     handleFinish() {
@@ -90,8 +65,7 @@ class HeSetupWizardContainer extends Component {
     }
 
     componentWillMount() {
-        this.getSystemData();
-        this.checkVirtSupport();
+        this.defaultsProvider = new DefaultValueProvider(this.init);
     }
 
     componentDidMount() {
@@ -110,6 +84,7 @@ class HeSetupWizardContainer extends Component {
             <HeSetupWizard
                 loadingState={this.state.loadingState}
                 abortCallback={this.abortCallback}
+                defaultsProvider={this.defaultsProvider}
                 handleFinish={this.handleFinish}
                 handleRedeploy={this.handleReDeploy}
                 heSetupModel={this.state.heSetupModel}

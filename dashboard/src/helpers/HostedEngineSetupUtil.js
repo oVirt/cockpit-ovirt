@@ -760,17 +760,6 @@ export function checkReverseDns(ipAddress) {
     return cockpit.spawn(["dig", "-x", ipAddress, "+short"]);
 }
 
-export function checkVirtSupport() {
-    return cockpit.spawn(["egrep", "vmx|svm", "/proc/cpuinfo"])
-        .fail(function(result) {
-            console.log("Error: " + result);
-        });
-}
-
-export function isEmptyObject(obj) {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
-
 export function getClassNames(propertyName, errorMsgs) {
     let classes = "";
 

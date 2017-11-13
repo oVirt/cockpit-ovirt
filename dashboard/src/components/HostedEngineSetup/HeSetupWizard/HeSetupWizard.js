@@ -1,5 +1,5 @@
 import React from 'react'
-import { loadingState as state, messages } from '../constants'
+import { status, messages } from '../constants'
 import HeWizardNetworkContainer from '../NetworkStep/HeWizardNetworkContainer'
 import HeWizardEngineContainer from '../EngineStep/HeWizardEngineContainer'
 import HeWizardStorageContainer from '../StorageStep/HeWizardStorageContainer'
@@ -7,15 +7,15 @@ import HeWizardVmContainer from '../VmStep/HeWizardVmContainer'
 import HeWizardPreviewContainer from '../PreviewStep/HeWizardPreviewContainer'
 import Wizard from '../../common/Wizard'
 
-const HeSetupWizard = ({abortCallback, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
+const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
                        loadingState, onSuccess, onStepChange, setup, systemData, virtSupported,
                        systemDataRetrieved}) => {
-    const virtNotSupported = virtSupported === -1;
-    const systemDataNotRetrievable = systemDataRetrieved === -1;
+    const virtNotSupported = virtSupported === status.FAILURE;
+    const systemDataNotRetrievable = systemDataRetrieved === status.FAILURE;
 
     return (
         <div>
-            {loadingState === state.POLLING &&
+            {loadingState === status.POLLING &&
             <div className="curtains curtains-ct blank-slate-pf he-data-loading-container">
                 <div className="container-center">
                     <div className="spinner" />
@@ -25,7 +25,7 @@ const HeSetupWizard = ({abortCallback, handleFinish, handleRedeploy, heSetupMode
             </div>
             }
 
-            {loadingState === state.READY &&
+            {loadingState === status.SUCCESS &&
             <Wizard title="Hosted Engine Deployment"
                     onClose={abortCallback}
                     onFinish={handleFinish}
@@ -34,10 +34,12 @@ const HeSetupWizard = ({abortCallback, handleFinish, handleRedeploy, heSetupMode
                 <HeWizardStorageContainer stepName="Storage" model={heSetupModel}/>
                 <HeWizardNetworkContainer stepName="Network" heSetupModel={heSetupModel.model}
                                           systemData={systemData}
+                                          defaultsProvider={defaultsProvider}
                 />
                 <HeWizardVmContainer stepName="VM"
                                      model={heSetupModel}
                                      systemData={systemData}
+                                     defaultsProvider={defaultsProvider}
                 />
                 <HeWizardEngineContainer stepName="Engine" heSetupModel={heSetupModel.model}/>
                 <HeWizardPreviewContainer stepName="Review" heSetupModel={heSetupModel.model}
@@ -50,7 +52,7 @@ const HeSetupWizard = ({abortCallback, handleFinish, handleRedeploy, heSetupMode
             </Wizard>
             }
 
-            <div style={loadingState === state.ERROR ? {} : {display: 'none'}}
+            <div style={loadingState === status.FAILURE ? {} : {display: 'none'}}
                  className="he-error-msg-container-outer">
 
                 <div className="he-error-msg-container-inner">
