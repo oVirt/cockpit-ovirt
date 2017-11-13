@@ -1,12 +1,8 @@
 import React, { Component } from 'react'
-import { getTaskData, pingGateway, isEmptyObject } from '../../../helpers/HostedEngineSetupUtil'
+import { pingGateway } from '../../../helpers/HostedEngineSetupUtil'
 import { validatePropsForUiStage, getErrorMsgForProperty } from '../Validation'
-import { messages, gatewayValidationState as gwState } from '../constants'
+import { defaultInterfaces, messages, status as gwState } from '../constants'
 import HeWizardNetwork from './HeWizardNetwork'
-
-export const defaultInterfaces = [
-    { key: "None Found", title: "None Found" }
-];
 
 class HeWizardNetworkContainer extends Component {
     constructor(props) {
@@ -19,9 +15,11 @@ class HeWizardNetworkContainer extends Component {
             interfaces: defaultInterfaces
         };
 
+        this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
         this.setDefaultValues = this.setDefaultValues.bind(this);
         this.handleNetworkConfigUpdate = this.handleNetworkConfigUpdate.bind(this);
-        this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
+        this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
+        this.validateAllInputs = this.validateAllInputs.bind(this);
     }
 
     componentWillMount() {
@@ -55,60 +53,11 @@ class HeWizardNetworkContainer extends Component {
     }
 
     setDefaultValues() {
-        if (this.props.systemData === null) {
-            return;
-        }
+        const defaultsProvider = this.props.defaultsProvider;
 
-        let systemData = getTaskData(this.props.systemData, "Gathering Facts");
-        this.setInterfaces(systemData);
-
-        const ipv4Data = systemData["ansible_facts"]["ansible_default_ipv4"];
-
-        if (!isEmptyObject(ipv4Data)) {
-            this.setDefaultInterface(ipv4Data, systemData);
-            this.setGateway(ipv4Data);
-        } else {
-            const ipv6Data = systemData["ansible_facts"]["ansible_default_ipv6"];
-            if (!isEmptyObject(ipv6Data)) {
-                this.setDefaultInterface(ipv6Data, systemData);
-                this.setGateway(ipv6Data);
-            } else {
-                this.setDefaultInterface("", systemData);
-            }
-        }
-    }
-
-    setInterfaces(ansibleData) {
-        let interfaces = defaultInterfaces;
-
-        const ansibleInterfaces = ansibleData["ansible_facts"]["ansible_interfaces"];
-
-        if (typeof ansibleInterfaces !== "undefined" && ansibleInterfaces.length > 0) {
-            let ifaceObjectsArray = [];
-            ansibleInterfaces.forEach(function (iface) {
-                ifaceObjectsArray.push({key: iface, title: iface});
-            });
-
-            interfaces = ifaceObjectsArray;
-        }
-
-        this.setState({ interfaces });
-    }
-
-    setDefaultInterface(defaultIpData, systemData) {
-        let defaultInterface = defaultIpData["alias"];
-
-        if (defaultInterface === "" || defaultInterface === "undefined") {
-            const ansibleInterfaces = systemData["ansible_facts"]["ansible_interfaces"];
-            defaultInterface = ansibleInterfaces[0];
-        }
-
-        this.handleNetworkConfigUpdate("bridgeName", defaultInterface);
-    }
-
-    setGateway(defaultIpData) {
-        const gateway = defaultIpData["gateway"];
-        this.handleNetworkConfigUpdate("gateway", gateway);
+        this.setState({ interfaces: defaultsProvider.getNetworkInterfaces() });
+        this.handleNetworkConfigUpdate("bridgeName", defaultsProvider.getDefaultInterface());
+        this.handleNetworkConfigUpdate("gateway", defaultsProvider.getDefaultGateway());
     }
 
     handleNetworkConfigUpdate(property, value) {

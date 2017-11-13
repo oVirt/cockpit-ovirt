@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { getTaskData, TimeZone, checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
-import { getErrorMsgForProperty, validatePropsForUiStage } from "../Validation";
-import { amdCpuTypes, configValues, intelCpuTypes, resourceConstants, messages } from "../constants"
+import { checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
+import { getErrorMsgForProperty, validatePropsForUiStage } from '../Validation'
+import { amdCpuTypes, configValues, intelCpuTypes, messages } from '../constants'
 import HeWizardVm from './HeWizardVm'
 
 const defaultAppliances = [
@@ -29,10 +29,7 @@ class HeWizardVmContainer extends Component {
         this.verifyReverseDns = this.verifyReverseDns.bind(this);
         this.setDefaultValues = this.setDefaultValues.bind(this);
         this.setApplianceFiles = this.setApplianceFiles.bind(this);
-        this.setCpuArchitecture = this.setCpuArchitecture.bind(this);
         this.setValidationValues = this.setValidationValues.bind(this);
-        this.getMaxMemAvailable = this.getMaxMemAvailable.bind(this);
-        this.setTimeZone = this.setTimeZone.bind(this);
         this.handleVmConfigUpdate = this.handleVmConfigUpdate.bind(this);
         this.handleApplianceFileUpdate = this.handleApplianceFileUpdate.bind(this);
         this.handleImportApplianceUpdate = this.handleImportApplianceUpdate.bind(this);
@@ -77,78 +74,35 @@ class HeWizardVmContainer extends Component {
     }
 
     setDefaultValues() {
-        this.setTimeZone();
+        const heSetupModel = this.state.heSetupModel;
+        const defaultsProvider = this.props.defaultsProvider;
+        const cpuArch = defaultsProvider.getCpuArchitecture();
 
-        if (this.props.systemData !== null) {
-            this.setApplianceFiles();
-            this.setCpuArchitecture();
-        }
+        heSetupModel.vm.cloudinitVMTZ.value = defaultsProvider.getTimeZone();
+        heSetupModel.vdsm.cpu.value = cpuArch.model;
+        this.setApplianceFiles();
+
+        this.setState({ heSetupModel, cpuArch: cpuArch })
     }
 
     setApplianceFiles() {
-        let appliances = defaultAppliances;
-
-        let applData = getTaskData(this.props.systemData, "Get appliance files");
-        const applList = applData["stdout_lines"];
-
-        if (typeof applList !== 'undefined' && applList.length > 0) {
-            applList.forEach(function (appliance) {
-                appliances.push({key: appliance, title: appliance});
-            });
-        }
+        const appliances = this.props.defaultsProvider.getApplianceFiles();
 
         if (appliances[0].key === "Manually Select") {
             this.setState({ showApplPath: true });
         }
 
-        this.setState({ appliances, applPathSelection: appliances[0].key });
-    }
-
-    setCpuArchitecture() {
-        let modelData = getTaskData(this.props.systemData, "Get CPU model")["stdout"];
-        let cpuModel = modelData.replace("\<model\>", "").replace("\</model\>", "").trim();
-
-        let vendorData = getTaskData(this.props.systemData, "Get CPU vendor")["stdout"];
-        let cpuVendor = vendorData.replace("\<vendor\>", "").replace("\</vendor\>", "").trim();
-
-        let cpuArch = {
-            model: cpuModel,
-            vendor: cpuVendor
-        };
-
-        const heSetupModel = this.state.heSetupModel;
-        heSetupModel.vdsm.cpu.value = cpuModel;
-        this.setState({ heSetupModel, cpuArch: cpuArch });
+        this.setState({ appliances: appliances, applPathSelection: appliances[0].key });
     }
 
     setValidationValues() {
+        const defaultsProvider = this.props.defaultsProvider;
         const heSetupModel = this.state.heSetupModel;
-        let systemData = getTaskData(this.props.systemData, "Gathering Facts");
 
-        heSetupModel.vm.vmVCpus.range.max = systemData["ansible_facts"]["ansible_processor_vcpus"];
-        heSetupModel.vm.vmMemSizeMB.range.max = this.getMaxMemAvailable(systemData);
+        heSetupModel.vm.vmVCpus.range.max = defaultsProvider.getMaxVCpus();
+        heSetupModel.vm.vmMemSizeMB.range.max = defaultsProvider.getMaxMemAvailable();
 
         this.setState({ heSetupModel });
-    }
-
-    getMaxMemAvailable(systemData) {
-        let totalMemMb = systemData["ansible_facts"]["ansible_memtotal_mb"];
-        let availMemMb = systemData["ansible_facts"]["ansible_memfree_mb"];
-
-        let calc1 = totalMemMb - resourceConstants.VDSM_HOST_OVERHEAD_MB - resourceConstants.VDSM_VM_OVERHEAD_MB;
-        let calc2 = availMemMb - resourceConstants.VDSM_VM_OVERHEAD_MB;
-
-        return Math.min(calc1, calc2);
-    }
-
-    setTimeZone() {
-        const vmConfig = this.state.heSetupModel.vm;
-        let that = this;
-        const timeZone = new TimeZone();
-        timeZone.getTimeZone(function(result) {
-            vmConfig["cloudinitVMTZ"].value = result;
-            that.setState({ vmConfig });
-        });
     }
 
     handleVmConfigUpdate(propName, value, configType) {

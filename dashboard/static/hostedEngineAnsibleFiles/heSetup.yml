@@ -23,3 +23,17 @@
     when: true
     ignore_errors: true
   - debug: msg={{ cpu_vendor | to_json }}
+
+  - name: Get virt support
+    shell: egrep "vmx|svm" "/proc/cpuinfo"
+    register: virt_supported
+    when: true
+    ignore_errors: true
+  - debug: msg={{ virt_supported | to_json }}
+
+  - name: Get time zone
+    shell: timedatectl | grep "Time zone"
+    register: time_zone
+    when: true
+    ignore_errors: true
+  - debug: msg={{ time_zone | to_json }}

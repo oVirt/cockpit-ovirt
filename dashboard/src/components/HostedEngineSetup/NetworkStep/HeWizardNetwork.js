@@ -1,6 +1,6 @@
 import React from 'react'
 import Selectbox from '../../common/Selectbox'
-import { gatewayValidationState as gwState } from '../constants'
+import { status as gwState } from '../constants'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 
 const HeWizardNetwork = ({errorMsg, errorMsgs, gatewayState, interfaces, networkConfig, handleNetworkConfigUpdate}) => {
