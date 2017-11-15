@@ -31,17 +31,17 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRed
                     onFinish={handleFinish}
                     onStepChange={onStepChange}
                     isDeploymentStarted={isDeploymentStarted}>
-                <HeWizardStorageContainer stepName="Storage" model={heSetupModel}/>
-                <HeWizardNetworkContainer stepName="Network" heSetupModel={heSetupModel.model}
-                                          systemData={systemData}
-                                          defaultsProvider={defaultsProvider}
-                />
                 <HeWizardVmContainer stepName="VM"
                                      model={heSetupModel}
                                      systemData={systemData}
                                      defaultsProvider={defaultsProvider}
                 />
                 <HeWizardEngineContainer stepName="Engine" heSetupModel={heSetupModel.model}/>
+                <HeWizardStorageContainer stepName="Storage" model={heSetupModel}/>
+                <HeWizardNetworkContainer stepName="Network" heSetupModel={heSetupModel.model}
+                                          systemData={systemData}
+                                          defaultsProvider={defaultsProvider}
+                />
                 <HeWizardPreviewContainer stepName="Review" heSetupModel={heSetupModel.model}
                                    isDeploymentStarted={isDeploymentStarted}
                                    onSuccess={onSuccess}
