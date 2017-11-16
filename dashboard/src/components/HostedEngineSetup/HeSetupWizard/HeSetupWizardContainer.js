@@ -71,9 +71,12 @@ class HeSetupWizardContainer extends Component {
     componentDidMount() {
         if (this.state.gDeployAnswerFilePaths) {
             console.log(messages.ADD_GDEPLOY_PROPS_TO_ANS_FILE);
-            const filePath = this.state.gDeployAnswerFilePaths[0];
+            const gdeployAnsFiles = this.state.gDeployAnswerFilePaths;
+            const glusterAnsFile = gdeployAnsFiles.shift();
             const setupModel = this.state.heSetupModel.model;
-            this.state.heSetupModel.addGlusterValues(filePath, setupModel);
+            this.state.heSetupModel.addGlusterValues(glusterAnsFile, setupModel);
+
+            this.setState({ gDeployAnswerFilePaths: gdeployAnsFiles })
         } else {
             console.log(messages.NO_GDEPLOY_ANSWER_FILES_FOUND);
         }
@@ -95,6 +98,7 @@ class HeSetupWizardContainer extends Component {
                 systemData={this.state.systemData}
                 virtSupported={this.virtSupported}
                 systemDataRetrieved={this.systemDataRetrieved}
+                gDeployAnswerFilePaths={this.state.gDeployAnswerFilePaths}
             />
         )
     }

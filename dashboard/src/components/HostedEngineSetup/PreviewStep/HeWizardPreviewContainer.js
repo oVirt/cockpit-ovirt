@@ -64,6 +64,7 @@ class HeWizardPreviewContainer extends Component {
                 heSetupModel={this.state.heSetupModel}
                 abortCallback={this.props.abortCallback}
                 sectionRows={sectionRows}
+                gDeployAnswerFilePaths={this.props.gDeployAnswerFilePaths}
             />
         )
     }

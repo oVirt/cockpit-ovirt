@@ -12,7 +12,9 @@ class HeWizardExecutionContainer extends Component {
             heSetupStatus: deploymentStatus.RUNNING
         };
 
-        this.setup = new RunSetup(this.props.abortCallback, [configValues.ANSWER_FILE_PATH]);
+        this.setup = this.getSetup();
+
+        this.getSetup = this.getSetup.bind(this);
         this.startSetup = this.startSetup.bind(this);
     }
 
@@ -20,12 +22,24 @@ class HeWizardExecutionContainer extends Component {
         this.startSetup();
     }
 
+    getSetup() {
+        let answerFiles = [];
+
+        if (typeof this.props.gDeployAnswerFilePaths !== 'undefined') {
+            answerFiles = this.props.gDeployAnswerFilePaths.slice();
+        }
+
+        answerFiles.push(configValues.ANSWER_FILE_PATH);
+        return new RunSetup(this.props.abortCallback, answerFiles);
+    }
+
     startSetup() {
         const fileGenerator = new AnswerFileGenerator(this.props.heSetupModel);
-        let self = this;
-        let prom = fileGenerator.writeConfigToFile();
+        const self = this;
+        const prom = fileGenerator.writeConfigToFile();
+
         prom.done(function() {
-            self.setup = new RunSetup(self.props.abortCallback, [configValues.ANSWER_FILE_PATH]);
+            self.setup = self.getSetup();
         });
     }
 

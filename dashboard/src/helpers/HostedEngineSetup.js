@@ -1,3 +1,5 @@
+import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
+
 class RunSetup {
   constructor(abortCallback, answerFiles) {
     this._outputCallback = null
@@ -234,6 +236,45 @@ export function CheckIfRegistered(callback) {
   .always(function() {
     cert.close()
   })
+}
+
+export function checkForGdeployAnsFiles(callback) {
+  const answerFile = cockpit.file(constants.heAnsfileFile);
+    const commonAnsFile = cockpit.file(constants.heCommonAnsFile);
+
+    answerFile.read()
+      .done(function(output) {
+        if (!output) {
+          callback(false);
+          console.log("Failed to read file " + constants.heAnsfileFile +
+            ". Check that the file exists and is not empty");
+        } else {
+          commonAnsFile.read()
+            .done(function(output) {
+              if (output) {
+                callback(true);
+              } else {
+                callback(false);
+                console.log("Failed to read file " + constants.heCommonAnsFile +
+                  ". Check that the file exists and is not empty");
+              }
+            })
+            .fail(function(error) {
+              callback(false);
+              console.log("Failed to read file " + constants.heCommonAnsFile + ". Error: " + error);
+            })
+            .always(function() {
+              commonAnsFile.close();
+            });
+        }
+      })
+      .fail(function(error) {
+        callback(false);
+        console.log("Failed to read file " + constants.heAnsfileFile + ". Error: " + error);
+      })
+      .always(function() {
+        answerFile.close();
+      })
 }
 
 export default RunSetup
