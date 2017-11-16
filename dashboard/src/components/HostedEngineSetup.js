@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import {CheckIfRegistered} from '../helpers/HostedEngineSetup'
+import {CheckIfRegistered, checkForGdeployAnsFiles} from '../helpers/HostedEngineSetup'
 import HeSetupWizardContainer from './HostedEngineSetup/HeSetupWizard/HeSetupWizardContainer'
 import GdeploySetup from './gdeploy/GdeploySetup'
 import GdeployUtil from '../helpers/GdeployUtil'
 import { heSetupState, deploymentOption } from './HostedEngineSetup/constants'
+import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
 
 const classNames = require('classnames');
 
@@ -15,11 +16,13 @@ class HostedEngineSetup extends Component {
       deploymentOption: deploymentOption.REGULAR,
       state: heSetupState.POLLING,
       gdeployAvailable: false,
+      gdeployFilesFound: false,
       registered: false,
       registeredTo: "",
       answerFiles: []
     };
     this.registeredCallback = this.registeredCallback.bind(this);
+    this.gdeployFileCallback = this.gdeployFileCallback.bind(this);
     this.onClick = this.onClick.bind(this);
     this.abortCallback = this.abortCallback.bind(this);
     this.startSetup = this.startSetup.bind(this);
@@ -28,6 +31,10 @@ class HostedEngineSetup extends Component {
     this.redeploy = this.redeploy.bind(this);
 
     CheckIfRegistered(this.registeredCallback);
+  }
+
+  componentWillMount() {
+      checkForGdeployAnsFiles(this.gdeployFileCallback);
   }
 
   componentDidMount() {
@@ -41,9 +48,11 @@ class HostedEngineSetup extends Component {
     this.setState({ cancelled: false });
 
     if (this.state.deploymentOption === deploymentOption.REGULAR) {
-      this.startSetup()
+      this.startSetup();
     } else if (this.state.deploymentOption === deploymentOption.HYPERCONVERGED) {
       this.startGdeploy();
+    } else if (this.state.deploymentOption === 'useExistingConfig') {
+        this.startSetup([ constants.heAnsfileFile, constants.heCommonAnsFile ]);
     }
   }
 
@@ -54,6 +63,12 @@ class HostedEngineSetup extends Component {
     } else {
       this.setState({state: heSetupState.EMPTY})
     }
+  }
+
+  gdeployFileCallback(filesExist) {
+      if (filesExist) {
+          this.setState({ gdeployFilesFound: true });
+      }
   }
 
   redeploy() {
@@ -97,6 +112,7 @@ class HostedEngineSetup extends Component {
             cancelled={this.state.cancelled}
             deploymentOption={this.state.deploymentOption}
             gdeployAvailable={this.state.gdeployAvailable}
+            gdeployFilesFound={this.state.gdeployFilesFound}
             selectionChangeCallback={this.handleOptionChange}
             />
         }
@@ -115,7 +131,8 @@ class HostedEngineSetup extends Component {
   }
 }
 
-const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, selectionChangeCallback}) => {
+const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, gdeployFilesFound,
+                      selectionChangeCallback}) => {
   let message = cancelled ?
     "Hosted engine setup was aborted" :
     "Configure and install a highly-available virtual machine which will \
@@ -151,6 +168,16 @@ const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, sele
               Standard
               </label>
           </div>
+          {gdeployFilesFound &&
+          <div className="radio">
+            <label>
+              <input type="radio" value="useExistingConfig"
+                     checked={deploymentOption === 'useExistingConfig'}
+                     onChange={selectionChangeCallback} />
+              Hosted Engine using existing Gluster configuration
+            </label>
+          </div>
+          }
           <div className={gdeployClass}  data-placement="top" title={gdeployTitle}>
             <label>
               <input type="radio" value="hci" disabled={!gdeployAvailable}

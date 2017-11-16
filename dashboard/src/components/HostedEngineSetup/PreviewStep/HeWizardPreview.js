@@ -1,7 +1,7 @@
 import React from 'react'
 import HeWizardExecutionContainer from '../ExecutionStep/HeWizardExecutionContainer'
 
-const HeWizardPreview = ({isDeploymentStarted, onSuccess, reDeployCallback, setup, heSetupModel, abortCallback, sectionRows}) => {
+const HeWizardPreview = ({gDeployAnswerFilePaths, isDeploymentStarted, onSuccess, reDeployCallback, setup, heSetupModel, abortCallback, sectionRows}) => {
     if (isDeploymentStarted) {
         return (
             <HeWizardExecutionContainer onSuccess={onSuccess}
@@ -9,6 +9,7 @@ const HeWizardPreview = ({isDeploymentStarted, onSuccess, reDeployCallback, setu
                                         setup={setup}
                                         heSetupModel={heSetupModel}
                                         abortCallback={abortCallback}
+                                        gDeployAnswerFilePaths={gDeployAnswerFilePaths}
             />
         );
     } else {

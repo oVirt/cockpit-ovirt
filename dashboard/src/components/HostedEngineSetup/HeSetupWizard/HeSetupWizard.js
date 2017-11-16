@@ -9,7 +9,7 @@ import Wizard from '../../common/Wizard'
 
 const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
                        loadingState, onSuccess, onStepChange, setup, systemData, virtSupported,
-                       systemDataRetrieved}) => {
+                       systemDataRetrieved, gDeployAnswerFilePaths}) => {
     const virtNotSupported = virtSupported === status.FAILURE;
     const systemDataNotRetrievable = systemDataRetrieved === status.FAILURE;
 
@@ -43,11 +43,12 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRed
                                           defaultsProvider={defaultsProvider}
                 />
                 <HeWizardPreviewContainer stepName="Review" heSetupModel={heSetupModel.model}
-                                   isDeploymentStarted={isDeploymentStarted}
-                                   onSuccess={onSuccess}
-                                   reDeployCallback={handleRedeploy}
-                                   setup={setup}
-                                   abortCallback={abortCallback}
+                                          isDeploymentStarted={isDeploymentStarted}
+                                          onSuccess={onSuccess}
+                                          reDeployCallback={handleRedeploy}
+                                          setup={setup}
+                                          abortCallback={abortCallback}
+                                          gDeployAnswerFilePaths={gDeployAnswerFilePaths}
                 />
             </Wizard>
             }
