@@ -71,6 +71,8 @@ export class HeSetupModel {
             storage: {
                 domainType: {
                     name: "domainType",
+                    ansibleVarName: "DOMAIN_TYPE",
+                    ansiblePhasesUsed: [2, 3],
                     description: "Storage Type",
                     value: "nfs3",
                     type: types.STRING,
@@ -91,6 +93,8 @@ export class HeSetupModel {
                 },
                 storagePath: {
                     name: "storagePath",
+                    ansibleVarName: "STORAGE_DOMAIN_PATH",
+                    ansiblePhasesUsed: [2],
                     description: "Storage Path",
                     value: "",
                     type: types.STRING,
@@ -101,6 +105,8 @@ export class HeSetupModel {
                 },
                 storageDomain: {
                     name: "storageDomain",
+                    ansibleVarName: "STORAGE_DOMAIN_NAME",
+                    ansiblePhasesUsed: [2, 3],
                     description: "Storage Domain",
                     value: "hosted_storage",
                     type: types.STRING,
@@ -111,6 +117,8 @@ export class HeSetupModel {
                 },
                 storageDomainConnection: {
                     name: "storageDomainConnection",
+                    ansibleVarName: "STORAGE",
+                    ansiblePhasesUsed: [3],
                     description: "Storage Domain Connection",
                     value: "",
                     type: types.STRING,
@@ -121,6 +129,8 @@ export class HeSetupModel {
                 },
                 mntOptions: {
                     name: "mntOptions",
+                    ansibleVarName: "MOUNT_OPTIONS",
+                    ansiblePhasesUsed: [2],
                     description: "Mount Options",
                     value: "",
                     type: types.STRING,
@@ -131,6 +141,8 @@ export class HeSetupModel {
                 },
                 iSCSIPortalUser: {
                     name: "iSCSIPortalUser",
+                    ansibleVarName: "ISCSI_USERNAME",
+                    ansiblePhasesUsed: [2, 3],
                     description: "Portal User",
                     value: "",
                     type: types.STRING,
@@ -141,6 +153,8 @@ export class HeSetupModel {
                 },
                 iSCSIPortalPassword: {
                     name: "iSCSIPortalPassword",
+                    ansibleVarName: "ISCSI_PASSWORD",
+                    ansiblePhasesUsed: [2, 3],
                     description: "Portal Password",
                     value: "",
                     type: types.STRING,
@@ -163,6 +177,8 @@ export class HeSetupModel {
                 },
                 iSCSIPortalPort: {
                     name: "iSCSIPortalPort",
+                    ansibleVarName: "ISCSI_PORT",
+                    ansiblePhasesUsed: [2, 3],
                     description: "Portal Port",
                     value: "3260",
                     type: types.STRING,
@@ -175,6 +191,8 @@ export class HeSetupModel {
                 },
                 iSCSITargetName: {
                     name: "iSCSITargetName",
+                    ansibleVarName: "ISCSI_TARGET",
+                    ansiblePhasesUsed: [2, 3],
                     description: "Target Name",
                     value: "",
                     type: types.STRING,
@@ -185,6 +203,8 @@ export class HeSetupModel {
                 },
                 LunID: {
                     name: "LunID",
+                    ansibleVarName: "LUN_ID",
+                    ansiblePhasesUsed: [2],
                     description: "Destination LUN",
                     value: "",
                     type: types.STRING,
@@ -217,6 +237,8 @@ export class HeSetupModel {
                 },
                 gateway: {
                     name: "gateway",
+                    ansibleVarName: "GATEWAY",
+                    ansiblePhasesUsed: [3],
                     description: "Gateway Address",
                     value: "",
                     type: types.STRING,
@@ -229,6 +251,8 @@ export class HeSetupModel {
                 },
                 fqdn: {
                     name: "fqdn",
+                    ansibleVarName: "FQDN",
+                    ansiblePhasesUsed: [1, 2, 3],
                     description: "Engine FQDN",
                     value: "ovirt-engine.localdomain",
                     type: types.STRING,
@@ -251,6 +275,8 @@ export class HeSetupModel {
                 },
                 vmVCpus: {
                     name: "vmVCpus",
+                    ansibleVarName: "VCPUS",
+                    ansiblePhasesUsed: [1, 3],
                     description: "Number of Virtual CPUs",
                     value: "2",
                     type: types.STRING,
@@ -262,6 +288,8 @@ export class HeSetupModel {
                 },
                 vmMACAddr: {
                     name: "vmMACAddr",
+                    ansibleVarName: "VM_MAC_ADDR",
+                    ansiblePhasesUsed: [1, 3],
                     description: "MAC Address",
                     value: "00:16:3E:6A:7A:F9",
                     type: types.STRING,
@@ -274,6 +302,8 @@ export class HeSetupModel {
                 },
                 vmMemSizeMB: {
                     name: "vmMemSizeMB",
+                    ansibleVarName: "MEM_SIZE",
+                    ansiblePhasesUsed: [1, 3],
                     description: "Memory Size (MB)",
                     value: "4096",
                     type: types.INTEGER,
@@ -327,6 +357,8 @@ export class HeSetupModel {
                 },
                 cloudinitVMTZ: {
                     name: "cloudinitVMTZ",
+                    ansibleVarName: "TIME_ZONE",
+                    ansiblePhasesUsed: [1, 3],
                     description: "Host Time Zone",
                     value: "America/New_York",
                     type: types.STRING,
@@ -347,6 +379,8 @@ export class HeSetupModel {
                 },
                 ovfArchive: {
                     name: "ovfArchive",
+                    ansibleVarName: "APPLIANCE_OVA",
+                    ansiblePhasesUsed: [1],
                     description: "Appliance File Path",
                     value: "",
                     type: types.STRING,
@@ -357,6 +391,8 @@ export class HeSetupModel {
                 },
                 cloudinitInstanceDomainName: {
                     name: "cloudinitInstanceDomainName",
+                    ansibleVarName: "CLOUD_INIT_DOMAIN_NAME",
+                    ansiblePhasesUsed: [1],
                     description: "Engine VM Domain",
                     value: "localdomain",
                     type: types.STRING,
@@ -387,6 +423,8 @@ export class HeSetupModel {
                 },
                 rootPassword: {
                     name: "rootPassword",
+                    ansibleVarName: "APPLIANCE_PASSWORD",
+                    ansiblePhasesUsed: [1],
                     description: "Root password",
                     value: "",
                     type: types.STRING,
@@ -407,6 +445,8 @@ export class HeSetupModel {
                 },
                 rootSshPubkey: {
                     name: "rootSshPubkey",
+                    ansibleVarName: "ROOT_SSH_PUBKEY",
+                    ansiblePhasesUsed: [1],
                     description: "Root User SSH Public Key",
                     value: "",
                     type: types.STRING,
@@ -417,6 +457,8 @@ export class HeSetupModel {
                 },
                 rootSshAccess: {
                     name: "rootSshAccess",
+                    ansibleVarName: "ROOT_SSH_ACCESS",
+                    ansiblePhasesUsed: [1],
                     description: "Root User SSH Access",
                     value: "yes",
                     type: types.STRING,
@@ -427,6 +469,8 @@ export class HeSetupModel {
                 },
                 cloudinitVMETCHOSTS: {
                     name: "cloudinitVMETCHOSTS",
+                    ansibleVarName: "VM_ETC_HOSTS",
+                    ansiblePhasesUsed: [1],
                     description: "Add Lines to /etc/hosts",
                     value: true,
                     type: types.BOOLEAN,
@@ -459,6 +503,8 @@ export class HeSetupModel {
                 },
                 adminPortalPassword: {
                     name: "adminPortalPassword",
+                    ansibleVarName: "ADMIN_PASSWORD",
+                    ansiblePhasesUsed: [1, 2, 3],
                     description: "Admin Portal Password",
                     value: "",
                     type: types.STRING,
@@ -481,6 +527,8 @@ export class HeSetupModel {
             vdsm: {
                 consoleType: {
                     name: "consoleType",
+                    ansibleVarName: "CONSOLE_TYPE",
+                    ansiblePhasesUsed: [1, 3],
                     description: "Console Type",
                     value: "vnc",
                     type: types.STRING,
@@ -491,6 +539,8 @@ export class HeSetupModel {
                 },
                 cpu: {
                     name: "cpu",
+                    ansibleVarName: "CPU_TYPE",
+                    ansiblePhasesUsed: [1, 3],
                     description: "CPU Type",
                     value: "Conroe",
                     type: types.STRING,
