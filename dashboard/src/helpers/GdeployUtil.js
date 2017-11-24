@@ -70,6 +70,8 @@ var GdeployUtil = {
             redhatSubscription,
             yumConfig
         )
+        // Dir /var/lib/ovirt-hosted-engine-setup/gdeploy is not available first time, so creating.
+        this.createDirIfNotExist(filePath)
         const configString = this.convertToString(gdeployConfig)
         return this.writeConfigFile(filePath, configString)
     },
@@ -373,6 +375,8 @@ var GdeployUtil = {
         return baseString + '\n' + newString
     },
     writeConfigFile(filePath, configString) {
+        // Take backup conf file before replacing contents.
+        this.backupFileWithTimestamp(filePath)
         const file = cockpit.file(filePath)
         return file.replace(configString)
             .always(function(tag) {
@@ -426,6 +430,32 @@ var GdeployUtil = {
         .fail(function(code) {
             callBack(false)
         })
+    },
+    createDirIfNotExist(filePath){
+      // pick only directory path
+      const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
+      return cockpit.spawn(
+        ["mkdir",dirPath]
+      ).done(function(code){
+        console.log("Directory "+dirPath+" created successfully.");
+      }).fail(function(code){
+        console.log("Directory "+dirPath+" already exist.");
+      })
+    },
+    backupFileWithTimestamp(filePath){
+      // pick only directory path
+      const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
+      // pick only file name, omiting .conf
+      const fileName = filePath.split("/").pop().split(".")[0]
+      // Complete file path containing timestamp.
+      const backupPath = dirPath+"/"+fileName+"-"+new Date().getTime()+".conf"
+      return cockpit.spawn(
+        ["mv",filePath,backupPath]
+      ).done(function(code){
+        console.log("File "+backupPath+" backup successfully.");
+      }).fail(function(code){
+        console.log("File "+backupPath+" backup failed.");
+      })
     }
 }
 
