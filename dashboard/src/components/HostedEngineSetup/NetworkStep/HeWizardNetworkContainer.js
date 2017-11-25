@@ -15,6 +15,8 @@ class HeWizardNetworkContainer extends Component {
             interfaces: defaultInterfaces
         };
 
+        this.lastGatewayAddress = "";
+
         this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
         this.setDefaultValues = this.setDefaultValues.bind(this);
         this.handleNetworkConfigUpdate = this.handleNetworkConfigUpdate.bind(this);
@@ -38,17 +40,23 @@ class HeWizardNetworkContainer extends Component {
 
         this.setState({ gatewayState, errorMsg, errorMsgs });
 
+        this.lastGatewayAddress = address;
+
         let self = this;
         pingGateway(address)
             .done(function() {
-                gatewayState = gwState.SUCCESS;
-                self.setState({ errorMsg, gatewayState });
+                if (address === self.lastGatewayAddress) {
+                    gatewayState = gwState.SUCCESS;
+                    self.setState({errorMsg, gatewayState});
+                }
             })
             .fail(function() {
-                errorMsg = messages.GENERAL_ERROR_MSG;
-                errorMsgs.gateway = messages.IP_NOT_PINGABLE;
-                gatewayState = gwState.FAILED;
-                self.setState({ errorMsg, errorMsgs, gatewayState });
+                if (address === self.lastGatewayAddress) {
+                    errorMsg = messages.GENERAL_ERROR_MSG;
+                    errorMsgs.gateway = messages.IP_NOT_PINGABLE;
+                    gatewayState = gwState.FAILURE;
+                    self.setState({errorMsg, errorMsgs, gatewayState});
+                }
             });
     }
 
