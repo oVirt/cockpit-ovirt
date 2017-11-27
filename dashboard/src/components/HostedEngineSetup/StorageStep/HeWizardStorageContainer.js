@@ -3,7 +3,7 @@ import { getErrorMsgForProperty, validatePropsForUiStage } from "../Validation";
 import { messages } from '../constants';
 import HeWizardStorage from './HeWizardStorage'
 
-const nfsAnsFileFields = ["storagePath", "storageDomain"];
+const nfsAnsFileFields = ["storageDomainConnection", "storageDomain"];
 
 const requiredNfsFields = nfsAnsFileFields;
 
@@ -21,7 +21,7 @@ const glusterAnsFileFields = ["storageDomainConnection"];
 
 const requiredGlusterFields = glusterAnsFileFields;
 
-const glusterAndNfsAnsFileFields = ["mntOptions"];
+const glusterAndNfsAnsFileFields = ["storageDomainConnection", "mntOptions"];
 
 const fieldProps = ["showInReview", "useInAnswerFile"];
 
@@ -41,6 +41,10 @@ class HeWizardStorageContainer extends Component {
         this.setStorageTypeDisplaySettings = this.setStorageTypeDisplaySettings.bind(this);
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
+    }
+
+    componentWillMount() {
+        this.setStorageTypeDisplaySettings(this.state.heSetupModel.storage.domainType.value);
     }
 
     handleStorageConfigUpdate(propName, value) {

@@ -98,22 +98,22 @@ export class HeSetupModel {
                     description: "Storage Path",
                     value: "",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "Storage",
-                    useInAnswerFile: true,
-                    required: true
+                    useInAnswerFile: false,
+                    required: false
                 },
                 storageDomain: {
                     name: "storageDomain",
                     ansibleVarName: "STORAGE_DOMAIN_NAME",
                     ansiblePhasesUsed: [2, 3],
-                    description: "Storage Domain",
+                    description: "Storage Domain Name",
                     value: "hosted_storage",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Storage",
                     useInAnswerFile: true,
-                    required: false
+                    required: true
                 },
                 storageDomainConnection: {
                     name: "storageDomainConnection",
@@ -125,7 +125,7 @@ export class HeSetupModel {
                     showInReview: false,
                     uiStage: "Storage",
                     useInAnswerFile: false,
-                    required: false
+                    required: true
                 },
                 mntOptions: {
                     name: "mntOptions",

@@ -40,22 +40,8 @@ const HeWizardStorage = ({errorMsg, errorMsgs, handleStorageConfigUpdate, storag
                 </div>
 
                 <div style={nfsSelected ? {} : { display: 'none' }}>
-                    <div className={getClassNames("storagePath", errorMsgs)}>
-                        <label className="col-md-3 control-label">Storage Path</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "300px"}}
-                                   placeholder="host:/path"
-                                   title="Enter the path for the shared storage you wish to use."
-                                   className="form-control"
-                                   value={storageConfig.storagePath.value}
-                                   onChange={(e) => handleStorageConfigUpdate("storagePath", e.target.value)}
-                            />
-                            {errorMsgs.storagePath && <span className="help-block">{errorMsgs.storagePath}</span>}
-                        </div>
-                    </div>
-
                     <div className={getClassNames("storageDomain", errorMsgs)}>
-                        <label className="col-md-3 control-label">Storage Domain</label>
+                        <label className="col-md-3 control-label">Storage Domain Name</label>
                         <div className="col-md-6">
                             <input type="text" style={{width: "250px"}}
                                    title=""
@@ -63,7 +49,9 @@ const HeWizardStorage = ({errorMsg, errorMsgs, handleStorageConfigUpdate, storag
                                    value={storageConfig.storageDomain.value}
                                    onChange={(e) => handleStorageConfigUpdate("storageDomain", e.target.value)}
                             />
-                            {errorMsgs.storageDomain && <span className="help-block">{errorMsgs.storageDomain}</span>}
+                            {errorMsgs.storageDomain &&
+                                <span className="help-block">{errorMsgs.storageDomain}</span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -154,12 +142,14 @@ const HeWizardStorage = ({errorMsg, errorMsgs, handleStorageConfigUpdate, storag
                                    value={storageConfig.LunID.value}
                                    onChange={(e) => handleStorageConfigUpdate("LunID", e.target.value)}
                             />
-                            {errorMsgs.LunID && <span className="help-block">{errorMsgs.LunID}</span>}
+                            {errorMsgs.LunID &&
+                                <span className="help-block">{errorMsgs.LunID}</span>
+                            }
                         </div>
                     </div>
                 </div>
 
-                <div style={glusterSelected ? {} : {display: 'none'}}>
+                <div style={(nfsSelected || glusterSelected) ? {} : {display: 'none'}}>
                     <div className={getClassNames("storageDomainConnection", errorMsgs)}>
                         <label className="col-md-3 control-label">Storage Connection</label>
                         <div className="col-md-6">
@@ -175,9 +165,7 @@ const HeWizardStorage = ({errorMsg, errorMsgs, handleStorageConfigUpdate, storag
                             }
                         </div>
                     </div>
-                </div>
 
-                <div style={(nfsSelected || glusterSelected) ? {} : {display: 'none'}}>
                     <div className={getClassNames("mntOptions", errorMsgs)}>
                         <label className="col-md-3 control-label">Mount Options</label>
                         <div className="col-md-6">
@@ -187,7 +175,9 @@ const HeWizardStorage = ({errorMsg, errorMsgs, handleStorageConfigUpdate, storag
                                    value={storageConfig.mntOptions.value}
                                    onChange={(e) => handleStorageConfigUpdate("mntOptions", e.target.value)}
                             />
-                            {errorMsgs.mntOptions && <span className="help-block">{errorMsgs.mntOptions}</span>}
+                            {errorMsgs.mntOptions &&
+                                <span className="help-block">{errorMsgs.mntOptions}</span>
+                            }
                         </div>
                     </div>
                 </div>
