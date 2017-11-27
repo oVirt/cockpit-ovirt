@@ -431,8 +431,8 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: false
                 },
-                rootPassword: {
-                    name: "rootPassword",
+                cloudinitRootPassword: {
+                    name: "cloudinitRootPassword",
                     ansibleVarName: "APPLIANCE_PASSWORD",
                     ansiblePhasesUsed: [1],
                     description: "Root password",
@@ -511,8 +511,8 @@ export class HeSetupModel {
                     useInAnswerFile: false,
                     required: true
                 },
-                adminPortalPassword: {
-                    name: "adminPortalPassword",
+                adminPassword: {
+                    name: "adminPassword",
                     ansibleVarName: "ADMIN_PASSWORD",
                     ansiblePhasesUsed: [1, 2, 3],
                     description: "Admin Portal Password",

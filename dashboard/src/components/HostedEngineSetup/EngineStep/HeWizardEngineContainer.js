@@ -38,8 +38,8 @@ class HeWizardEngineContainer extends Component {
 
         heSetupModel[configType][propName].value = value;
 
-        if (propName === "adminPortalPassword") {
-            heSetupModel.engine.adminPortalPassword.useInAnswerFile = true;
+        if (propName === "adminPassword") {
+            heSetupModel.engine.adminPassword.useInAnswerFile = true;
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
@@ -67,7 +67,7 @@ class HeWizardEngineContainer extends Component {
 
     validateAdminPasswordMatch(errorMsgs) {
         const engineConfig = this.state.heSetupModel.engine;
-        let passwordsMatch = engineConfig.adminPortalPassword.value === engineConfig.confirmAdminPortalPassword.value;
+        let passwordsMatch = engineConfig.adminPassword.value === engineConfig.confirmAdminPortalPassword.value;
 
         if (!passwordsMatch) {
             errorMsgs.confirmAdminPortalPassword = messages.PASSWORD_MISMATCH;
