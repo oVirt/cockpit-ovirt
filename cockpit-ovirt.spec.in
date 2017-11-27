@@ -131,6 +131,9 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Mon Nov 27 2017 Ryan Barry <rbarry@redhat.com> - 0.10.10
+- More gdeploy fixes
+
 * Mon Nov 27 2017 Ryan Barry <rbarry@redhat.com> - 0.10.9-3
 - More gdeploy fixes
 

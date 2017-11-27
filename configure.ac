@@ -18,9 +18,9 @@ AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [10])
-define([VERSION_FIX], [9])
+define([VERSION_FIX], [10])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_RELEASE], [3])
+define([VERSION_RELEASE], [0])
 define([VERSION_SUFFIX],[])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER, [devel@ovirt.org])
