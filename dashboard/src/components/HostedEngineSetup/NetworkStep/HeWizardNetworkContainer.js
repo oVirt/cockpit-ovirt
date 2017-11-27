@@ -64,7 +64,7 @@ class HeWizardNetworkContainer extends Component {
         const defaultsProvider = this.props.defaultsProvider;
 
         this.setState({ interfaces: defaultsProvider.getNetworkInterfaces() });
-        this.handleNetworkConfigUpdate("bridgeName", defaultsProvider.getDefaultInterface());
+        this.handleNetworkConfigUpdate("bridgeIf", defaultsProvider.getDefaultInterface());
         this.handleNetworkConfigUpdate("gateway", defaultsProvider.getDefaultGateway());
     }
 

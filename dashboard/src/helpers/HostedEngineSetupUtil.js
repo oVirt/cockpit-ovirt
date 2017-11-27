@@ -215,8 +215,8 @@ export class HeSetupModel {
                 }
             },
             network: {
-                bridgeName: {
-                    name: "bridgeName",
+                bridgeIf: {
+                    name: "bridgeIf",
                     description: "Bridge Interface",
                     value: "",
                     type: types.STRING,
@@ -224,6 +224,16 @@ export class HeSetupModel {
                     uiStage: "Network",
                     useInAnswerFile: true,
                     required: false
+                },
+                bridgeName: {
+                    name: "bridgeName",
+                    description: "Bridge Name",
+                    value: "ovirtmgmt",
+                    type: types.STRING,
+                    showInReview: true,
+                    uiStage: "Network",
+                    useInAnswerFile: true,
+                    required: true
                 },
                 firewallManager: {
                     name: "firewallManager",
