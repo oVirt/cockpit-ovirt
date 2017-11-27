@@ -131,6 +131,9 @@ for low-level host management.
 %{_uipluginsdir}/cockpit-resources
 
 %changelog
+* Mon Nov 27 2017 Ryan Barry <rbarry@redhat.com> - 0.10.9-3
+- More gdeploy fixes
+
 * Tue Nov 21 2017 Ryan Barry <rbarry@redhat.com> - 0.10.9-2
 - Add an option to reuse the gdeploy config
 
