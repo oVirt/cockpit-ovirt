@@ -23,10 +23,23 @@ const HeWizardNetwork = ({errorMsg, errorMsgs, gatewayState, interfaces, network
                     <div className="col-md-6">
                         <div style={{width: "120px"}}>
                             <Selectbox optionList={interfaces}
-                                       selectedOption={networkConfig.bridgeName.value}
-                                       callBack={(e) => handleNetworkConfigUpdate("bridgeName", e)}
+                                       selectedOption={networkConfig.bridgeIf.value}
+                                       callBack={(e) => handleNetworkConfigUpdate("bridgeIf", e)}
                             />
                         </div>
+                    </div>
+                </div>
+
+                <div className={getClassNames("bridgeName", errorMsgs)}>
+                    <label className="col-md-3 control-label">Bridge Name</label>
+                    <div className="col-md-6">
+                        <input type="text" style={{width: "110px"}}
+                               title="Enter the bridge name."
+                               className="form-control"
+                               value={networkConfig.bridgeName.value}
+                               onChange={(e) => handleNetworkConfigUpdate("bridgeName", e.target.value)}
+                        />
+                        {errorMsgs.bridgeName && <span className="help-block">{errorMsgs.bridgeName}</span>}
                     </div>
                 </div>
 
