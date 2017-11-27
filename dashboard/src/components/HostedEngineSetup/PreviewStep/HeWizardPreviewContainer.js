@@ -8,6 +8,16 @@ class HeWizardPreviewContainer extends Component {
             heSetupModel: props.heSetupModel,
             isEditing: false,
             isChanged: false
+        };
+
+        this.getDisplayValue = this.getDisplayValue.bind(this);
+    }
+
+    getDisplayValue(prop) {
+        if (prop.name === "cpu") {
+            return prop.value.replace("model_", "").trim();
+        } else {
+            return prop.value.toString();
         }
     }
 
@@ -34,7 +44,8 @@ class HeWizardPreviewContainer extends Component {
                             return;
                         }
 
-                        let previewRow = <PreviewRow property={prop.description} value={prop.value.toString()} key={idx++} />;
+                        let previewRow = <PreviewRow property={prop.description}
+                                                     value={this.getDisplayValue(prop)} key={idx++} />;
 
                         switch (prop.uiStage) {
                             case "Storage":
