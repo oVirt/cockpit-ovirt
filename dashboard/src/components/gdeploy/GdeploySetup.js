@@ -45,6 +45,7 @@ class GdeploySetup extends Component {
                     glusterModel={this.state.glusterModel}
                     bricks={this.state.glusterModel.bricks}
                     raidConfig={this.state.glusterModel.raidConfig}
+                    lvCacheConfig={this.state.glusterModel.lvCacheConfig}
                     />
                 <WizardPreviewStep stepName="Review" glusterModel={this.state.glusterModel}
                     configFilePath={CONFIG_FILES.gdeployConfigFile}

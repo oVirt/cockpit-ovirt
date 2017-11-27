@@ -15,6 +15,7 @@ class WizardBricksStep extends Component {
         this.state = {
             bricks: props.bricks,
             raidConfig: props.raidConfig,
+            lvCacheConfig: props.lvCacheConfig,
             errorMsg: "",
             errorMsgs: {}
         }
@@ -22,6 +23,7 @@ class WizardBricksStep extends Component {
         this.handleAdd = this.handleAdd.bind(this)
         this.handleUpdate = this.handleUpdate.bind(this)
         this.handleRaidConfigUpdate = this.handleRaidConfigUpdate.bind(this)
+        this.handleLvCacheConfig = this.handleLvCacheConfig.bind(this)
     }
     handleDelete(index) {
         const bricks = this.state.bricks
@@ -77,6 +79,40 @@ class WizardBricksStep extends Component {
         }
         return valid
     }
+
+    handleLvCacheConfig(property, value) {
+        const lvCacheConfig = this.state.lvCacheConfig
+        lvCacheConfig[property] = value
+        const errorMsgs= this.state.errorMsgs
+        this.validateLvCacheConfig(lvCacheConfig, errorMsgs)
+        this.setState({ lvCacheConfig, errorMsgs })
+    }
+
+    validateLvCacheConfig(lvCacheConfig, errorMsgs){
+      let valid = true
+      if(lvCacheConfig != null && lvCacheConfig.lvCache){
+        errorMsgs.lvCacheConfig = {}
+        if(lvCacheConfig.ssd.trim().length < 1){
+            errorMsgs.lvCacheConfig.ssd = "Enter SSD"
+            valid = false
+        }
+        if(lvCacheConfig.lvCacheSize.trim().length < 1){
+            errorMsgs.lvCacheConfig.lvCacheSize = "Enter lv cache size"
+            valid = false
+        }else{
+            const lvCacheSize = Number(lvCacheConfig.lvCacheSize)
+            if(lvCacheSize < 1){
+                errorMsgs.lvCacheConfig.lvCacheSize = "Invalid lv cache size"
+                valid = false
+            }
+        }
+        if(lvCacheConfig.cacheMode.trim().length < 1){
+            errorMsgs.lvCacheConfig.cacheMode = "Enter cache mode"
+            valid = false
+        }
+      }
+      return valid
+    }
     // Trim "LV Name","Device Name" and "Mount Point" values
     trimBrickProperties(){
       const inBricks = this.state.bricks
@@ -126,6 +162,9 @@ class WizardBricksStep extends Component {
         if(!this.validateRaidConfig(this.state.raidConfig, errorMsgs)){
             valid = false
         }
+        if(!this.validateLvCacheConfig(this.state.lvCacheConfig, errorMsgs)){
+            valid = false
+        }
         this.setState({ errorMsg, errorMsgs })
         return valid
     }
@@ -156,6 +195,21 @@ class WizardBricksStep extends Component {
         const diskCount = classNames(
             "form-group",
             { "has-error": diskCountMsg}
+        )
+        const ssdMsg = this.state.errorMsgs.lvCacheConfig ? this.state.errorMsgs.lvCacheConfig.ssd : ""
+        const lvCacheSizeMsg = this.state.errorMsgs.lvCacheConfig ? this.state.errorMsgs.lvCacheConfig.lvCacheSize : ""
+        const cacheModeMsg = this.state.errorMsgs.lvCacheConfig ? this.state.errorMsgs.lvCacheConfig.cacheMode : ""
+        const ssd = classNames(
+            "form-group",
+            { "has-error": ssdMsg}
+        )
+        const lvCacheSize = classNames(
+            "form-group",
+            { "has-error": lvCacheSizeMsg}
+        )
+        const cacheMode = classNames(
+            "form-group",
+            { "has-error": cacheModeMsg}
         )
         return (
             <div>
@@ -224,6 +278,49 @@ class WizardBricksStep extends Component {
                         <strong> Add Bricks</strong>
                     </span>
                 </a>
+                <form className="form-horizontal">
+                    <div className="panel-heading gdeploy-wizard-section-title">
+                        <input type="checkbox"
+                            checked={this.state.lvCacheConfig.lvCache}
+                            onChange={(e) => this.handleLvCacheConfig("lvCache", e.target.checked)}
+                            />
+                        <label className="control-label">&nbsp;&nbsp;Configure LV Cache</label>
+                    </div>
+                    <div className={ssd}
+                      style={this.state.lvCacheConfig.lvCache ? {} : { display: 'none' }}>
+                        <label className="col-md-3 control-label">SSD</label>
+                        <div className="col-md-2">
+                        <input type="text" className="form-control"
+                            value={this.state.lvCacheConfig.ssd}
+                            onChange={(e) => this.handleLvCacheConfig("ssd", e.target.value)}
+                            />
+                            <span className="help-block">{ssdMsg}</span>
+                        </div>
+                    </div>
+                    <div className={lvCacheSize}
+                      style={this.state.lvCacheConfig.lvCache ? {} : { display: 'none' }}>
+                        <label className="col-md-3 control-label">LV Size(GB)</label>
+                        <div className="col-md-2">
+                            <input type="number" className="form-control"
+                                value={this.state.lvCacheConfig.lvCacheSize}
+                                onChange={(e) => this.handleLvCacheConfig("lvCacheSize", e.target.value)}
+                                />
+                                <span className="help-block">{lvCacheSizeMsg}</span>
+                        </div>
+                    </div>
+                    <div className={cacheMode}
+                      style={this.state.lvCacheConfig.lvCache ? {} : { display: 'none' }}>
+                        <label className="col-md-3 control-label">Cache Mode <span className="fa fa-lg fa-info-circle"
+                            title="Caching mode is write-through by default. If cache is configured in other mode, please add input here."></span></label>
+                        <div className="col-md-2">
+                        <input type="text" className="form-control"
+                            value={this.state.lvCacheConfig.cacheMode}
+                            onChange={(e) => this.handleLvCacheConfig("cacheMode", e.target.value)}
+                            />
+                            <span className="help-block">{cacheModeMsg}</span>
+                        </div>
+                    </div>
+                </form>
                 <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
                     <span className="pficon pficon-info"></span>
                     <strong>
