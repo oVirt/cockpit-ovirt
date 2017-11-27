@@ -44,20 +44,20 @@ const HeWizardEngine = ({heSetupModel, errorMsg, errorMsgs, handleEngineConfigUp
                     </div>
                 </div>
 
-                <div className={getClassNames("adminPortalPassword", errorMsgs)}>
+                <div className={getClassNames("adminPassword", errorMsgs)}>
                     <label className="col-md-4 control-label">Admin Portal Password</label>
                     <div className="col-md-6">
                         <input type="password" style={{width: "140px"}}
                                title="Enter the admin portal password."
                                className="form-control"
-                               onChange={(e) => handleEngineConfigUpdate("adminPortalPassword", e.target.value, "engine")}
+                               onChange={(e) => handleEngineConfigUpdate("adminPassword", e.target.value, "engine")}
                         />
                         {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
                     </div>
                 </div>
 
                 <div className={getClassNames("confirmAdminPortalPassword", errorMsgs)}
-                     style={engineConfig.adminPortalPassword.value !== "" ? {} : {display: 'none'}}>
+                     style={engineConfig.adminPassword.value !== "" ? {} : {display: 'none'}}>
                     <label className="col-md-4 control-label">Confirm Password</label>
                     <div className="col-md-6">
                         <input type="password" style={{width: "140px"}}
