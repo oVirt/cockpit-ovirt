@@ -69,26 +69,25 @@ export const messages = {
 };
 
 export const intelCpuTypes = [
-    { key: "Skylake-Client", title: "Intel Skylake-Client Family" },
-    { key: "Skylake", title: "Intel Skylake Family" },
-    { key: "Broadwell", title: "Intel Broadwell Family" },
-    { key: "Broadwell-noTSX", title: "Intel Broadwell-noTSX Family" },
-    { key: "Haswell", title: "Intel Haswell Family" },
-    { key: "Haswell-noTSX", title: "Intel Haswell-noTSX Family" },
-    { key: "IvyBridge", title: "Intel IvyBridge Family" },
-    { key: "SandyBridge", title: "Intel SandyBridge Family" },
-    { key: "Westmere", title: "Intel Westmere Family" },
-    { key: "Nehalem", title: "Intel Nehalem Family" },
-    { key: "Penryn", title: "Intel Penryn Family" },
-    { key: "Conroe", title: "Intel Conroe Family" }
+    { key: "model_Skylake-Client", title: "Intel Skylake Family" },
+    { key: "model_Broadwell", title: "Intel Broadwell Family" },
+    { key: "model_Broadwell-noTSX", title: "Intel Broadwell-noTSX Family" },
+    { key: "model_Haswell", title: "Intel Haswell Family" },
+    { key: "model_Haswell-noTSX", title: "Intel Haswell-noTSX Family" },
+    { key: "model_IvyBridge", title: "Intel IvyBridge Family" },
+    { key: "model_SandyBridge", title: "Intel SandyBridge Family" },
+    { key: "model_Westmere", title: "Intel Westmere Family" },
+    { key: "model_Nehalem", title: "Intel Nehalem Family" },
+    { key: "model_Penryn", title: "Intel Penryn Family" },
+    { key: "model_Conroe", title: "Intel Conroe Family" }
 ];
 
 export const amdCpuTypes = [
-    { key: "Opteron_G5", title: "AMD Opteron G5" },
-    { key: "Opteron_G4", title: "AMD Opteron G4" },
-    { key: "Opteron_G3", title: "AMD Opteron G3" },
-    { key: "Opteron_G2", title: "AMD Opteron G2" },
-    { key: "Opteron_G1", title: "AMD Opteron G1" }
+    { key: "model_Opteron_G5", title: "AMD Opteron G5" },
+    { key: "model_Opteron_G4", title: "AMD Opteron G4" },
+    { key: "model_Opteron_G3", title: "AMD Opteron G3" },
+    { key: "model_Opteron_G2", title: "AMD Opteron G2" },
+    { key: "model_Opteron_G1", title: "AMD Opteron G1" }
 ];
 
 export const defaultInterfaces = [

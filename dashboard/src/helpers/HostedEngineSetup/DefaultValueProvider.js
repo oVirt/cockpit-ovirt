@@ -75,10 +75,11 @@ export class DefaultValueProvider {
     }
 
     getCpuArchitecture() {
-        let modelData = this.getTaskData("Get CPU model")["stdout"];
-        const cpuModel = modelData.replace("\<model\>", "").replace("\</model\>", "").trim();
+        const modelData = this.getTaskData("Get CPU model")["stdout"];
+        const cpuModelPrefix = "model_";
+        const cpuModel = cpuModelPrefix + modelData.replace("\<model\>", "").replace("\</model\>", "").trim();
 
-        let vendorData = this.getTaskData("Get CPU vendor")["stdout"];
+        const vendorData = this.getTaskData("Get CPU vendor")["stdout"];
         const cpuVendor = vendorData.replace("\<vendor\>", "").replace("\</vendor\>", "").trim();
 
         return {
