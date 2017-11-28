@@ -85,6 +85,9 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Tue Nov  28 2017 Ryan Barry <rbarry@redhat.com> - 0.11.1-0.5
+- Even more hosted engine fixes
+
 * Tue Nov  14 2017 Ryan Barry <rbarry@redhat.com> - 0.11.1-0.4
 - More hosted engine fixes
 
