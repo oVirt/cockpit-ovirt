@@ -420,4 +420,29 @@ div.multi-row-text-box-input {
     margin-top: 100px;
 }
 
+div.he-cpu-select-row {
+    margin-bottom: 0px;
+}
 
+div.he-cpu-select-col {
+    padding-right: 0px;
+}
+
+div.he-cpu-select-container {
+    width: 100%;
+}
+
+div.he-cpu-select-warn-col {
+    padding-left: 5px;
+    height: 26px;
+}
+
+.he-warning-icon {
+    font-size: 15px;
+}
+
+.vertical-center {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}

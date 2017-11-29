@@ -59,6 +59,10 @@ export const messages = {
     GENERAL_ERROR_MSG: "Please correct errors before moving to the next step.",
     PASSWORD_MISMATCH: "Passwords do not match",
     IP_NOT_PINGABLE: "Unable to ping address. Please enter a pingable address.",
+    // Displayed when detected CPU model isn't recognized
+    DETECTED_CPU_NOT_FOUND: "Unable to determine CPU level. Please select the CPU model the host CPU can properly emulate.",
+    // Displayed when detected CPU model is known, but not supported by ovirt-hosted-engine-setup
+    DETECTED_CPU_NOT_SUPPORTED_BY_SETUP: "The CPU level has been set at the highest level supported for the detected CPU.",
     VIRT_NOT_SUPPORTED: "Error! Hardware virtualization not supported on this host!",
     SYS_DATA_UNRETRIEVABLE: "Error! System data could not be retrieved!",
     DEPLOYMENT_SUCCESSFUL: "Hosted Engine has been successfully deployed!",
@@ -68,13 +72,37 @@ export const messages = {
     NO_GDEPLOY_ANSWER_FILES_FOUND: "No gdeploy answer files found."
 };
 
+export const allowedIntelCpus = [
+    "model_Broadwell",
+    "model_Broadwell-noTSX",
+    "model_Haswell",
+    "model_Haswell-noTSX",
+    "model_SandyBridge",
+    "model_Westmere",
+    "model_Nehalem",
+    "model_Penryn",
+    "model_Conroe"
+];
+
+export const allIntelCpus = [
+    "model_Skylake-Client",
+    "model_Broadwell",
+    "model_Broadwell-noTSX",
+    "model_Haswell",
+    "model_Haswell-noTSX",
+    "model_IvyBridge",
+    "model_SandyBridge",
+    "model_Westmere",
+    "model_Nehalem",
+    "model_Penryn",
+    "model_Conroe"
+];
+
 export const intelCpuTypes = [
-    { key: "model_Skylake-Client", title: "Intel Skylake Family" },
     { key: "model_Broadwell", title: "Intel Broadwell Family" },
     { key: "model_Broadwell-noTSX", title: "Intel Broadwell-noTSX Family" },
     { key: "model_Haswell", title: "Intel Haswell Family" },
     { key: "model_Haswell-noTSX", title: "Intel Haswell-noTSX Family" },
-    { key: "model_IvyBridge", title: "Intel IvyBridge Family" },
     { key: "model_SandyBridge", title: "Intel SandyBridge Family" },
     { key: "model_Westmere", title: "Intel Westmere Family" },
     { key: "model_Nehalem", title: "Intel Nehalem Family" },

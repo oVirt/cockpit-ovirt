@@ -27,7 +27,7 @@ const rootSshAccessOptions = [
 
 const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs, handleDnsAddressUpdate,
                     handleDnsAddressDelete, handleImportApplianceUpdate, handleVmConfigUpdate, heSetupModel,
-                    importAppliance, showApplPath, verifyDns, verifyReverseDns, }) => {
+                    importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs }) => {
     const vmConfig = heSetupModel.vm;
     const vdsmConfig = heSetupModel.vdsm;
     const storageConfig = heSetupModel.storage;
@@ -81,15 +81,26 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                     </div>
                 </div>
 
-                <div className={getClassNames("cpu", errorMsgs)}>
+                <div className={getClassNames("cpu", errorMsgs) + " he-cpu-select-row"} >
                     <label className="col-md-3 control-label">CPU Type</label>
-                    <div className="col-md-6">
-                        <div style={{width: "250px"}}>
+                    <div className="col-md-4 he-cpu-select-col">
+                        <div className="he-cpu-select-container">
                             <Selectbox optionList={cpuArch.vendor === "Intel" ? intelCpuTypes : amdCpuTypes}
                                        selectedOption={heSetupModel.vdsm.cpu.value}
                                        callBack={(e) => handleVmConfigUpdate("cpu", e, "vdsm")}
                             />
                         </div>
+                    </div>
+                    <div className="col-md-1 he-cpu-select-warn-col">
+                        {warningMsgs.cpu &&
+                            <i className="pficon pficon-warning-triangle-o he-warning-icon vertical-center"
+                               rel="tooltip" title={warningMsgs.cpu}/>
+                        }
+                    </div>
+                </div>
+                <div className={getClassNames("cpu", errorMsgs)}>
+                    <div className="col-md-3" />
+                    <div className="col-md-6">
                         {errorMsgs.cpu && <span className="help-block">{errorMsgs.cpu}</span>}
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
 import { getErrorMsgForProperty, validatePropsForUiStage } from '../Validation'
-import { amdCpuTypes, configValues, intelCpuTypes, messages } from '../constants'
+import { allIntelCpus, amdCpuTypes, configValues, intelCpuTypes, messages } from '../constants'
 import HeWizardVm from './HeWizardVm'
 
 const defaultAppliances = [
@@ -20,7 +20,8 @@ class HeWizardVmContainer extends Component {
             appliances: defaultAppliances,
             cpuArch: {},
             errorMsg: "",
-            errorMsgs: {}
+            errorMsgs: {},
+            warningMsgs: {}
         };
 
         this.handleDnsAddressDelete = this.handleDnsAddressDelete.bind(this);
@@ -28,6 +29,7 @@ class HeWizardVmContainer extends Component {
         this.verifyDns = this.verifyDns.bind(this);
         this.verifyReverseDns = this.verifyReverseDns.bind(this);
         this.setDefaultValues = this.setDefaultValues.bind(this);
+        this.setCpuModel = this.setCpuModel.bind(this);
         this.setApplianceFiles = this.setApplianceFiles.bind(this);
         this.setValidationValues = this.setValidationValues.bind(this);
         this.handleVmConfigUpdate = this.handleVmConfigUpdate.bind(this);
@@ -79,10 +81,22 @@ class HeWizardVmContainer extends Component {
         const cpuArch = defaultsProvider.getCpuArchitecture();
 
         heSetupModel.vm.cloudinitVMTZ.value = defaultsProvider.getTimeZone();
-        heSetupModel.vdsm.cpu.value = cpuArch.model;
+        this.setCpuModel(cpuArch, heSetupModel);
         this.setApplianceFiles();
 
         this.setState({ heSetupModel, cpuArch: cpuArch })
+    }
+
+    setCpuModel(cpuArch, heSetupModel) {
+        heSetupModel.vdsm.cpu.value = cpuArch.model;
+        const detectedCpuInvalid = cpuArch.detectedModel !== cpuArch.model;
+        const detectedCpuRecognized = allIntelCpus.includes(cpuArch.detectedModel);
+
+        if (detectedCpuInvalid) {
+            const warningMsgs = this.state.warningMsgs;
+            warningMsgs.cpu = detectedCpuRecognized ? messages.DETECTED_CPU_NOT_SUPPORTED_BY_SETUP : messages.DETECTED_CPU_NOT_FOUND;
+            this.setState({ warningMsgs });
+        }
     }
 
     setApplianceFiles() {
@@ -203,13 +217,20 @@ class HeWizardVmContainer extends Component {
     }
 
     validateCpuModelSelection(errorMsgs) {
+        const cpuArch = this.state.cpuArch;
+
+        // user will select CPU level if detected CPU isn't recognized - don't display error message
+        if (!allIntelCpus.includes(cpuArch.detectedModel)) {
+            return;
+        }
+
         let hostCpuIdx = -1;
-        const hostCpuModel = this.state.cpuArch.model;
+        const hostCpuModel = cpuArch.model;
 
         let selectedCpuIdx = -1;
         const selectedCpuModel = this.state.heSetupModel.vdsm.cpu.value;
 
-        const cpuModels = this.state.cpuArch.vendor === "Intel" ? intelCpuTypes : amdCpuTypes;
+        const cpuModels = cpuArch.vendor === "Intel" ? intelCpuTypes : amdCpuTypes;
 
         for (let i = 0; i < cpuModels.length; i++) {
             let cpuModel = cpuModels[i].key;
@@ -224,7 +245,8 @@ class HeWizardVmContainer extends Component {
         }
 
         if (selectedCpuIdx < hostCpuIdx) {
-            errorMsgs.cpu = "VM CPU model cannot be newer than host CPU model (" + hostCpuModel + ").";
+            errorMsgs.cpu = "VM CPU model cannot be newer than host CPU model ("
+                            + hostCpuModel.replace("model_", "") + ").";
         }
     }
 
@@ -271,6 +293,7 @@ class HeWizardVmContainer extends Component {
                 showApplPath={this.state.showApplPath}
                 verifyDns={this.verifyDns}
                 verifyReverseDns={this.verifyReverseDns}
+                warningMsgs={this.state.warningMsgs}
             />
         )
     }
