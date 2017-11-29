@@ -1,4 +1,5 @@
-import { configValues, defaultInterfaces, resourceConstants, status } from "../../components/HostedEngineSetup/constants"
+import { allIntelCpus, allowedIntelCpus, configValues, defaultInterfaces,
+         resourceConstants, status } from "../../components/HostedEngineSetup/constants"
 
 export class DefaultValueProvider {
     constructor(registeredCallback) {
@@ -9,6 +10,7 @@ export class DefaultValueProvider {
         this.getSystemData = this.getSystemData.bind(this);
         this.getTaskData = this.getTaskData.bind(this);
         this.getCpuArchitecture = this.getCpuArchitecture.bind(this);
+        this.getCpuModel = this.getCpuModel.bind(this);
         this.getMaxMemAvailable = this.getMaxMemAvailable.bind(this);
         this.getMaxVCpus = this.getMaxVCpus.bind(this);
         this.getApplianceFiles = this.getApplianceFiles.bind(this);
@@ -75,17 +77,40 @@ export class DefaultValueProvider {
     }
 
     getCpuArchitecture() {
-        const modelData = this.getTaskData("Get CPU model")["stdout"];
-        const cpuModelPrefix = "model_";
-        const cpuModel = cpuModelPrefix + modelData.replace("\<model\>", "").replace("\</model\>", "").trim();
-
         const vendorData = this.getTaskData("Get CPU vendor")["stdout"];
         const cpuVendor = vendorData.replace("\<vendor\>", "").replace("\</vendor\>", "").trim();
 
+        const modelData = this.getTaskData("Get CPU model")["stdout"];
+        const cpuModelPrefix = "model_";
+        const detectedModel = cpuModelPrefix + modelData.replace("\<model\>", "").replace("\</model\>", "").trim();
+        let cpuModel = detectedModel;
+
+        if (cpuVendor === "Intel") {
+            cpuModel = this.getCpuModel(detectedModel);
+        }
+
         return {
+            detectedModel: detectedModel,
             model: cpuModel,
             vendor: cpuVendor
         };
+    }
+
+    getCpuModel(detectedCpu) {
+        let cpu = allowedIntelCpus[allowedIntelCpus.length - 1];
+        let currIdx = allIntelCpus.indexOf(detectedCpu);
+
+        if (currIdx !== -1) {
+            for (currIdx; currIdx <= allIntelCpus.length; currIdx++) {
+                const currCpu = allIntelCpus[currIdx];
+                if (allowedIntelCpus.includes(currCpu)) {
+                    cpu = currCpu;
+                    break;
+                }
+            }
+        }
+
+        return cpu;
     }
 
     getMaxMemAvailable() {
