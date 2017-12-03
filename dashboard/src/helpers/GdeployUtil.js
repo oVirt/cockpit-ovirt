@@ -52,7 +52,7 @@ var GdeployUtil = {
             ]
         }
     },
-    createGdeployConfig(glusterModel, templateModel, filePath) {
+    createGdeployConfig(glusterModel, templateModel, filePath, callback) {
         const template = JSON.parse(JSON.stringify(templateModel));
         const volumeTemplate = template.volume
         const volumeConfigs = this.createVolumeConfigs(glusterModel.volumes, glusterModel.hosts, volumeTemplate)
@@ -70,10 +70,10 @@ var GdeployUtil = {
             redhatSubscription,
             yumConfig
         )
-        // Dir /var/lib/ovirt-hosted-engine-setup/gdeploy is not available first time, so creating.
-        this.createDirIfNotExist(filePath)
         const configString = this.convertToString(gdeployConfig)
-        return this.writeConfigFile(filePath, configString)
+        this.handleDirAndFileCreation(filePath, configString, function(result){
+          callback(true)
+        })
     },
     createPreFlightCheck(hosts, pvConfig) {
         const preFlightCheck = {
@@ -374,22 +374,23 @@ var GdeployUtil = {
     appendLine(baseString, newString) {
         return baseString + '\n' + newString
     },
-    writeConfigFile(filePath, configString) {
-        // Take backup conf file before replacing contents.
-        this.backupFileWithTimestamp(filePath)
+    writeConfigFile(filePath, configString, callback) {
         const file = cockpit.file(filePath)
-        return file.replace(configString)
+        file.replace(configString)
             .always(function(tag) {
                 file.close()
+                callback(true)
             })
     },
-    createHEAnswerFileForGlusterStorage(volumeName, glusterServers, filePath) {
+    createHEAnswerFileForGlusterStorage(volumeName, glusterServers, filePath, callback) {
         let configString = "[environment:default]"
         configString = this.appendLine(configString, `OVEHOSTED_STORAGE/storageDomainConnection=str:${glusterServers[0]}:/${volumeName}`)
         if (glusterServers.length > 1) {
             configString = this.appendLine(configString, `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}`)
         }
-        return this.writeConfigFile(filePath, configString)
+        this.handleDirAndFileCreation(filePath, configString, function(result){
+          callback(true)
+        })
     },
     runGdeploy(configFile, stdoutCallback, successCallback, failCallback) {
         //gdeploy -c /cockpit-gluster/src/gdeploy-templat.conf
@@ -431,30 +432,90 @@ var GdeployUtil = {
             callBack(false)
         })
     },
-    createDirIfNotExist(filePath){
+    createDir(filePath, callback){
       // pick only directory path
       const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
-      return cockpit.spawn(
-        ["mkdir",dirPath]
+       cockpit.spawn(
+        [ "mkdir", dirPath ], { "superuser":"require" }
       ).done(function(code){
-        console.log("Directory "+dirPath+" created successfully.");
+        console.log("Directory " + dirPath + " created successfully.");
+        callback(code)
       }).fail(function(code){
-        console.log("Directory "+dirPath+" already exist.");
+        console.log("Failed to create directory " + dirPath + ", Reason: "+ code);
+        callback(code)
       })
     },
-    backupFileWithTimestamp(filePath){
+    backupOldFileWithTimestamp(filePath, callback){
       // pick only directory path
       const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
       // pick only file name, omiting .conf
       const fileName = filePath.split("/").pop().split(".")[0]
       // Complete file path containing timestamp.
-      const backupPath = dirPath+"/"+fileName+"-"+new Date().getTime()+".conf"
-      return cockpit.spawn(
-        ["mv",filePath,backupPath]
+      const backupPath = dirPath + "/" + fileName + "-" + new Date().getTime() + ".conf"
+       cockpit.spawn(
+        [ "mv", filePath, backupPath ], { "superuser":"require" }
       ).done(function(code){
-        console.log("File "+backupPath+" backup successfully.");
+        console.log("Backup of " + backupPath + " completed successfully.");
+        callback(code)
       }).fail(function(code){
-        console.log("File "+backupPath+" backup failed.");
+        console.log("Failed to take backup of " + backupPath + ", Reason: "+ code);
+        callback(code)
+      })
+    },
+    checkIfDirExist(filePath, callback){
+      // pick only directory path
+      const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
+       cockpit.spawn(
+        [ "ls", dirPath ], { "superuser":"require" }
+      ).done(function(code){
+        console.log("Directory " + dirPath + " is exist.");
+        callback(true)
+      }).fail(function(code){
+        console.log("Directory " + dirPath + " does not exist.");
+        callback(false)
+      })
+    },
+    checkIfFileExist(filePath, callback){
+      cockpit.file(filePath, { "superuser":"require" }).read()
+          .done(function (content, tag) {
+            if(content != null && tag != "-") {
+              console.log("File " + filePath + " is exist.");
+              callback(true)
+            } else {
+              console.log("File " + filePath + " does not exist.");
+              callback(false)
+            }
+          })
+          .fail(function (error) {
+            console.log("Failed to read File "+ filePath + ", Reason: "+ error);
+            callback(false)
+          });
+    },
+    handleDirAndFileCreation(filePath, configString, callback) {
+      const that = this
+      this.checkIfDirExist(filePath, function(isDirPresent) {
+        if(isDirPresent) {
+          that.checkIfFileExist(filePath, function(isFilePresent) {
+            if(isFilePresent) {
+              that.backupOldFileWithTimestamp(filePath, function(response1) {
+                that.writeConfigFile(filePath, configString, function(response2) {
+                  callback(true)
+                })
+              })
+            } else {
+              console.log("File " + filePath + " is not present to take backup, so creating the file.");
+              that.writeConfigFile(filePath, configString, function(response1) {
+                callback(true)
+              })
+            }
+          })
+        } else {
+          that.createDir(filePath, function(response1) {
+              that.writeConfigFile(filePath, configString, function(response2) {
+                callback(true)
+              })
+          })
+        }
       })
     }
 }
