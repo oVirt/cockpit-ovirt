@@ -134,7 +134,12 @@ class HeWizardVmContainer extends Component {
         }
 
         if (propName === "cloudinitRootPassword") {
-            heSetupModel.vm.cloudinitRootPassword.useInAnswerFile = true;
+            if (value === "") {
+                heSetupModel.vm.confirmRootPassword.value = "";
+                heSetupModel.vm.cloudinitRootPassword.useInAnswerFile = false;
+            } else {
+                heSetupModel.vm.cloudinitRootPassword.useInAnswerFile = true;
+            }
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
