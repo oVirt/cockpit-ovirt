@@ -30,20 +30,18 @@ class WizardPreviewStep extends Component {
                     const configTemplate = ini.parse(template)
                     GdeployUtil.createGdeployConfig(that.props.glusterModel,
                         configTemplate,
-                        that.props.configFilePath
-                    )
-                    .done(function() {
-                        console.log(`Gdeploy configuration saved successfully to ${that.props.configFilePath}`)
-                        that.readGdeployConfig()
+                        that.props.configFilePath,
+                    function(returnValue){
+                      console.log(`Gdeploy configuration saved successfully to ${that.props.configFilePath}`)
+                      that.readGdeployConfig()
                     })
                 }
             })
             GdeployUtil.createHEAnswerFileForGlusterStorage(this.props.glusterModel.volumes[0].name,
                 this.props.glusterModel.hosts,
-                this.props.heAnsweFilePath
-            )
-            .done(function() {
-                console.log(`Hosted Engine configuration saved successfully to ${that.props.heAnsweFilePath}`)
+                this.props.heAnsweFilePath,
+            function(returnValue){
+              console.log(`Hosted Engine configuration saved successfully to ${that.props.heAnsweFilePath}`)
             })
         }
     }
