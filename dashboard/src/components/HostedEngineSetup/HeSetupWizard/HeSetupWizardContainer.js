@@ -16,8 +16,9 @@ class HeSetupWizardContainer extends Component {
         };
 
         this.state.heSetupModel = new HeSetupModel();
-        this.virtSupported = status.EMPTY;
-        this.systemDataRetrieved = status.EMPTY;
+        this.virtSupported = false;
+        this.systemDataRetrieved = false;
+        this.sufficientMemAvail = false;
         this.defaultsProvider = null;
 
         this.handleFinish = this.handleFinish.bind(this);
@@ -31,21 +32,17 @@ class HeSetupWizardContainer extends Component {
 
     }
 
-    init(initStatus) {
-        let loadingStatus = status.EMPTY;
-        let systemData = null;
+    init(initSuccessful) {
+        this.systemDataRetrieved = initSuccessful;
+        this.virtSupported = this.defaultsProvider.virtSupported();
+        this.sufficientMemAvail = this.defaultsProvider.sufficientMemAvail();
 
-        if (initStatus === status.FAILURE) {
-            this.systemDataRetrieved = status.FAILURE;
-            loadingStatus = status.FAILURE;
-        } else if (!this.defaultsProvider.virtSupported()) {
-            this.virtSupported = status.FAILURE;
-            loadingStatus = status.FAILURE;
-        } else {
-            this.virtSupported = status.SUCCESS;
-            this.systemDataRetrieved = status.SUCCESS;
+        const loadingSuccessful = this.systemDataRetrieved && this.virtSupported && this.sufficientMemAvail;
+        const loadingStatus = loadingSuccessful ? status.SUCCESS : status.FAILURE;
+
+        let systemData = null;
+        if (initSuccessful) {
             systemData = this.defaultsProvider.systemData;
-            loadingStatus = status.SUCCESS;
         }
 
         this.setState({ loadingState: loadingStatus, systemData: systemData });
@@ -98,6 +95,7 @@ class HeSetupWizardContainer extends Component {
                 systemData={this.state.systemData}
                 virtSupported={this.virtSupported}
                 systemDataRetrieved={this.systemDataRetrieved}
+                sufficientMemAvail={this.sufficientMemAvail}
                 gDeployAnswerFilePaths={this.state.gDeployAnswerFilePaths}
             />
         )

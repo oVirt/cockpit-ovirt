@@ -1,4 +1,4 @@
-import { configValues, configFileTypes as types, answerFilePrefixes } from "../components/HostedEngineSetup/constants"
+import { configValues, configFileTypes as types, answerFilePrefixes, resourceConstants } from "../components/HostedEngineSetup/constants"
 import classNames from 'classnames'
 import Validation from '../components/HostedEngineSetup/Validation'
 
@@ -321,7 +321,7 @@ export class HeSetupModel {
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
-                    range: {min: 4096, max: 4096}
+                    range: {min: resourceConstants.VM_MEM_MIN_MB, max: 4096}
                 },
                 networkConfigType: {
                     name: "networkConfigType",
