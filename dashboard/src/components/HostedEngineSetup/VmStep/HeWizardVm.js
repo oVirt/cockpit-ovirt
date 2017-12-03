@@ -262,6 +262,7 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                         <div className="col-md-3">
                             <input type="password"
                                    className="form-control"
+                                   value={vmConfig.confirmRootPassword.value}
                                    onChange={(e) => handleVmConfigUpdate("confirmRootPassword", e.target.value, "vm")}
                             />
                             {errorMsgs.confirmRootPassword && <span className="help-block">{errorMsgs.confirmRootPassword}</span>}

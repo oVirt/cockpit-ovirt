@@ -39,7 +39,12 @@ class HeWizardEngineContainer extends Component {
         heSetupModel[configType][propName].value = value;
 
         if (propName === "adminPassword") {
-            heSetupModel.engine.adminPassword.useInAnswerFile = true;
+            if (value === "") {
+                heSetupModel.engine.adminPassword.useInAnswerFile = false;
+                heSetupModel.engine.confirmAdminPortalPassword.value = "";
+            } else {
+                heSetupModel.engine.adminPassword.useInAnswerFile = true;
+            }
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
