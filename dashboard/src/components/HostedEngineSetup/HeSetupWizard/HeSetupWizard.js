@@ -8,11 +8,8 @@ import HeWizardPreviewContainer from '../PreviewStep/HeWizardPreviewContainer'
 import Wizard from '../../common/Wizard'
 
 const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
-                       loadingState, onSuccess, onStepChange, setup, systemData, virtSupported,
+                       loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, virtSupported,
                        systemDataRetrieved, gDeployAnswerFilePaths}) => {
-    const virtNotSupported = virtSupported === status.FAILURE;
-    const systemDataNotRetrievable = systemDataRetrieved === status.FAILURE;
-
     return (
         <div>
             {loadingState === status.POLLING &&
@@ -57,22 +54,31 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRed
                  className="he-error-msg-container-outer">
 
                 <div className="he-error-msg-container-inner">
-                    {virtNotSupported &&
-                    <div className="container">
-                        <div className="alert alert-danger he-error-msg">
-                            <span className="pficon pficon-error-circle-o" />
-                            <strong>{ messages.VIRT_NOT_SUPPORTED }</strong>
+                    {!virtSupported &&
+                        <div className="container">
+                            <div className="alert alert-danger he-error-msg">
+                                <span className="pficon pficon-error-circle-o" />
+                                <strong>{ messages.VIRT_NOT_SUPPORTED }</strong>
+                            </div>
                         </div>
-                    </div>
                     }
 
-                    {systemDataNotRetrievable &&
-                    <div className="container">
-                        <div className="alert alert-danger he-error-msg">
-                            <span className="pficon pficon-error-circle-o" />
-                            <strong>{ messages.SYS_DATA_UNRETRIEVABLE }</strong>
+                    {!systemDataRetrieved &&
+                        <div className="container">
+                            <div className="alert alert-danger he-error-msg">
+                                <span className="pficon pficon-error-circle-o" />
+                                <strong>{ messages.SYS_DATA_UNRETRIEVABLE }</strong>
+                            </div>
                         </div>
-                    </div>
+                    }
+
+                    {!sufficientMemAvail &&
+                        <div className="container">
+                            <div className="alert alert-danger he-error-msg">
+                                <span className="pficon pficon-error-circle-o" />
+                                <strong>{ messages.INSUFFICIENT_MEM_AVAIL }</strong>
+                            </div>
+                        </div>
                     }
                 </div>
             </div>

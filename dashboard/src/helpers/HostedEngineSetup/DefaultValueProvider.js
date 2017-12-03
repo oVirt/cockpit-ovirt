@@ -12,6 +12,7 @@ export class DefaultValueProvider {
         this.getCpuArchitecture = this.getCpuArchitecture.bind(this);
         this.getCpuModel = this.getCpuModel.bind(this);
         this.getMaxMemAvailable = this.getMaxMemAvailable.bind(this);
+        this.sufficientMemAvail = this.sufficientMemAvail.bind(this);
         this.getMaxVCpus = this.getMaxVCpus.bind(this);
         this.getApplianceFiles = this.getApplianceFiles.bind(this);
         this.cleanData = this.cleanData.bind(this);
@@ -34,12 +35,12 @@ export class DefaultValueProvider {
                 let data = self.cleanData(json);
                 self.systemData = JSON.parse(data);
                 self.ready = status.SUCCESS;
-                self.registeredCallback(status.SUCCESS);
+                self.registeredCallback(true);
             })
             .fail(function(error) {
                 console.log(error);
                 self.ready = status.FAILURE;
-                self.registeredCallback(status.FAILURE);
+                self.registeredCallback(false);
             });
     }
 
@@ -115,8 +116,8 @@ export class DefaultValueProvider {
 
     getMaxMemAvailable() {
         const ansibleFacts = this.getTaskData("Gathering Facts")["ansible_facts"];
-        let totalMemMb = ansibleFacts["ansible_memtotal_mb"];
-        let availMemMb = ansibleFacts["ansible_memfree_mb"];
+        const totalMemMb = ansibleFacts["ansible_memtotal_mb"];
+        const availMemMb = ansibleFacts["ansible_memory_mb"]["nocache"]["free"];
 
         let calc1 = totalMemMb - resourceConstants.VDSM_HOST_OVERHEAD_MB - resourceConstants.VDSM_VM_OVERHEAD_MB;
         let calc2 = availMemMb - resourceConstants.VDSM_VM_OVERHEAD_MB;
@@ -145,6 +146,19 @@ export class DefaultValueProvider {
 
     virtSupported() {
         return this.getTaskData("Get virt support")["stdout"] !== "";
+    }
+
+    sufficientMemAvail() {
+        const maxAvailMem = this.getMaxMemAvailable();
+        const minMemReqd = resourceConstants.VM_MEM_MIN_MB;
+        const sufficientMemAvail = maxAvailMem >= minMemReqd;
+
+        if (!sufficientMemAvail) {
+            console.log("Insufficient memory available to create HE VM. Available: " + maxAvailMem +
+                ", Required: " + minMemReqd);
+        }
+
+        return sufficientMemAvail;
     }
 
     getNetworkInterfaces() {

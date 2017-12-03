@@ -138,15 +138,16 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                 <div className={getClassNames("vmMemSizeMB", errorMsgs)}>
                     <label className="col-md-3 control-label">Memory Size (MB)</label>
                     <div className="col-md-6 he-text-with-units">
-                        <input type="number" style={{width: "60px"}}
+                        <input type="number"
                                min={vmConfig.vmMemSizeMB.range.min}
                                max={vmConfig.vmMemSizeMB.range.max}
                                placeholder="Disk Size"
                                title="Enter the disk size for the VM."
-                               className="form-control"
+                               className="form-control he-mem-input"
                                value={vmConfig.vmMemSizeMB.value}
                                onChange={(e) => handleVmConfigUpdate("vmMemSizeMB", e.target.value, "vm")}
                         />
+                        <span className="info-block">{vmConfig.vmMemSizeMB.range.max.toLocaleString() + " "} MB available</span>
                         {errorMsgs.vmMemSizeMB && <span className="help-block">{errorMsgs.vmMemSizeMB}</span>}
                     </div>
                 </div>

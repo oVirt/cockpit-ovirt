@@ -446,3 +446,9 @@ div.he-cpu-select-warn-col {
     top: 50%;
     transform: translateY(-50%);
 }
+
+input.he-mem-input {
+    width: 60px;
+    display: inline-block;
+    margin-right: 5px;
+}
