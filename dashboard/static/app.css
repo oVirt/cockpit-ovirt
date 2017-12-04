@@ -452,3 +452,9 @@ input.he-mem-input {
     display: inline-block;
     margin-right: 5px;
 }
+
+i.info-icon {
+    color: #0088CE;
+    font-size: 15px;
+    vertical-align: middle;
+}
