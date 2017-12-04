@@ -244,6 +244,47 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                         </div>
                     </div>
 
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">Network Configuration</label>
+                        <div className="col-md-3">
+                            <Selectbox optionList={networkConfigTypes}
+                                       selectedOption={vmConfig.networkConfigType.value}
+                                       callBack={(e) => handleVmConfigUpdate("networkConfigType", e, "vm")}
+                            />
+                        </div>
+                    </div>
+
+                    <div style={heSetupModel.vm.networkConfigType.value === "static" ? {} : {display: 'none'}}>
+                        <div className={getClassNames("cloudinitVMStaticCIDR", errorMsgs)}>
+                            <label className="col-md-3 control-label">VM IP Address</label>
+                            <div className="col-md-6">
+                                <input type="text" style={{width: "110px"}}
+                                       placeholder="192.168.1.2"
+                                       title="Enter the desired IP address for the VM."
+                                       className="form-control"
+                                       value={vmConfig.cloudinitVMStaticCIDR.value}
+                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDR", e.target.value, "vm")}
+                                       onBlur={(e) => verifyReverseDns(e.target.value)}
+                                />
+                                {errorMsgs.cloudinitVMStaticCIDR && <span className="help-block">{errorMsgs.cloudinitVMStaticCIDR}</span>}
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("cloudinitVMDNS", errorMsgs)}>
+                            <label className="col-md-3 control-label">DNS Servers</label>
+                            <div className="col-md-6">
+                                <div style={{width: "220px"}}>
+                                    <MultiRowTextBoxContainer values={vmConfig.cloudinitVMDNS.value}
+                                                              itemType={"Address"}
+                                                              rowLimit={3}
+                                                              handleValueUpdate={handleDnsAddressUpdate}
+                                                              handleValueDelete={handleDnsAddressDelete}/>
+                                    {errorMsgs.cloudinitVMDNS && <span className="help-block">{errorMsgs.cloudinitVMDNS}</span>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className={getClassNames("cloudinitRootPassword", errorMsgs)}>
                         <label className="col-md-3 control-label">Root Password</label>
                         <div className="col-md-3">
@@ -329,47 +370,6 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                                    checked={vmConfig.automateVMShutdown.value}
                                    onChange={(e) => handleVmConfigUpdate("automateVMShutdown", e.target.checked, "vm")}
                             />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Network Configuration</label>
-                        <div className="col-md-3">
-                            <Selectbox optionList={networkConfigTypes}
-                                       selectedOption={vmConfig.networkConfigType.value}
-                                       callBack={(e) => handleVmConfigUpdate("networkConfigType", e, "vm")}
-                            />
-                        </div>
-                    </div>
-
-                    <div style={heSetupModel.vm.networkConfigType.value === "static" ? {} : {display: 'none'}}>
-                        <div className={getClassNames("cloudinitVMStaticCIDR", errorMsgs)}>
-                            <label className="col-md-3 control-label">VM IP Address</label>
-                            <div className="col-md-6">
-                                <input type="text" style={{width: "110px"}}
-                                       placeholder="192.168.1.2"
-                                       title="Enter the desired IP address for the VM."
-                                       className="form-control"
-                                       value={vmConfig.cloudinitVMStaticCIDR.value}
-                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDR", e.target.value, "vm")}
-                                       onBlur={(e) => verifyReverseDns(e.target.value)}
-                                />
-                                {errorMsgs.cloudinitVMStaticCIDR && <span className="help-block">{errorMsgs.cloudinitVMStaticCIDR}</span>}
-                            </div>
-                        </div>
-
-                        <div className={getClassNames("cloudinitVMDNS", errorMsgs)}>
-                            <label className="col-md-3 control-label">DNS Servers</label>
-                            <div className="col-md-6">
-                                <div style={{width: "220px"}}>
-                                    <MultiRowTextBoxContainer values={vmConfig.cloudinitVMDNS.value}
-                                                     itemType={"Address"}
-                                                     rowLimit={3}
-                                                     handleValueUpdate={handleDnsAddressUpdate}
-                                                     handleValueDelete={handleDnsAddressDelete}/>
-                                    {errorMsgs.cloudinitVMDNS && <span className="help-block">{errorMsgs.cloudinitVMDNS}</span>}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
