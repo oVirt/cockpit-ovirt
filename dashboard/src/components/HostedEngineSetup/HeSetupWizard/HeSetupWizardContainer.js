@@ -69,11 +69,9 @@ class HeSetupWizardContainer extends Component {
         if (this.state.gDeployAnswerFilePaths) {
             console.log(messages.ADD_GDEPLOY_PROPS_TO_ANS_FILE);
             const gdeployAnsFiles = this.state.gDeployAnswerFilePaths;
-            const glusterAnsFile = gdeployAnsFiles.shift();
+            const glusterAnsFile = gdeployAnsFiles[0];
             const setupModel = this.state.heSetupModel.model;
             this.state.heSetupModel.addGlusterValues(glusterAnsFile, setupModel);
-
-            this.setState({ gDeployAnswerFilePaths: gdeployAnsFiles })
         } else {
             console.log(messages.NO_GDEPLOY_ANSWER_FILES_FOUND);
         }
