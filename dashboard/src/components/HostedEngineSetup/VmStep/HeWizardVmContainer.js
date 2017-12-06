@@ -121,6 +121,7 @@ class HeWizardVmContainer extends Component {
 
     handleVmConfigUpdate(propName, value, configType) {
         const heSetupModel = this.state.heSetupModel;
+        const vmConfig = heSetupModel.vm;
 
         if (propName === "ovfArchiveSelect") {
             this.handleApplianceFileUpdate(value);
@@ -140,6 +141,13 @@ class HeWizardVmContainer extends Component {
             } else {
                 heSetupModel.vm.cloudinitRootPassword.useInAnswerFile = true;
             }
+        }
+
+        if (propName === "cloudinitInstanceHostName" || propName === "cloudinitInstanceDomainName") {
+            const hostName = propName === "cloudinitInstanceHostName" ? value : vmConfig.cloudinitInstanceHostName.value;
+            const domainName = propName === "cloudinitInstanceDomainName" ? value : vmConfig.cloudinitInstanceDomainName.value;
+
+            heSetupModel.network.fqdn.value = hostName + "." + domainName;
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
