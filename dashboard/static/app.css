@@ -458,3 +458,12 @@ i.info-icon {
     font-size: 15px;
     vertical-align: middle;
 }
+
+label.he-long-label-name {
+    padding-left: 0px;
+}
+
+label.value-label {
+    margin-bottom: 0px;
+    padding-top: 3px;
+}

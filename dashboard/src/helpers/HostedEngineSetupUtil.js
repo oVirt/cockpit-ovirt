@@ -399,6 +399,18 @@ export class HeSetupModel {
                     useInAnswerFile: false,
                     required: false
                 },
+                cloudinitInstanceHostName: {
+                    name: "cloudinitInstanceHostName",
+                    ansibleVarName: "",
+                    ansiblePhasesUsed: [],
+                    description: "Engine VM Host Name",
+                    value: "ovirt-engine",
+                    type: types.STRING,
+                    showInReview: true,
+                    uiStage: "VM",
+                    useInAnswerFile: true,
+                    required: false
+                },
                 cloudinitInstanceDomainName: {
                     name: "cloudinitInstanceDomainName",
                     ansibleVarName: "CLOUD_INIT_DOMAIN_NAME",

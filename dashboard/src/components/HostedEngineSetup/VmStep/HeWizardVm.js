@@ -218,22 +218,20 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                         </div>
                     </div>
 
-                    <div className={getClassNames("fqdn", errorMsgs)}>
-                        <label className="col-md-3 control-label">Engine VM FQDN</label>
-                        <div className="col-md-4">
-                            <input type="text"
-                                   title="Enter the engine FQDN."
+                    <div className={getClassNames("cloudinitInstanceHostName", errorMsgs)}>
+                        <label className="col-md-3 control-label">Engine VM Host Name</label>
+                        <div className="col-md-3">
+                            <input type="text" placeholder="Engine VM Host Name"
                                    className="form-control"
-                                   value={networkConfig.fqdn.value}
-                                   onChange={(e) => handleVmConfigUpdate("fqdn", e.target.value, "network")}
-                                   onBlur={(e) => verifyDns(e.target.value)}
+                                   value={vmConfig.cloudinitInstanceHostName.value}
+                                   onChange={(e) => handleVmConfigUpdate("cloudinitInstanceHostName", e.target.value, "vm")}
                             />
-                            {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
+                            {errorMsgs.cloudinitInstanceHostName && <span className="help-block">{errorMsgs.cloudinitInstanceHostName}</span>}
                         </div>
                     </div>
 
                     <div className={getClassNames("cloudinitInstanceDomainName", errorMsgs)}>
-                        <label className="col-md-3 control-label">Engine VM Domain</label>
+                        <label className="col-md-3 control-label he-long-label-name">Engine VM Domain Name</label>
                         <div className="col-md-3">
                             <input type="text" placeholder="Engine VM Domain"
                                    className="form-control"
@@ -241,6 +239,14 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                                    onChange={(e) => handleVmConfigUpdate("cloudinitInstanceDomainName", e.target.value, "vm")}
                             />
                             {errorMsgs.cloudinitInstanceDomainName && <span className="help-block">{errorMsgs.cloudinitInstanceDomainName}</span>}
+                        </div>
+                    </div>
+
+                    <div className={getClassNames("fqdn", errorMsgs)}>
+                        <label className="col-md-3 control-label">Engine VM FQDN</label>
+                        <div className="col-md-4">
+                            <label className="value-label" type="text">{networkConfig.fqdn.value}</label>
+                            {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
                         </div>
                     </div>
 
