@@ -443,8 +443,8 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: false
                 },
-                cloudinitRootPassword: {
-                    name: "cloudinitRootPassword",
+                cloudinitRootPwd: {
+                    name: "cloudinitRootPwd",
                     ansibleVarName: "APPLIANCE_PASSWORD",
                     ansiblePhasesUsed: [1],
                     description: "Root password",
