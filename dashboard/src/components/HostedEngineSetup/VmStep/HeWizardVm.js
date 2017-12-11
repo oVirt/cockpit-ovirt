@@ -291,20 +291,20 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                         </div>
                     </div>
 
-                    <div className={getClassNames("cloudinitRootPassword", errorMsgs)}>
+                    <div className={getClassNames("cloudinitRootPwd", errorMsgs)}>
                         <label className="col-md-3 control-label">Root Password</label>
                         <div className="col-md-3">
                             <input type="password"
                                    className="form-control"
-                                   value={vmConfig.cloudinitRootPassword.value}
-                                   onChange={(e) => handleVmConfigUpdate("cloudinitRootPassword", e.target.value, "vm")}
+                                   value={vmConfig.cloudinitRootPwd.value}
+                                   onChange={(e) => handleVmConfigUpdate("cloudinitRootPwd", e.target.value, "vm")}
                             />
-                            {errorMsgs.cloudinitRootPassword && <span className="help-block">{errorMsgs.cloudinitRootPassword}</span>}
+                            {errorMsgs.cloudinitRootPwd && <span className="help-block">{errorMsgs.cloudinitRootPwd}</span>}
                         </div>
                     </div>
 
                     <div className={getClassNames("confirmRootPassword", errorMsgs)}
-                         style={vmConfig.cloudinitRootPassword.value !== "" ? {} : {display: 'none'}}>
+                         style={vmConfig.cloudinitRootPwd.value !== "" ? {} : {display: 'none'}}>
                         <label className="col-md-3 control-label">Confirm Root Password</label>
                         <div className="col-md-3">
                             <input type="password"

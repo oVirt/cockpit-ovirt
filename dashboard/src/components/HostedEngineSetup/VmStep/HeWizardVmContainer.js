@@ -134,12 +134,12 @@ class HeWizardVmContainer extends Component {
             this.setNetworkConfigDisplaySettings(value);
         }
 
-        if (propName === "cloudinitRootPassword") {
+        if (propName === "cloudinitRootPwd") {
             if (value === "") {
                 heSetupModel.vm.confirmRootPassword.value = "";
-                heSetupModel.vm.cloudinitRootPassword.useInAnswerFile = false;
+                heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = false;
             } else {
-                heSetupModel.vm.cloudinitRootPassword.useInAnswerFile = true;
+                heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = true;
             }
         }
 
@@ -220,7 +220,7 @@ class HeWizardVmContainer extends Component {
 
     validateRootPasswordMatch(errorMsgs) {
         const vmConfig = this.state.heSetupModel.vm;
-        let passwordsMatch = vmConfig.cloudinitRootPassword.value === vmConfig.confirmRootPassword.value;
+        let passwordsMatch = vmConfig.cloudinitRootPwd.value === vmConfig.confirmRootPassword.value;
 
         if (!passwordsMatch) {
             errorMsgs.confirmRootPassword = messages.PASSWORD_MISMATCH;
