@@ -16,6 +16,10 @@ class HeWizardPreviewContainer extends Component {
     getDisplayValue(prop) {
         if (prop.name === "cpu") {
             return prop.value.replace("model_", "").trim();
+        } else if (prop.name === "firewallManager") {
+            return prop.value === "iptables" ? "yes" : "no";
+        } else if (typeof prop.value === "boolean") {
+            return prop.value ? "yes" : "no";
         } else {
             return prop.value.toString();
         }

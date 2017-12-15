@@ -44,13 +44,12 @@ const HeWizardNetwork = ({errorMsg, errorMsgs, gatewayState, interfaces, network
                 </div>
 
                 <div className="form-group">
-                    <label className="col-md-3 control-label">Firewall</label>
+                    <label className="col-md-3 control-label">Configure iptables</label>
                     <div className="col-md-5">
                         <input type="checkbox"
-                               checked={networkConfig.firewallManager.value}
+                               checked={networkConfig.firewallManager.value === "iptables"}
                                onChange={(e) => handleNetworkConfigUpdate("firewallManager", e.target.checked)}
                         />
-                        <label className="control-label he-input-label">Configure IPTables</label>
                     </div>
                 </div>
 

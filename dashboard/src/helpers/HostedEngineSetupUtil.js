@@ -237,9 +237,9 @@ export class HeSetupModel {
                 },
                 firewallManager: {
                     name: "firewallManager",
-                    description: "Firewall",
-                    value: false,
-                    type: types.BOOLEAN,
+                    description: "Configure iptables",
+                    value: "iptables",
+                    type: types.STRING,
                     showInReview: true,
                     uiStage: "Network",
                     useInAnswerFile: true,

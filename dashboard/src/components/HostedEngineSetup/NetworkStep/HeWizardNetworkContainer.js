@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { pingGateway } from '../../../helpers/HostedEngineSetupUtil'
 import { validatePropsForUiStage, getErrorMsgForProperty } from '../Validation'
-import { defaultInterfaces, messages, status as gwState } from '../constants'
+import { defaultInterfaces, messages, status as gwState, configFileTypes as types } from '../constants'
 import HeWizardNetwork from './HeWizardNetwork'
 
 class HeWizardNetworkContainer extends Component {
@@ -70,7 +70,14 @@ class HeWizardNetworkContainer extends Component {
 
     handleNetworkConfigUpdate(property, value) {
         const networkConfig = this.state.networkConfig;
-        networkConfig[property].value = value;
+
+        if (property === "firewallManager") {
+            networkConfig.firewallManager.value = value ? "iptables" : "None";
+            networkConfig.firewallManager.type = value ? types.STRING : types.NONE;
+        } else {
+            networkConfig[property].value = value;
+        }
+
         this.setState({ networkConfig });
         this.validateConfigUpdate(property, networkConfig);
     }
