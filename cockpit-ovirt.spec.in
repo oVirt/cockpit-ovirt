@@ -85,6 +85,9 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Wed Dec 13 2017 Ryan Barry <rbarry@redhat.com> - 0.11.3-0.1
+- Correct some problems with the HE answerfile
+
 * Wed Dec 13 2017 Ryan Barry <rbarry@redhat.com> - 0.11.2-0.1
 - Rework tarball naming
 
