@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
 import { getErrorMsgForProperty, validatePropsForUiStage } from '../Validation'
-import { allIntelCpus, amdCpuTypes, configValues, intelCpuTypes, messages } from '../constants'
+import { allIntelCpus, amdCpuTypes, configValues, intelCpuTypes, messages, resourceConstants as constants } from '../constants'
 import HeWizardVm from './HeWizardVm'
 
 const defaultAppliances = [
@@ -79,8 +79,13 @@ class HeWizardVmContainer extends Component {
         const heSetupModel = this.state.heSetupModel;
         const defaultsProvider = this.props.defaultsProvider;
         const cpuArch = defaultsProvider.getCpuArchitecture();
+        const maxMemAvail = defaultsProvider.getMaxMemAvailable();
 
         heSetupModel.vm.cloudinitVMTZ.value = defaultsProvider.getTimeZone();
+        if (maxMemAvail < constants.VM_MEM_MIN_RECOMMENDED_MB) {
+            heSetupModel.vm.vmMemSizeMB.value = maxMemAvail;
+        }
+
         this.setCpuModel(cpuArch, heSetupModel);
         this.setApplianceFiles();
 
