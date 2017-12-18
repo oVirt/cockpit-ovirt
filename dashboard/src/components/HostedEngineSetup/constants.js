@@ -53,7 +53,8 @@ export const deploymentOption = {
 export const resourceConstants = {
     VDSM_HOST_OVERHEAD_MB: 256,
     VDSM_VM_OVERHEAD_MB: 64,
-    VM_MEM_MIN_MB: 4096
+    VM_MEM_MIN_MB: 2048,
+    VM_MEM_MIN_RECOMMENDED_MB: 4096
 };
 
 export const messages = {
@@ -66,7 +67,8 @@ export const messages = {
     DETECTED_CPU_NOT_SUPPORTED_BY_SETUP: "The CPU level has been set at the highest level supported for the detected CPU.",
     VIRT_NOT_SUPPORTED: "Hardware virtualization is not supported on this host!",
     SYS_DATA_UNRETRIEVABLE: "System data could not be retrieved!",
-    INSUFFICIENT_MEM_AVAIL: "There is insufficient memory available to support engine VM creation at this time!",
+    INSUFFICIENT_MEM_AVAIL: `There is insufficient memory available to support engine VM creation at this time! The minimum requirement is ${resourceConstants.VM_MEM_MIN_MB.toLocaleString()}MB.`,
+    RECOMMENDED_MIN_MEM_AVAIL_WARNING: `The minimum recommended amount of memory is ${resourceConstants.VM_MEM_MIN_RECOMMENDED_MB.toLocaleString()}MB.`,
     DEPLOYMENT_SUCCESSFUL: "Hosted Engine has been successfully deployed!",
     DEPLOYMENT_FAILED: "Deployment failed",
     DEPLOYMENT_IN_PROGRESS: "Deployment in progress",

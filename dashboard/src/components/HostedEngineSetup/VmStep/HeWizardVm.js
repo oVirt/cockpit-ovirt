@@ -2,7 +2,7 @@ import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
-import { amdCpuTypes, intelCpuTypes } from "../constants"
+import { amdCpuTypes, intelCpuTypes, messages } from "../constants"
 
 const consoleTypes = [
     { key: "vnc", title: "VNC" },
@@ -33,14 +33,26 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
     const storageConfig = heSetupModel.storage;
     const networkConfig = heSetupModel.network;
 
+    const maxAvailMem = vmConfig.vmMemSizeMB.range.max.toLocaleString();
+    const memWarningMessage = messages.RECOMMENDED_MIN_MEM_AVAIL_WARNING + ` Currently, only ${maxAvailMem}MB is available.`;
+
     return (
         <div>
             <form className="form-horizontal he-form-container">
                 {errorMsg &&
-                <div className="row" style={{marginLeft: "40px"}}>
-                    <div className="alert alert-danger col-sm-8">
+                <div className="row">
+                    <div className="alert alert-danger col-sm-11">
                         <span className="pficon pficon-error-circle-o" />
                         <strong>{errorMsg}</strong>
+                    </div>
+                </div>
+                }
+
+                {vmConfig.vmMemSizeMB.range.max < 4096 &&
+                <div className="row">
+                    <div className="alert alert-warning col-sm-11">
+                        <span className="pficon pficon-warning-triangle-o" />
+                        <strong>{memWarningMessage}</strong>
                     </div>
                 </div>
                 }
@@ -147,7 +159,7 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                                value={vmConfig.vmMemSizeMB.value}
                                onChange={(e) => handleVmConfigUpdate("vmMemSizeMB", e.target.value, "vm")}
                         />
-                        <span className="info-block">{vmConfig.vmMemSizeMB.range.max.toLocaleString() + " "} MB available</span>
+                        <span className="info-block">{vmConfig.vmMemSizeMB.range.max.toLocaleString()}MB available</span>
                         {errorMsgs.vmMemSizeMB && <span className="help-block">{errorMsgs.vmMemSizeMB}</span>}
                     </div>
                 </div>

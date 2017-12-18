@@ -316,6 +316,7 @@ export class HeSetupModel {
                     ansiblePhasesUsed: [1, 3],
                     description: "Memory Size (MB)",
                     value: "4096",
+                    unit: "MB",
                     type: types.INTEGER,
                     showInReview: true,
                     uiStage: "VM",

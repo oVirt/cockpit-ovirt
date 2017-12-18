@@ -42,8 +42,11 @@ export function getErrorMsgForProperty(prop) {
         const value = parseInt(prop.value);
         const outOfRange = value < prop.range.min || value > prop.range.max;
         if (outOfRange) {
-            let genericMsg = "Value must be between " + prop.range.min + " and " + prop.range.max;
-            errorMsg = prop.hasOwnProperty("errorMsg") ? prop.errorMsg : genericMsg;
+            const minValue = prop.range.min.toLocaleString();
+            const maxValue = prop.range.max.toLocaleString();
+            const unit = prop.hasOwnProperty("unit") ? prop.unit : "";
+            const message = `Value must be between ${minValue}${unit} and ${maxValue}${unit}`;
+            errorMsg = prop.hasOwnProperty("errorMsg") ? prop.errorMsg : message;
         }
     }
 
