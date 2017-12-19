@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
+import GdeployUtil from '../../helpers/GdeployUtil'
 
 const raidTypes = [
     { key: "jbod", title: "JBOD" },
@@ -31,7 +32,7 @@ class WizardBricksStep extends Component {
         this.setState({ bricks, errorMsgs: {} })
     }
     getEmptyRow() {
-        return { name: "", device: "", brick_dir: "", thinp: true, size:"1" }
+        return { name: "", device: "", brick_dir: "", thinp: true, size:"1", is_vdo_supported: false, logicalSize: "0" }
     }
     handleAdd() {
         const bricks = this.state.bricks
@@ -141,6 +142,17 @@ class WizardBricksStep extends Component {
             errorMsgs[index].brick_dir = "Mount point cannot be empty"
             valid = false;
         }
+        if(brick.is_vdo_supported && brick.logicalSize.trim().length<1){
+            errorMsgs[index].logicalSize = "Logical size cannot be empty"
+            valid = false;
+        }else{
+            const logicalSize = Number(brick.logicalSize)
+            const brickSize = Number(brick.size)
+            if(brick.is_vdo_supported && logicalSize < brickSize){
+                errorMsgs[index].logicalSize = "Logical size should be greater or equals to brick size"
+                valid = false
+            }
+        }
         return valid
     }
     validate(){
@@ -153,7 +165,6 @@ class WizardBricksStep extends Component {
             errorMsg = "Brick definition does not match with Volume definition"
         }
         const that = this
-
         this.state.bricks.forEach(function(brick, index){
             if(!that.validateBrick(brick, index, errorMsgs) && valid ){
                 valid = false
@@ -168,6 +179,21 @@ class WizardBricksStep extends Component {
         this.setState({ errorMsg, errorMsgs })
         return valid
     }
+    isAllDeviceSame(){
+      var deviceList = []
+      this.state.bricks.forEach(function (brick, index) {
+        deviceList.push(brick.device)
+      })
+      var checkItem = deviceList[0]
+      var isSame = true;
+      for (var i = 0; i < deviceList.length; i++) {
+        if (deviceList[i] != checkItem) {
+          isSame = false
+          break
+        }
+      }
+      return isSame
+    }
     shouldComponentUpdate(nextProps, nextState){
         if(!this.props.validating && nextProps.validating){
             this.props.validationCallBack(this.validate())
@@ -177,7 +203,16 @@ class WizardBricksStep extends Component {
     render() {
         const bricksRow = []
         const that = this
-        this.state.bricks.forEach(function (brick, index) {
+        let isVdoSupported = false
+        let is_same_device = this.isAllDeviceSame()
+        that.state.bricks.forEach(function (brick, index) {
+            if(brick.is_vdo_supported){
+              isVdoSupported = true
+            }
+            GdeployUtil.isVdoSupported(function(res){
+              that.state['isVdoSupported'] = res
+              brick['isVdoSupported'] = res
+            });
             bricksRow.push(
                 <BrickRow brick={brick} key={index} index={index}
                     errorMsgs = {that.state.errorMsgs[index]}
@@ -266,6 +301,8 @@ class WizardBricksStep extends Component {
                                     <th>Size(GB)</th>
                                     <th>Thinp</th>
                                     <th>Mount Point</th>
+                                    <th style={this.state.isVdoSupported ? {} : { display: 'none' }}>Enable Dedupe & Compression</th>
+                                    <th style={isVdoSupported ? {} : { display: 'none' }}>Logical Size(GB)</th>
                                 </tr>
                                 {bricksRow}
                             </tbody>
@@ -321,6 +358,12 @@ class WizardBricksStep extends Component {
                         </div>
                     </div>
                 </form>
+                <div className="col-md-offset-2 col-md-8 alert alert-warning" style={isVdoSupported && is_same_device ? {} : { display: 'none' }}>
+                    <span className="pficon pficon-info"></span>
+                    <strong>
+                        Dedupe/compression is enabled at the storage device, and will be applicable for all bricks that use the device.
+                    </strong>
+                </div>
                 <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
                     <span className="pficon pficon-info"></span>
                     <strong>
@@ -351,6 +394,9 @@ const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => 
     )
     const brick_dir = classNames(
         { "has-error": errorMsgs && errorMsgs.brick_dir }
+    )
+    const logicalSize = classNames(
+        { "has-error": errorMsgs && errorMsgs.logicalSize }
     )
     return (
         <tr className="gdeploy-wizard-bricks-row">
@@ -396,6 +442,21 @@ const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => 
                         onChange={(e) => changeCallBack(index, "brick_dir", e.target.value)}
                         />
                     {errorMsgs && errorMsgs.brick_dir && <span className="help-block">{errorMsgs.brick_dir}</span>}
+                </div>
+            </td>
+            <td className="col-md-1" className="col-md-1" style={brick.isVdoSupported ? {} : { display: 'none' }}>
+                <input type="checkbox" className="gdeploy-wizard-thinp-checkbox" title="Configure dedupe & compression using VDO."
+                    checked={brick.is_vdo_supported}
+                    onChange={(e) => changeCallBack(index, "is_vdo_supported", e.target.checked)}
+                    />
+            </td>
+            <td className="col-md-1" style={brick.is_vdo_supported ? {} : { display: 'none' }}>
+                <div className={logicalSize}>
+                    <input type="number" className="form-control" title="Default logical size will be four times of brick size."
+                        value={brick.logicalSize}
+                        onChange={(e) => changeCallBack(index, "logicalSize", e.target.value)}
+                        />
+                    {errorMsgs && errorMsgs.logicalSize && <span className="help-block">{errorMsgs.logicalSize}</span>}
                 </div>
             </td>
             <td className="col-sm-1 gdeploy-wizard-bricks-delete">
