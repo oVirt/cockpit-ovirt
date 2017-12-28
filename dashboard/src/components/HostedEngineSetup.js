@@ -179,7 +179,8 @@ const Curtains = ({callback, cancelled, deploymentOption, deploymentType, deploy
               <input type="radio" value="regular"
                 checked={deploymentOption === "regular"}
                 onChange={selectionChangeCallback} />
-              Standard
+              Hosted Engine Only Deployment <span className="fa fa-lg fa-info-circle"
+                            title="Use when storage has already been provisioned."></span>
               </label>
           </div>
           {gdeployFilesFound &&
