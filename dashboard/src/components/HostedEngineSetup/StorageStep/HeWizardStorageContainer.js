@@ -8,7 +8,7 @@ const nfsAnsFileFields = ["storageDomainConnection", "storageDomain"];
 const requiredNfsFields = nfsAnsFileFields;
 
 const iscsiAnsFileFields = [
-    "iSCSIPortalUser", "iSCSIPortalIPAddress", "iSCSIPortalPort",
+    "iSCSIPortalUser", "iSCSIPortalIPAddress", "iSCSIPortalPassword", "iSCSIPortalPort",
     "iSCSITargetName", "LunID"
 ];
 
