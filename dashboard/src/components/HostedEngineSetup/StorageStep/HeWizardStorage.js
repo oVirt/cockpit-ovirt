@@ -75,7 +75,7 @@ const HeWizardStorage = ({errorMsg, errorMsgs, handleStorageConfigUpdate, storag
                     <div className={getClassNames("iSCSIPortalPassword", errorMsgs)}>
                         <label className="col-md-3 control-label">Portal Password</label>
                         <div className="col-md-6">
-                            <input type="text" style={{width: "150px"}}
+                            <input type="password" style={{width: "150px"}}
                                    title="Enter the user for the iSCSI portal you wish to use."
                                    className="form-control"
                                    value={storageConfig.iSCSIPortalPassword.value}
