@@ -129,7 +129,7 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs
                                value={vmConfig.vmVCpus.value}
                                onChange={(e) => handleVmConfigUpdate("vmVCpus", e.target.value, "vm")}
                         />
-                        {errorMsgs.vmVCpus && <span className="he">{errorMsgs.vmVCpus}</span>}
+                        {errorMsgs.vmVCpus && <span className="help-block">{errorMsgs.vmVCpus}</span>}
                     </div>
                 </div>
 

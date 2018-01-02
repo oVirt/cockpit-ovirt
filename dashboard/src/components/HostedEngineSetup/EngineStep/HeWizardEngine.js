@@ -27,7 +27,7 @@ const HeWizardEngine = ({heSetupModel, errorMsg, errorMsgs, handleEngineConfigUp
                                value={engineConfig.hostIdentifier.value}
                                onChange={(e) => handleEngineConfigUpdate("hostIdentifier", e.target.value, "engine")}
                         />
-                        {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
+                        {errorMsgs.hostIdentifier && <span className="help-block">{errorMsgs.hostIdentifier}</span>}
                     </div>
                 </div>
 
@@ -40,7 +40,7 @@ const HeWizardEngine = ({heSetupModel, errorMsg, errorMsgs, handleEngineConfigUp
                                value={engineConfig.adminUsername.value}
                                onChange={(e) => handleEngineConfigUpdate("adminUsername", e.target.value, "engine")}
                         />
-                        {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
+                        {errorMsgs.adminUsername && <span className="help-block">{errorMsgs.adminUsername}</span>}
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@ const HeWizardEngine = ({heSetupModel, errorMsg, errorMsgs, handleEngineConfigUp
                                value={engineConfig.adminPassword.value}
                                onChange={(e) => handleEngineConfigUpdate("adminPassword", e.target.value, "engine")}
                         />
-                        {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
+                        {errorMsgs.adminPassword && <span className="help-block">{errorMsgs.adminPassword}</span>}
                     </div>
                 </div>
 
