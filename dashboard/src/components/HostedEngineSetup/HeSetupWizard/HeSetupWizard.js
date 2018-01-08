@@ -24,34 +24,31 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRed
             }
 
             {loadingState === status.SUCCESS &&
-            <Wizard title="Hosted Engine Deployment"
-                    onClose={abortCallback}
-                    onFinish={handleFinish}
-                    onStepChange={onStepChange}
-                    isDeploymentStarted={isDeploymentStarted}
-                    width={"1100px"}>
-                <MultiPartStepContainer stepName="VM/Engine">
-                    <HeWizardVmContainer stepName="VM"
-                                         model={heSetupModel}
-                                         systemData={systemData}
-                                         defaultsProvider={defaultsProvider}
-                    />
-                    <HeWizardEngineContainer stepName="Engine" heSetupModel={heSetupModel.model}/>
-                </MultiPartStepContainer>
-                <HeWizardStorageContainer stepName="Storage" model={heSetupModel}/>
-                <HeWizardNetworkContainer stepName="Network" heSetupModel={heSetupModel.model}
-                                          systemData={systemData}
-                                          defaultsProvider={defaultsProvider}
-                />
-                <HeWizardPreviewContainer stepName="Review" heSetupModel={heSetupModel.model}
-                                          isDeploymentStarted={isDeploymentStarted}
-                                          onSuccess={onSuccess}
-                                          reDeployCallback={handleRedeploy}
-                                          setup={setup}
-                                          abortCallback={abortCallback}
-                                          gDeployAnswerFilePaths={gDeployAnswerFilePaths}
-                />
-            </Wizard>
+                <Wizard title="Hosted Engine Deployment"
+                        onClose={abortCallback}
+                        onFinish={handleFinish}
+                        onStepChange={onStepChange}
+                        isDeploymentStarted={isDeploymentStarted}
+                        width={"1100px"}>
+                    <MultiPartStepContainer stepName="VM/Engine">
+                        <HeWizardVmContainer stepName="VM"
+                                             model={heSetupModel}
+                                             systemData={systemData}
+                                             defaultsProvider={defaultsProvider}/>
+                        <HeWizardEngineContainer stepName="Engine" heSetupModel={heSetupModel.model}/>
+                    </MultiPartStepContainer>
+                    <HeWizardStorageContainer stepName="Storage" model={heSetupModel}/>
+                    <HeWizardNetworkContainer stepName="Network" heSetupModel={heSetupModel.model}
+                                              systemData={systemData}
+                                              defaultsProvider={defaultsProvider}/>
+                    <HeWizardPreviewContainer stepName="Review" heSetupModel={heSetupModel.model}
+                                              isDeploymentStarted={isDeploymentStarted}
+                                              onSuccess={onSuccess}
+                                              reDeployCallback={handleRedeploy}
+                                              setup={setup}
+                                              abortCallback={abortCallback}
+                                              gDeployAnswerFilePaths={gDeployAnswerFilePaths}/>
+                </Wizard>
             }
 
             <div style={loadingState === status.FAILURE ? {} : {display: 'none'}}
