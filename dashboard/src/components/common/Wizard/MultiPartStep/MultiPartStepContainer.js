@@ -11,10 +11,12 @@ class MultiPartStepContainer extends Component {
             activeSubStep: this.props.activeSubStep,
             stepIndex: this.props.stepIndex,
             steps: [],
-            validatingSubsteps: false
+            validatingSubsteps: false,
+            nextButtonState: {}
         };
 
         this.subStepValidationCallBack = this.subStepValidationCallBack.bind(this);
+        this.setNextButtonState = this.setNextButtonState.bind(this);
     }
 
     subStepValidationCallBack(isValid) {
@@ -27,6 +29,13 @@ class MultiPartStepContainer extends Component {
         }
 
         this.setState(newState);
+    }
+
+    setNextButtonState(buttonState) {
+        this.setState({nextButtonState: buttonState});
+        if (this.props.nextButtonStateCallBack !== null) {
+            this.props.nextButtonStateCallBack(buttonState);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -42,15 +51,18 @@ class MultiPartStepContainer extends Component {
         const steps = [];
 
         this.props.children.forEach(function(step, index) {
+            const isActiveSubStep = index === that.props.activeSubStep;
+
             const subStep = React.cloneElement(step, {
                 activeStep: that.props.activeStep,
                 activeSubStep: that.props.activeSubStep,
                 validationCallBack: that.props.subStepValidationCallBack,
-                validating: that.props.validating && index === that.props.activeSubStep
+                validating: that.props.validating && index === that.props.activeSubStep,
+                nextButtonStateCallBack: isActiveSubStep ? that.setNextButtonState : null
             });
 
             const comp = classNames(
-                { "hidden": index !== that.props.activeSubStep }
+                { "hidden": !isActiveSubStep }
             );
 
             steps.push(
