@@ -24,6 +24,13 @@ export const answerFilePrefixes = {
     NOTIFICATIONS: "OVEHOSTED_NOTIF/"
 };
 
+export const wizardSections = {
+    VM: "VM",
+    ENGINE: "Engine",
+    STORAGE: "Storage",
+    NETWORK: "Network"
+};
+
 export const deploymentStatus = {
     SUCCESS: 0,
     RUNNING: 1,
