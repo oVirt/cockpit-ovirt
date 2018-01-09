@@ -2,7 +2,8 @@ import React from 'react'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 
-const HeWizardEngine = ({heSetupModel, errorMsg, errorMsgs, handleEngineConfigUpdate, handleRecipientAddressUpdate, handleRecipientAddressDelete}) => {
+const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, handleEngineConfigUpdate,
+                            handleRecipientAddressUpdate, handleRecipientAddressDelete}) => {
     const engineConfig = heSetupModel.engine;
     const notificationsConfig = heSetupModel.notifications;
 

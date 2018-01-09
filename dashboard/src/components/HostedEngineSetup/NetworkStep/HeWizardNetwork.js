@@ -3,7 +3,8 @@ import Selectbox from '../../common/Selectbox'
 import { status as gwState } from '../constants'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 
-const HeWizardNetwork = ({errorMsg, errorMsgs, gatewayState, interfaces, networkConfig, handleNetworkConfigUpdate}) => {
+const HeWizardNetwork = ({deploymentType, errorMsg, errorMsgs, gatewayState, interfaces, networkConfig,
+                             handleNetworkConfigUpdate}) => {
     const gatewayPingPending = gatewayState === gwState.POLLING;
 
     return (

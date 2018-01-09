@@ -125,19 +125,20 @@ class HeWizardNetworkContainer extends Component {
 
     render() {
         return <HeWizardNetwork
-                errorMsg={this.state.errorMsg}
-                errorMsgs={this.state.errorMsgs}
-                gatewayState={this.state.gatewayState}
-                interfaces={this.state.interfaces}
-                networkConfig={this.state.networkConfig}
-                handleNetworkConfigUpdate={this.handleNetworkConfigUpdate}
-                />
+                    deploymentType={this.props.deploymentType}
+                    errorMsg={this.state.errorMsg}
+                    errorMsgs={this.state.errorMsgs}
+                    gatewayState={this.state.gatewayState}
+                    interfaces={this.state.interfaces}
+                    networkConfig={this.state.networkConfig}
+                    handleNetworkConfigUpdate={this.handleNetworkConfigUpdate}/>
     }
 }
 
 HeWizardNetworkContainer.propTypes = {
     stepName: React.PropTypes.string.isRequired,
-    heSetupModel: React.PropTypes.object.isRequired
+    heSetupModel: React.PropTypes.object.isRequired,
+    deploymentType: React.PropTypes.string.isRequired
 };
 
 export default HeWizardNetworkContainer

@@ -105,20 +105,21 @@ class HeWizardEngineContainer extends Component {
     render() {
         return (
             <HeWizardEngine
+                deploymentType={this.props.deploymentType}
                 heSetupModel={this.state.heSetupModel}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
                 handleEngineConfigUpdate={this.handleEngineConfigUpdate}
                 handleRecipientAddressUpdate={this.handleRecipientAddressUpdate}
-                handleRecipientAddressDelete={this.handleRecipientAddressDelete}
-            />
+                handleRecipientAddressDelete={this.handleRecipientAddressDelete}/>
         )
     }
 }
 
 HeWizardEngineContainer.propTypes = {
     stepName: React.PropTypes.string.isRequired,
-    heSetupModel: React.PropTypes.object.isRequired
+    heSetupModel: React.PropTypes.object.isRequired,
+    deploymentType: React.PropTypes.string.isRequired
 };
 
 export default HeWizardEngineContainer

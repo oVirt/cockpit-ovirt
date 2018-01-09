@@ -25,9 +25,9 @@ const rootSshAccessOptions = [
     { key: "without-password", title: "Without Password" }
 ];
 
-const HeWizardVm = ({appliances, applPathSelection, cpuArch, errorMsg, errorMsgs, handleDnsAddressUpdate,
-                    handleDnsAddressDelete, handleImportApplianceUpdate, handleVmConfigUpdate, heSetupModel,
-                    importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs }) => {
+const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, errorMsg, errorMsgs,
+                    handleDnsAddressUpdate, handleDnsAddressDelete, handleImportApplianceUpdate, handleVmConfigUpdate,
+                    heSetupModel, importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
     const vmConfig = heSetupModel.vm;
     const vdsmConfig = heSetupModel.vdsm;
     const storageConfig = heSetupModel.storage;

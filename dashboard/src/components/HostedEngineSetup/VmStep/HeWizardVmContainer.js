@@ -283,6 +283,7 @@ class HeWizardVmContainer extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState){
+
         if(!this.props.validating && nextProps.validating){
             this.props.validationCallBack(this.validateAllInputs())
         }
@@ -300,6 +301,7 @@ class HeWizardVmContainer extends Component {
                 appliances={this.state.appliances}
                 applPathSelection={this.state.applPathSelection}
                 cpuArch={this.state.cpuArch}
+                deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
                 handleDnsAddressUpdate={this.handleDnsAddressUpdate}
@@ -311,8 +313,7 @@ class HeWizardVmContainer extends Component {
                 showApplPath={this.state.showApplPath}
                 verifyDns={this.verifyDns}
                 verifyReverseDns={this.verifyReverseDns}
-                warningMsgs={this.state.warningMsgs}
-            />
+                warningMsgs={this.state.warningMsgs}/>
         )
     }
 
@@ -320,7 +321,8 @@ class HeWizardVmContainer extends Component {
 
 HeWizardVmContainer.propTypes = {
     stepName: React.PropTypes.string.isRequired,
-    model: React.PropTypes.object.isRequired
+    model: React.PropTypes.object.isRequired,
+    deploymentType: React.PropTypes.string.isRequired
 };
 
 export default HeWizardVmContainer;

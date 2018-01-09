@@ -125,3 +125,8 @@ export const amdCpuTypes = [
 export const defaultInterfaces = [
     { key: "None Found", title: "None Found" }
 ];
+
+export const deploymentTypes = {
+    ANSIBLE_DEPLOYMENT: "Ansible Deployment",
+    OTOPI_DEPLOYMENT: "OTOPI Deployment"
+};
