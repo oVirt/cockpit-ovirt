@@ -5,7 +5,8 @@ import HeWizardEngineContainer from '../EngineStep/HeWizardEngineContainer'
 import HeWizardStorageContainer from '../StorageStep/HeWizardStorageContainer'
 import HeWizardVmContainer from '../VmStep/HeWizardVmContainer'
 import HeWizardPreviewContainer from '../PreviewStep/HeWizardPreviewContainer'
-import Wizard from '../../common/Wizard'
+import Wizard from '../../common/Wizard/Wizard'
+import MultiPartStepContainer from '../../common/Wizard/MultiPartStep/MultiPartStepContainer'
 
 const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
                        loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, virtSupported,
@@ -27,13 +28,16 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRed
                     onClose={abortCallback}
                     onFinish={handleFinish}
                     onStepChange={onStepChange}
-                    isDeploymentStarted={isDeploymentStarted}>
-                <HeWizardVmContainer stepName="VM"
-                                     model={heSetupModel}
-                                     systemData={systemData}
-                                     defaultsProvider={defaultsProvider}
-                />
-                <HeWizardEngineContainer stepName="Engine" heSetupModel={heSetupModel.model}/>
+                    isDeploymentStarted={isDeploymentStarted}
+                    width={"1100px"}>
+                <MultiPartStepContainer stepName="VM/Engine">
+                    <HeWizardVmContainer stepName="VM"
+                                         model={heSetupModel}
+                                         systemData={systemData}
+                                         defaultsProvider={defaultsProvider}
+                    />
+                    <HeWizardEngineContainer stepName="Engine" heSetupModel={heSetupModel.model}/>
+                </MultiPartStepContainer>
                 <HeWizardStorageContainer stepName="Storage" model={heSetupModel}/>
                 <HeWizardNetworkContainer stepName="Network" heSetupModel={heSetupModel.model}
                                           systemData={systemData}
