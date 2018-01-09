@@ -4,7 +4,7 @@ import WizardPackageStep from './Gdeploy-Wizard-Packages'
 import WizardVolumesStep from './Gdeploy-Wizard-Volumes'
 import WizardBricksStep from './Gdeploy-Wizard-Bricks'
 import WizardPreviewStep from './Gdeploy-Wizard-Preview'
-import Wizard from '../common/Wizard'
+import Wizard from '../common/Wizard/Wizard'
 import GdeployUtil from '../../helpers/GdeployUtil'
 import { CONFIG_FILES } from './constants'
 

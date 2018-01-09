@@ -1,21 +1,27 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import classNames from 'classnames'
+import SubStepTabListContainer from "./SubStepTabList/SubStepTabListContainer"
+import MultiPartStepContainer from './MultiPartStep/MultiPartStepContainer'
 
 class Wizard extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             activeStep: 0,
+            activeSubStep: 0,
             validating: false,
-            nextStep: -1
+            nextStep: -1,
+            nextSubStep: -1
         };
-        this.moveNext = this.moveNext.bind(this)
-        this.moveBack = this.moveBack.bind(this)
-        this.cancel = this.cancel.bind(this)
-        this.finish = this.finish.bind(this)
-        this.moveToStep = this.moveToStep.bind(this)
-        this.validationCallBack = this.validationCallBack.bind(this)
+        this.moveNext = this.moveNext.bind(this);
+        this.moveBack = this.moveBack.bind(this);
+        this.cancel = this.cancel.bind(this);
+        this.finish = this.finish.bind(this);
+        this.moveToStep = this.moveToStep.bind(this);
+        this.validationCallBack = this.validationCallBack.bind(this);
+        this.subStepValidationCallBack = this.subStepValidationCallBack.bind(this);
+        this.handleActiveSubStepChange = this.handleActiveSubStepChange.bind(this);
     }
     componentDidMount() {
         $(ReactDOM.findDOMNode(this)).modal('show')
@@ -28,12 +34,12 @@ class Wizard extends Component {
     }
     moveBack() {
         if (this.state.activeStep > 0) {
-            this.moveToStep(this.state.activeStep-1)
+            this.moveToStep(this.state.activeStep - 1)
         }
     }
     moveNext() {
         if (this.state.activeStep < this.props.children.length - 1) {
-            this.moveToStep(this.state.activeStep+1)
+            this.moveToStep(this.state.activeStep + 1)
         }
     }
     finish() {
@@ -42,17 +48,32 @@ class Wizard extends Component {
     validationCallBack(isValid) {
         const newState = {
             validating: false,
-            nextStep: -1
-        }
+            nextStep: -1,
+        };
+
         if (isValid && this.state.nextStep > -1) {
-            this.props.onStepChange(this.state.nextStep)
-            newState.activeStep = this.state.nextStep
+            this.props.onStepChange(this.state.nextStep);
+            newState.activeStep = this.state.nextStep;
+            newState.activeSubStep = 0;
         }
+
+        this.setState(newState)
+    }
+    subStepValidationCallBack(isValid) {
+        const newState = {
+            validating: false,
+            nextSubStep: -1
+        };
+
+        if (isValid && this.state.nextSubStep > -1) {
+            newState.activeSubStep = this.state.nextSubStep;
+        }
+
         this.setState(newState)
     }
     moveToStep(step) {
         if (step < this.state.activeStep) {
-            this.props.onStepChange(step)
+            this.props.onStepChange(step);
             this.setState({ activeStep: step })
         } else {
             this.setState({
@@ -61,26 +82,57 @@ class Wizard extends Component {
             })
         }
     }
+    handleActiveSubStepChange(subStep) {
+        if (subStep < this.state.activeSubStep) {
+            this.setState({activeSubStep: subStep });
+        } else {
+            this.setState({
+                validating: true,
+                nextSubStep: subStep
+            });
+        }
+    }
     render() {
-        const steps = []
-        const that = this
+        const steps = [];
+        const subStepLists = [];
+        const that = this;
+
         this.props.children.forEach(function(step, index) {
-            const stepElement = React.cloneElement(step, {
-                activeStep: that.state.activeStep,
-                validationCallBack: that.validationCallBack,
-                validating: that.state.validating && index === that.state.activeStep
-            })
-            const comp = classNames(
-                { "hidden": index != that.state.activeStep }
-            )
-            steps.push(
-                <div key={index} className={comp}>
-                    {stepElement}
-                </div>)
-        })
+                const stepElement = React.cloneElement(step, {
+                    activeStep: that.state.activeStep,
+                    activeSubStep: that.state.activeSubStep,
+                    stepIndex: index,
+                    validationCallBack: that.validationCallBack,
+                    subStepValidationCallBack: that.subStepValidationCallBack,
+                    validating: that.state.validating && index === that.state.activeStep
+                });
+
+                const comp = classNames(
+                    { "hidden": index !== that.state.activeStep }
+                );
+
+                steps.push(
+                    <div key={index} className={comp}>
+                        {stepElement}
+                    </div>);
+
+                if (step.type === MultiPartStepContainer) {
+                    const subStepTabList = <SubStepTabListContainer
+                                            stepIndex={index}
+                                            key={index}
+                                            steps={step.props.children}
+                                            activeStep={that.state.activeStep}
+                                            activeSubStep={that.state.activeSubStep}
+                                            handleActiveSubStepChange={that.handleActiveSubStepChange}/>;
+                    subStepLists.push(subStepTabList);
+                }
+        });
+
+        const wizardWidth = this.props.width ? {width: that.props.width} : {};
+
         return (
             <div className="modal" data-backdrop="static" role="dialog">
-                <div className="modal-dialog modal-lg wizard-pf">
+                <div className="modal-dialog modal-lg wizard-pf" style={wizardWidth}>
                     <div className="modal-content">
                         <div className="modal-header">
                             <button type="button"
@@ -88,7 +140,7 @@ class Wizard extends Component {
                                 aria-label="Close" onClick={this.props.onClose}
                                 data-dismiss="modal" aria-hidden="true"
                                 >
-                                <span className="pficon pficon-close"></span>
+                                <span className="pficon pficon-close" />
                             </button>
                             <dt className="modal-title">{this.props.title}</dt>
                         </div>
@@ -98,6 +150,9 @@ class Wizard extends Component {
                                 callBack={this.moveToStep}
                                 />
                             <div className="wizard-pf-row">
+                                <div className="wizard-pf-sidebar">
+                                    {subStepLists}
+                                </div>
                                 <div className="wizard-pf-main gdeploy-wizard-row">
                                     <div className="wizard-pf-contents">
                                         {steps}
