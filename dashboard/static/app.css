@@ -467,3 +467,15 @@ label.value-label {
     margin-bottom: 0px;
     padding-top: 3px;
 }
+
+.deployment-type-dropbox {
+    width: 300px;
+    margin-top: 30px;
+}
+
+.horizontal-center {
+    position: relative;
+    margin-left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}

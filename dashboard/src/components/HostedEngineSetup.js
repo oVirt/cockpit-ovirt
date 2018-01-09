@@ -3,8 +3,9 @@ import {CheckIfRegistered, checkForGdeployAnsFiles} from '../helpers/HostedEngin
 import HeSetupWizardContainer from './HostedEngineSetup/HeSetupWizard/HeSetupWizardContainer'
 import GdeploySetup from './gdeploy/GdeploySetup'
 import GdeployUtil from '../helpers/GdeployUtil'
-import { heSetupState, deploymentOption } from './HostedEngineSetup/constants'
+import { heSetupState, deploymentOption, deploymentTypes } from './HostedEngineSetup/constants'
 import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
+import Selectbox from './common/Selectbox'
 
 const classNames = require('classnames');
 
@@ -14,6 +15,7 @@ class HostedEngineSetup extends Component {
     this.state = {
       cancelled: false,
       deploymentOption: deploymentOption.REGULAR,
+      deploymentType: deploymentTypes.ANSIBLE_DEPLOYMENT,
       state: heSetupState.POLLING,
       gdeployAvailable: false,
       gdeployFilesFound: false,
@@ -29,6 +31,7 @@ class HostedEngineSetup extends Component {
     this.startGdeploy = this.startGdeploy.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.redeploy = this.redeploy.bind(this);
+    this.deploymentTypeChange = this.deploymentTypeChange.bind(this);
 
     CheckIfRegistered(this.registeredCallback);
   }
@@ -94,6 +97,10 @@ class HostedEngineSetup extends Component {
     });
   }
 
+  deploymentTypeChange(type) {
+    this.setState({ deploymentType: type });
+  }
+
   render() {
     return (
       <div>
@@ -111,6 +118,8 @@ class HostedEngineSetup extends Component {
             callback={this.onClick}
             cancelled={this.state.cancelled}
             deploymentOption={this.state.deploymentOption}
+            deploymentType={this.state.deploymentType}
+            deploymentTypeChangeCallback={this.deploymentTypeChange}
             gdeployAvailable={this.state.gdeployAvailable}
             gdeployFilesFound={this.state.gdeployFilesFound}
             selectionChangeCallback={this.handleOptionChange}
@@ -118,6 +127,7 @@ class HostedEngineSetup extends Component {
         }
         {this.state.state === heSetupState.HOSTED_ENGINE &&
           <HeSetupWizardContainer
+              deploymentType={this.state.deploymentType}
               gDeployAnswerFilePaths={this.state.answerFiles}
               onSuccess={this.startSetup}
               onClose={this.abortCallback}
@@ -131,8 +141,8 @@ class HostedEngineSetup extends Component {
   }
 }
 
-const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, gdeployFilesFound,
-                      selectionChangeCallback}) => {
+const Curtains = ({callback, cancelled, deploymentOption, deploymentType, deploymentTypeChangeCallback,
+                      gdeployAvailable, gdeployFilesFound, selectionChangeCallback}) => {
   let message = cancelled ?
     "Hosted engine setup was aborted" :
     "Configure and install a highly-available virtual machine which will \
@@ -146,7 +156,11 @@ const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, gdep
   })
   const gdeployTitle = gdeployAvailable ?
     "Gluster volume will be provisioned using gdeploy and hosted engine will be deployed on gluster" :
-    "Gdeploy utility is not installed. Install gdeploy to enable gluster deployment"
+    "Gdeploy utility is not installed. Install gdeploy to enable gluster deployment";
+  const deploymentTypeOptions = [
+      { key: deploymentTypes.ANSIBLE_DEPLOYMENT, title: "Ansible-based Deployment (Recommended)" },
+      { key: deploymentTypes.OTOPI_DEPLOYMENT, title: "Vintage (OTOPI-based) Deployment" }
+  ];
   return (
     <div className="curtains curtains-ct blank-slate-pf">
       <div className="container-center">
@@ -192,6 +206,11 @@ const Curtains = ({callback, cancelled, deploymentOption, gdeployAvailable, gdep
             className="btn btn-lg btn-primary"
             onClick={callback}>{button_text}</button>
         </div>
+          <div className="deployment-type-dropbox horizontal-center">
+            <Selectbox optionList={deploymentTypeOptions}
+                       selectedOption={deploymentType}
+                       callBack={(e) => deploymentTypeChangeCallback(e)}/>
+          </div>
       </div>
     </div>
   )

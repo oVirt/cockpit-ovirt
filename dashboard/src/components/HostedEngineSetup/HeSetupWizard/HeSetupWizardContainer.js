@@ -95,12 +95,13 @@ class HeSetupWizardContainer extends Component {
                 systemDataRetrieved={this.systemDataRetrieved}
                 sufficientMemAvail={this.sufficientMemAvail}
                 gDeployAnswerFilePaths={this.state.gDeployAnswerFilePaths}
-            />
+                deploymentType={this.props.deploymentType}/>
         )
     }
 }
 
 HeSetupWizardContainer.propTypes = {
+    deploymentType: React.PropTypes.string,
     gDeployAnswerFilePaths: React.PropTypes.array,
     onClose: React.PropTypes.func.isRequired,
     onSuccess: React.PropTypes.func.isRequired

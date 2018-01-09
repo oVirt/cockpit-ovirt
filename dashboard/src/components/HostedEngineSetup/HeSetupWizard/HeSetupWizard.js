@@ -8,9 +8,9 @@ import HeWizardPreviewContainer from '../PreviewStep/HeWizardPreviewContainer'
 import Wizard from '../../common/Wizard/Wizard'
 import MultiPartStepContainer from '../../common/Wizard/MultiPartStep/MultiPartStepContainer'
 
-const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
-                       loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, virtSupported,
-                       systemDataRetrieved, gDeployAnswerFilePaths}) => {
+const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
+                           loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, virtSupported,
+                           systemDataRetrieved, gDeployAnswerFilePaths}) => {
     return (
         <div>
             {loadingState === status.POLLING &&
@@ -32,16 +32,25 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, handleFinish, handleRed
                         width={"1100px"}>
                     <MultiPartStepContainer stepName="VM/Engine">
                         <HeWizardVmContainer stepName="VM"
+                                             deploymentType={deploymentType}
                                              model={heSetupModel}
                                              systemData={systemData}
                                              defaultsProvider={defaultsProvider}/>
-                        <HeWizardEngineContainer stepName="Engine" heSetupModel={heSetupModel.model}/>
+                        <HeWizardEngineContainer stepName="Engine"
+                                                 deploymentType={deploymentType}
+                                                 heSetupModel={heSetupModel.model}/>
                     </MultiPartStepContainer>
-                    <HeWizardStorageContainer stepName="Storage" model={heSetupModel}/>
-                    <HeWizardNetworkContainer stepName="Network" heSetupModel={heSetupModel.model}
+                    <HeWizardStorageContainer stepName="Storage"
+                                              deploymentType={deploymentType}
+                                              model={heSetupModel}/>
+                    <HeWizardNetworkContainer stepName="Network"
+                                              deploymentType={deploymentType}
+                                              heSetupModel={heSetupModel.model}
                                               systemData={systemData}
                                               defaultsProvider={defaultsProvider}/>
-                    <HeWizardPreviewContainer stepName="Review" heSetupModel={heSetupModel.model}
+                    <HeWizardPreviewContainer stepName="Review"
+                                              deploymentType={deploymentType}
+                                              heSetupModel={heSetupModel.model}
                                               isDeploymentStarted={isDeploymentStarted}
                                               onSuccess={onSuccess}
                                               reDeployCallback={handleRedeploy}

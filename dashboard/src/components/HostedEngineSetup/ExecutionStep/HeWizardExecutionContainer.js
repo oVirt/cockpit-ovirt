@@ -48,8 +48,7 @@ class HeWizardExecutionContainer extends Component {
             <HeWizardExecution
                 heSetupStatus={this.state.heSetupStatus}
                 setup={this.setup}
-                startSetup={this.startSetup}
-            />
+                startSetup={this.startSetup}/>
         )
 
     }

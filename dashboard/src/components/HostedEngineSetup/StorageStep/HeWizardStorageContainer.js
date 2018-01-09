@@ -117,18 +117,19 @@ class HeWizardStorageContainer extends Component {
     render() {
         return (
             <HeWizardStorage
+                deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
                 handleStorageConfigUpdate={this.handleStorageConfigUpdate}
-                storageConfig={this.state.storageConfig}
-            />
+                storageConfig={this.state.storageConfig}/>
         )
     }
 }
 
 HeWizardStorageContainer.propTypes = {
     stepName: React.PropTypes.string.isRequired,
-    model: React.PropTypes.object.isRequired
+    model: React.PropTypes.object.isRequired,
+    deploymentType: React.PropTypes.string.isRequired
 };
 
 export default HeWizardStorageContainer

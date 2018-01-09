@@ -10,7 +10,7 @@ const storageTypes = [
     { key: "glusterfs", title: "Gluster" }
 ];
 
-const HeWizardStorage = ({errorMsg, errorMsgs, handleStorageConfigUpdate, storageConfig}) => {
+const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConfigUpdate, storageConfig}) => {
     let nfsSelected = storageConfig.domainType.value === "nfs3" || storageConfig.domainType.value === "nfs4";
     let iscsiSelected = storageConfig.domainType.value === "iscsi";
     let glusterSelected = storageConfig.domainType.value === "glusterfs";
