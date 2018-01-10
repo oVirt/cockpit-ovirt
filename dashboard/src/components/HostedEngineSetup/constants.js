@@ -7,6 +7,28 @@ export const configValues = {
     ANSIBLE_PHASE_3_VAR_FILE_PATH: "/tmp/ansiblePhase3.var"
 };
 
+export const ansiblePhases = {
+    INITIAL_CLEAN: "INITIAL_CLEAN",
+    BOOTSTRAP_VM: "BOOTSTRAP_VM",
+    CREATE_STORAGE: "CREATE_STORAGE",
+    TARGET_VM: "TARGET_VM",
+    FINAL_CLEAN: "FINAL_CLEAN"
+};
+
+export const ansibleVarFilePaths = {
+    BOOTSTRAP_VM: "/tmp/ansibleBootstrapVm.var",
+    CREATE_STORAGE: "/tmp/ansibleCreateStorage.var",
+    TARGET_VM: "/tmp/ansibleTargetVm.var"
+};
+
+export const playbookPaths = {
+    INITIAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/initial_clean.yml",
+    BOOTSTRAP_VM: "/usr/share/ovirt-hosted-engine-setup/ansible/bootstrap_local_vm.yml",
+    CREATE_STORAGE: "/usr/share/ovirt-hosted-engine-setup/ansible/create_storage_domain.yml",
+    TARGET_VM: "/usr/share/ovirt-hosted-engine-setup/ansible/create_target_vm.yml",
+    FINAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml"
+};
+
 export const configFileTypes = {
     NONE: "none",
     BOOLEAN: "bool",
