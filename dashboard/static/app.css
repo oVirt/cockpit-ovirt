@@ -479,3 +479,33 @@ label.value-label {
     margin-right: -50%;
     transform: translate(-50%, -50%)
 }
+
+span.ansible-output-line {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+div.ansible-output-container {
+    max-height: 450px;
+    min-height: 200px;
+    overflow: auto;
+}
+
+div.ansible-output-panel {
+    max-height: 450px;
+}
+
+div.deployment-status-spinner {
+    display: inline-block;
+    border-width: 5px;
+    margin-right: 10px;
+}
+
+div.deployment-status-msg {
+    display: inline-block;
+}
+
+span.deployment-failure-icon {
+    font-size: 18px;
+    margin-right: 10px;
+}

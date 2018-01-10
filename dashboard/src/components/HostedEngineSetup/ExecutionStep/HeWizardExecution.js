@@ -1,6 +1,6 @@
 import React from 'react'
 import { deploymentStatus } from '../constants';
-import DeploymentSuccessPanel from './DeploymentSuccessPanel'
+import DeploymentSuccessPanel from '../Execution/DeploymentSuccessPanel'
 import HeSetupContainer from '../HeSetup/HeSetupContainer'
 
 const HeWizardExecution = ({heSetupStatus, setup, startSetup}) => {

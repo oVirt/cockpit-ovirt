@@ -66,6 +66,30 @@ export class HeSetupModel {
                     uiStage: "",
                     useInAnswerFile: true,
                     required: false
+                },
+                localVmDirPath: {
+                    name: "LOCAL_VM_DIR_PATH",
+                    ansibleVarName: "LOCAL_VM_DIR_PATH",
+                    ansiblePhasesUsed: [1],
+                    description: "LOCAL_VM_DIR_PATH",
+                    value: "/var/tmp",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                localVmDirPrefix: {
+                    name: "LOCAL_VM_DIR_PREFIX",
+                    ansibleVarName: "LOCAL_VM_DIR_PREFIX",
+                    ansiblePhasesUsed: [1],
+                    description: "LOCAL_VM_DIR_PREFIX",
+                    value: "localvm",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "",
+                    useInAnswerFile: false,
+                    required: false
                 }
             },
             storage: {
