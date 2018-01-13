@@ -50,6 +50,14 @@ class HeWizardStorageContainer extends Component {
     handleStorageConfigUpdate(propName, value) {
         const storageConfig = this.state.storageConfig;
         storageConfig[propName].value = value;
+
+        if (propName === "storageDomainConnection") {
+            const storageConn = value.split(":");
+            storageConfig.storageAddress.value = storageConn[0];
+            storageConfig.storagePath.value = storageConn[1];
+            storageConfig.storage.value = value;
+        }
+        
         this.setState({ storageConfig });
 
         if (propName === "domainType") {
