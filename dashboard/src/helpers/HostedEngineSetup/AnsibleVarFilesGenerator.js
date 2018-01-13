@@ -1,4 +1,4 @@
-import { configValues } from "../../components/HostedEngineSetup/constants"
+import { ansibleVarFilePaths } from "../../components/HostedEngineSetup/constants"
 
 class AnsibleVarFilesGenerator {
     constructor(heSetupModel) {
@@ -47,9 +47,9 @@ class AnsibleVarFilesGenerator {
         const varStrings = this.getAnswerFileStrings();
 
         const filePaths = [
-            configValues.ANSIBLE_PHASE_1_VAR_FILE_PATH,
-            configValues.ANSIBLE_PHASE_2_VAR_FILE_PATH,
-            configValues.ANSIBLE_PHASE_3_VAR_FILE_PATH
+            ansibleVarFilePaths.BOOTSTRAP_VM,
+            ansibleVarFilePaths.CREATE_STORAGE,
+            ansibleVarFilePaths.TARGET_VM
         ];
 
         let promises = [];

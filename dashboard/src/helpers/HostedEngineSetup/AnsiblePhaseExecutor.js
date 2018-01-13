@@ -1,4 +1,5 @@
-import { ansibleVarFilePaths, deploymentStatus as status, playbookPaths } from "../../components/HostedEngineSetup/constants";
+import {ansiblePhases as phases, ansibleVarFilePaths, deploymentStatus as status, playbookPaths}
+    from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator"
 
 class AnsiblePhaseExecutor {
@@ -12,6 +13,8 @@ class AnsiblePhaseExecutor {
 
         this.generateVarFiles = this.generateVarFiles.bind(this);
         this.startSetup = this.startSetup.bind(this);
+        this.runInitialClean = this.runInitialClean.bind(this);
+        this.runFinalClean = this.runFinalClean.bind(this);
     }
 
     startSetup(outputCallback, exitCallback) {
@@ -19,48 +22,186 @@ class AnsiblePhaseExecutor {
         this._exitCallback = exitCallback;
 
         const self = this;
-        this.generateVarFiles()
-            .then(function() {
-                self.execute();
-            });
+        const cmd  = this.getPlaybookCommand();
+
+        switch(this.phase) {
+            case phases.BOOTSTRAP_VM:
+                this.generateVarFiles()
+                    .then(() => {self.runInitialClean()
+                        .then(() => {self.executePlaybook(cmd)
+                            .then((options) => {
+                                self._exitCallback(options["exit-status"]);
+                            })
+                            .catch((options, denied) => {
+                                self._exitCallback(options["exit-status"], denied);
+                            });
+                        })
+                        .catch((options, denied) => {
+                            self._exitCallback(options["exit-status"], denied);
+                        });
+                    });
+                break;
+            case phases.TARGET_VM:
+                this.generateVarFiles()
+                    .then(() => {self.executePlaybook(cmd)
+                        .then(() => {self.runFinalClean()
+                            .then((options) => {
+                                self._exitCallback(options["exit-status"]);
+                            })
+                            .catch((options, denied) => {
+                                self._exitCallback(options["exit-status"], denied);
+                            });
+                        })
+                        .catch((options, denied) => {
+                            self._exitCallback(options["exit-status"], denied);
+                        });
+                    });
+                break;
+            default:
+                this.generateVarFiles()
+                    .then(() => {
+                        self.executePlaybook(cmd)
+                            .then((options) => {
+                                self._exitCallback(options["exit-status"]);
+                            })
+                            .catch((options, denied) => {
+                                self._exitCallback(options["exit-status"], denied);
+                            });
+                    });
+        }
     }
 
-    execute() {
-        const varFileParam = "\"@" + ansibleVarFilePaths[this.phase] + "\"";
+    runInitialClean() {
+        return new Promise((resolve, reject) => {
+            const cmd = "ansible-playbook -e @" + ansibleVarFilePaths.BOOTSTRAP_VM + " " +
+                "/usr/share/ovirt-hosted-engine-setup/ansible/initial_clean.yml " +
+                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
+
+            this.channel = cockpit.channel({
+                "payload": "stream",
+                "environ": [
+                    "TERM=xterm-256color",
+                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
+                ],
+                "spawn": cmd.split(" "),
+                "pty": true,
+                "err": "out",
+                "superuser": "require",
+            });
+
+            const self = this;
+            $(this.channel).on("close", function(ev, options) {
+                let denied = false;
+                if (!self._manual_close) {
+                    if (options["problem"] === "access-denied") {
+                        denied = true;
+                        reject(options, denied);
+                    } else if (options["exit-status"] === 0) {
+                        console.log("Execution of " + playbookPaths[phases.INITIAL_CLEAN] + " completed successfully.");
+                        resolve();
+                    } else {
+                        console.log("Execution of " + playbookPaths[phases.INITIAL_CLEAN] + " failed to complete.");
+                        reject(options, denied);
+                    }
+                }
+            });
+
+            $(this.channel).on("message", $.proxy(this.handleOutput, this));
+        })
+    }
+
+    runFinalClean() {
+        return new Promise((resolve, reject) => {
+            const cmd = "ansible-playbook -e @" + ansibleVarFilePaths.BOOTSTRAP_VM + " " +
+                "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml " +
+                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
+
+            this.channel = cockpit.channel({
+                "payload": "stream",
+                "environ": [
+                    "TERM=xterm-256color",
+                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
+                ],
+                "spawn": cmd.split(" "),
+                "pty": true,
+                "err": "out",
+                "superuser": "require",
+            });
+
+            const self = this;
+            $(this.channel).on("close", function(ev, options) {
+                let denied = false;
+                if (!self._manual_close) {
+                    if (options["problem"] === "access-denied") {
+                        denied = true;
+                        reject(options, denied);
+                    } else if (options["exit-status"] === 0) {
+                        console.log("Execution of " + playbookPaths[phases.FINAL_CLEAN] + " completed successfully.");
+                        resolve();
+                    } else {
+                        console.log("Execution of " + playbookPaths[phases.FINAL_CLEAN] + " failed to complete.");
+                        reject(options, denied);
+                    }
+                }
+            });
+
+            $(this.channel).on("message", $.proxy(this.handleOutput, this));
+        })
+    }
+
+    getPlaybookCommand() {
+        const varFileParam = "@" + ansibleVarFilePaths[this.phase];
         const playbookParam = playbookPaths[this.phase];
 
         let cmd = ['ansible-playbook', '-e', varFileParam, playbookParam,
             '--module-path=/usr/share/ovirt-hosted-engine-setup/ansible',
             '--inventory=localhost'];
 
-        console.log(cmd);
+        let inv = '--inventory=localhost';
+        if (this.phase === phases.BOOTSTRAP_VM) {
+            inv += ',' + this.heSetupModel.network.fqdn.value;
+        }
 
-        this.channel = cockpit.channel({
-            "payload": "stream",
-            "environ": [
-                "TERM=xterm-256color",
-                "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
-            ],
-            "spawn": cmd,
-            "pty": true,
-            "err": "out",
-            "superuser": "require",
-        });
+        cmd.push(inv);
+        return cmd;
+    }
 
-        let self = this;
-        $(this.channel).on("close", function(ev, options) {
-            let denied = false;
-            if (!self._manual_close) {
-                if (options["problem"] === "access-denied") {
-                    denied = true
+    executePlaybook(cmd) {
+        return new Promise((resolve, reject) => {
+            this.channel = cockpit.channel({
+                "payload": "stream",
+                "environ": [
+                    "TERM=xterm-256color",
+                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
+                ],
+                "spawn": cmd,
+                "pty": true,
+                "err": "out",
+                "superuser": "require",
+            });
+
+            const self = this;
+            $(this.channel).on("close", function (ev, options) {
+                let denied = false;
+                if (!self._manual_close) {
+                    if (options["problem"] === "access-denied") {
+                        denied = true;
+                        reject(options, denied);
+                    } else if (options["exit-status"] === 0) {
+                        console.log("Execution of " + playbookPaths[self.phase] + " completed successfully.");
+                        resolve();
+                    } else {
+                        console.log("Execution of " + playbookPaths[self.phase] + " failed to complete.");
+                        reject(options, denied);
+                    }
                 }
-                self._exitCallback(options["exit-status"], denied)
-            }
-            console.log("hosted-engine-setup exited");
-            console.log(ev);
-            console.log(options);
+                console.log("hosted-engine-setup exited");
+                console.log(ev);
+                console.log(options);
+            });
+
+            $(this.channel).on("message", $.proxy(this.handleOutput, this));
         });
-        $(this.channel).on("message", $.proxy(this.handleOutput, this));
     }
 
     generateVarFiles() {

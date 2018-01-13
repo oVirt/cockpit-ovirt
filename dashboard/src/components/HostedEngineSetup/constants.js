@@ -1,10 +1,7 @@
 export const configValues = {
     ANSWER_FILE_PATH: "/tmp/he-setup-answerfile.conf",
     ANSIBLE_PLAYBOOK_PATH: "/usr/share/cockpit/ovirt-dashboard/hostedEngineAnsibleFiles/heSetup.yml",
-    APPLIANCE_PATH_PREFIX: "/usr/share/ovirt-engine-appliance/",
-    ANSIBLE_PHASE_1_VAR_FILE_PATH: "/tmp/ansiblePhase1.var",
-    ANSIBLE_PHASE_2_VAR_FILE_PATH: "/tmp/ansiblePhase2.var",
-    ANSIBLE_PHASE_3_VAR_FILE_PATH: "/tmp/ansiblePhase3.var"
+    APPLIANCE_PATH_PREFIX: "/usr/share/ovirt-engine-appliance/"
 };
 
 export const ansiblePhases = {
