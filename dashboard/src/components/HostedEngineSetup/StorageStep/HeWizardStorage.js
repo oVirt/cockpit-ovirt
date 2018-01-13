@@ -1,6 +1,7 @@
 import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
+import {deploymentTypes} from "../constants";
 
 const storageTypes = [
     { key: "nfs3", title: "NFS3" },
@@ -58,7 +59,7 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConf
 
                 <div style={iscsiSelected ? {} : {display: 'none'}}>
                     <div className={getClassNames("iSCSIPortalUser", errorMsgs)}>
-                        <label className="col-md-3 control-label">Portal User</label>
+                        <label className="col-md-3 control-label">Portal Username</label>
                         <div className="col-md-6">
                             <input type="text" style={{width: "150px"}}
                                    title="Enter the user for the iSCSI portal you wish to use."
@@ -86,6 +87,41 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConf
                             }
                         </div>
                     </div>
+
+                    {deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT &&
+                        <div className={getClassNames("iSCSIDiscoverUser", errorMsgs)}>
+                            <label className="col-md-3 control-label">Discovery Username</label>
+                            <div className="col-md-6">
+                                <input type="text" style={{width: "150px"}}
+                                       title="Enter the user for the iSCSI portal you wish to use."
+                                       className="form-control"
+                                       value={storageConfig.iSCSIDiscoverUser.value}
+                                       onChange={(e) => handleStorageConfigUpdate("iSCSIDiscoverUser", e.target.value)}
+                                />
+                                {errorMsgs.iSCSIDiscoverUser &&
+                                    <span className="help-block">{errorMsgs.iSCSIDiscoverUser}</span>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    {deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT &&
+                        <div className={getClassNames("iSCSIDiscoverPassword", errorMsgs)}>
+                            <label className="col-md-3 control-label">Discovery Password</label>
+                            <div className="col-md-6">
+                                <input type="password" style={{width: "150px"}}
+                                       title="Enter the user for the iSCSI portal you wish to use."
+                                       className="form-control"
+                                       value={storageConfig.iSCSIDiscoverPassword.value}
+                                       onChange={(e) => handleStorageConfigUpdate("iSCSIDiscoverPassword", e.target.value)}
+                                />
+                                {errorMsgs.iSCSIDiscoverPassword &&
+                                    <span className="help-block">{errorMsgs.iSCSIDiscoverPassword}</span>
+                                }
+                            </div>
+                        </div>
+                    }
+
 
                     <div className={getClassNames("iSCSIPortalIPAddress", errorMsgs)}>
                         <label className="col-md-3 control-label">Portal IP Address</label>

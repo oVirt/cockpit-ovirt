@@ -187,6 +187,30 @@ export class HeSetupModel {
                     useInAnswerFile: false,
                     required: false
                 },
+                iSCSIDiscoverUser: {
+                    name: "iSCSIDiscoverUser",
+                    ansibleVarName: "ISCSI_DISCOVER_USERNAME",
+                    ansiblePhasesUsed: [2, 3],
+                    description: "Discovery User",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                iSCSIDiscoverPassword: {
+                    name: "iSCSIDiscoverPassword",
+                    ansibleVarName: "ISCSI_DISCOVER_PASSWORD",
+                    ansiblePhasesUsed: [2, 3],
+                    description: "Discovery Password",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 iSCSIPortalIPAddress: {
                     name: "iSCSIPortalIPAddress",
                     description: "Portal IP Address",
