@@ -7,6 +7,7 @@ class AnsibleVarFilesGenerator {
         this.getAnswerFileStrings = this.getAnswerFileStrings.bind(this);
         this.addLineToVarStrings = this.addLineToVarStrings.bind(this);
         this.writeVarFiles = this.writeVarFiles.bind(this);
+        this.formatValue = this.formatValue.bind(this);
     }
 
     getAnswerFileStrings() {
@@ -25,14 +26,27 @@ class AnsibleVarFilesGenerator {
                         const prop = section[propName];
 
                         if (prop.hasOwnProperty("ansibleVarName")) {
-                            const varLine = prop.ansibleVarName + separator + prop.value + '\n';
+                            const varLine = prop.ansibleVarName + separator + self.formatValue(prop.value) + '\n';
                             self.addLineToVarStrings(varLine, varStrings, prop.ansiblePhasesUsed);
-
                         }
                     }, this)
             }, this);
 
         return varStrings;
+    }
+
+    formatValue(value) {
+        let cleanedValue = value;
+
+        if (value === "") {
+            cleanedValue = "null";
+        }
+
+        if (value === "yes" || value === "no") {
+            cleanedValue = "\"" + value + "\"";
+        }
+
+        return cleanedValue;
     }
 
     addLineToVarStrings(varLine, varStrings, phasesUsed) {
