@@ -5,6 +5,7 @@ class AnsibleVarFilesGenerator {
         this.model = heSetupModel;
 
         this.getAnswerFileStrings = this.getAnswerFileStrings.bind(this);
+        this.checkValue = this.checkValue.bind(this);
         this.addLineToVarStrings = this.addLineToVarStrings.bind(this);
         this.writeVarFiles = this.writeVarFiles.bind(this);
         this.formatValue = this.formatValue.bind(this);
@@ -26,13 +27,40 @@ class AnsibleVarFilesGenerator {
                         const prop = section[propName];
 
                         if (prop.hasOwnProperty("ansibleVarName")) {
-                            const varLine = prop.ansibleVarName + separator + self.formatValue(prop.value) + '\n';
+                            const val = self.checkValue(propName, prop.value);
+                            const varLine = prop.ansibleVarName + separator + self.formatValue(val) + '\n';
                             self.addLineToVarStrings(varLine, varStrings, prop.ansiblePhasesUsed);
                         }
                     }, this)
             }, this);
 
         return varStrings;
+    }
+
+    checkValue(propName, value) {
+        let retVal = value;
+        if (propName === "storageDomainConnection" || propName === "storage") {
+            switch (this.model.storage.domainType.value.toLowerCase()) {
+                case "iscsi":
+                    retVal = this.model.storage.LunID.value;
+                    break;
+                case "fc":
+                    retVal = "";
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (propName === "domainType" && value.includes("nfs")) {
+            retVal = "nfs";
+        }
+
+        if (propName === "nfsVersion" && !this.model.storage.domainType.value.includes("nfs")) {
+            retVal = "";
+        }
+
+        return retVal;
     }
 
     formatValue(value) {

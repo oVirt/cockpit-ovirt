@@ -90,6 +90,30 @@ export class HeSetupModel {
                     uiStage: "",
                     useInAnswerFile: false,
                     required: false
+                },
+                localVmDir: {
+                    name: "LOCAL_VM_DIR",
+                    ansibleVarName: "LOCAL_VM_DIR",
+                    ansiblePhasesUsed: [2,3],
+                    description: "LOCAL_VM_DIR",
+                    value: "localvm",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                discard: {
+                    name: "discard",
+                    ansibleVarName: "DISCARD",
+                    ansiblePhasesUsed: [2],
+                    description: "Discard",
+                    value: false,
+                    type: types.BOOLEAN,
+                    showInReview: false,
+                    uiStage: "",
+                    useInAnswerFile: false,
+                    required: false
                 }
             },
             storage: {
@@ -107,6 +131,8 @@ export class HeSetupModel {
                 },
                 imgSizeGB: {
                     name: "imgSizeGB",
+                    ansibleVarName: "DISK_SIZE",
+                    ansiblePhasesUsed: [3],
                     description: "Disk Size (GB)",
                     value: "50",
                     type: types.STRING,
@@ -139,9 +165,21 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: true
                 },
+                storageAddress: {
+                    name: "storageAddress",
+                    ansibleVarName: "STORAGE_DOMAIN_ADDRESS",
+                    ansiblePhasesUsed: [2],
+                    description: "Storage Address",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 storageDomainConnection: {
                     name: "storageDomainConnection",
-                    ansibleVarName: "STORAGE",
+                    ansibleVarName: "STORAGE_DOMAIN_CONNECTION",
                     ansiblePhasesUsed: [3],
                     description: "Storage Domain Connection",
                     value: "",
@@ -151,16 +189,40 @@ export class HeSetupModel {
                     useInAnswerFile: false,
                     required: true
                 },
+                storage: {
+                    name: "storage",
+                    ansibleVarName: "STORAGE",
+                    ansiblePhasesUsed: [3],
+                    description: "Storage Domain Connection",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 mntOptions: {
                     name: "mntOptions",
                     ansibleVarName: "MOUNT_OPTIONS",
-                    ansiblePhasesUsed: [2],
+                    ansiblePhasesUsed: [2,3],
                     description: "Mount Options",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Storage",
                     useInAnswerFile: true,
+                    required: false
+                },
+                nfsVersion: {
+                    name: "nfsVersion",
+                    ansibleVarName: "NFS_VERSION",
+                    ansiblePhasesUsed: [2,3],
+                    description: "NFS Version",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
                     required: false
                 },
                 iSCSIPortalUser: {
@@ -213,6 +275,8 @@ export class HeSetupModel {
                 },
                 iSCSIPortalIPAddress: {
                     name: "iSCSIPortalIPAddress",
+                    ansibleVarName: "ISCSI_IP_ADDR",
+                    ansiblePhasesUsed: [3],
                     description: "Portal IP Address",
                     value: "",
                     type: types.STRING,
@@ -222,6 +286,18 @@ export class HeSetupModel {
                     required: false,
                     regex: Validation.ipAddress,
                     errorMsg: "Invalid format for IP address"
+                },
+                iSCSIIPTPGT: {
+                    name: "iSCSIIPTPGT",
+                    ansibleVarName: "ISCSI_IP_TPGT",
+                    ansiblePhasesUsed: [3],
+                    description: "iSCSI IP TPGT",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false
                 },
                 iSCSIPortalPort: {
                     name: "iSCSIPortalPort",
@@ -252,7 +328,7 @@ export class HeSetupModel {
                 LunID: {
                     name: "LunID",
                     ansibleVarName: "LUN_ID",
-                    ansiblePhasesUsed: [2],
+                    ansiblePhasesUsed: [2,3],
                     description: "Destination LUN",
                     value: "",
                     type: types.STRING,
@@ -275,6 +351,8 @@ export class HeSetupModel {
                 },
                 bridgeName: {
                     name: "bridgeName",
+                    ansibleVarName: "BRIDGE",
+                    ansiblePhasesUsed: [3],
                     description: "Bridge Name",
                     value: "ovirtmgmt",
                     type: types.STRING,
@@ -344,6 +422,54 @@ export class HeSetupModel {
                     required: true,
                     range: {min: 2, max: 2}
                 },
+                maxVCpus: {
+                    name: "maxVCpus",
+                    ansibleVarName: "MAXVCPUS",
+                    ansiblePhasesUsed: [1,3],
+                    description: "Maximum Number of Virtual CPUs",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                cpuSockets: {
+                    name: "cpuSockets",
+                    ansibleVarName: "CPU_SOCKETS",
+                    ansiblePhasesUsed: [1,3],
+                    description: "Number of CPU Sockets",
+                    value: "1",
+                    type: types.INTEGER,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                emulatedMachine: {
+                    name: "emulatedMachine",
+                    ansibleVarName: "EMULATED_MACHINE",
+                    ansiblePhasesUsed: [1,3],
+                    description: "Emulated Machine",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                localVmUUID: {
+                    name: "localVmUUID",
+                    ansibleVarName: "VM_UUID",
+                    ansiblePhasesUsed: [1],
+                    description: "Local VM UUID",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 vmMACAddr: {
                     name: "vmMACAddr",
                     ansibleVarName: "VM_MAC_ADDR",
@@ -357,6 +483,18 @@ export class HeSetupModel {
                     required: false,
                     regex: Validation.macAddress,
                     errorMsg: "Invalid format for MAC address"
+                },
+                vmIpPrefix: {
+                    name: "vmIpPrefix",
+                    ansibleVarName: "VM_IP_PREFIX",
+                    ansiblePhasesUsed: [3],
+                    description: "VM IP Prefix",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: true,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
                 },
                 vmMemSizeMB: {
                     name: "vmMemSizeMB",
@@ -384,6 +522,8 @@ export class HeSetupModel {
                 },
                 cloudinitVMStaticCIDR: {
                     name: "cloudinitVMStaticCIDR",
+                    ansibleVarName: "VM_IP_ADDR",
+                    ansiblePhasesUsed: [3],
                     description: "IP Address",
                     value: "",
                     type: types.STRING,
@@ -396,6 +536,8 @@ export class HeSetupModel {
                 },
                 cloudinitVMDNS: {
                     name: "cloudinitVMDNS",
+                    ansibleVarName: "DNS_ADDR",
+                    ansiblePhasesUsed: [3],
                     description: "DNS Servers",
                     value: [""],
                     type: types.STRING,
@@ -439,7 +581,7 @@ export class HeSetupModel {
                 ovfArchive: {
                     name: "ovfArchive",
                     ansibleVarName: "APPLIANCE_OVA",
-                    ansiblePhasesUsed: [1],
+                    ansiblePhasesUsed: [1,3],
                     description: "Appliance File Path",
                     value: "",
                     type: types.STRING,
@@ -450,8 +592,8 @@ export class HeSetupModel {
                 },
                 cloudinitInstanceHostName: {
                     name: "cloudinitInstanceHostName",
-                    ansibleVarName: "",
-                    ansiblePhasesUsed: [],
+                    ansibleVarName: "CLOUD_INIT_HOST_NAME",
+                    ansiblePhasesUsed: [1,3],
                     description: "Engine VM Host Name",
                     value: "ovirt-engine",
                     type: types.STRING,
@@ -463,7 +605,7 @@ export class HeSetupModel {
                 cloudinitInstanceDomainName: {
                     name: "cloudinitInstanceDomainName",
                     ansibleVarName: "CLOUD_INIT_DOMAIN_NAME",
-                    ansiblePhasesUsed: [1],
+                    ansiblePhasesUsed: [1,3],
                     description: "Engine VM Domain",
                     value: "localdomain",
                     type: types.STRING,
@@ -495,7 +637,7 @@ export class HeSetupModel {
                 cloudinitRootPwd: {
                     name: "cloudinitRootPwd",
                     ansibleVarName: "APPLIANCE_PASSWORD",
-                    ansiblePhasesUsed: [1],
+                    ansiblePhasesUsed: [1,3],
                     description: "Root password",
                     value: "",
                     type: types.STRING,
@@ -517,7 +659,7 @@ export class HeSetupModel {
                 rootSshPubkey: {
                     name: "rootSshPubkey",
                     ansibleVarName: "ROOT_SSH_PUBKEY",
-                    ansiblePhasesUsed: [1],
+                    ansiblePhasesUsed: [1,3],
                     description: "Root User SSH Public Key",
                     value: "",
                     type: types.STRING,
@@ -541,13 +683,109 @@ export class HeSetupModel {
                 cloudinitVMETCHOSTS: {
                     name: "cloudinitVMETCHOSTS",
                     ansibleVarName: "VM_ETC_HOSTS",
-                    ansiblePhasesUsed: [1],
+                    ansiblePhasesUsed: [1,3],
                     description: "Add Lines to /etc/hosts",
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: true,
                     uiStage: "VM",
                     useInAnswerFile: true,
+                    required: false
+                },
+                cloudinitHostIP: {
+                    name: "cloudinitHostIP",
+                    ansibleVarName: "HOST_IP",
+                    ansiblePhasesUsed: [1,3],
+                    description: "Host IP Address",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                cdromUUID: {
+                    name: "cdromUUID",
+                    ansibleVarName: "CDROM_UUID",
+                    ansiblePhasesUsed: [1,3],
+                    description: "CDROM UUID",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                cdrom: {
+                    name: "cdrom",
+                    ansibleVarName: "CDROM",
+                    ansiblePhasesUsed: [1,3],
+                    description: "CDROM",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                nicUUID: {
+                    name: "nicUUID",
+                    ansibleVarName: "NIC_UUID",
+                    ansiblePhasesUsed: [1,3],
+                    description: "NIC UUID",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                consoleUUID: {
+                    name: "consoleUUID",
+                    ansibleVarName: "CONSOLE_UUID",
+                    ansiblePhasesUsed: [1],
+                    description: "Console UUID",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                videoDevice: {
+                    name: "videoDevice",
+                    ansibleVarName: "VIDEO_DEVICE",
+                    ansiblePhasesUsed: [1,3],
+                    description: "Video Device",
+                    value: "vga",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                graphicsDevice: {
+                    name: "graphicsDevice",
+                    ansibleVarName: "GRAPHICS_DEVICE",
+                    ansiblePhasesUsed: [1,3],
+                    description: "Graphics Device",
+                    value: "vnc",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                vmName: {
+                    name: "vmName",
+                    ansibleVarName: "VM_NAME",
+                    ansiblePhasesUsed: [1,3],
+                    description: "VM Name",
+                    value: "HostedEngine",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
                     required: false
                 }
             },
@@ -589,6 +827,18 @@ export class HeSetupModel {
                     description: "Confirm Admin Portal Password",
                     value: "",
                     type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Engine",
+                    useInAnswerFile: false,
+                    required: false
+                },
+                enableLibgfapi: {
+                    name: "enableLibgfapi",
+                    ansibleVarName: "ENABLE_LIBGFAPI",
+                    ansiblePhasesUsed: [1],
+                    description: "Enable libgfapi",
+                    value: "",
+                    type: types.BOOLEAN,
                     showInReview: false,
                     uiStage: "Engine",
                     useInAnswerFile: false,
@@ -654,6 +904,8 @@ export class HeSetupModel {
             notifications: {
                 smtpServer: {
                     name: "smtpServer",
+                    ansibleVarName: "SMTP_SERVER",
+                    ansiblePhasesUsed: [3],
                     description: "Notifications SMTP Server",
                     value: "localhost",
                     type: types.STRING,
@@ -664,6 +916,8 @@ export class HeSetupModel {
                 },
                 smtpPort: {
                     name: "smtpPort",
+                    ansibleVarName: "SMTP_PORT",
+                    ansiblePhasesUsed: [3],
                     description: "SMTP Port Number",
                     value: "25",
                     type: types.STRING,
@@ -676,6 +930,8 @@ export class HeSetupModel {
                 },
                 sourceEmail: {
                     name: "sourceEmail",
+                    ansibleVarName: "SOURCE_EMAIL",
+                    ansiblePhasesUsed: [3],
                     description: "SMTP Sender E-Mail Address",
                     value: "root@localhost",
                     type: types.STRING,
@@ -686,6 +942,8 @@ export class HeSetupModel {
                 },
                 destEmail: {
                     name: "destEmail",
+                    ansibleVarName: "DEST_EMAIL",
+                    ansiblePhasesUsed: [3],
                     description: "SMTP Recipient E-Mail Addresses",
                     value: ["root@localhost"],
                     type: types.STRING,
