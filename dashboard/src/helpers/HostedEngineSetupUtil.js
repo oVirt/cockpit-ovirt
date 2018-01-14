@@ -288,7 +288,7 @@ export class HeSetupModel {
                     ansibleVarName: "FQDN",
                     ansiblePhasesUsed: [1, 2, 3],
                     description: "Engine FQDN",
-                    value: "ovirt-engine.localdomain",
+                    value: "",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
