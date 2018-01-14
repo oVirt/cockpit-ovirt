@@ -148,11 +148,9 @@ class HeWizardVmContainer extends Component {
             }
         }
 
-        if (propName === "cloudinitInstanceHostName" || propName === "cloudinitInstanceDomainName") {
-            const hostName = propName === "cloudinitInstanceHostName" ? value : vmConfig.cloudinitInstanceHostName.value;
-            const domainName = propName === "cloudinitInstanceDomainName" ? value : vmConfig.cloudinitInstanceDomainName.value;
-
-            heSetupModel.network.fqdn.value = hostName + "." + domainName;
+        if (propName === "fqdn") {
+            heSetupModel.vm.cloudinitInstanceHostName.value = value.substring(0, value.indexOf("."));
+            heSetupModel.vm.cloudinitInstanceDomainName.value = value.substring(value.indexOf(".") + 1);
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
