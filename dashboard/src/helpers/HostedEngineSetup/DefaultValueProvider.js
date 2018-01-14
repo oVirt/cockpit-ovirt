@@ -1,4 +1,4 @@
-import { allIntelCpus, allowedIntelCpus, configValues, defaultInterfaces,
+import { allIntelCpus, allowedIntelCpus, configValues, defaultInterfaces, filteredNetworkInterfaces,
          resourceConstants, status } from "../../components/HostedEngineSetup/constants"
 
 export class DefaultValueProvider {
@@ -167,8 +167,9 @@ export class DefaultValueProvider {
         const ansibleInterfaces = this.getTaskData("Gathering Facts")["ansible_facts"]["ansible_interfaces"];
 
         if (typeof ansibleInterfaces !== "undefined" && ansibleInterfaces.length > 0) {
+            const filteredInterfaces = ansibleInterfaces.filter(iface => !filteredNetworkInterfaces.includes(iface));
             const interfacesArray = [];
-            ansibleInterfaces.forEach(function (iface) {
+            filteredInterfaces.forEach(function (iface) {
                 interfacesArray.push({key: iface, title: iface});
             });
 
