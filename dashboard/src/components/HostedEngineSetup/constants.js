@@ -156,3 +156,5 @@ export const deploymentTypes = {
     ANSIBLE_DEPLOYMENT: "Ansible Deployment",
     OTOPI_DEPLOYMENT: "OTOPI Deployment"
 };
+
+export const filteredNetworkInterfaces = ["lo"];
