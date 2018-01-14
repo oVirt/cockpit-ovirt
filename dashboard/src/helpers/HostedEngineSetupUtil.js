@@ -414,13 +414,13 @@ export class HeSetupModel {
                     ansibleVarName: "VCPUS",
                     ansiblePhasesUsed: [1, 3],
                     description: "Number of Virtual CPUs",
-                    value: "2",
+                    value: "1",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
-                    range: {min: 2, max: 2}
+                    range: {min: 1, max: 1}
                 },
                 maxVCpus: {
                     name: "maxVCpus",
@@ -797,7 +797,7 @@ export class HeSetupModel {
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: false,
+                    useInAnswerFile: true,
                     required: true
                 },
                 adminUsername: {
@@ -807,7 +807,7 @@ export class HeSetupModel {
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Engine",
-                    useInAnswerFile: false,
+                    useInAnswerFile: true,
                     required: true
                 },
                 adminPassword: {
