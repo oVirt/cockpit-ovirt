@@ -234,10 +234,6 @@ const WizardFooter = ({activeStep, stepCount, isDeploymentStarted,
         "btn", "btn-default", "wizard-pf-back",
         { "disabled": activeStep === 0 || isDeploymentStarted}
     ),
-        nextButton = classNames(
-            "btn", "btn-primary", "wizard-pf-next",
-            { "hidden": isLastStep }
-        ),
         finishButton = classNames(
             "btn", "btn-primary", "wizard-pf-finish",
             { "hidden": (!isLastStep || isDeploymentStarted) }
@@ -246,6 +242,10 @@ const WizardFooter = ({activeStep, stepCount, isDeploymentStarted,
             "btn", "btn-primary", "wizard-pf-close", "wizard-pf-dismiss",
             { "hidden": (!isLastStep || !isDeploymentStarted) }
         );
+    let nextButton = classNames(
+        "btn", "btn-primary", "wizard-pf-next",
+        { "hidden": isLastStep }
+    );
 
     let nextButtonText = "Next";
     let nextCallBack = moveNext;
@@ -254,6 +254,11 @@ const WizardFooter = ({activeStep, stepCount, isDeploymentStarted,
     if (typeof nextButtonState !== "undefined") {
         nextButtonText = typeof nextButtonState.nextButtonText === "string" ? nextButtonState.nextButtonText : "Next";
         showNextArrow = typeof nextButtonState.showArrow === "boolean" ? nextButtonState.showArrow : true;
+        nextButton = classNames(
+            "btn", "btn-primary", "wizard-pf-next",
+            { "hidden": isLastStep },
+            { "disabled": nextButtonState.disabled }
+        );
 
         if (typeof nextButtonState.nextButtonCallBack === "function") {
             nextCallBack = () => {
