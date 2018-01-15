@@ -34,12 +34,28 @@ class Wizard extends Component {
         this.props.onClose()
     }
     moveBack() {
-        if (this.state.activeStep > 0) {
-            this.moveToStep(this.state.activeStep - 1)
+        if (this.state.activeSubStep > 0) {
+            this.handleActiveSubStepChange(this.state.activeSubStep - 1);
+        } else if (this.state.activeStep > 0) {
+            this.moveToStep(this.state.activeStep - 1);
+            const prevStep = this.props.children[this.state.activeStep - 1];
+            const prevStepHasSubSteps = typeof prevStep.props.children !== "undefined";
+            if (prevStepHasSubSteps) {
+                const numSubStepsInPrevStep = prevStep.props.children.length;
+                this.handleActiveSubStepChange(numSubStepsInPrevStep - 1);
+            }
         }
     }
     moveNext() {
-        if (this.state.activeStep < this.props.children.length - 1) {
+        const isNotLastStep = this.state.activeStep < this.props.children.length - 1;
+
+        const currStep = this.props.children[this.state.activeStep];
+        const currStepHasSubSteps = typeof currStep.props.children !== "undefined";
+        const isNotLastSubStep = currStepHasSubSteps && (this.state.activeSubStep < currStep.props.children.length - 1);
+
+        if (isNotLastSubStep) {
+            this.handleActiveSubStepChange(this.state.activeSubStep + 1);
+        } else if (isNotLastStep) {
             this.moveToStep(this.state.activeStep + 1)
         }
     }
@@ -177,6 +193,7 @@ class Wizard extends Component {
                             </div>
                         </div>
                         <WizardFooter activeStep={this.state.activeStep}
+                            activeSubStep={this.state.activeSubStep}
                             stepCount={this.props.children.length}
                             isDeploymentStarted={this.props.isDeploymentStarted}
                             moveBack={this.moveBack} moveNext={this.moveNext}
@@ -227,12 +244,12 @@ const WizardSteps = ({steps, activeStep, callBack}) => {
     )
 }
 
-const WizardFooter = ({activeStep, stepCount, isDeploymentStarted,
+const WizardFooter = ({activeStep, activeSubStep, stepCount, isDeploymentStarted,
     moveBack, moveNext, cancel, finish, close, nextButtonState}) => {
     const isLastStep = activeStep === stepCount - 1;
     const backButton = classNames(
         "btn", "btn-default", "wizard-pf-back",
-        { "disabled": activeStep === 0 || isDeploymentStarted}
+        { "disabled": (activeStep === 0 && activeSubStep === 0) || isDeploymentStarted}
     ),
         finishButton = classNames(
             "btn", "btn-primary", "wizard-pf-finish",
