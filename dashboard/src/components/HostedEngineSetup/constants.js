@@ -99,7 +99,8 @@ export const messages = {
     DEPLOYMENT_FAILED: "Deployment failed",
     DEPLOYMENT_IN_PROGRESS: "Deployment in progress",
     ADD_GDEPLOY_PROPS_TO_ANS_FILE: "Attempting to add gdeploy properties to the answer file.",
-    NO_GDEPLOY_ANSWER_FILES_FOUND: "No gdeploy answer files found."
+    NO_GDEPLOY_ANSWER_FILES_FOUND: "No gdeploy answer files found.",
+    ANSIBLE_PHASE_SUCCESSFUL: "Execution completed successfully. Please proceed to the next step."
 };
 
 export const allowedIntelCpus = [

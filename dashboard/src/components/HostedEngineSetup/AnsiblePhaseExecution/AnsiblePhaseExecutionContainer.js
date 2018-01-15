@@ -14,7 +14,9 @@ class AnsiblePhaseExecutionContainer extends Component {
 
         this.parseOutput = this.parseOutput.bind(this);
         this.processExit = this.processExit.bind(this);
-
+        this.resetState = this.resetState.bind(this);
+        this.restart = this.restart.bind(this);
+        this.restartCallBack = this.restartCallBack.bind(this);
 
         this.phaseExecutor = new AnsiblePhaseExecutor(this.props.abortCallBack, this.props.heSetupModel, this.props.phase);
     }
@@ -23,11 +25,29 @@ class AnsiblePhaseExecutionContainer extends Component {
         this.phaseExecutor.startSetup(this.parseOutput, this.processExit);
     }
 
+    restart() {
+        this.resetState();
+        this.phaseExecutor.startSetup(this.parseOutput, this.processExit);
+    }
+
+    restartCallBack() {
+        this.props.restartCallBack(this.restart);
+    }
+
+    resetState() {
+        this.setState({
+            phaseExecutionStatus: status.RUNNING,
+            terminated: false,
+            output: {lines: []}
+        });
+    }
+
     processExit(executionStatus) {
         const newState = {};
         newState.phaseExecutionStatus = executionStatus === status.SUCCESS ? status.SUCCESS : status.FAILURE;
         newState.terminated = true;
         this.setState(newState);
+        this.props.terminationCallBack(newState.phaseExecutionStatus, this.restart);
     }
 
     parseOutput(data) {
@@ -38,7 +58,8 @@ class AnsiblePhaseExecutionContainer extends Component {
 
     render() {
         return <AnsiblePhaseExecution phaseExecutionStatus={this.state.phaseExecutionStatus}
-                                      output={this.state.output}/>
+                                      output={this.state.output}
+                                      restartCallBack={this.restartCallBack}/>
     }
 }
 

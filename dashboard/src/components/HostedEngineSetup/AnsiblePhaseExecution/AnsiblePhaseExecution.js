@@ -1,16 +1,13 @@
 import React from 'react'
-import { deploymentStatus } from '../constants';
-import DeploymentSuccessPanel from '../Execution/DeploymentSuccessPanel'
+import {deploymentStatus, messages} from '../constants';
 
-const AnsiblePhaseExecution = ({output, phaseExecutionStatus}) => {
-    const redeployCallback = () => {console.log("Redeploy")};
-
+const AnsiblePhaseExecution = ({output, phaseExecutionStatus, restartCallBack}) => {
     if (phaseExecutionStatus === deploymentStatus.SUCCESS) {
-        return <DeploymentSuccessPanel />
+        return <DeploymentSuccessPanel restartCallBack={restartCallBack}/>
     } else {
         return <OutputPanel output={output}
                             phaseExecutionStatus={phaseExecutionStatus}
-                            reDeployCallback={redeployCallback}/>
+                            reDeployCallback={restartCallBack}/>
     }
 };
 
@@ -58,4 +55,22 @@ const Status = ({ status, reDeployCallback }) => {
             </div>
         </div>
     )
-}
+};
+
+const DeploymentSuccessPanel = ({ restartCallBack }) => {
+    return (
+        <div className="wizard-pf-complete blank-slate-pf">
+            <div className="wizard-pf-success-icon">
+                <span className="glyphicon glyphicon-ok-circle" />
+            </div>
+            <h3 className="blank-slate-pf-main-action">
+                {messages.ANSIBLE_PHASE_SUCCESSFUL}
+            </h3>
+            <br />
+            <button className="btn btn-primary" onClick={restartCallBack}>
+                <span className="pficon pficon-restart">&nbsp;</span>
+                Rerun Setup
+            </button>
+        </div>
+    )
+};
