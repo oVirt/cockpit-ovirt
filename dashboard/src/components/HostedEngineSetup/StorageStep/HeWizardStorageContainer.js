@@ -49,7 +49,15 @@ class HeWizardStorageContainer extends Component {
 
     handleStorageConfigUpdate(propName, value) {
         const storageConfig = this.state.storageConfig;
-        storageConfig[propName].value = value;
+
+        if (propName === "domainType" && value === "nfs") {
+            storageConfig.domainType.value = value + storageConfig.nfsVersion.value;
+        } else if (propName === "nfsVersion") {
+            storageConfig.domainType.value = "nfs" + value;
+            storageConfig.nfsVersion.value = value;
+        } else {
+            storageConfig[propName].value = value;
+        }
 
         if (propName === "storageDomainConnection") {
             const storageConn = value.split(":");
@@ -70,7 +78,7 @@ class HeWizardStorageContainer extends Component {
     setStorageTypeDisplaySettings(storageType) {
         const model = this.state.model;
 
-        let isNfs = storageType === "nfs3" || storageType === "nfs4";
+        let isNfs = storageType.includes("nfs");
         let isIscsi = storageType === "iscsi";
         let isGluster = storageType === "glusterfs";
 
