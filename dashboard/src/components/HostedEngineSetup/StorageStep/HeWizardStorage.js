@@ -4,15 +4,19 @@ import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 import {deploymentTypes} from "../constants";
 
 const storageTypes = [
-    { key: "nfs3", title: "NFS3" },
-    { key: "nfs4", title: "NFS4" },
+    { key: "nfs", title: "NFS" },
     { key: "iscsi", title: "iSCSI" },
     { key: "fc", title: "Fiber Channel"},
     { key: "glusterfs", title: "Gluster" }
 ];
 
+const nfsVersions = [
+    { key: "3", title: "v3" },
+    { key: "4", title: "v4" }
+];
+
 const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConfigUpdate, storageConfig}) => {
-    let nfsSelected = storageConfig.domainType.value === "nfs3" || storageConfig.domainType.value === "nfs4";
+    let nfsSelected = storageConfig.domainType.value.includes("nfs");
     let iscsiSelected = storageConfig.domainType.value === "iscsi";
     let glusterSelected = storageConfig.domainType.value === "glusterfs";
 
@@ -41,6 +45,18 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConf
                 </div>
 
                 <div style={nfsSelected ? {} : { display: 'none' }}>
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">NFS Version</label>
+                        <div className="col-md-6">
+                            <div style={{width: "120px"}}>
+                                <Selectbox optionList={nfsVersions}
+                                           selectedOption={storageConfig.nfsVersion.value}
+                                           callBack={(e) => handleStorageConfigUpdate("nfsVersion", e)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     <div className={getClassNames("storageDomain", errorMsgs)}>
                         <label className="col-md-3 control-label">Storage Domain Name</label>
                         <div className="col-md-6">
