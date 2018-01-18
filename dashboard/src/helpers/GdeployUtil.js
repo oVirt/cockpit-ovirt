@@ -36,23 +36,32 @@ var GdeployUtil = {
                     brick_dir: "/gluster_bricks/vmstore/vmstore"
                 },
             ],
-            bricks: [
-                { name: "engine", device: "sdb",
-                    brick_dir: "/gluster_bricks/engine", size: "100",
-                    thinp: false, is_vdo_supported: false, logicalSize: "400"
-                },
-                { name: "data", device: "sdb",
-                    brick_dir: "/gluster_bricks/data", size: "500",
-                    thinp: true, is_vdo_supported: false, logicalSize: "2000"
-                },
-                { name: "vmstore", device: "sdb",
-                    brick_dir: "/gluster_bricks/vmstore", size: "500",
-                    thinp: true, is_vdo_supported: false, logicalSize: "2000"
-                },
-            ],
-            lvCacheConfig: {
-                lvCache: false, ssd: "", lvCacheSize: "1", cacheMode: "writethrough"
-            },
+            bricks: [{
+                host: "",
+                host_bricks: [
+                    { name: "engine", device: "sdb",
+                        brick_dir: "/gluster_bricks/engine", size: "100",
+                        thinp: false,
+                        is_vdo_supported: false,
+                        logicalSize: "400"
+                    },
+                    { name: "data", device: "sdb",
+                        brick_dir: "/gluster_bricks/data", size: "500",
+                        thinp: true,
+                        is_vdo_supported: false,
+                        logicalSize: "2000"
+                    },
+                    { name: "vmstore", device: "sdb",
+                        brick_dir: "/gluster_bricks/vmstore", size: "500",
+                        thinp: true,
+                        is_vdo_supported: false,
+                        logicalSize: "2000"
+                    },
+                ]
+            }],
+            lvCacheConfig: [{
+                host: "", lvCache: false, ssd: "", lvCacheSize: "1", cacheMode: "writethrough"
+            }],
         }
     },
     createGdeployConfig(glusterModel, templateModel, filePath, callback) {
@@ -83,12 +92,24 @@ var GdeployUtil = {
         })
     },
     createPreFlightCheck(hosts, pvConfig) {
-        const preFlightCheck = {
-            action: 'execute',
-            ignore_script_errors: 'no'
-        }
-        let disks = Object.keys(pvConfig).join()
-        preFlightCheck.file = `${PRE_FLIGHT_CHECK_SCRIPT} -d ${disks} -h ${hosts.join()}`
+        let preFlightCheck = []
+        pvConfig.forEach(function(pvHost, index) {
+            const hostPreFlightCheckObject = {
+              host: pvHost.host,
+              hostPreFlightCheck: {
+                action: 'execute',
+                ignore_script_errors: 'no'
+              }
+            }
+            let disksArray = Object.keys(pvHost)
+            if(disksArray.indexOf('host') >= 0){
+                disksArray.splice(disksArray.indexOf('host'), 1)
+            }
+            let disks = disksArray.join()
+            hostPreFlightCheckObject.hostPreFlightCheck.file = `${PRE_FLIGHT_CHECK_SCRIPT} -d ${disks} -h ${hosts.join()}`
+
+            preFlightCheck.push(hostPreFlightCheckObject)
+        })
         return preFlightCheck
     },
     createYumConfig(subscription) {
@@ -135,8 +156,8 @@ var GdeployUtil = {
     },
     createBrickConfig(glusterModel) {
         const brickConfig = {
-            pvConfig: {}, vgConfig: {},
-            lvConfig: [], thinPoolConfig: {},
+            pvConfig: [], vgConfig: [],
+            lvConfig: [], thinPoolConfig: [],
             arbiterLvConfig: {}, arbiterThinPoolConfig: {}
         }
         brickConfig.raidParam = {
@@ -145,99 +166,72 @@ var GdeployUtil = {
             stripesize: glusterModel.raidConfig.stripeSize
         }
         const that = this
-        glusterModel.bricks.forEach(function(brick, index) {
-            //If there is no PV added for the given device, add it now.
-            if (!brickConfig.pvConfig.hasOwnProperty(brick.device)) {
-                brickConfig.pvConfig[brick.device] = {
-                    action: 'create',
-                    devices: brick.device,
-                    ignore_pv_errors: 'no'
-                }
-            }
-            //If there is no VG added for the given device, add it now.
-            if (!brickConfig.vgConfig.hasOwnProperty(brick.device)) {
-                brickConfig.vgConfig[brick.device] = {
-                    action: 'create',
-                    vgname: VG_NAME + brick.device,
-                    pvname: brick.device,
-                    ignore_vg_errors: 'no'
-                }
-            }
-            //Find if the brick is used for arbiter volume.
-            const is_arbiter = glusterModel.volumes[index].is_arbiter
-            //Create the lv configuration for the brick
-            const lvConfig = {
-                action: 'create',
-                lvname: LV_NAME + brick.name,
-                ignore_lv_errors: 'no'
-            }
-            lvConfig.vgname = VG_NAME + brick.device
-            lvConfig.mount = brick.brick_dir
-            if (brick.thinp) {
-                //If it is a thinlv, check if there is a thinpool already created for the device.
-                //If it is already created then increase the thinpool size by brick size.
-                if (brickConfig.thinPoolConfig.hasOwnProperty(brick.device)) {
-                    //If thinpool configuration is already seperated because of previous arbiter brick then
-                    //we have to increment that with the current brick size regardless of it is arbiter or not.
-                    if(brickConfig.arbiterThinPoolConfig.hasOwnProperty(brick.device)){
-                        brickConfig.arbiterThinPoolConfig[brick.device].size += is_arbiter ?
-                            that.getArbiterBrickSize(parseInt(brick.size)) : parseInt(brick.size)
-                        brickConfig.arbiterThinPoolConfig[brick.device].poolmetadatasize =
-                            that.getPoolMetadataSize(brickConfig.arbiterThinPoolConfig[brick.device].size) + "GB"
-                    }else if(is_arbiter){
-                        //If it is arbiter brick but thinpool configuration is not yet seperated then
-                        //seperate now. Clone the regular thinpool and increase the size by arbiter size
-                        const thinpool_arbiter = JSON.parse(JSON.stringify(brickConfig.thinPoolConfig[brick.device]))
-                        thinpool_arbiter.size = thinpool_arbiter.size + that.getArbiterBrickSize(parseInt(brick.size))
-                        thinpool_arbiter.poolmetadatasize = that.getPoolMetadataSize(thinpool_arbiter.size) + "GB"
-                        brickConfig.arbiterThinPoolConfig[brick.device] = thinpool_arbiter
-                    }
-                    brickConfig.thinPoolConfig[brick.device].size += parseInt(brick.size)
-                    brickConfig.thinPoolConfig[brick.device].poolmetadatasize =
-                       that.getPoolMetadataSize(brickConfig.thinPoolConfig[brick.device].size)
-                    brickConfig.thinPoolConfig[brick.device].size += brickConfig.thinPoolConfig[brick.device].poolmetadatasize
-                    brickConfig.thinPoolConfig[brick.device].poolmetadatasize += "GB"
-                } else {
-                    //Create a thinpool if it is not created already
-                    const thinpool = {
+        glusterModel.bricks.forEach(function(brickHost, hostIndex) {
+            brickConfig.pvConfig.push({host: brickHost.host})
+            brickConfig.vgConfig.push({host: brickHost.host})
+            brickConfig.lvConfig.push({host: brickHost.host, host_lvConfig: []})
+            brickConfig.thinPoolConfig.push({host: brickHost.host})
+            brickHost.host_bricks.forEach(function(brick, index) {
+                //If there is no PV added for the given device, add it now.
+                if (!brickConfig.pvConfig[hostIndex].hasOwnProperty(brick.device)) {
+                    brickConfig.pvConfig[hostIndex][brick.device] = {
                         action: 'create',
-                        poolname: POOL_NAME + brick.device,
-                        ignore_lv_errors: 'no'
-                    }
-                    thinpool.vgname = VG_NAME + brick.device
-                    thinpool.lvtype = 'thinpool'
-                    thinpool.size = parseInt(brick.size)
-                    thinpool.poolmetadatasize = that.getPoolMetadataSize(thinpool.size) + "GB"
-                    brickConfig.thinPoolConfig[brick.device] = thinpool
-                    if(is_arbiter){
-                        //For arbiter brick, just clone the regular thinpool and modify the size
-                        const thinpool_arbiter = JSON.parse(JSON.stringify(thinpool))
-                        thinpool_arbiter.size = that.getArbiterBrickSize(parseInt(brick.size))
-                        thinpool_arbiter.poolmetadatasize = that.getPoolMetadataSize(thinpool_arbiter.size)
-                        thinpool_arbiter.size += thinpool_arbiter.poolmetadatasize
-                        thinpool_arbiter.poolmetadatasize += "GB"
-                        brickConfig.arbiterThinPoolConfig[brick.device] = thinpool_arbiter
+                        devices: brick.device,
+                        ignore_pv_errors: 'no'
                     }
                 }
-                //If thinlv, then we need to add the thinpoolname, virtualsize and lvtype as 'thinlv'
-                lvConfig.lvtype = 'thinlv'
-                lvConfig.poolname = POOL_NAME + brick.device
-                lvConfig.virtualsize = brick.size + "GB"
-            } else {
-                lvConfig.size = brick.size + "GB"
-                lvConfig.lvtype = 'thick'
-            }
-            brickConfig.lvConfig.push(lvConfig)
-
-            if(is_arbiter){
-                const lv_arbiter = JSON.parse(JSON.stringify(lvConfig))
+                //If there is no VG added for the given device, add it now.
+                if (!brickConfig.vgConfig[hostIndex].hasOwnProperty(brick.device)) {
+                    brickConfig.vgConfig[hostIndex][brick.device] = {
+                        action: 'create',
+                        vgname: VG_NAME + brick.device,
+                        pvname: brick.device,
+                        ignore_vg_errors: 'no'
+                    }
+                }
+                //Find if the brick is used for arbiter volume.
+                const is_arbiter = (hostIndex % 3 == 2) && glusterModel.volumes[index].is_arbiter
+                //Create the lv configuration for the brick
+                const lvConfig = {
+                    action: 'create',
+                    lvname: LV_NAME + brick.name,
+                    ignore_lv_errors: 'no'
+                }
+                lvConfig.vgname = VG_NAME + brick.device
+                lvConfig.mount = brick.brick_dir
                 if (brick.thinp) {
-                    lv_arbiter.virtualsize = this.getArbiterBrickSize(parseInt(brick.size)) + "GB"
-                }else{
-                    lv_arbiter.size = this.getArbiterBrickSize(parseInt(brick.size)) + "GB"
+                    //If it is a thinlv, check if there is a thinpool already created for the device.
+                    //If it is already created then increase the thinpool size by brick size.
+                    if (brickConfig.thinPoolConfig[hostIndex].hasOwnProperty(brick.device)) {
+                        brickConfig.thinPoolConfig[hostIndex][brick.device].size += parseInt(brick.size)
+                        brickConfig.thinPoolConfig[hostIndex][brick.device].poolmetadatasize =
+                           that.getPoolMetadataSize(brickConfig.thinPoolConfig[hostIndex][brick.device].size)
+                        brickConfig.thinPoolConfig[hostIndex][brick.device].size += brickConfig.thinPoolConfig[hostIndex][brick.device].poolmetadatasize
+                        brickConfig.thinPoolConfig[hostIndex][brick.device].poolmetadatasize += "GB"
+                    } else {
+                        //Create a thinpool if it is not created already
+                        const thinpool = {
+                            action: 'create',
+                            poolname: POOL_NAME + brick.device,
+                            ignore_lv_errors: 'no'
+                        }
+                        thinpool.vgname = VG_NAME + brick.device
+                        thinpool.lvtype = 'thinpool'
+                        thinpool.size = parseInt(brick.size)
+                        thinpool.poolmetadatasize = that.getPoolMetadataSize(thinpool.size) + "GB"
+                        brickConfig.thinPoolConfig[hostIndex][brick.device] = thinpool
+                    }
+                    //If thinlv, then we need to add the thinpoolname, virtualsize and lvtype as 'thinlv'
+                    lvConfig.lvtype = 'thinlv'
+                    lvConfig.poolname = POOL_NAME + brick.device
+                    lvConfig.virtualsize = brick.size + "GB"
+                } else {
+                    lvConfig.size = brick.size + "GB"
+                    lvConfig.lvtype = 'thick'
                 }
-                brickConfig.arbiterLvConfig[lvConfig.lvname] = lv_arbiter
-            }
+                brickConfig.lvConfig[hostIndex].host_lvConfig.push(lvConfig)
+
+            }, this)
         }, this)
         return brickConfig
     },
@@ -261,7 +255,9 @@ var GdeployUtil = {
                 if (section === 'hosts') {
                     gdeployConfig['hosts'] = hosts
                     if(preFlightCheck != null){
-                        gdeployConfig['script1'] = preFlightCheck
+                        preFlightCheck.forEach(function(hostPreFlightCheckObject, index) {
+                            gdeployConfig['script1:' + hostPreFlightCheckObject.host] = hostPreFlightCheckObject.hostPreFlightCheck
+                        })
                     }
                     if (brickConfig.hasOwnProperty("raidParam")) {
                         //Not truly ini format. But we need RAID params in the following format.
@@ -286,42 +282,46 @@ var GdeployUtil = {
                     //Add all brick related configurations in the place of 'pv' section
 
                     //Create all PVS
-                    Object.keys(brickConfig.pvConfig).forEach(function(pv, index) {
-                        gdeployConfig['pv' + (index + 1)] = brickConfig.pvConfig[pv]
+                    brickConfig.pvConfig.forEach(function(pvHost, hostIndex) {
+                        let pvIndex = 1
+                        Object.keys(pvHost).forEach(function(pv, index) {
+                            if(pv != 'host'){
+                                gdeployConfig['pv' + (pvIndex++) + ':' + pvHost.host] = brickConfig.pvConfig[hostIndex][pv]
+                            }
+                        })
                     })
+
                     //Create all VGS
-                    Object.keys(brickConfig.vgConfig).forEach(function(vg, index) {
-                        gdeployConfig['vg' + (index + 1)] = brickConfig.vgConfig[vg]
+                    brickConfig.vgConfig.forEach(function(vgHost, hostIndex) {
+                        let vgIndex = 1
+                        Object.keys(vgHost).forEach(function(vg, index) {
+                            if(vg != 'host'){
+                                gdeployConfig['vg' + (vgIndex++) + ':' + vgHost.host] = brickConfig.vgConfig[hostIndex][vg]
+                            }
+                        })
                     })
                     //Create all thinpools before creating lvs
                     //thinpools and lvs will use lv module in gdeploy. So we need to keep unique numbering
                     //for each lv section.
                     let lvIndex = 1
-                    Object.keys(brickConfig.thinPoolConfig).forEach(function(thinpool, index) {
-                        brickConfig.thinPoolConfig[thinpool].size = brickConfig.thinPoolConfig[thinpool].size + "GB"
-                        //If there is an thinpool with the same name, then we have to
-                        //create regular thinpool in first two hosts and arbiter thinpool in last host.
-                        if (brickConfig.arbiterThinPoolConfig.hasOwnProperty(thinpool)) {
-                            gdeployConfig['lv' + (lvIndex++) + `:{${hosts[0]},${hosts[1]}}`] = brickConfig.thinPoolConfig[thinpool]
-                            brickConfig.arbiterThinPoolConfig[thinpool].size = brickConfig.arbiterThinPoolConfig[thinpool].size + "GB"
-                            gdeployConfig['lv' + (lvIndex++) + `:${hosts[2]}`] = brickConfig.arbiterThinPoolConfig[thinpool]
-                        } else {
-                            gdeployConfig['lv' + lvIndex++] = brickConfig.thinPoolConfig[thinpool]
-                        }
+                    brickConfig.thinPoolConfig.forEach(function(thinPoolConfigHost, hostIndex){
+                        Object.keys(thinPoolConfigHost).forEach(function(thinpool, index) {
+                            if(thinpool != 'host'){
+                                brickConfig.thinPoolConfig[hostIndex][thinpool].size = brickConfig.thinPoolConfig[hostIndex][thinpool].size + "GB"
+                                gdeployConfig['lv' + (lvIndex++) + ':' + thinPoolConfigHost.host] = brickConfig.thinPoolConfig[hostIndex][thinpool]
+                            }
+                        })
                     })
                     //Create all lvs.
-                    brickConfig.lvConfig.forEach(function(lv, index) {
-                        //If there is an arbiter lv with the same lvname, then we have to
-                        //create regular size lv in first two hosts and arbiter lv in last host.
-                        if(brickConfig.arbiterLvConfig.hasOwnProperty(lv.lvname)){
-                            gdeployConfig['lv' + (lvIndex++) + `:{${hosts[0]},${hosts[1]}}`] = lv
-                            gdeployConfig['lv' + (lvIndex++) + `:${hosts[2]}`] = brickConfig.arbiterLvConfig[lv.lvname]
-                        }else{
-                            gdeployConfig['lv' + lvIndex++] = lv
-                        }
+                    brickConfig.lvConfig.forEach(function(lvConfigHost, hostIndex){
+                        lvConfigHost.host_lvConfig.forEach(function(lv, index) {
+                            gdeployConfig['lv' + (lvIndex++) + ':' + lvConfigHost.host] = lv
+                        })
                     })
-                    if (lvCacheConfig != null) {
-                      gdeployConfig['lv' + lvIndex] = lvCacheConfig
+                    if (lvCacheConfig.length != 0) {
+                      lvCacheConfig.forEach(function (hostLvCacheConfig, index) {
+                        gdeployConfig['lv' + (lvIndex++) + ':' + hostLvCacheConfig.host] = hostLvCacheConfig.lvCacheConfig
+                      })
                     }
                 } else if (section === 'volume') {
                     volumeConfigs.forEach(function(volumeConfig, index) {
@@ -330,8 +330,13 @@ var GdeployUtil = {
                 } else {
                     gdeployConfig[section] = template[section]
                 }
-                if (vdoConfig.devices != "") {
-                  gdeployConfig['vdo'] = vdoConfig
+                if (vdoConfig.length != 0) {
+                    let vdoIndex = 1
+                    vdoConfig.forEach(function(hostVdoConfigs, hostIndex) {
+                        if (hostVdoConfigs.vdoConfig.devices != "") {
+                            gdeployConfig['vdo' + (vdoIndex++) + ':' + hostVdoConfigs.host] = hostVdoConfigs.vdoConfig
+                        }
+                    })
                 }
             }
         }
@@ -357,46 +362,61 @@ var GdeployUtil = {
 
     },
     createLvCacheConfig(glusterModel){
-      const brick = glusterModel.bricks[0]
-      const lvConfig = glusterModel.lvCacheConfig
-      // If checkbox is checked
-      if(lvConfig.lvCache){
-        const lvCacheConfig = {
-            action: 'setup-cache',
-            ssd: lvConfig.ssd.trim(),
-            vgname: VG_NAME + brick.device,
-            poolname: POOL_NAME + brick.device,
-            cache_lv: 'lvcache',
-            cache_lvsize: lvConfig.lvCacheSize,
-            cachemode: lvConfig.cacheMode.trim(),
-            ignore_lv_errors: 'yes'
-        }
+        const lvConfig = glusterModel.lvCacheConfig
+        const lvCacheConfig = []
+        glusterModel.bricks.forEach(function (bricksHost, hostIndex) {
+            const brickIndex = (bricksHost.host_bricks[0].name === "engine" && bricksHost.host_bricks.length > 0) ?  1 : 0
+            const brick = bricksHost.host_bricks[brickIndex]
+            // If checkbox is checked
+            if(lvConfig[hostIndex].lvCache){
+                const hostLvCacheConfig = {
+                  host: lvConfig[hostIndex].host,
+                  lvCacheConfig: {
+                    action: 'setup-cache',
+                    ssd: lvConfig[hostIndex].ssd.trim(),
+                    vgname: VG_NAME + brick.device,
+                    poolname: POOL_NAME + brick.device,
+                    cache_lv: 'lvcache',
+                    cache_lvsize: lvConfig[hostIndex].lvCacheSize,
+                    cachemode: lvConfig[hostIndex].cacheMode.trim(),
+                    ignore_lv_errors: 'yes'
+                  }
+                }
+                lvCacheConfig.push(hostLvCacheConfig)
+            }
+        })
         return lvCacheConfig
-      } else{
-        return null
-      }
     },
     createVdoConfig(glusterModel){
-      const vdoConfigs = {
-          action: 'create',
-          devices: "",
-          names: "",
-          logicalsize: ""
-         }
-         const devices = []
-         const names = []
-         const logicalSizes = []
-      glusterModel.bricks.forEach(function(brick, index) {
-        if (brick.is_vdo_supported) {
-          devices.push(brick.device)
-          names.push(brick.name)
-          logicalSizes.push(brick.logicalSize)
-        }
-      })
-      vdoConfigs.devices = devices.join()
-      vdoConfigs.names = names.join()
-      vdoConfigs.logicalsize = logicalSizes.join()
-      return vdoConfigs
+        const vdoConfigs = []
+
+        glusterModel.bricks.forEach(function(bricksHost, hostIndex) {
+          const hostVdoConfigs = {
+            host: bricksHost.host,
+            vdoConfig: {
+              action: 'create',
+              devices: "",
+              names: "",
+              logicalsize: ""
+            }
+          }
+          const devices = []
+          const names = []
+          const logicalSizes = []
+
+          bricksHost.host_bricks.forEach(function(brick, index) {
+            if (brick.is_vdo_supported) {
+              devices.push(brick.device)
+              names.push(brick.name)
+              logicalSizes.push(brick.logicalSize)
+            }
+          })
+          hostVdoConfigs.vdoConfig.devices = devices.join()
+          hostVdoConfigs.vdoConfig.names = names.join()
+          hostVdoConfigs.vdoConfig.logicalsize = logicalSizes.join()
+          vdoConfigs.push(hostVdoConfigs)
+        })
+        return vdoConfigs
     },
     convertToString(config) {
         var configString = "#gdeploy configuration generated by cockpit-gluster plugin"
