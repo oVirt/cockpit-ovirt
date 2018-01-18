@@ -251,8 +251,8 @@ path.line.highlight {
     visibility: visible;
 }
 
-.gdeploy-wizard-row {
-    margin-left: 0px !important;
+div.no-sidebar {
+    margin-left: 5%;
 }
 
 .gdeploy-wizard-delete-icon {
@@ -508,4 +508,10 @@ div.deployment-status-msg {
 span.deployment-failure-icon {
     font-size: 18px;
     margin-right: 10px;
+}
+
+div.wizard-pf-row-fix {
+    height: inherit;
+    top: 162px;
+    max-height: inherit;
 }

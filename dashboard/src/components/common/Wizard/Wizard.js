@@ -161,6 +161,8 @@ class Wizard extends Component {
         });
 
         const wizardWidth = this.props.width ? {width: that.props.width} : {};
+        const hasSidebar = subStepLists.length > 0;
+        const wizardMainClasses = hasSidebar ? "wizard-pf-main" : "wizard-pf-main no-sidebar";
 
         return (
             <div className="modal" data-backdrop="static" role="dialog">
@@ -181,11 +183,9 @@ class Wizard extends Component {
                                 activeStep={this.state.activeStep}
                                 callBack={this.moveToStep}
                                 />
-                            <div className="wizard-pf-row">
-                                <div className="wizard-pf-sidebar">
-                                    {subStepLists}
-                                </div>
-                                <div className="wizard-pf-main gdeploy-wizard-row">
+                            <div className="wizard-pf-row wizard-pf-row-fix">
+                                {subStepLists}
+                                <div className={wizardMainClasses}>
                                     <div className="wizard-pf-contents">
                                         {steps}
                                     </div>
