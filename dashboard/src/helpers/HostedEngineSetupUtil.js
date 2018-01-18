@@ -5,6 +5,7 @@ import Validation from '../components/HostedEngineSetup/Validation'
 export class HeSetupModel {
     constructor() {
         this.model = this.getBaseHeSetupModel();
+        this.assignVmUUID();
 
         this.getBaseHeSetupModel = this.getBaseHeSetupModel.bind(this);
         this.addGlusterValues = this.addGlusterValues.bind(this);
@@ -12,6 +13,7 @@ export class HeSetupModel {
         this.setBooleanValues = this.setBooleanValues.bind(this);
         this.setBooleanValue = this.setBooleanValue.bind(this);
         this.getAnsFileProperty = this.getAnsFileProperty.bind(this);
+        this.assignVmUUID = this.assignVmUUID.bind(this);
     }
 
     getBaseHeSetupModel() {
@@ -1034,6 +1036,11 @@ export class HeSetupModel {
         );
 
         return prop;
+    }
+
+    assignVmUUID() {
+        const uuidv4 = require('uuid/v4');
+        this.model.vm.localVmUUID.value = uuidv4();
     }
 }
 
