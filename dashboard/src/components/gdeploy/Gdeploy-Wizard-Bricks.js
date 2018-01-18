@@ -15,7 +15,13 @@ class WizardBricksStep extends Component {
         super(props)
         this.state = {
             bricks: props.bricks,
+            bricksList: props.bricks,
             raidConfig: props.raidConfig,
+            hostTypes: [],
+            selectedHost: {hostName: "", hostIndex: 0},
+            enabledFields: ['device', 'size'],
+            hostArbiterVolumes: [],
+            arbiterVolumes: [],
             lvCacheConfig: props.lvCacheConfig,
             errorMsg: "",
             errorMsgs: {}
@@ -25,6 +31,93 @@ class WizardBricksStep extends Component {
         this.handleUpdate = this.handleUpdate.bind(this)
         this.handleRaidConfigUpdate = this.handleRaidConfigUpdate.bind(this)
         this.handleLvCacheConfig = this.handleLvCacheConfig.bind(this)
+        this.handleSelectedHostUpdate = this.handleSelectedHostUpdate.bind(this)
+    }
+    componentDidMount(){
+        let bricksList = this.state.bricksList
+        bricksList.push(JSON.parse(JSON.stringify(this.props.bricks[0])))
+        bricksList.push(JSON.parse(JSON.stringify(this.props.bricks[0])))
+
+        let lvCacheConfig = this.state.lvCacheConfig
+        lvCacheConfig.push(JSON.parse(JSON.stringify(this.props.lvCacheConfig[0])))
+        lvCacheConfig.push(JSON.parse(JSON.stringify(this.props.lvCacheConfig[0])))
+
+        // Checking for arbiter volumes
+        let arbiterVolumes = []
+        this.props.glusterModel.volumes.forEach(function(volume, index) {
+            if(volume.is_arbiter){
+                arbiterVolumes.push(volume.name)
+            }
+        })
+
+        // Checking for VDO support
+        let isVdoSupported = false
+        let that = this
+        GdeployUtil.isVdoSupported(function(res){
+            isVdoSupported = res
+            bricksList.forEach(function(bricksHost, hostIndex){
+                bricksHost.host_bricks.forEach(function(brick, index){
+                    brick['isVdoSupported'] = res
+                })
+            })
+            that.setState({bricksList, lvCacheConfig, arbiterVolumes, isVdoSupported})
+        });
+
+    }
+    componentWillReceiveProps(nextProps){
+        let hostsHaveChanged = false;
+        if(nextProps.hosts.length !== this.state.hostTypes.length) {
+            hostsHaveChanged = true
+        }else{
+            for(var i = 0; i < nextProps.hosts.length; i++) {
+                if(nextProps.hosts[i] !== this.state.hostTypes[i]){
+                    hostsHaveChanged = true;
+                    break;
+                }
+            }
+        }
+        if(hostsHaveChanged){
+            let hostTypes = []
+            let bricksList = []
+            let lvCacheConfig = this.state.lvCacheConfig
+            let that = this
+            nextProps.hosts.map(function(host, i) {
+                let hostType = {key: host, title: host}
+                hostTypes.push(hostType)
+                let brickHost = that.state.bricksList[i]
+                brickHost.host = host
+                bricksList.push(brickHost)
+                lvCacheConfig[i].host = host
+            })
+            let selectedHost = this.state.selectedHost
+            selectedHost.hostName = nextProps.hosts[0]
+            this.setState({hostTypes, selectedHost, bricksList, lvCacheConfig})
+            this.handleSelectedHostUpdate(selectedHost.hostName)
+        }
+        // Check for arbiter volume and update respective brick in the arbiter host
+        let bricksList = this.state.bricksList
+        let bricksHaveChanged = false
+        let arbiterVolumes = []
+        nextProps.glusterModel.volumes.forEach(function(volume, index) {
+          if(volume.is_arbiter){
+            arbiterVolumes.push(volume.name)
+          }
+        })
+        nextProps.glusterModel.volumes.forEach(function(volume, index) {
+            if((this.state.arbiterVolumes.indexOf(volume.name) < 0 ^ arbiterVolumes.indexOf(volume.name) < 0) == 1){
+                if(volume.is_arbiter){
+                    let arbiterBrickSize = GdeployUtil.getArbiterBrickSize(parseInt(bricksList[2].host_bricks[index].size))
+                    bricksList[2].host_bricks[index].size = JSON.stringify(arbiterBrickSize)
+                }
+                else{
+                    bricksList[2].host_bricks[index].size = bricksList[1].host_bricks[index].size
+                }
+                bricksHaveChanged = true
+            }
+        }, this)
+        if(bricksHaveChanged){
+            this.setState({bricksList, arbiterVolumes})
+        }
     }
     handleDelete(index) {
         const bricks = this.state.bricks
@@ -35,9 +128,15 @@ class WizardBricksStep extends Component {
         return { name: "", device: "", brick_dir: "", thinp: true, size:"1", is_vdo_supported: false, logicalSize: "0" }
     }
     handleAdd() {
-        const bricks = this.state.bricks
-        bricks.push(this.getEmptyRow())
-        this.setState({ bricks })
+        let bricksList = this.state.bricksList
+        let newBricksList = []
+        let newBrickRow = this.getEmptyRow()
+        bricksList.forEach(function (brickHost, i) {
+            let newBrickHost = JSON.parse(JSON.stringify(brickHost))
+            newBrickHost.host_bricks.push(newBrickRow)
+            newBricksList.push(newBrickHost)
+        })
+        this.setState({bricksList: newBricksList})
     }
     handleRaidConfigUpdate(property, value) {
         const raidConfig = this.state.raidConfig
@@ -46,12 +145,46 @@ class WizardBricksStep extends Component {
         this.validateRaidConfig(raidConfig, errorMsgs)
         this.setState({ raidConfig, errorMsgs })
     }
+    getHostIndex(hostName){
+        const hostIndex = this.state.bricksList.findIndex(function(brickHost){
+            return brickHost.host === hostName
+        })
+        return hostIndex
+    }
+    handleSelectedHostUpdate(value){
+        let hostIndex = this.getHostIndex(value)
+        let selectedHost = this.state.selectedHost
+        selectedHost.hostName = value
+        selectedHost.hostIndex = hostIndex
+        let hostArbiterVolumes = []
+        this.props.glusterModel.volumes.forEach(function(volume, index) {
+            if(volume.is_arbiter == true && hostIndex == 2){
+                hostArbiterVolumes.push(volume.name)
+            }
+        })
+        let enabledFields = []
+        if(hostIndex % 3 == 0) {
+            enabledFields = ['device', 'size']
+        }
+        else {
+            enabledFields = ['device']
+        }
+        this.setState({selectedHost, enabledFields, hostArbiterVolumes})
+    }
     handleUpdate(index, property, value) {
-        const bricks = this.state.bricks
-        bricks[index][property] = value
+        let bricksList = this.state.bricksList
         const errorMsgs= this.state.errorMsgs
-        this.validateBrick(bricks[index], index, errorMsgs)
-        this.setState({ bricks, errorMsgs })
+        for(var i = 2; i >= this.state.selectedHost.hostIndex; i--){
+            if(this.state.selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
+                const arbiterValue = GdeployUtil.getArbiterBrickSize(parseInt(value))
+                bricksList[i].host_bricks[index][property] = JSON.stringify(arbiterValue)
+            }
+            else {
+                bricksList[i].host_bricks[index][property] = value
+            }
+        }
+        this.validateBrick(bricksList[this.state.selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
+        this.setState({ bricksList, errorMsgs })
     }
     validateRaidConfig(raidConfig, errorMsgs){
         let valid = true
@@ -83,9 +216,12 @@ class WizardBricksStep extends Component {
 
     handleLvCacheConfig(property, value) {
         const lvCacheConfig = this.state.lvCacheConfig
-        lvCacheConfig[property] = value
+        const lvCacheConfigIndex = lvCacheConfig.findIndex(function(hostLvCacheConfig){
+            return hostLvCacheConfig.host == this.state.selectedHost.hostName
+        }, this)
+        lvCacheConfig[lvCacheConfigIndex][property] = value
         const errorMsgs= this.state.errorMsgs
-        this.validateLvCacheConfig(lvCacheConfig, errorMsgs)
+        this.validateLvCacheConfig(lvCacheConfig[lvCacheConfigIndex], errorMsgs)
         this.setState({ lvCacheConfig, errorMsgs })
     }
 
@@ -116,12 +252,14 @@ class WizardBricksStep extends Component {
     }
     // Trim "LV Name","Device Name" and "Mount Point" values
     trimBrickProperties(){
-      const inBricks = this.state.bricks
-      for(var i =0; i< inBricks.length; i++){
-        this.state.bricks[i].name = inBricks[i].name.trim()
-        this.state.bricks[i].device = inBricks[i].device.trim()
-        this.state.bricks[i].brick_dir = inBricks[i].brick_dir.trim()
-      }
+        this.state.bricksList.forEach(function(bricksHost, index) {
+            const inBricks = bricksHost.host_bricks
+            for(var i =0; i< inBricks.length; i++){
+                this.state.bricksList[index].host_bricks[i].name = inBricks[i].name.trim()
+                this.state.bricksList[index].host_bricks[i].device = inBricks[i].device.trim()
+                this.state.bricksList[index].host_bricks[i].brick_dir = inBricks[i].brick_dir.trim()
+            }
+        }, this)
     }
     validateBrick(brick, index, errorMsgs){
         let valid  = true
@@ -160,22 +298,27 @@ class WizardBricksStep extends Component {
         let valid = true
         const errorMsgs= {}
         let errorMsg = ""
-        if(this.props.glusterModel.volumes.length != this.state.bricks.length){
-            valid = false;
-            errorMsg = "Brick definition does not match with Volume definition"
-        }
-        const that = this
-        this.state.bricks.forEach(function(brick, index){
-            if(!that.validateBrick(brick, index, errorMsgs) && valid ){
-                valid = false
+        this.state.bricksList.forEach(function(bricksHost, hostIndex){
+            if(this.props.glusterModel.volumes.length != bricksHost.host_bricks.length){
+              valid = false;
+              errorMsg = "Brick definition does not match with Volume definition"
             }
-        })
+            const that = this
+
+            bricksHost.host_bricks.forEach(function(brick, index){
+              if(!that.validateBrick(brick, index, errorMsgs) && valid ){
+                valid = false
+              }
+            })
+        }, this)
         if(!this.validateRaidConfig(this.state.raidConfig, errorMsgs)){
             valid = false
         }
-        if(!this.validateLvCacheConfig(this.state.lvCacheConfig, errorMsgs)){
-            valid = false
-        }
+        this.state.lvCacheConfig.forEach(function(hostLvCacheConfig, hostIndex) {
+            if(!this.validateLvCacheConfig(hostLvCacheConfig, errorMsgs)){
+              valid = false
+            }
+        }, this)
         this.setState({ errorMsg, errorMsgs })
         return valid
     }
@@ -205,16 +348,16 @@ class WizardBricksStep extends Component {
         const that = this
         let isVdoSupported = false
         let is_same_device = this.isAllDeviceSame()
-        that.state.bricks.forEach(function (brick, index) {
+
+        this.state.bricksList[this.state.selectedHost.hostIndex].host_bricks.forEach(function (brick, index) {
             if(brick.is_vdo_supported){
               isVdoSupported = true
             }
-            GdeployUtil.isVdoSupported(function(res){
-              that.state['isVdoSupported'] = res
-              brick['isVdoSupported'] = res
-            });
+
             bricksRow.push(
-                <BrickRow brick={brick} key={index} index={index}
+                <BrickRow hostIndex={this.state.selectedHost.hostIndex}
+                    enabledFields={this.state.enabledFields}
+                    hostArbiterVolumes={this.state.hostArbiterVolumes} brick={brick} key={index} index={index}
                     errorMsgs = {that.state.errorMsgs[index]}
                     changeCallBack={this.handleUpdate}
                     deleteCallBack={() => this.handleDelete(index)}
@@ -293,6 +436,19 @@ class WizardBricksStep extends Component {
                         <div className="panel-heading gdeploy-wizard-section-title">
                             <h3 className="panel-title">Brick Configuration</h3>
                         </div>
+                        <div className="form-group">
+                          <label className="col-md-2 control-label">Select Host</label>
+                          <div className="col-md-4">
+                            {
+                              (this.state.hostTypes.length <= 0) ? null :
+                              <Selectbox optionList={this.state.hostTypes}
+                                selectedOption={this.state.selectedHost.hostName}
+                                callBack={(e) => this.handleSelectedHostUpdate(e)}
+                                />
+                            }
+                          </div>
+                        </div>
+                        <hr />
                         <table className="gdeploy-wizard-bricks-table">
                             <tbody>
                                 <tr className="gdeploy-wizard-bricks-row">
@@ -318,40 +474,40 @@ class WizardBricksStep extends Component {
                 <form className="form-horizontal">
                     <div className="panel-heading gdeploy-wizard-section-title">
                         <input type="checkbox"
-                            checked={this.state.lvCacheConfig.lvCache}
+                            checked={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache}
                             onChange={(e) => this.handleLvCacheConfig("lvCache", e.target.checked)}
                             />
                         <label className="control-label">&nbsp;&nbsp;Configure LV Cache</label>
                     </div>
                     <div className={ssd}
-                      style={this.state.lvCacheConfig.lvCache ? {} : { display: 'none' }}>
+                      style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">SSD</label>
                         <div className="col-md-2">
                         <input type="text" className="form-control"
-                            value={this.state.lvCacheConfig.ssd}
+                            value={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].ssd}
                             onChange={(e) => this.handleLvCacheConfig("ssd", e.target.value)}
                             />
                             <span className="help-block">{ssdMsg}</span>
                         </div>
                     </div>
                     <div className={lvCacheSize}
-                      style={this.state.lvCacheConfig.lvCache ? {} : { display: 'none' }}>
+                      style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">LV Size(GB)</label>
                         <div className="col-md-2">
                             <input type="number" className="form-control"
-                                value={this.state.lvCacheConfig.lvCacheSize}
+                                value={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCacheSize}
                                 onChange={(e) => this.handleLvCacheConfig("lvCacheSize", e.target.value)}
                                 />
                                 <span className="help-block">{lvCacheSizeMsg}</span>
                         </div>
                     </div>
                     <div className={cacheMode}
-                      style={this.state.lvCacheConfig.lvCache ? {} : { display: 'none' }}>
+                      style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">Cache Mode <span className="fa fa-lg fa-info-circle"
                             title="Caching mode is write-through by default. If cache is configured in other mode, please add input here."></span></label>
                         <div className="col-md-2">
                         <input type="text" className="form-control"
-                            value={this.state.lvCacheConfig.cacheMode}
+                            value={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].cacheMode}
                             onChange={(e) => this.handleLvCacheConfig("cacheMode", e.target.value)}
                             />
                             <span className="help-block">{cacheModeMsg}</span>
@@ -379,10 +535,12 @@ WizardBricksStep.propTypes = {
     stepName: React.PropTypes.string.isRequired,
     glusterModel: React.PropTypes.object.isRequired,
     raidConfig: React.PropTypes.object.isRequired,
-    bricks: React.PropTypes.array.isRequired
+    bricks: React.PropTypes.array.isRequired,
+    hosts: React.PropTypes.array.isRequired,
+    lvCacheConfig: React.PropTypes.array.isRequired
 }
 
-const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => {
+const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack}) => {
     const name = classNames(
         { "has-error": errorMsgs && errorMsgs.name }
     )
@@ -405,6 +563,7 @@ const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => 
                     <input type="text" className="form-control"
                         value={brick.name}
                         onChange={(e) => changeCallBack(index, "name", e.target.value)}
+                        disabled={(enabledFields.indexOf('name') >= 0) ? false : true}
                         />
                     {errorMsgs && errorMsgs.name && <span className="help-block">{errorMsgs.name}</span>}
                 </div>
@@ -416,6 +575,7 @@ const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => 
                         className="form-control"
                         value={brick.device}
                         onChange={(e) => changeCallBack(index, "device", e.target.value)}
+                        disabled={(enabledFields.indexOf('device') >= 0) ? false : true}
                         />
                     {errorMsgs && errorMsgs.device && <span className="help-block">{errorMsgs.device}</span>}
                 </div>
@@ -425,6 +585,7 @@ const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => 
                     <input type="number" className="form-control"
                         value={brick.size}
                         onChange={(e) => changeCallBack(index, "size", e.target.value)}
+                        disabled={(enabledFields.indexOf('size') >= 0 || hostArbiterVolumes.indexOf(brick.name) >= 0 ) ? false : true}
                         />
                     {errorMsgs && errorMsgs.size && <span className="help-block">{errorMsgs.size}</span>}
                 </div>
@@ -433,6 +594,7 @@ const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => 
                 <input type="checkbox" className="gdeploy-wizard-thinp-checkbox"
                     checked={brick.thinp}
                     onChange={(e) => changeCallBack(index, "thinp", e.target.checked)}
+                    disabled={(enabledFields.indexOf('thinp') >= 0) ? false : true}
                     />
             </td>
             <td className="col-md-2">
@@ -440,6 +602,7 @@ const BrickRow = ({brick, index, errorMsgs, changeCallBack, deleteCallBack}) => 
                     <input type="text" className="form-control"
                         value={brick.brick_dir}
                         onChange={(e) => changeCallBack(index, "brick_dir", e.target.value)}
+                        disabled={(enabledFields.indexOf('brick_dir') >= 0) ? false : true}
                         />
                     {errorMsgs && errorMsgs.brick_dir && <span className="help-block">{errorMsgs.brick_dir}</span>}
                 </div>
