@@ -96,8 +96,8 @@ export const messages = {
     INSUFFICIENT_MEM_AVAIL: `There is insufficient memory available to support engine VM creation at this time! The minimum requirement is ${resourceConstants.VM_MEM_MIN_MB.toLocaleString()}MB.`,
     RECOMMENDED_MIN_MEM_AVAIL_WARNING: `The minimum recommended amount of memory is ${resourceConstants.VM_MEM_MIN_RECOMMENDED_MB.toLocaleString()}MB.`,
     DEPLOYMENT_SUCCESSFUL: "Hosted Engine has been successfully deployed!",
-    DEPLOYMENT_FAILED: "Deployment failed",
-    DEPLOYMENT_IN_PROGRESS: "Deployment in progress",
+    DEPLOYMENT_FAILED: "Deployment Failed",
+    DEPLOYMENT_IN_PROGRESS: "Deployment in Progress",
     ADD_GDEPLOY_PROPS_TO_ANS_FILE: "Attempting to add gdeploy properties to the answer file.",
     NO_GDEPLOY_ANSWER_FILES_FOUND: "No gdeploy answer files found.",
     ANSIBLE_PHASE_SUCCESSFUL: "Execution completed successfully. Please proceed to the next step."

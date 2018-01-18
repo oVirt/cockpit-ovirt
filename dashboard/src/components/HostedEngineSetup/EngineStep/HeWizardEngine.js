@@ -19,21 +19,8 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
                 }
 
-                <div className={getClassNames("hostIdentifier", errorMsgs)}>
-                    <label className="col-md-4 control-label">Host Identifier</label>
-                    <div className="col-md-6">
-                        <input type="text" style={{width: "120px"}}
-                               title="Enter the host identifier."
-                               className="form-control"
-                               value={engineConfig.hostIdentifier.value}
-                               onChange={(e) => handleEngineConfigUpdate("hostIdentifier", e.target.value, "engine")}
-                        />
-                        {errorMsgs.hostIdentifier && <span className="help-block">{errorMsgs.hostIdentifier}</span>}
-                    </div>
-                </div>
-
                 <div className={getClassNames("adminUsername", errorMsgs)}>
-                    <label className="col-md-4 control-label">Admin Username</label>
+                    <label className="col-md-3 control-label">Admin Username</label>
                     <div className="col-md-6">
                         <input type="text" style={{width: "140px"}}
                                title="Enter the admin username."
@@ -46,7 +33,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
 
                 <div className={getClassNames("adminPassword", errorMsgs)}>
-                    <label className="col-md-4 control-label">Admin Portal Password</label>
+                    <label className="col-md-3 control-label">Admin Portal Password</label>
                     <div className="col-md-6">
                         <input type="password" style={{width: "140px"}}
                                title="Enter the admin portal password."
@@ -60,7 +47,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
 
                 <div className={getClassNames("confirmAdminPortalPassword", errorMsgs)}
                      style={engineConfig.adminPassword.value !== "" ? {} : {display: 'none'}}>
-                    <label className="col-md-4 control-label">Confirm Password</label>
+                    <label className="col-md-3 control-label">Confirm Password</label>
                     <div className="col-md-6">
                         <input type="password" style={{width: "140px"}}
                                title="Confirm the admin portal password."
@@ -79,7 +66,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
 
                 <div className={getClassNames("smtpServer", errorMsgs)}>
-                    <label className="col-md-4 control-label">Server Name</label>
+                    <label className="col-md-3 control-label">Server Name</label>
                     <div className="col-md-6">
                         <input type="text"  style={{width: "120px"}}
                                placeholder="localhost"
@@ -93,7 +80,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
 
                 <div className={getClassNames("smtpPort", errorMsgs)}>
-                    <label className="col-md-4 control-label">Server Port Number</label>
+                    <label className="col-md-3 control-label">Server Port Number</label>
                     <div className="col-md-6">
                         <input type="number"  style={{width: "75px"}}
                                placeholder="25"
@@ -107,7 +94,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
 
                 <div className={getClassNames("sourceEmail", errorMsgs)}>
-                    <label className="col-md-4 control-label">Sender E-Mail Address</label>
+                    <label className="col-md-3 control-label">Sender E-Mail Address</label>
                     <div className="col-md-6">
                         <input type="text"  style={{width: "120px"}}
                                placeholder="root@localhost"
@@ -121,7 +108,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
 
                 <div className={getClassNames("destEmail", errorMsgs)}>
-                    <label className="col-md-4 control-label">Recipient E-Mail Addresses</label>
+                    <label className="col-md-3 control-label" style={{paddingLeft: "18px"}}>Recipient E-Mail Addresses</label>
                     <div className="col-md-6">
                         <div style={{width: "300px"}}>
                             <MultiRowTextBoxContainer values={notificationsConfig.destEmail.value}

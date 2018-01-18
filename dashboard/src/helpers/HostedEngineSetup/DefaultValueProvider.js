@@ -19,7 +19,9 @@ export class DefaultValueProvider {
         this.virtSupported = this.virtSupported.bind(this);
         this.getTimeZone = this.getTimeZone.bind(this);
         this.getNetworkInterfaces = this.getNetworkInterfaces.bind(this);
+        this.getIpAddress = this.getIpAddress.bind(this);
         this.getIpData = this.getIpData.bind(this);
+        this.getFQDN = this.getFQDN.bind(this);
         this.isEmptyObject = this.isEmptyObject.bind(this);
 
         this.getSystemData();
@@ -196,7 +198,12 @@ export class DefaultValueProvider {
 
     getDefaultGateway() {
         const ipData = this.getIpData();
-        return ipData !== null ? this.getIpData()["gateway"] : "";
+        return ipData !== null ? ipData["gateway"] : "";
+    }
+
+    getIpAddress() {
+        const ipData = this.getIpData();
+        return ipData !== null ? ipData["address"] : "";
     }
 
     getIpData() {
@@ -212,6 +219,15 @@ export class DefaultValueProvider {
         }
 
         return ipData;
+    }
+
+    getFQDN() {
+        const fqdnData = this.getTaskData("Get FQDN");
+        let fqdn = "";
+        if (typeof fqdnData !== "undefined") {
+            fqdn = fqdnData["stdout"];
+        }
+        return fqdn;
     }
 
     isEmptyObject(obj) {

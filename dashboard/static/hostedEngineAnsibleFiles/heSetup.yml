@@ -37,3 +37,10 @@
     when: true
     ignore_errors: true
   - debug: msg={{ time_zone | to_json }}
+
+  - name: Get FQDN
+    shell: hostname --fqdn
+    register: fqdn
+    when: true
+    ignore_errors: true
+  - debug: msg={{ fqdn | to_json }}

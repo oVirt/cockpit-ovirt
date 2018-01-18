@@ -77,14 +77,7 @@ class HeWizardVmContainer extends Component {
 
     setDefaultValues() {
         const heSetupModel = this.state.heSetupModel;
-        const defaultsProvider = this.props.defaultsProvider;
-        const cpuArch = defaultsProvider.getCpuArchitecture();
-        const maxMemAvail = defaultsProvider.getMaxMemAvailable();
-
-        heSetupModel.vm.cloudinitVMTZ.value = defaultsProvider.getTimeZone();
-        if (maxMemAvail < constants.VM_MEM_MIN_RECOMMENDED_MB) {
-            heSetupModel.vm.vmMemSizeMB.value = maxMemAvail;
-        }
+        const cpuArch = this.props.defaultsProvider.getCpuArchitecture();
 
         this.setCpuModel(cpuArch, heSetupModel);
         this.setApplianceFiles();
@@ -126,7 +119,6 @@ class HeWizardVmContainer extends Component {
 
     handleVmConfigUpdate(propName, value, configType) {
         const heSetupModel = this.state.heSetupModel;
-        const vmConfig = heSetupModel.vm;
 
         if (propName === "ovfArchiveSelect") {
             this.handleApplianceFileUpdate(value);
@@ -135,22 +127,27 @@ class HeWizardVmContainer extends Component {
 
         heSetupModel[configType][propName].value = value;
 
-        if (propName === "networkConfigType") {
-            this.setNetworkConfigDisplaySettings(value);
-        }
-
-        if (propName === "cloudinitRootPwd") {
-            if (value === "") {
-                heSetupModel.vm.confirmRootPassword.value = "";
-                heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = false;
-            } else {
-                heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = true;
-            }
-        }
-
-        if (propName === "fqdn") {
-            heSetupModel.vm.cloudinitInstanceHostName.value = value.substring(0, value.indexOf("."));
-            heSetupModel.vm.cloudinitInstanceDomainName.value = value.substring(value.indexOf(".") + 1);
+        switch (propName) {
+            case "networkConfigType":
+                this.setNetworkConfigDisplaySettings(value);
+                break;
+            case "cloudinitRootPwd":
+                if (value === "") {
+                    heSetupModel.vm.confirmRootPassword.value = "";
+                    heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = false;
+                } else {
+                    heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = true;
+                }
+                break;
+            case "fqdn":
+                heSetupModel.vm.cloudinitInstanceHostName.value = value.substring(0, value.indexOf("."));
+                heSetupModel.vm.cloudinitInstanceDomainName.value = value.substring(value.indexOf(".") + 1);
+                break;
+            case "host_name":
+                heSetupModel.engine.appHostName.value = value;
+                break;
+            default:
+                break;
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);

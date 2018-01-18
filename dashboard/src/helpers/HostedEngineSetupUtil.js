@@ -1,4 +1,7 @@
-import { configValues, configFileTypes as types, answerFilePrefixes, resourceConstants } from "../components/HostedEngineSetup/constants"
+import {
+    configValues, configFileTypes as types, answerFilePrefixes, resourceConstants,
+    resourceConstants as constants
+} from "../components/HostedEngineSetup/constants"
 import classNames from 'classnames'
 import Validation from '../components/HostedEngineSetup/Validation'
 
@@ -10,6 +13,7 @@ export class HeSetupModel {
         this.getBaseHeSetupModel = this.getBaseHeSetupModel.bind(this);
         this.addGlusterValues = this.addGlusterValues.bind(this);
         this.addValuesToModel = this.addValuesToModel.bind(this);
+        this.setDefaultValues = this.setDefaultValues.bind(this);
         this.setBooleanValues = this.setBooleanValues.bind(this);
         this.setBooleanValue = this.setBooleanValue.bind(this);
         this.getAnsFileProperty = this.getAnsFileProperty.bind(this);
@@ -398,6 +402,18 @@ export class HeSetupModel {
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true
+                },
+                host_name: {
+                    name: "host_name",
+                    ansibleVarName: "HOST_ADDRESS",
+                    ansiblePhasesUsed: [1,3],
+                    description: "Host IP or FQDN",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
                 }
             },
             vm: {
@@ -845,6 +861,18 @@ export class HeSetupModel {
                     uiStage: "Engine",
                     useInAnswerFile: false,
                     required: false
+                },
+                appHostName: {
+                    name: "appHostName",
+                    ansibleVarName: "HOST_NAME",
+                    ansiblePhasesUsed: [1,2,3],
+                    description: "Host's name",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
                 }
             },
             vdsm: {
@@ -1000,6 +1028,17 @@ export class HeSetupModel {
             .fail(function(error) {
                 console.log("Failed to read the gluster answer file. " + error);
             })
+    }
+
+    setDefaultValues(dataProvider) {
+        this.model.vm.cloudinitVMTZ.value = dataProvider.getTimeZone();
+        this.model.network.host_name.value = dataProvider.getFQDN();
+        this.model.engine.appHostName.value = dataProvider.getFQDN();
+        this.model.vm.cloudinitHostIP.value = dataProvider.getIpAddress();
+        this.model.vm.maxVCpus.value = dataProvider.getMaxVCpus();
+        if (dataProvider.getMaxMemAvailable() < constants.VM_MEM_MIN_RECOMMENDED_MB) {
+            this.model.vm.vmMemSizeMB.value = dataProvider;
+        }
     }
 
     setBooleanValues(ansFileFields, fieldProps, desiredValue) {
