@@ -32,6 +32,20 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConf
                 </div>
                 }
 
+                <div className={getClassNames("imgSizeGB", errorMsgs)}>
+                    <label className="col-md-3 control-label">Disk Size (GB)</label>
+                    <div className="col-md-6 he-text-with-units">
+                        <input type="number" style={{width: "60px"}}
+                               placeholder="Disk Size"
+                               title="Enter the disk size for the VM."
+                               className="form-control"
+                               value={storageConfig.imgSizeGB.value}
+                               onChange={(e) => handleStorageConfigUpdate("imgSizeGB", e.target.value)}
+                        />
+                        {errorMsgs.imgSizeGB && <span className="help-block">{errorMsgs.imgSizeGB}</span>}
+                    </div>
+                </div>
+
                 <div className="form-group">
                     <label className="col-md-3 control-label">Storage Type</label>
                     <div className="col-md-6">

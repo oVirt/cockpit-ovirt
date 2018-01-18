@@ -2,7 +2,7 @@ import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
-import { amdCpuTypes, intelCpuTypes, messages } from "../constants"
+import {amdCpuTypes, deploymentTypes, intelCpuTypes, messages} from "../constants"
 
 const consoleTypes = [
     { key: "vnc", title: "VNC" },
@@ -93,29 +93,33 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                     </div>
                 </div>
 
-                <div className={getClassNames("cpu", errorMsgs) + " he-cpu-select-row"} >
-                    <label className="col-md-3 control-label">CPU Type</label>
-                    <div className="col-md-4 he-cpu-select-col">
-                        <div className="he-cpu-select-container">
-                            <Selectbox optionList={cpuArch.vendor === "Intel" ? intelCpuTypes : amdCpuTypes}
-                                       selectedOption={heSetupModel.vdsm.cpu.value}
-                                       callBack={(e) => handleVmConfigUpdate("cpu", e, "vdsm")}
-                            />
+                {deploymentType === deploymentTypes.OTOPI_DEPLOYMENT &&
+                    <span>
+                        <div className={getClassNames("cpu", errorMsgs) + " he-cpu-select-row"} >
+                            <label className="col-md-3 control-label">CPU Type</label>
+                            <div className="col-md-4 he-cpu-select-col">
+                                <div className="he-cpu-select-container">
+                                    <Selectbox optionList={cpuArch.vendor === "Intel" ? intelCpuTypes : amdCpuTypes}
+                                               selectedOption={heSetupModel.vdsm.cpu.value}
+                                               callBack={(e) => handleVmConfigUpdate("cpu", e, "vdsm")}
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-1 he-cpu-select-warn-col">
+                                {warningMsgs.cpu &&
+                                    <i className="pficon pficon-warning-triangle-o he-warning-icon vertical-center"
+                                       rel="tooltip" title={warningMsgs.cpu}/>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-md-1 he-cpu-select-warn-col">
-                        {warningMsgs.cpu &&
-                            <i className="pficon pficon-warning-triangle-o he-warning-icon vertical-center"
-                               rel="tooltip" title={warningMsgs.cpu}/>
-                        }
-                    </div>
-                </div>
-                <div className={getClassNames("cpu", errorMsgs)}>
-                    <div className="col-md-3" />
-                    <div className="col-md-6">
-                        {errorMsgs.cpu && <span className="help-block">{errorMsgs.cpu}</span>}
-                    </div>
-                </div>
+                        <div className={getClassNames("cpu", errorMsgs)}>
+                            <div className="col-md-3" />
+                            <div className="col-md-6">
+                                {errorMsgs.cpu && <span className="help-block">{errorMsgs.cpu}</span>}
+                            </div>
+                        </div>
+                    </span>
+                }
 
                 <div className={getClassNames("vmVCpus", errorMsgs)}>
                     <label className="col-md-3 control-label">Number of Virtual CPUs</label>
@@ -130,20 +134,6 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                                onChange={(e) => handleVmConfigUpdate("vmVCpus", e.target.value, "vm")}
                         />
                         {errorMsgs.vmVCpus && <span className="help-block">{errorMsgs.vmVCpus}</span>}
-                    </div>
-                </div>
-
-                <div className={getClassNames("imgSizeGB", errorMsgs)}>
-                    <label className="col-md-3 control-label">Disk Size (GB)</label>
-                    <div className="col-md-6 he-text-with-units">
-                        <input type="number" style={{width: "60px"}}
-                               placeholder="Disk Size"
-                               title="Enter the disk size for the VM."
-                               className="form-control"
-                               value={storageConfig.imgSizeGB.value}
-                               onChange={(e) => handleVmConfigUpdate("imgSizeGB", e.target.value, "storage")}
-                        />
-                        {errorMsgs.imgSizeGB && <span className="help-block">{errorMsgs.imgSizeGB}</span>}
                     </div>
                 </div>
 
@@ -185,6 +175,20 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                                    selectedOption={vdsmConfig.consoleType.value}
                                    callBack={(e) => handleVmConfigUpdate("consoleType", e, "vdsm")}
                         />
+                    </div>
+                </div>
+
+                <div className={getClassNames("host_name", errorMsgs)}>
+                    <label className="col-md-3 control-label">Host FQDN</label>
+                    <div className="col-md-4">
+                        <input type="text"
+                               placeholder="engine-host.example.com"
+                               title="Enter the host's FQDN."
+                               className="form-control"
+                               value={networkConfig.host_name.value}
+                               onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
+                        />
+                        {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
                     </div>
                 </div>
 

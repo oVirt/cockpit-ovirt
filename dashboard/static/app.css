@@ -319,7 +319,7 @@ label.he-preview-value {
 }
 
 .he-form-container {
-    margin-left: 16%;
+    margin-left: 5%;
 }
 
 label.he-input-label {
@@ -488,11 +488,11 @@ span.ansible-output-line {
 div.ansible-output-container {
     max-height: 450px;
     min-height: 200px;
-    overflow: auto;
+    overflow: hidden;
 }
 
 div.ansible-output-panel {
-    max-height: 450px;
+    max-height: 405px;
 }
 
 div.deployment-status-spinner {
@@ -503,6 +503,7 @@ div.deployment-status-spinner {
 
 div.deployment-status-msg {
     display: inline-block;
+    top: 7px;
 }
 
 span.deployment-failure-icon {

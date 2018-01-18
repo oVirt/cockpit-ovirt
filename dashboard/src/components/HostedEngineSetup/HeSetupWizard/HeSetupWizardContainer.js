@@ -43,6 +43,7 @@ class HeSetupWizardContainer extends Component {
         let systemData = null;
         if (initSuccessful) {
             systemData = this.defaultsProvider.systemData;
+            this.state.heSetupModel.setDefaultValues(this.defaultsProvider);
         }
 
         this.setState({ loadingState: loadingStatus, systemData: systemData });
