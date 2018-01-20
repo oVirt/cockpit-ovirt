@@ -1,7 +1,9 @@
 import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
-import {deploymentTypes} from "../constants";
+import { deploymentTypes, messages, status } from "../constants";
+import TargetListContainer from "./iSCSI/TargetList/TargetListContainer";
+import LunListContainer from "./iSCSI/LunList/LunListContainer";
 
 const storageTypes = [
     { key: "nfs", title: "NFS" },
@@ -15,21 +17,44 @@ const nfsVersions = [
     { key: "4", title: "v4" }
 ];
 
-const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConfigUpdate, storageConfig}) => {
-    let nfsSelected = storageConfig.domainType.value.includes("nfs");
-    let iscsiSelected = storageConfig.domainType.value === "iscsi";
-    let glusterSelected = storageConfig.domainType.value === "glusterfs";
+const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTargetRequest, handleStorageConfigUpdate,
+                             handleLunSelection, handleTargetSelection, iscsiLunData, iscsiTargetData,
+                             lunRetrievalStatus, selectedIscsiTarget, selectedLun, storageConfig,
+                             targetRetrievalStatus}) => {
+    const nfsSelected = storageConfig.domainType.value.includes("nfs");
+    const iscsiSelected = storageConfig.domainType.value === "iscsi";
+    const glusterSelected = storageConfig.domainType.value === "glusterfs";
+    let targetRetrievalBtnClasses = "btn btn-primary";
+    targetRetrievalBtnClasses += targetRetrievalStatus === status.POLLING ? " disabled" : "";
 
     return (
         <div>
             <form className="form-horizontal he-form-container">
                 {errorMsg &&
-                <div className="row" style={{marginLeft: "40px"}}>
-                    <div className="alert alert-danger col-sm-8">
-                        <span className="pficon pficon-error-circle-o" />
-                        <strong>{errorMsg}</strong>
+                    <div className="row" style={{marginLeft: "40px"}}>
+                        <div className="alert alert-danger col-sm-8">
+                            <span className="pficon pficon-error-circle-o" />
+                            <strong>{errorMsg}</strong>
+                        </div>
                     </div>
-                </div>
+                }
+
+                {targetRetrievalStatus === status.FAILURE &&
+                    <div className="row" style={{marginLeft: "40px"}}>
+                        <div className="alert alert-danger col-sm-8">
+                            <span className="pficon pficon-error-circle-o" />
+                            <strong>{ messages.TARGET_RETRIEVAL_FAILED }</strong>
+                        </div>
+                    </div>
+                }
+
+                {lunRetrievalStatus === status.FAILURE &&
+                    <div className="row" style={{marginLeft: "40px"}}>
+                        <div className="alert alert-danger col-sm-8">
+                            <span className="pficon pficon-error-circle-o" />
+                            <strong>{ messages.LUN_RETRIEVAL_FAILED }</strong>
+                        </div>
+                    </div>
                 }
 
                 <div className={getClassNames("imgSizeGB", errorMsgs)}>
@@ -184,35 +209,77 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleStorageConf
                         </div>
                     </div>
 
-                    <div className={getClassNames("iSCSITargetName", errorMsgs)}>
-                        <label className="col-md-3 control-label">Target Name</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "250px"}}
-                                   title="Enter the iSCSI target name."
-                                   className="form-control"
-                                   value={storageConfig.iSCSITargetName.value}
-                                   onChange={(e) => handleStorageConfigUpdate("iSCSITargetName", e.target.value)}
-                            />
-                            {errorMsgs.iSCSITargetName &&
-                                <span className="help-block">{errorMsgs.iSCSITargetName}</span>
-                            }
-                        </div>
+                    {deploymentType === deploymentTypes.OTOPI_DEPLOYMENT &&
+                        <span>
+                            <div className={getClassNames("iSCSITargetName", errorMsgs)}>
+                                <label className="col-md-3 control-label">Target Name</label>
+                                <div className="col-md-6">
+                                    <input type="text" style={{width: "250px"}}
+                                           title="Enter the iSCSI target name."
+                                           className="form-control"
+                                           value={storageConfig.iSCSITargetName.value}
+                                           onChange={(e) => handleStorageConfigUpdate("iSCSITargetName", e.target.value)} />
+                                    {errorMsgs.iSCSITargetName &&
+                                        <span className="help-block">{errorMsgs.iSCSITargetName}</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className={getClassNames("LunID", errorMsgs)}>
+                                <label className="col-md-3 control-label">Destination LUN</label>
+                                <div className="col-md-6">
+                                    <input type="text" style={{width: "250px"}}
+                                           title="Enter the iSCSI target name."
+                                           className="form-control"
+                                           value={storageConfig.LunID.value}
+                                           onChange={(e) => handleStorageConfigUpdate("LunID", e.target.value)} />
+                                    {errorMsgs.LunID &&
+                                        <span className="help-block">{errorMsgs.LunID}</span>
+                                    }
+                                </div>
+                            </div>
+                        </span>
+                    }
+
+                    <div className="form-group">
+                        <span className="col-md-offset-3 col-md-6">
+                            <button type="button"
+                                    className={targetRetrievalBtnClasses}
+                                    onClick={handleIscsiTargetRequest}>
+                                Retrieve Target List
+                            </button>
+                        </span>
                     </div>
 
-                    <div className={getClassNames("LunID", errorMsgs)}>
-                        <label className="col-md-3 control-label">Destination LUN</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "250px"}}
-                                   title="Enter the iSCSI target name."
-                                   className="form-control"
-                                   value={storageConfig.LunID.value}
-                                   onChange={(e) => handleStorageConfigUpdate("LunID", e.target.value)}
-                            />
-                            {errorMsgs.LunID &&
-                                <span className="help-block">{errorMsgs.LunID}</span>
-                            }
+                    {targetRetrievalStatus === status.POLLING &&
+                        <div className="form-group" style={{ marginTop: "20px"}}>
+                            <div className="col-md-9 horizontal-center">
+                                <div className="spinner blank-slate-pf-icon storage-retrieval-spinner vertical-center"/>
+                                <div className="vertical-center storage-retrieval-msg">Retrieving iSCSI Targets</div>
+                            </div>
                         </div>
-                    </div>
+                    }
+
+                    {iscsiTargetData !== null &&
+                        <TargetListContainer targetList={iscsiTargetData}
+                                             handleTargetSelection={handleTargetSelection}
+                                             selectedTarget={selectedIscsiTarget} />
+                    }
+
+                    {lunRetrievalStatus === status.POLLING &&
+                        <div className="form-group" style={{ marginTop: "20px"}}>
+                            <div className="col-md-9 horizontal-center">
+                                <div className="spinner blank-slate-pf-icon storage-retrieval-spinner vertical-center"/>
+                                <div className="vertical-center storage-retrieval-msg">Retrieving LUNs</div>
+                            </div>
+                        </div>
+                    }
+
+                    {iscsiLunData !== null &&
+                        <LunListContainer lunList={iscsiLunData}
+                                          handleLunSelection={handleLunSelection}
+                                          selectedLun={selectedLun} />
+                    }
                 </div>
 
                 <div style={(nfsSelected || glusterSelected) ? {} : {display: 'none'}}>

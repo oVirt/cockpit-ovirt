@@ -1,4 +1,4 @@
-import { ansibleVarFilePaths } from "../../components/HostedEngineSetup/constants"
+import {ansiblePhases, ansibleVarFilePaths} from "../../components/HostedEngineSetup/constants"
 
 class AnsibleVarFilesGenerator {
     constructor(heSetupModel) {
@@ -8,7 +8,10 @@ class AnsibleVarFilesGenerator {
         this.checkValue = this.checkValue.bind(this);
         this.addLineToVarStrings = this.addLineToVarStrings.bind(this);
         this.writeVarFiles = this.writeVarFiles.bind(this);
+        this.writeVarFile = this.writeVarFile.bind(this);
+        this.writeVarFileForPhase = this.writeVarFileForPhase.bind(this);
         this.formatValue = this.formatValue.bind(this);
+        this.generateRandomString = this.generateRandomString.bind(this);
     }
 
     getAnswerFileStrings() {
@@ -106,7 +109,7 @@ class AnsibleVarFilesGenerator {
                     console.log("Phase " + phase + " variable file successfully written to " + filePath);
                 })
                 .fail(function(error) {
-                    console.log("Problem writing variable file file. " + error);
+                    console.log("Problem writing variable file. " + error);
                 })
                 .always(function() {
                     file.close()
@@ -115,6 +118,49 @@ class AnsibleVarFilesGenerator {
         }
 
         return Promise.all(promises);
+    }
+
+    generateRandomString() {
+        let str = "";
+        const strLength = 6;
+        const possChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        for(let i = 0; i < strLength; i++) {
+            str += possChars.charAt(Math.floor(Math.random() * possChars.length));
+        }
+
+        return str;
+    }
+
+    writeVarFileForPhase(phase) {
+        const phases = [
+            ansiblePhases.BOOTSTRAP_VM,
+            ansiblePhases.CREATE_STORAGE,
+            ansiblePhases.TARGET_VM
+        ];
+        const varStrings = this.getAnswerFileStrings();
+        const varString = varStrings[phases.indexOf(phase)];
+        return this.writeVarFile(varString, phase);
+    }
+
+    writeVarFile(varString, phase) {
+        const filePath = "/tmp/ansibleVarFile" + this.generateRandomString() + ".var";
+        const file = cockpit.file(filePath);
+
+        return new Promise((resolve, reject) => {
+            file.replace(varString)
+                .done(function () {
+                    console.log("Phase " + phase + " variable file successfully created.");
+                    resolve(filePath);
+                })
+                .fail(function (error) {
+                    console.log("Problem creating variable file. Error: " + error);
+                    reject(error);
+                })
+                .always(function () {
+                    file.close()
+                });
+        });
     }
 }
 

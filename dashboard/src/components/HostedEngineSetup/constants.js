@@ -9,13 +9,17 @@ export const ansiblePhases = {
     BOOTSTRAP_VM: "BOOTSTRAP_VM",
     CREATE_STORAGE: "CREATE_STORAGE",
     TARGET_VM: "TARGET_VM",
-    FINAL_CLEAN: "FINAL_CLEAN"
+    FINAL_CLEAN: "FINAL_CLEAN",
+    ISCSI_DISCOVER: "ISCSI_DISCOVER",
+    ISCSI_GET_DEVICES: "ISCSI_GET_DEVICES"
 };
 
 export const ansibleVarFilePaths = {
     BOOTSTRAP_VM: "/tmp/ansibleBootstrapVm.var",
     CREATE_STORAGE: "/tmp/ansibleCreateStorage.var",
-    TARGET_VM: "/tmp/ansibleTargetVm.var"
+    TARGET_VM: "/tmp/ansibleTargetVm.var",
+    ISCSI_DISCOVER: "/tmp/ansibleIscsiDiscover.var",
+    ISCSI_GET_DEVICES: "/tmp/ansibleIscsIGetDevices.var"
 };
 
 export const playbookPaths = {
@@ -23,7 +27,19 @@ export const playbookPaths = {
     BOOTSTRAP_VM: "/usr/share/ovirt-hosted-engine-setup/ansible/bootstrap_local_vm.yml",
     CREATE_STORAGE: "/usr/share/ovirt-hosted-engine-setup/ansible/create_storage_domain.yml",
     TARGET_VM: "/usr/share/ovirt-hosted-engine-setup/ansible/create_target_vm.yml",
-    FINAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml"
+    FINAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml",
+    ISCSI_DISCOVER: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_discover.yml",
+    ISCSI_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_getdevices.yml"
+};
+
+export const playbookOutputPaths = {
+    INITIAL_CLEAN: "/tmp/initial_clean_out.json",
+    BOOTSTRAP_VM: "/tmp/bootstrap_local_vm_out.json",
+    CREATE_STORAGE: "/tmp/create_storage_domain_out.json",
+    TARGET_VM: "/tmp/create_target_vm_out.json",
+    FINAL_CLEAN: "/tmp/final_clean_out.json",
+    ISCSI_DISCOVER: "/tmp/iscsi_discover_out.json",
+    ISCSI_GET_DEVICES: "/tmp/iscsi_getdevices_out.json"
 };
 
 export const configFileTypes = {
@@ -100,7 +116,9 @@ export const messages = {
     DEPLOYMENT_IN_PROGRESS: "Deployment in Progress",
     ADD_GDEPLOY_PROPS_TO_ANS_FILE: "Attempting to add gdeploy properties to the answer file.",
     NO_GDEPLOY_ANSWER_FILES_FOUND: "No gdeploy answer files found.",
-    ANSIBLE_PHASE_SUCCESSFUL: "Execution completed successfully. Please proceed to the next step."
+    ANSIBLE_PHASE_SUCCESSFUL: "Execution completed successfully. Please proceed to the next step.",
+    TARGET_RETRIEVAL_FAILED: "Retrieval of iSCSI targets failed.",
+    LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed."
 };
 
 export const allowedIntelCpus = [

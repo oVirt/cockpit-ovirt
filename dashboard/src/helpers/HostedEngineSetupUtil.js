@@ -281,7 +281,7 @@ export class HeSetupModel {
                 },
                 iSCSIPortalIPAddress: {
                     name: "iSCSIPortalIPAddress",
-                    ansibleVarName: "ISCSI_IP_ADDR",
+                    ansibleVarName: "ISCSI_PORTAL_ADDR",
                     ansiblePhasesUsed: [3],
                     description: "Portal IP Address",
                     value: "",
@@ -307,7 +307,7 @@ export class HeSetupModel {
                 },
                 iSCSIPortalPort: {
                     name: "iSCSIPortalPort",
-                    ansibleVarName: "ISCSI_PORT",
+                    ansibleVarName: "ISCSI_PORTAL_PORT",
                     ansiblePhasesUsed: [2, 3],
                     description: "Portal Port",
                     value: "3260",
