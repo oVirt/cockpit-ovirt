@@ -495,13 +495,13 @@ div.ansible-output-panel {
     max-height: 405px;
 }
 
-div.deployment-status-spinner {
+div.deployment-status-spinner, div.storage-retrieval-spinner {
     display: inline-block;
     border-width: 5px;
     margin-right: 10px;
 }
 
-div.deployment-status-msg {
+div.deployment-status-msg, div.storage-retrieval-msg {
     display: inline-block;
     top: 7px;
 }
@@ -515,4 +515,24 @@ div.wizard-pf-row-fix {
     height: inherit;
     top: 162px;
     max-height: inherit;
+}
+
+input[type="radio"].iscsi-target-radio-button {
+    padding-left: 5px;
+}
+
+div.iscsi-target, div.lun {
+    margin-left: 20px
+}
+
+div.target-portal-group {
+    padding-left: 35px;
+}
+
+span.iscsi-target-name, span.lun-prop-label {
+    font-weight: bold;
+}
+
+div.lun-prop {
+    margin-left: 17px;
 }

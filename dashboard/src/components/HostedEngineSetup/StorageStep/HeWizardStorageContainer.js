@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { getErrorMsgForProperty, validatePropsForUiStage } from "../Validation";
-import { messages } from '../constants';
+import {deploymentTypes, messages, status} from '../constants';
 import HeWizardStorage from './HeWizardStorage'
+import IscsiUtil from '../../../helpers/HostedEngineSetup/IscsiUtil'
 
 const nfsAnsFileFields = ["storageDomainConnection", "storageDomain"];
 
@@ -12,10 +13,7 @@ const iscsiAnsFileFields = [
     "iSCSITargetName", "LunID"
 ];
 
-const requiredIscsiFields = [
-    "iSCSIPortalIPAddress", "iSCSIPortalPort",
-    "iSCSITargetName", "LunID"
-];
+const requiredIscsiFieldsBase = ["iSCSIPortalIPAddress", "iSCSIPortalPort"];
 
 const glusterAnsFileFields = ["storageDomainConnection"];
 
@@ -32,15 +30,27 @@ class HeWizardStorageContainer extends Component {
         this.state = {
             model: props.model,
             heSetupModel: props.model.model,
+            iscsiLunData: null,
+            iscsiTargetData: null,
+            selectedIscsiTarget: "",
+            selectedLun: "",
+            targetRetrievalStatus: status.EMPTY,
+            lunRetrievalStatus: status.EMPTY,
             storageConfig: props.model.model.storage,
             errorMsg: "",
             errorMsgs: {}
         };
 
+        this.iscsiUtil = new IscsiUtil(props.model.model);
+
         this.handleStorageConfigUpdate = this.handleStorageConfigUpdate.bind(this);
         this.setStorageTypeDisplaySettings = this.setStorageTypeDisplaySettings.bind(this);
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
+        this.getIscsiTargetList = this.getIscsiTargetList.bind(this);
+        this.getIscsiLunList = this.getIscsiLunList.bind(this);
+        this.handleTargetSelection = this.handleTargetSelection.bind(this);
+        this.handleLunSelection = this.handleLunSelection.bind(this);
     }
 
     componentWillMount() {
@@ -81,6 +91,12 @@ class HeWizardStorageContainer extends Component {
         let isNfs = storageType.includes("nfs");
         let isIscsi = storageType === "iscsi";
         let isGluster = storageType === "glusterfs";
+
+        let requiredIscsiFields = requiredIscsiFieldsBase;
+        if (this.props.deploymentType === deploymentTypes.OTOPI_DEPLOYMENT) {
+            const otopiIscsiFields = ["iSCSITargetName", "LunID"];
+            requiredIscsiFields.concat(otopiIscsiFields);
+        }
 
         model.setBooleanValues(nfsAnsFileFields, fieldProps, isNfs);
         model.setBooleanValues(requiredNfsFields, ["required"], isNfs);
@@ -123,6 +139,44 @@ class HeWizardStorageContainer extends Component {
         return propsAreValid;
     }
 
+    getIscsiTargetList() {
+        this.setState({ targetRetrievalStatus: status.POLLING });
+        const self = this;
+        this.iscsiUtil.getTargetList()
+            .then(targetData => self.setState({ targetRetrievalStatus: status.SUCCESS, iscsiTargetData: targetData }))
+            .catch(error => {
+                console.log("Error: " + error);
+                self.setState({ targetRetrievalStatus: status.FAILURE });
+            });
+    }
+
+    handleTargetSelection(target) {
+        this.setState({ selectedIscsiTarget: target });
+        const config = this.state.storageConfig;
+        config.iSCSITargetName.value = target;
+        this.setState({ config });
+        this.getIscsiLunList();
+    }
+
+    getIscsiLunList() {
+        this.setState({ lunRetrievalStatus: status.POLLING });
+        const self = this;
+        this.iscsiUtil.getLunList()
+            .then(lunData => self.setState({ lunRetrievalStatus: status.SUCCESS, iscsiLunData: lunData }))
+            .catch(error => {
+                console.log("Error: " + error);
+                self.setState({ lunRetrievalStatus: status.FAILURE });
+            });
+    }
+
+    handleLunSelection(lunId) {
+        this.setState({ selectedLun: lunId });
+        const config = this.state.storageConfig;
+        config.LunID.value = lunId;
+        this.setState({ config });
+    }
+
+
     shouldComponentUpdate(nextProps, nextState){
         if(!this.props.validating && nextProps.validating){
             this.props.validationCallBack(this.validateAllInputs())
@@ -136,8 +190,17 @@ class HeWizardStorageContainer extends Component {
                 deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
+                handleIscsiTargetRequest={this.getIscsiTargetList}
+                handleLunSelection={this.handleLunSelection}
+                handleTargetSelection={this.handleTargetSelection}
                 handleStorageConfigUpdate={this.handleStorageConfigUpdate}
-                storageConfig={this.state.storageConfig}/>
+                iscsiLunData={this.state.iscsiLunData}
+                iscsiTargetData={this.state.iscsiTargetData}
+                lunRetrievalStatus={this.state.lunRetrievalStatus}
+                selectedLun={this.state.selectedLun}
+                selectedIscsiTarget={this.state.selectedIscsiTarget}
+                storageConfig={this.state.storageConfig}
+                targetRetrievalStatus={this.state.targetRetrievalStatus} />
         )
     }
 }
