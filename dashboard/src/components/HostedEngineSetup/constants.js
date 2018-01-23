@@ -177,3 +177,11 @@ export const deploymentTypes = {
 };
 
 export const filteredNetworkInterfaces = ["lo"];
+
+export const ansibleOutputTypes = {
+    INFO: "OVEHOSTED_AC/info",
+    DEBUG: "OVEHOSTED_AC/debug",
+    WARNING: "OVEHOSTED_AC/warning",
+    ERROR: "OVEHOSTED_AC/error",
+    RESULT: "OVEHOSTED_AC/result"
+};
