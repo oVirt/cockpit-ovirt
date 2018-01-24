@@ -85,6 +85,10 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Wed Jan 24 2017 Ryan Barry <rbarry@redhat.com> - 0.11.5-0.1
+- Continue modernizing the hosted engine wizard
+- Move to ansible
+
 * Wed Dec 13 2017 Ryan Barry <rbarry@redhat.com> - 0.11.4-0.1
 - Continue modernizing the hosted engine wizard
 
