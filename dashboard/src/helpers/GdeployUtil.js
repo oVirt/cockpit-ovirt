@@ -320,12 +320,13 @@ var GdeployUtil = {
                             gdeployConfig['lv' + lvIndex++] = lv
                         }
                     })
+                    if (lvCacheConfig != null) {
+                      gdeployConfig['lv' + lvIndex] = lvCacheConfig
+                    }
                 } else if (section === 'volume') {
                     volumeConfigs.forEach(function(volumeConfig, index) {
                         gdeployConfig['volume' + (index + 1)] = volumeConfig
                     })
-                } else if (lvCacheConfig != null) {
-                  gdeployConfig['lv' + (brickConfig.lvConfig.length + 2)] = lvCacheConfig
                 } else {
                     gdeployConfig[section] = template[section]
                 }
