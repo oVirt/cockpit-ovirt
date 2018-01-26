@@ -1,5 +1,7 @@
-import {ansibleOutputTypes as outputTypes, ansiblePhases as phases, ansibleVarFilePaths,
-    deploymentStatus as status, playbookPaths} from "../../components/HostedEngineSetup/constants";
+import {
+    ansibleOutputTypes as outputTypes, ansiblePhases as phases, ansibleVarFilePaths,
+    deploymentStatus as status, playbookOutputPaths as outputPaths, playbookPaths
+} from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator"
 
 class AnsiblePhaseExecutor {
@@ -31,48 +33,49 @@ class AnsiblePhaseExecutor {
         switch(this.phase) {
             case phases.BOOTSTRAP_VM:
                 this.generateVarFiles()
-                    .then(() => {self.runInitialClean()
-                        .then(() => {self.executePlaybook(cmd)
-                            .then((options) => {
-                                self._exitCallback(options["exit-status"]);
-                            })
-                            .catch((options, denied) => {
-                                self._exitCallback(options["exit-status"], denied);
-                            });
-                        })
-                        .catch((options, denied) => {
-                            self._exitCallback(options["exit-status"], denied);
-                        });
-                    });
+                    .then(() => self.deleteOutputFiles([outputPaths.INITIAL_CLEAN, outputPaths.BOOTSTRAP_VM]))
+                    .then(() => self.runInitialClean())
+                    .then(() => self.executePlaybook(cmd))
+                    .then((options) => self._exitCallback(options["exit-status"]))
+                    .catch((options, denied) => self._exitCallback(options["exit-status"], denied));
                 break;
             case phases.TARGET_VM:
                 this.generateVarFiles()
-                    .then(() => {self.executePlaybook(cmd)
-                        .then(() => {self.runFinalClean()
-                            .then((options) => {
-                                self._exitCallback(options["exit-status"]);
-                            })
-                            .catch((options, denied) => {
-                                self._exitCallback(options["exit-status"], denied);
-                            });
-                        })
-                        .catch((options, denied) => {
-                            self._exitCallback(options["exit-status"], denied);
-                        });
-                    });
+                    .then(() => self.deleteOutputFiles([outputPaths.FINAL_CLEAN, outputPaths.TARGET_VM]))
+                    .then(() => self.executePlaybook(cmd))
+                    .then(() => self.runFinalClean())
+                    .then((options) => self._exitCallback(options["exit-status"]))
+                    .catch((options, denied) => self._exitCallback(options["exit-status"], denied));
                 break;
             default:
                 this.generateVarFiles()
-                    .then(() => {
-                        self.executePlaybook(cmd)
-                            .then((options) => {
-                                self._exitCallback(options["exit-status"]);
-                            })
-                            .catch((options, denied) => {
-                                self._exitCallback(options["exit-status"], denied);
-                            });
-                    });
+                    .then(() => self.deleteOutputFiles([outputPaths[this.phase]]))
+                    .then(() => self.executePlaybook(cmd))
+                    .then((options) => self._exitCallback(options["exit-status"]))
+                    .catch((options, denied) => self._exitCallback(options["exit-status"], denied));
         }
+    }
+
+    deleteOutputFiles(paths) {
+        let promises = [];
+
+        paths.forEach(function(filePath) {
+            const file = cockpit.file(filePath);
+
+            promises.push(file.replace(" ")
+                .done(function() {
+                    console.log("File " + filePath + " cleared.");
+                })
+                .fail(function(error) {
+                    console.log("Problem clearing " + filePath + ". Error: " + error);
+                })
+                .always(function() {
+                    file.close()
+                })
+            );
+        });
+
+        return Promise.all(promises);
     }
 
     runInitialClean() {
@@ -84,7 +87,7 @@ class AnsiblePhaseExecutor {
             const env = [
                 "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=/tmp/out.json"
+                "OTOPI_CALLBACK_OF=" + outputPaths[phases.INITIAL_CLEAN]
             ];
 
             this.channel = cockpit.channel({
@@ -116,7 +119,7 @@ class AnsiblePhaseExecutor {
                 }
             });
 
-            $(this.channel).on("ready", $.proxy(this.readOutputFile, this));
+            $(this.channel).on("ready", $.proxy(this.readOutputFile, this, outputPaths[phases.INITIAL_CLEAN]));
         })
     }
 
@@ -129,7 +132,7 @@ class AnsiblePhaseExecutor {
             const env = [
                 "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=/tmp/out.json"
+                "OTOPI_CALLBACK_OF=" + outputPaths[phases.FINAL_CLEAN]
             ];
 
             this.channel = cockpit.channel({
@@ -161,7 +164,7 @@ class AnsiblePhaseExecutor {
                 }
             });
 
-            $(this.channel).on("ready", $.proxy(this.readOutputFile, this));
+            $(this.channel).on("ready", $.proxy(this.readOutputFile, this, outputPaths[phases.FINAL_CLEAN]));
         })
     }
 
@@ -187,7 +190,7 @@ class AnsiblePhaseExecutor {
             const env = [
                 "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=/tmp/out.json"
+                "OTOPI_CALLBACK_OF=" + outputPaths[this.phase]
             ];
 
             this.channel = cockpit.channel({
@@ -223,14 +226,15 @@ class AnsiblePhaseExecutor {
                 console.log(options);
             });
 
-            $(this.channel).on("ready", $.proxy(this.readOutputFile, this));
+            $(this.channel).on("ready", $.proxy(this.readOutputFile, this, outputPaths[this.phase]));
         });
     }
 
-    readOutputFile() {
+    readOutputFile(path) {
+        console.log("Path: " + path);
         return new Promise((resolve, reject) => {
-            let path = "/tmp/out.json";
             const cmd = "tail -f " + path;
+            console.log("cmd: " + cmd);
 
             this.channel = cockpit.channel({
                 "payload": "stream",
@@ -252,7 +256,7 @@ class AnsiblePhaseExecutor {
                         resolve();
                     } else {
                         console.log(options);
-                        throw new Error("Read of " + path + " failed to complete.");
+                        reject("Read of " + path + " failed to complete.");
                     }
                 }
             });
@@ -274,15 +278,15 @@ class AnsiblePhaseExecutor {
 
                 switch (type) {
                     case outputTypes.INFO:
-                        returnValue.lines.push(data);
+                        returnValue.lines.push(line);
                         returnValue.info.push(data);
                         break;
                     case outputTypes.WARNING:
-                        returnValue.lines.push(data);
+                        returnValue.lines.push(line);
                         returnValue.warnings.push(data);
                         break;
                     case outputTypes.ERROR:
-                        returnValue.lines.push(data);
+                        returnValue.lines.push(line);
                         returnValue.errors.push(data);
                         break;
                     case outputTypes.DEBUG:

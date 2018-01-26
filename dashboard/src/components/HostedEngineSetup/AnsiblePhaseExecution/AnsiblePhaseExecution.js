@@ -1,8 +1,8 @@
 import React from 'react'
-import {deploymentStatus, messages} from '../constants';
+import {deploymentStatus as status, messages} from '../constants';
 
 const AnsiblePhaseExecution = ({output, phaseExecutionStatus, restartCallBack}) => {
-    if (phaseExecutionStatus === deploymentStatus.SUCCESS) {
+    if (phaseExecutionStatus === status.SUCCESS) {
         return <DeploymentSuccessPanel restartCallBack={restartCallBack}/>
     } else {
         return <OutputPanel output={output}
@@ -15,11 +15,19 @@ export default AnsiblePhaseExecution;
 
 const OutputPanel = ({output, phaseExecutionStatus, reDeployCallback}) => {
     const outputDiv = output.lines.map(function(line, i) {
-        return (
-            <span className="ansible-output-line" key={i}>
-                {line}<br />
-            </span>
-        )
+        try {
+            const ln = JSON.parse(line);
+            const type = ln["OVEHOSTED_AC/type"].replace("OVEHOSTED_AC/", "").toUpperCase();
+            const data = ln["OVEHOSTED_AC/body"];
+
+            return (
+                <span className="ansible-output-line" key={i}>
+                    [ { type } ] { data }<br />
+                </span>
+            )
+        } catch (e) {
+            console.log("Error in Ansible JSON output. Error: " + e);
+        }
     });
 
     return (
@@ -37,7 +45,7 @@ const OutputPanel = ({output, phaseExecutionStatus, reDeployCallback}) => {
 const Status = ({ status, reDeployCallback }) => {
     let msg = "Deployment in progress";
     let statusIcon = <div className="spinner blank-slate-pf-icon deployment-status-spinner vertical-center"/>;
-    if (status === -1) {
+    if (status === status.FAILURE) {
         msg = "Deployment failed";
         statusIcon = <span className="pficon-error-circle-o deployment-failure-icon"/>;
     }
@@ -46,7 +54,7 @@ const Status = ({ status, reDeployCallback }) => {
             {statusIcon}
             <div className="vertical-center deployment-status-msg">{msg}</div>
             <div className="pull-right">
-                {status === -1 &&
+                {status === status.FAILURE &&
                 <button className="btn btn-primary" onClick={reDeployCallback}>
                     <span className="pficon pficon-restart">&nbsp;</span>
                     Redeploy
