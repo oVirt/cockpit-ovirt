@@ -12,7 +12,8 @@ class Wizard extends Component {
             activeSubStep: 0,
             validating: false,
             nextStep: -1,
-            nextSubStep: -1
+            nextSubStep: -1,
+            customActionBtnData: {}
         };
         this.moveNext = this.moveNext.bind(this);
         this.moveBack = this.moveBack.bind(this);
@@ -22,7 +23,10 @@ class Wizard extends Component {
         this.validationCallBack = this.validationCallBack.bind(this);
         this.subStepValidationCallBack = this.subStepValidationCallBack.bind(this);
         this.handleActiveSubStepChange = this.handleActiveSubStepChange.bind(this);
-        this.nextButtonStateCallBack = this.nextButtonStateCallBack.bind(this);
+        this.registerCustomActionBtnStateCallback = this.registerCustomActionBtnStateCallback.bind(this);
+
+        this.subStepCounts = [];
+        this.hasSubSteps = false;
     }
     componentDidMount() {
         $(ReactDOM.findDOMNode(this)).modal('show')
@@ -72,7 +76,6 @@ class Wizard extends Component {
             this.props.onStepChange(this.state.nextStep);
             newState.activeStep = this.state.nextStep;
             newState.activeSubStep = 0;
-            newState.nextButtonState = {};
         }
 
         this.setState(newState)
@@ -85,7 +88,6 @@ class Wizard extends Component {
 
         if (isValid && this.state.nextSubStep > -1) {
             newState.activeSubStep = this.state.nextSubStep;
-            newState.nextButtonState = {};
         }
 
         this.setState(newState)
@@ -95,8 +97,7 @@ class Wizard extends Component {
             this.props.onStepChange(step);
             this.setState({
                 activeStep: step,
-                activeSubStep: 0,
-                nextButtonState: {}
+                activeSubStep: 0
             })
         } else {
             this.setState({
@@ -118,25 +119,38 @@ class Wizard extends Component {
             });
         }
     }
-    nextButtonStateCallBack(buttonState) {
-        this.setState({ nextButtonState: buttonState });
+    registerCustomActionBtnStateCallback(buttonState, stepIndex, subStepIndex = -1) {
+        const customActionBtnData = this.state.customActionBtnData;
+        if (typeof customActionBtnData[stepIndex] === "undefined") {
+            customActionBtnData[stepIndex] = {};
+        }
+
+        if (subStepIndex >= 0) {
+            customActionBtnData[stepIndex][subStepIndex] = buttonState;
+        } else {
+            customActionBtnData[stepIndex] = buttonState;
+        }
+        this.setState({ customActionBtnData });
     }
     render() {
+        const activeStep = this.state.activeStep;
+        const activeSubStep = this.state.activeSubStep;
         const steps = [];
         const subStepLists = [];
-        const that = this;
+        const self = this;
 
         this.props.children.forEach(function(step, index) {
-                const isActiveStep = index === that.state.activeStep;
+                const isActiveStep = index === activeStep;
 
                 const stepElement = React.cloneElement(step, {
-                    activeStep: that.state.activeStep,
-                    activeSubStep: that.state.activeSubStep,
+                    activeStep: activeStep,
+                    activeSubStep: activeSubStep,
                     stepIndex: index,
-                    validationCallBack: that.validationCallBack,
-                    subStepValidationCallBack: that.subStepValidationCallBack,
-                    validating: that.state.validating && index === that.state.activeStep,
-                    nextButtonStateCallBack: isActiveStep ? that.nextButtonStateCallBack : null
+                    stepCount: self.props.children.length,
+                    validationCallBack: self.validationCallBack,
+                    subStepValidationCallBack: self.subStepValidationCallBack,
+                    validating: self.state.validating && isActiveStep,
+                    registerCustomActionBtnStateCallback: self.registerCustomActionBtnStateCallback
                 });
 
                 const comp = classNames(
@@ -153,16 +167,28 @@ class Wizard extends Component {
                                             stepIndex={index}
                                             key={index}
                                             steps={step.props.children}
-                                            activeStep={that.state.activeStep}
-                                            activeSubStep={that.state.activeSubStep}
-                                            handleActiveSubStepChange={that.handleActiveSubStepChange}/>;
+                                            activeStep={self.state.activeStep}
+                                            activeSubStep={self.state.activeSubStep}
+                                            handleActiveSubStepChange={self.handleActiveSubStepChange}/>;
                     subStepLists.push(subStepTabList);
+
+                    self.subStepCounts.push(step.props.children.length);
+                    self.hasSubSteps = true;
                 }
         });
 
-        const wizardWidth = this.props.width ? {width: that.props.width} : {};
+        const wizardWidth = this.props.width ? {width: this.props.width} : {};
         const hasSidebar = subStepLists.length > 0;
         const wizardMainClasses = hasSidebar ? "wizard-pf-main" : "wizard-pf-main no-sidebar";
+
+        let customActionBtnState = {};
+        const stepData = this.state.customActionBtnData[activeStep];
+        const stepDataExists = typeof stepData !== "undefined";
+        if (this.hasSubSteps && stepDataExists && typeof stepData[activeSubStep] !== "undefined") {
+            customActionBtnState = stepData[activeSubStep];
+        } else if (!this.hasSubSteps && stepDataExists) {
+            customActionBtnState = stepData;
+        }
 
         return (
             <div className="modal" data-backdrop="static" role="dialog">
@@ -193,14 +219,14 @@ class Wizard extends Component {
                             </div>
                         </div>
                         <WizardFooter activeStep={this.state.activeStep}
-                            activeSubStep={this.state.activeSubStep}
-                            stepCount={this.props.children.length}
-                            isDeploymentStarted={this.props.isDeploymentStarted}
-                            moveBack={this.moveBack} moveNext={this.moveNext}
-                            cancel={this.cancel} finish={this.finish}
-                            close={this.props.onClose}
-                            nextButtonState={this.state.nextButtonState}
-                            />
+                                      activeSubStep={this.state.activeSubStep}
+                                      stepCount={this.props.children.length}
+                                      subStepCounts={this.subStepCounts}
+                                      isDeploymentStarted={this.props.isDeploymentStarted}
+                                      moveBack={this.moveBack} moveNext={this.moveNext}
+                                      cancel={this.cancel} finish={this.finish}
+                                      close={this.props.onClose}
+                                      customActionBtnState={customActionBtnState} />
                     </div>
                 </div>
             </div>
@@ -215,16 +241,16 @@ Wizard.propTypes = {
     onStepChange: React.PropTypes.func.isRequired,
     children: React.PropTypes.array.isRequired,
     isDeploymentStarted: React.PropTypes.bool.isRequired
-}
+};
 
 const WizardSteps = ({steps, activeStep, callBack}) => {
     //Create the Navigation steps with active step
-    const stepItems = []
+    const stepItems = [];
     steps.forEach(function(step, index) {
         const stepClass = classNames(
             "wizard-pf-step",
-            { "active": activeStep == index }
-        )
+            { "active": activeStep === index }
+        );
         stepItems.push(
             <li className={stepClass} data-tabgroup={index}
                 key={index} onClick={() => callBack(index)}>
@@ -234,7 +260,7 @@ const WizardSteps = ({steps, activeStep, callBack}) => {
                 </a>
             </li>
         )
-    })
+    });
     return (
         <div className="wizard-pf-steps">
             <ul className="wizard-pf-steps-indicator">
@@ -242,48 +268,62 @@ const WizardSteps = ({steps, activeStep, callBack}) => {
             </ul>
         </div>
     )
-}
+};
 
-const WizardFooter = ({activeStep, activeSubStep, stepCount, isDeploymentStarted,
-    moveBack, moveNext, cancel, finish, close, nextButtonState}) => {
+const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDeploymentStarted,
+    moveBack, moveNext, cancel, finish, close, customActionBtnState}) => {
+    const hasSubSteps = subStepCounts.length > 1;
+    const btnState = customActionBtnState;
     const isLastStep = activeStep === stepCount - 1;
-    const backButton = classNames(
-        "btn", "btn-default", "wizard-pf-back",
-        { "disabled": (activeStep === 0 && activeSubStep === 0) || isDeploymentStarted}
-    ),
-        finishButton = classNames(
-            "btn", "btn-primary", "wizard-pf-finish",
-            { "hidden": (!isLastStep || isDeploymentStarted) }
+    const isLastSubStep = activeSubStep === (subStepCounts[activeStep] - 1);
+    let backBtnClasses = classNames(
+            "btn", "btn-default", "wizard-pf-back",
+            { "disabled": (activeStep === 0 && activeSubStep === 0) || isDeploymentStarted }
         ),
-        closeButton = classNames(
+        finishBtnClasses = classNames(
+            "btn", "btn-primary", "wizard-pf-finish",
+            { "hidden": !isLastStep || (hasSubSteps && !isLastSubStep) || isDeploymentStarted }
+        ),
+        closeBtnClasses = classNames(
             "btn", "btn-primary", "wizard-pf-close", "wizard-pf-dismiss",
             { "hidden": (!isLastStep || !isDeploymentStarted) }
-        );
-    let nextButton = classNames(
-        "btn", "btn-primary", "wizard-pf-next",
-        { "hidden": isLastStep }
-    );
-
-    let nextButtonText = "Next";
-    let nextCallBack = moveNext;
-    let showNextArrow = true;
-
-    if (typeof nextButtonState !== "undefined") {
-        nextButtonText = typeof nextButtonState.nextButtonText === "string" ? nextButtonState.nextButtonText : "Next";
-        showNextArrow = typeof nextButtonState.showArrow === "boolean" ? nextButtonState.showArrow : true;
-        nextButton = classNames(
+        ),
+        nextBtnClasses = classNames(
             "btn", "btn-primary", "wizard-pf-next",
-            { "hidden": isLastStep },
-            { "disabled": nextButtonState.disabled }
+            { "hidden": (!hasSubSteps && isLastStep) || (hasSubSteps && isLastStep && isLastSubStep) }
         );
 
-        if (typeof nextButtonState.nextButtonCallBack === "function") {
-            nextCallBack = () => {
-                nextButtonState.nextButtonCallBack();
-                if (nextButtonState.moveNext) {
-                    moveNext();
-                }
-            }
+    let customActionBtnClasses = "hidden";
+    let customActionBtnText = "";
+    let customActionBtnCallback = null;
+    const renderCustomActionBtn = typeof btnState !== "undefined"
+        && Object.keys(btnState).length !== 0 && btnState.constructor === Object;
+
+    if (renderCustomActionBtn) {
+        customActionBtnText = typeof btnState.buttonText === "string" ? btnState.buttonText : "Deploy";
+        customActionBtnClasses = classNames(
+            "btn", "btn-primary", "wizard-pf-next",
+            { "hidden": customActionBtnState.hidden },
+            { "disabled": customActionBtnState.disabled }
+        );
+
+        const disableList = typeof btnState.disableBtnsList !== "undefined" ? btnState.disableBtnsList : [];
+        const hideList = typeof btnState.hideBtnsList !== "undefined" ? btnState.hideBtnsList : [];
+
+        backBtnClasses += disableList.includes(footerButtons.BACK) ? " disabled" : "";
+        backBtnClasses += hideList.includes(footerButtons.BACK) ? " hidden" : "";
+
+        nextBtnClasses += disableList.includes(footerButtons.NEXT) ? " disabled" : "";
+        nextBtnClasses += hideList.includes(footerButtons.NEXT) ? " hidden" : "";
+
+        finishBtnClasses += disableList.includes(footerButtons.FINISH) ? " disabled" : "";
+        finishBtnClasses += hideList.includes(footerButtons.FINISH) ? " hidden" : "";
+
+        closeBtnClasses += disableList.includes(footerButtons.CLOSE) ? " disabled" : "";
+        closeBtnClasses += hideList.includes(footerButtons.CLOSE) ? " hidden" : "";
+
+        if (typeof btnState.buttonCallBack === "function") {
+            customActionBtnCallback = btnState.buttonCallBack;
         }
     }
 
@@ -293,20 +333,34 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, isDeploymentStarted
                 className="btn btn-default btn-cancel wizard-pf-cancel wizard-pf-dismiss"
                 onClick={cancel} data-dismiss="modal" aria-hidden="true">Cancel
             </button>
-            <button type="button" className={backButton} onClick={moveBack}>
+            <button type="button" className={backBtnClasses} onClick={moveBack}>
                 <span className="i fa fa-angle-left"/>Back
             </button>
-            <button type="button" className={nextButton} onClick={nextCallBack}>
-                {nextButtonText}
-                {showNextArrow && <span className="i fa fa-angle-right"/>}
+            <button type="button" className={nextBtnClasses} onClick={moveNext}>
+                Next
+                <span className="i fa fa-angle-right"/>
             </button>
-            <button type="button" className={finishButton} onClick={finish}>
+            {renderCustomActionBtn &&
+                <button type="button" className={customActionBtnClasses} onClick={customActionBtnCallback}>
+                    {customActionBtnText}
+                </button>
+            }
+            <button type="button" className={finishBtnClasses} onClick={finish}>
                 Deploy
             </button>
-            <button type="button" className={closeButton} onClick={close}
+            <button type="button" className={closeBtnClasses} onClick={close}
                 data-dismiss="modal" aria-hidden="true">Close
             </button>
         </div>
     )
-}
+};
+
+export const footerButtons = {
+    BACK: "BACK",
+    NEXT: "NEXT",
+    CANCEL: "CANCEL",
+    FINISH: "FINISH",
+    CLOSE: "CLOSE"
+};
+
 export default Wizard

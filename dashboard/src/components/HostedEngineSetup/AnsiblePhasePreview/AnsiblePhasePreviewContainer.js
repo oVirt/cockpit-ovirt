@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import AnsiblePhasePreview from './AnsiblePhasePreview'
 import PreviewGenerator from '../../../helpers/HostedEngineSetup/PreviewGenerator'
 import {deploymentStatus as status} from "../constants";
+import {footerButtons} from "../../common/Wizard/Wizard";
 
 class AnsiblePhasePreviewContainer extends Component {
     constructor(props) {
@@ -13,52 +14,70 @@ class AnsiblePhasePreviewContainer extends Component {
             executionStatus: status.RUNNING
         };
 
-        this.nextButtonCallBack = this.nextButtonCallBack.bind(this);
+        this.customActionBtnCallback = this.customActionBtnCallback.bind(this);
         this.restartCallBack = this.restartCallBack.bind(this);
         this.terminationCallBack = this.terminationCallBack.bind(this);
     }
 
-    nextButtonCallBack() {
+    customActionBtnCallback() {
         this.setState({ executionStarted: true });
-        this.props.nextButtonStateCallBack({ disabled: true }); // Reset the 'Next' button after 'Execute' is pressed
+        const newBtnState = {
+            disabled: true,
+            disableBtnsList: [footerButtons.BACK],
+            hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH, footerButtons.CLOSE]
+        };
+        this.props.registerCustomActionBtnStateCallback(newBtnState,
+            this.props.stepIndex,
+            this.props.subStepIndex); // Reset the 'Next' button after 'Execute' is pressed
     }
 
     terminationCallBack(executionStatus, buttonCallBack) {
         this.setState({ executionTerminated: true, executionStatus: executionStatus });
         const self = this;
-        let nextButtonState = {};
+        let btnState = {};
         if (executionStatus === status.FAILURE) {
-            nextButtonState = {
-                nextButtonText: "Execute",
-                showArrow: false,
-                nextButtonCallBack: function() {
+            btnState = {
+                buttonText: "Execute",
+                hideBtnsList: [footerButtons.NEXT],
+                buttonCallBack: function() {
                     buttonCallBack();
-                    self.props.nextButtonStateCallBack({ disabled: true });
-                },
-                moveNext: false
+                    self.props.registerCustomActionBtnStateCallback({ disableBtnsList: [footerButtons.NEXT] });
+                }
             };
         }
-        this.props.nextButtonStateCallBack(nextButtonState);
+        this.props.registerCustomActionBtnStateCallback(btnState, this.props.stepIndex, this.props.subStepIndex);
     }
 
     restartCallBack(buttonCallBack) {
-        const self = this;
         buttonCallBack();
-        self.props.nextButtonStateCallBack({ disabled: true });
+        this.props.registerCustomActionBtnStateCallback({ disabled: true });
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.nextButtonStateCallBack === null &&
-            this.props.nextButtonStateCallBack !== null &&
+        if (prevProps.registerCustomActionBtnStateCallback === null &&
+            this.props.registerCustomActionBtnStateCallback !== null &&
             this.state.executionStatus !== status.SUCCESS) {
             const self = this;
-            const nextButtonState = {
-                nextButtonText: "Execute",
-                showArrow: false,
-                nextButtonCallBack: self.nextButtonCallBack,
-                moveNext: false
+            const newBtnState = {
+                buttonText: "Execute",
+                buttonCallBack: self.customActionBtnCallback,
+                moveNext: false,
+                overrideFinish: true
             };
-            this.props.nextButtonStateCallBack(nextButtonState);
+            this.props.registerCustomActionBtnStateCallback(newBtnState);
+        }
+    }
+
+    componentWillMount() {
+        let newBtnState = {};
+        if (this.state.executionStatus !== status.SUCCESS) {
+            newBtnState = {
+                buttonText: "Execute",
+                buttonCallBack: this.customActionBtnCallback,
+                hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH]
+            };
+
+            this.props.registerCustomActionBtnStateCallback(newBtnState, this.props.stepIndex, this.props.subStepIndex);
         }
     }
 
@@ -71,6 +90,7 @@ class AnsiblePhasePreviewContainer extends Component {
                                  sections={sections}
                                  executionStarted={this.state.executionStarted}
                                  heSetupModel={this.state.heSetupModel}
+                                 isLastStep={this.props.stepIndex === (this.props.stepCount - 1)}
                                  phase={this.props.phase}
                                  restartCallBack={this.restartCallBack}
                                  terminationCallBack={this.terminationCallBack}/>
