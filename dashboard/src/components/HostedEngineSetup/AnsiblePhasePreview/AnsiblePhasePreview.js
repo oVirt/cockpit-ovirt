@@ -1,8 +1,8 @@
 import React from 'react'
 import AnsiblePhaseExecutionContainer from "../AnsiblePhaseExecution/AnsiblePhaseExecutionContainer";
 
-const AnsiblePhasePreview = ({abortCallBack, sections, executionStarted, heSetupModel, phase, restartCallBack,
-                                 terminationCallBack}) => {
+const AnsiblePhasePreview = ({abortCallBack, sections, executionStarted, heSetupModel, isLastStep, phase,
+                                 restartCallBack, terminationCallBack}) => {
 
     const outputRows = [];
 
@@ -25,6 +25,7 @@ const AnsiblePhasePreview = ({abortCallBack, sections, executionStarted, heSetup
     if (executionStarted) {
         return <AnsiblePhaseExecutionContainer abortCallBack={abortCallBack}
                                                heSetupModel={heSetupModel}
+                                               isLastStep={isLastStep}
                                                phase={phase}
                                                restartCallBack={restartCallBack}
                                                terminationCallBack={terminationCallBack}/>

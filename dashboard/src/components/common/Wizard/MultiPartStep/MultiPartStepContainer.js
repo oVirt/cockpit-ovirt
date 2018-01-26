@@ -11,12 +11,10 @@ class MultiPartStepContainer extends Component {
             activeSubStep: this.props.activeSubStep,
             stepIndex: this.props.stepIndex,
             steps: [],
-            validatingSubsteps: false,
-            nextButtonState: {}
+            validatingSubsteps: false
         };
 
         this.subStepValidationCallBack = this.subStepValidationCallBack.bind(this);
-        this.setNextButtonState = this.setNextButtonState.bind(this);
     }
 
     subStepValidationCallBack(isValid) {
@@ -31,13 +29,6 @@ class MultiPartStepContainer extends Component {
         this.setState(newState);
     }
 
-    setNextButtonState(buttonState) {
-        this.setState({nextButtonState: buttonState});
-        if (this.props.nextButtonStateCallBack !== null) {
-            this.props.nextButtonStateCallBack(buttonState);
-        }
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
         if (!this.props.validating && nextProps.validating) {
             this.props.validationCallBack(true);
@@ -47,18 +38,21 @@ class MultiPartStepContainer extends Component {
     }
 
     render() {
-        const that = this;
+        const self = this;
         const steps = [];
 
         this.props.children.forEach(function(step, index) {
-            const isActiveSubStep = index === that.props.activeSubStep;
+            const isActiveSubStep = index === self.props.activeSubStep;
 
             const subStep = React.cloneElement(step, {
-                activeStep: that.props.activeStep,
-                activeSubStep: that.props.activeSubStep,
-                validationCallBack: that.props.subStepValidationCallBack,
-                validating: that.props.validating && index === that.props.activeSubStep,
-                nextButtonStateCallBack: isActiveSubStep ? that.setNextButtonState : null
+                stepIndex: self.props.stepIndex,
+                subStepIndex: index,
+                activeStep: self.props.activeStep,
+                activeSubStep: self.props.activeSubStep,
+                stepCount: self.props.stepCount,
+                validationCallBack: self.props.subStepValidationCallBack,
+                validating: self.props.validating && index === self.props.activeSubStep,
+                registerCustomActionBtnStateCallback: self.props.registerCustomActionBtnStateCallback
             });
 
             const comp = classNames(
