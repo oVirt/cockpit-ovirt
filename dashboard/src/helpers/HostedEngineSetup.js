@@ -16,7 +16,7 @@ class RunSetup {
   start(outputCallback, exitCallback) {
     this._outputCallback = outputCallback
     this._exitCallback = exitCallback
-    var cmd = ['hosted-engine', '--deploy',
+    var cmd = ['hosted-engine', '--deploy', '--noansible',
                '--otopi-environment="DIALOG/dialect=str:machine"']
     if (this.answerFiles != null){
       this.answerFiles.forEach(function(file){
