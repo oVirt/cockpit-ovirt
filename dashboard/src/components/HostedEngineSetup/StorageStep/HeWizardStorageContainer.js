@@ -59,15 +59,7 @@ class HeWizardStorageContainer extends Component {
 
     handleStorageConfigUpdate(propName, value) {
         const storageConfig = this.state.storageConfig;
-
-        if (propName === "domainType" && value === "nfs") {
-            storageConfig.domainType.value = value + storageConfig.nfsVersion.value;
-        } else if (propName === "nfsVersion") {
-            storageConfig.domainType.value = "nfs" + value;
-            storageConfig.nfsVersion.value = value;
-        } else {
-            storageConfig[propName].value = value;
-        }
+        storageConfig[propName].value = value;
 
         if (propName === "storageDomainConnection") {
             const storageConn = value.split(":");
@@ -100,6 +92,7 @@ class HeWizardStorageContainer extends Component {
 
         model.setBooleanValues(nfsAnsFileFields, fieldProps, isNfs);
         model.setBooleanValues(requiredNfsFields, ["required"], isNfs);
+        model.model.storage.nfsVersion.showInReview = isNfs;
 
         model.setBooleanValues(iscsiAnsFileFields, fieldProps, isIscsi);
         model.setBooleanValues(requiredIscsiFields, ["required"], isIscsi);
@@ -108,6 +101,8 @@ class HeWizardStorageContainer extends Component {
         model.setBooleanValues(requiredGlusterFields, ["required"], isGluster);
 
         model.setBooleanValues(glusterAndNfsAnsFileFields, fieldProps, isNfs || isGluster);
+
+        this.setState({ model });
     }
 
     validateConfigUpdate(propName) {
