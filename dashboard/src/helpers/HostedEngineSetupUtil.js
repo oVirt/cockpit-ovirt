@@ -135,6 +135,18 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: false
                 },
+                nfsVersion: {
+                    name: "nfsVersion",
+                    ansibleVarName: "NFS_VERSION",
+                    ansiblePhasesUsed: [2,3],
+                    description: "NFS Version",
+                    value: "3",
+                    type: types.STRING,
+                    showInReview: true,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 imgSizeGB: {
                     name: "imgSizeGB",
                     ansibleVarName: "DISK_SIZE",
@@ -217,18 +229,6 @@ export class HeSetupModel {
                     showInReview: true,
                     uiStage: "Storage",
                     useInAnswerFile: true,
-                    required: false
-                },
-                nfsVersion: {
-                    name: "nfsVersion",
-                    ansibleVarName: "NFS_VERSION",
-                    ansiblePhasesUsed: [2,3],
-                    description: "NFS Version",
-                    value: "3",
-                    type: types.STRING,
-                    showInReview: false,
-                    uiStage: "Storage",
-                    useInAnswerFile: false,
                     required: false
                 },
                 iSCSIPortalUser: {
@@ -1088,6 +1088,8 @@ export class AnswerFileGenerator {
         this.model = heSetupModel;
         this.filePath = configValues.ANSWER_FILE_PATH;
         this.additionalLines = "";
+
+        this.checkValue = this.checkValue.bind(this);
     }
 
     appendLines(additionalLines) {
@@ -1105,15 +1107,26 @@ export class AnswerFileGenerator {
 
                 propNames.forEach(
                     function(propName) {
-                        let prop = section[propName];
+                        const prop = section[propName];
+                        const value = this.checkValue(propName, prop.value);
 
                         if (prop.useInAnswerFile) {
-                            configString += this.createLine(sectionName, propName, prop.value, prop.type);
+                            configString += this.createLine(sectionName, propName, value, prop.type);
                         }
                     }, this)
             }, this);
 
         return configString;
+    }
+
+    checkValue(propName, value) {
+        let retVal = value;
+
+        if (propName === "domainType" && value === "nfs") {
+            retVal = value + this.model.storage.nfsVersion.value;
+        }
+
+        return retVal;
     }
 
     createLine(sectionName, key, value, type) {
