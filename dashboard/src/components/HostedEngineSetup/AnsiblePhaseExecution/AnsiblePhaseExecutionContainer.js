@@ -18,16 +18,16 @@ class AnsiblePhaseExecutionContainer extends Component {
         this.restart = this.restart.bind(this);
         this.restartCallBack = this.restartCallBack.bind(this);
 
-        this.phaseExecutor = new AnsiblePhaseExecutor(this.props.abortCallBack, this.props.heSetupModel, this.props.phase);
+        this.phaseExecutor = new AnsiblePhaseExecutor(this.props.abortCallBack, this.props.heSetupModel);
     }
 
     componentWillMount() {
-        this.phaseExecutor.startSetup(this.parseOutput, this.processExit);
+        this.phaseExecutor.startSetup(this.props.phase, this.parseOutput, this.processExit);
     }
 
     restart() {
         this.resetState();
-        this.phaseExecutor.startSetup(this.parseOutput, this.processExit);
+        this.phaseExecutor.startSetup(this.props.phase, this.parseOutput, this.processExit);
     }
 
     restartCallBack() {

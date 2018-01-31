@@ -33,7 +33,7 @@ const OutputPanel = ({output, phaseExecutionStatus, reDeployCallback}) => {
     return (
         <div className="panel panel-default ansible-output-container">
             <div className="panel-heading">
-                <Status status={phaseExecutionStatus} reDeployCallback={reDeployCallback}/>
+                <Status phaseExecutionStatus={phaseExecutionStatus} reDeployCallback={reDeployCallback}/>
             </div>
             <div className="he-input viewport ansible-output-panel">
                 {outputDiv}
@@ -42,10 +42,10 @@ const OutputPanel = ({output, phaseExecutionStatus, reDeployCallback}) => {
     )
 };
 
-const Status = ({ status, reDeployCallback }) => {
+const Status = ({ phaseExecutionStatus, reDeployCallback }) => {
     let msg = "Deployment in progress";
     let statusIcon = <div className="spinner blank-slate-pf-icon deployment-status-spinner vertical-center"/>;
-    if (status === status.FAILURE) {
+    if (phaseExecutionStatus === status.FAILURE) {
         msg = "Deployment failed";
         statusIcon = <span className="pficon-error-circle-o deployment-failure-icon"/>;
     }
@@ -54,7 +54,7 @@ const Status = ({ status, reDeployCallback }) => {
             {statusIcon}
             <div className="vertical-center deployment-status-msg">{msg}</div>
             <div className="pull-right">
-                {status === status.FAILURE &&
+                {phaseExecutionStatus === status.FAILURE &&
                 <button className="btn btn-primary" onClick={reDeployCallback}>
                     <span className="pficon pficon-restart">&nbsp;</span>
                     Redeploy

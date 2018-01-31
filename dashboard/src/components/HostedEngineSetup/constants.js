@@ -1,7 +1,8 @@
 export const configValues = {
     ANSWER_FILE_PATH: "/tmp/he-setup-answerfile.conf",
     ANSIBLE_PLAYBOOK_PATH: "/usr/share/cockpit/ovirt-dashboard/hostedEngineAnsibleFiles/heSetup.yml",
-    APPLIANCE_PATH_PREFIX: "/usr/share/ovirt-engine-appliance/"
+    APPLIANCE_PATH_PREFIX: "/usr/share/ovirt-engine-appliance/",
+    ANSIBLE_VAR_FILE_PATH_PREFIX: "/var/lib/ovirt-hosted-engine-setup/cockpit/"
 };
 
 export const ansiblePhases = {
@@ -12,14 +13,6 @@ export const ansiblePhases = {
     FINAL_CLEAN: "FINAL_CLEAN",
     ISCSI_DISCOVER: "ISCSI_DISCOVER",
     ISCSI_GET_DEVICES: "ISCSI_GET_DEVICES"
-};
-
-export const ansibleVarFilePaths = {
-    BOOTSTRAP_VM: "/tmp/ansibleBootstrapVm.var",
-    CREATE_STORAGE: "/tmp/ansibleCreateStorage.var",
-    TARGET_VM: "/tmp/ansibleTargetVm.var",
-    ISCSI_DISCOVER: "/tmp/ansibleIscsiDiscover.var",
-    ISCSI_GET_DEVICES: "/tmp/ansibleIscsIGetDevices.var"
 };
 
 export const playbookPaths = {
