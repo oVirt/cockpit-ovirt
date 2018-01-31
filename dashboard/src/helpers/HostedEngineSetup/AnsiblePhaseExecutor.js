@@ -1,62 +1,112 @@
 import {
-    ansibleOutputTypes as outputTypes, ansiblePhases as phases, ansibleVarFilePaths,
+    ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues as configValue,
     deploymentStatus as status, playbookOutputPaths as outputPaths, playbookPaths
 } from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator"
 
 class AnsiblePhaseExecutor {
-    constructor(abortCallback, heSetupModel, phase) {
+    constructor(abortCallback, heSetupModel) {
         this._outputCallback = null;
         this._exitCallback = null;
         this._manual_close = false;
         this.abortCallback = abortCallback;
         this.heSetupModel = heSetupModel;
-        this.phase = phase;
         this.result = null;
+        this.varFileGenerator = new AnsibleVarFilesGenerator(this.heSetupModel);
+        this.varFilePaths = [];
 
-        this.generateVarFiles = this.generateVarFiles.bind(this);
         this.startSetup = this.startSetup.bind(this);
-        this.runInitialClean = this.runInitialClean.bind(this);
-        this.runFinalClean = this.runFinalClean.bind(this);
+        this.deleteVarFiles = this.deleteVarFiles.bind(this);
+        this.deleteFile = this.deleteFile.bind(this);
+        this.performSetupJobs = this.performSetupJobs.bind(this);
+        this.createVarFileDir = this.createVarFileDir.bind(this);
         this.readOutputFile = this.readOutputFile.bind(this);
         this.parseOutput = this.parseOutput.bind(this);
         this.processResult = this.processResult.bind(this);
+        this.close = this.close.bind(this);
+        this.handleOutput = this.handleOutput.bind(this);
     }
 
-    startSetup(outputCallback, exitCallback) {
+    startSetup(phase, outputCallback, exitCallback) {
         this._outputCallback = outputCallback;
         this._exitCallback = exitCallback;
 
         const self = this;
-        const cmd  = this.getPlaybookCommand();
 
-        switch(this.phase) {
+        switch(phase) {
             case phases.BOOTSTRAP_VM:
-                this.generateVarFiles()
-                    .then(() => self.deleteOutputFiles([outputPaths.INITIAL_CLEAN, outputPaths.BOOTSTRAP_VM]))
-                    .then(() => self.runInitialClean())
-                    .then(() => self.executePlaybook(cmd))
-                    .then((options) => self._exitCallback(options["exit-status"]))
-                    .catch((options, denied) => self._exitCallback(options["exit-status"], denied));
+                this.performSetupJobs([outputPaths.INITIAL_CLEAN, outputPaths.BOOTSTRAP_VM])
+                    .then(() => self.varFileGenerator.writeVarFileForPhase(phases.INITIAL_CLEAN))
+                    .then(varFilePath => self.executePlaybook(phases.INITIAL_CLEAN, varFilePath))
+                    .then(() => self.varFileGenerator.writeVarFileForPhase(phases.BOOTSTRAP_VM))
+                    .then(varFilePath => self.executePlaybook(phase, varFilePath))
+                    .then(options => self._exitCallback(options["exit-status"]))
+                    .then(() => self.deleteVarFiles())
+                    .catch((options, denied) => {
+                        self.deleteVarFiles();
+                        self._exitCallback(options["exit-status"], denied);
+                    });
                 break;
             case phases.TARGET_VM:
-                this.generateVarFiles()
-                    .then(() => self.deleteOutputFiles([outputPaths.FINAL_CLEAN, outputPaths.TARGET_VM]))
-                    .then(() => self.executePlaybook(cmd))
-                    .then(() => self.runFinalClean())
-                    .then((options) => self._exitCallback(options["exit-status"]))
-                    .catch((options, denied) => self._exitCallback(options["exit-status"], denied));
+                self.performSetupJobs([outputPaths.FINAL_CLEAN, outputPaths.TARGET_VM])
+                    .then(() => self.varFileGenerator.writeVarFileForPhase(phases.TARGET_VM))
+                    .then(varFilePath => self.executePlaybook(phase, varFilePath))
+                    .then(() => self.varFileGenerator.writeVarFileForPhase(phases.FINAL_CLEAN))
+                    .then(varFilePath => self.executePlaybook(phases.FINAL_CLEAN, varFilePath))
+                    .then(options => self._exitCallback(options["exit-status"]))
+                    .then(() => self.deleteVarFiles())
+                    .catch((options, denied) => {
+                        self.deleteVarFiles();
+                        self._exitCallback(options["exit-status"], denied);
+                    });
                 break;
             default:
-                this.generateVarFiles()
-                    .then(() => self.deleteOutputFiles([outputPaths[this.phase]]))
-                    .then(() => self.executePlaybook(cmd))
-                    .then((options) => self._exitCallback(options["exit-status"]))
-                    .catch((options, denied) => self._exitCallback(options["exit-status"], denied));
+                self.performSetupJobs([outputPaths[phase]])
+                    .then(() => self.varFileGenerator.writeVarFileForPhase(phase))
+                    .then(varFilePath => self.executePlaybook(phase, varFilePath))
+                    .then(options => self._exitCallback(options["exit-status"]))
+                    .then(() => self.deleteVarFiles())
+                    .catch((options, denied) => {
+                        self.deleteVarFiles();
+                        self._exitCallback(options["exit-status"], denied);
+                    });
         }
     }
 
-    deleteOutputFiles(paths) {
+    deleteVarFiles() {
+        const proms = [];
+
+        const self = this;
+        this.varFilePaths.forEach(function(filePath) {
+            proms.push(self.deleteFile(filePath));
+        });
+
+        this.varFilePaths = [];
+        return Promise.all(proms);
+    }
+
+    deleteFile(filePath) {
+        return new Promise((resolve, reject) => {
+            cockpit.spawn(["rm", "-f", filePath], { "superuser": "require" })
+                .done(function() {
+                    console.log("File " + filePath + " deleted.");
+                    resolve();
+                })
+                .fail(function(error) {
+                    console.log("Problem deleting " + filePath + ". Error: " + error);
+                    reject(error);
+                })
+        });
+    }
+
+    performSetupJobs(paths) {
+        const promises = [];
+        promises.concat(this.clearOutputFiles(paths));
+        promises.push(this.createVarFileDir());
+        return Promise.all(promises);
+    }
+
+    clearOutputFiles(paths) {
         let promises = [];
 
         paths.forEach(function(filePath) {
@@ -75,109 +125,33 @@ class AnsiblePhaseExecutor {
             );
         });
 
-        return Promise.all(promises);
+        return promises;
     }
 
-    runInitialClean() {
+    createVarFileDir() {
         return new Promise((resolve, reject) => {
-            const cmd = "ansible-playbook -e @" + ansibleVarFilePaths.BOOTSTRAP_VM + " " +
-                "/usr/share/ovirt-hosted-engine-setup/ansible/initial_clean.yml " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
-
-            const env = [
-                "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
-                "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=" + outputPaths[phases.INITIAL_CLEAN]
-            ];
-
-            this.channel = cockpit.channel({
-                "payload": "stream",
-                "environ": [
-                    "TERM=xterm-256color",
-                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
-                ].concat(env),
-                "spawn": cmd.split(" "),
-                "pty": true,
-                "err": "out",
-                "superuser": "require",
-            });
-
-            const self = this;
-            $(this.channel).on("close", function(ev, options) {
-                let denied = false;
-                if (!self._manual_close) {
-                    if (options["problem"] === "access-denied") {
-                        denied = true;
-                        reject(options, denied);
-                    } else if (options["exit-status"] === 0) {
-                        console.log("Execution of " + playbookPaths[phases.INITIAL_CLEAN] + " completed successfully.");
-                        resolve();
-                    } else {
-                        console.log("Execution of " + playbookPaths[phases.INITIAL_CLEAN] + " failed to complete.");
-                        reject(options, denied);
-                    }
-                }
-            });
-
-            $(this.channel).on("ready", $.proxy(this.readOutputFile, this, outputPaths[phases.INITIAL_CLEAN]));
-        })
+            cockpit.spawn(["mkdir", "-p", configValue.ANSIBLE_VAR_FILE_PATH_PREFIX], { "superuser": "require" })
+                .done(function() {
+                    console.log("Var file directory created successfully.");
+                    resolve();
+                })
+                .fail(function(error) {
+                    console.log("There was an error while creating the var file directory. Error: " + error);
+                    reject(error);
+                })
+        });
     }
 
-    runFinalClean() {
-        return new Promise((resolve, reject) => {
-            const cmd = "ansible-playbook -e @" + ansibleVarFilePaths.BOOTSTRAP_VM + " " +
-                "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
-
-            const env = [
-                "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
-                "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=" + outputPaths[phases.FINAL_CLEAN]
-            ];
-
-            this.channel = cockpit.channel({
-                "payload": "stream",
-                "environ": [
-                    "TERM=xterm-256color",
-                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
-                ].concat(env),
-                "spawn": cmd.split(" "),
-                "pty": true,
-                "err": "out",
-                "superuser": "require",
-            });
-
-            const self = this;
-            $(this.channel).on("close", function(ev, options) {
-                let denied = false;
-                if (!self._manual_close) {
-                    if (options["problem"] === "access-denied") {
-                        denied = true;
-                        reject(options, denied);
-                    } else if (options["exit-status"] === 0) {
-                        console.log("Execution of " + playbookPaths[phases.FINAL_CLEAN] + " completed successfully.");
-                        resolve();
-                    } else {
-                        console.log("Execution of " + playbookPaths[phases.FINAL_CLEAN] + " failed to complete.");
-                        reject(options, denied);
-                    }
-                }
-            });
-
-            $(this.channel).on("ready", $.proxy(this.readOutputFile, this, outputPaths[phases.FINAL_CLEAN]));
-        })
-    }
-
-    getPlaybookCommand() {
-        const varFileParam = "@" + ansibleVarFilePaths[this.phase];
-        const playbookParam = playbookPaths[this.phase];
+    getPlaybookCommand(phase, varFilePath) {
+        const varFileParam = "@" + varFilePath;
+        const playbookParam = playbookPaths[phase];
 
         let cmd = ['ansible-playbook', '-e', varFileParam, playbookParam,
             '--module-path=/usr/share/ovirt-hosted-engine-setup/ansible',
             '--inventory=localhost'];
 
         let inv = '--inventory=localhost';
-        if (this.phase === phases.BOOTSTRAP_VM) {
+        if (phase === phases.BOOTSTRAP_VM) {
             inv += ',' + this.heSetupModel.network.fqdn.value;
         }
 
@@ -185,12 +159,14 @@ class AnsiblePhaseExecutor {
         return cmd;
     }
 
-    executePlaybook(cmd) {
+    executePlaybook(phase, varFilePath) {
+        this.varFilePaths.push(varFilePath);
         return new Promise((resolve, reject) => {
+            const cmd = this.getPlaybookCommand(phase, varFilePath);
             const env = [
                 "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=" + outputPaths[this.phase]
+                "OTOPI_CALLBACK_OF=" + outputPaths[phase]
             ];
 
             this.channel = cockpit.channel({
@@ -207,34 +183,36 @@ class AnsiblePhaseExecutor {
 
             const self = this;
             $(this.channel).on("close", function (ev, options) {
-                let denied = false;
+                let accessDenied = options["problem"] === "access-denied";
                 if (!self._manual_close) {
-                    if (options["problem"] === "access-denied") {
-                        denied = true;
-                        reject(options, denied);
+                    if (accessDenied) {
+                        reject(options, accessDenied);
                     } else if (options["exit-status"] === 0) {
-                        console.log("Execution of " + playbookPaths[self.phase] + " completed successfully.");
-                        resolve();
+                        console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
+                        resolve({options: options, varFilePath: varFilePath});
                     } else {
-                        console.log("Execution of " + playbookPaths[self.phase] + " failed to complete.");
-                        reject(options, denied);
+                        console.log("Execution of " + playbookPaths[phase] + " failed to complete.");
+                        reject(options, accessDenied);
                     }
+                } else if (options["exit-status"] === 0) {
+                    console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
+                    self.processResult();
+                    resolve({options: options, varFilePath: varFilePath});
+                } else {
+                    console.log("hosted-engine-setup exited");
+                    console.log(ev);
+                    console.log(options);
+                    reject(options, options["problem"] === "access-denied");
                 }
-                self.processResult();
-                console.log("hosted-engine-setup exited");
-                console.log(ev);
-                console.log(options);
             });
 
-            $(this.channel).on("ready", $.proxy(this.readOutputFile, this, outputPaths[this.phase]));
+            $(this.channel).on("ready", $.proxy(this.readOutputFile, this, outputPaths[phase]));
         });
     }
 
     readOutputFile(path) {
-        console.log("Path: " + path);
         return new Promise((resolve, reject) => {
             const cmd = "tail -f " + path;
-            console.log("cmd: " + cmd);
 
             this.channel = cockpit.channel({
                 "payload": "stream",
@@ -320,14 +298,9 @@ class AnsiblePhaseExecutor {
         }
     }
 
-    generateVarFiles() {
-        const varFileGenerator = new AnsibleVarFilesGenerator(this.heSetupModel);
-        return varFileGenerator.writeVarFiles();
-    }
-
     close() {
         console.log("Closing ovirt-hosted-engine-setup");
-        this.manual_close = true;
+        this._manual_close = true;
         if (this.channel.valid) {
             this.channel.close()
         }
