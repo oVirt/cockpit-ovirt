@@ -85,6 +85,9 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Wed Jan 31 2018 Ryan Barry <rbarry@redhat.com> - 0.11.7-0.1
+- Correct the domain type for vintage deployments
+
 * Fri Jan 26 2018 Ryan Barry <rbarry@redhat.com> - 0.11.6-0.1
 - Continue using otopi flow in the HE wizard for now
 
