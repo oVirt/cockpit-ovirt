@@ -85,6 +85,9 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Thu Feb 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.9-0.1
+- Hide iSCSI target discovery for the iSCSI flow
+
 * Thu Feb 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.8-0.1
 - Move the default to otopi deployment
 
