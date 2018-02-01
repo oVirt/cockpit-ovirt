@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import HeSetup from './HeSetup'
+import { AnswerFileGenerator } from '../../../helpers/HostedEngineSetupUtil'
+import RunSetup from '../../../helpers/HostedEngineSetup'
 
 class HeSetupContainer extends Component {
     constructor(props) {
@@ -13,11 +15,15 @@ class HeSetupContainer extends Component {
             success: false
         };
 
+        this.setup = null;
+
         this.resetState = this.resetState.bind(this);
         this.processExit = this.processExit.bind(this);
         this.parseOutput = this.parseOutput.bind(this);
         this.passInput = this.passInput.bind(this);
         this.restart = this.restart.bind(this);
+        this.getSetup = this.getSetup.bind(this);
+        this.startSetup = this.startSetup.bind(this);
     }
 
     resetState() {
@@ -43,17 +49,36 @@ class HeSetupContainer extends Component {
 
     restart() {
         this.resetState();
-        this.props.setupCallback();
-        this.setState({setup: this.props.setup.start(this.parseOutput,
-            this.processExit)
-        })
+        this.startSetup();
+        this.setState({ setup: this.setup.start(this.parseOutput, this.processExit) });
+    }
+
+    getSetup(answerFilePath) {
+        let answerFiles = [];
+
+        if (typeof this.props.gDeployAnswerFilePaths !== 'undefined') {
+            answerFiles = this.props.gDeployAnswerFilePaths.slice();
+        }
+
+        answerFiles.push(answerFilePath);
+        return new RunSetup(this.props.abortCallback, answerFiles);
+    }
+
+    startSetup() {
+        const fileGenerator = new AnswerFileGenerator(this.props.heSetupModel);
+        const self = this;
+        fileGenerator.writeConfigToFile()
+            .then(filePath => {
+                self.setup = self.getSetup(filePath)
+            });
     }
 
     componentWillMount() {
         this.resetState();
-        this.setState({setup: this.props.setup.start(this.parseOutput,
-            this.processExit)
-        })
+        this.startSetup();
+        // this.setState({setup: this.props.setup.start(this.parseOutput,
+        //     this.processExit)
+        // })
     }
 
     componentDidMount() {

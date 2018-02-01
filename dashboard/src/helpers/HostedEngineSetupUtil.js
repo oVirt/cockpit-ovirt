@@ -1107,7 +1107,6 @@ export class HeSetupModel {
 export class AnswerFileGenerator {
     constructor(heSetupModel) {
         this.model = heSetupModel;
-        this.filePath = configValues.ANSWER_FILE_PATH;
         this.additionalLines = "";
 
         this.checkValue = this.checkValue.bind(this);
@@ -1172,22 +1171,28 @@ export class AnswerFileGenerator {
     }
 
     writeConfigToFile() {
-        const file = cockpit.file(this.filePath);
+        const filePath = configValues.ANSWER_FILE_PATH_PREFIX + "heAnswerFile" + generateRandomString() + ".conf";
+        console.log(filePath);
+        const file = cockpit.file(filePath);
         let configString = this.generateConfigFile();
         this.additionalLines = this.additionalLines.replace("[environment:default]\n", "");
         configString += this.additionalLines;
 
-        const that = this;
-        return file.replace(configString)
-            .done(function() {
-                console.log("Answer file successfully written to " + that.filePath);
-            })
-            .fail(function(error) {
-                console.log("Problem writing answer file. " + error);
-            })
-            .always(function() {
-                file.close()
-            })
+
+        return new Promise((resolve, reject) => {
+            file.replace(configString)
+                .done(function() {
+                    console.log("Answer file successfully written to " + filePath);
+                    resolve(filePath);
+                })
+                .fail(function(error) {
+                    console.log("Problem writing answer file. Error: " + error);
+                    reject(error);
+                })
+                .always(function() {
+                    file.close()
+                })
+        })
     }
 }
 
@@ -1255,4 +1260,16 @@ export function getTaskData(ansibleData, taskName) {
     });
 
     return data;
+}
+
+export function generateRandomString() {
+    let str = "";
+    const strLength = 6;
+    const possChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    for(let i = 0; i < strLength; i++) {
+        str += possChars.charAt(Math.floor(Math.random() * possChars.length));
+    }
+
+    return str;
 }
