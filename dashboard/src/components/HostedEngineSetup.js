@@ -15,7 +15,7 @@ class HostedEngineSetup extends Component {
     this.state = {
       cancelled: false,
       deploymentOption: deploymentOption.REGULAR,
-      deploymentType: deploymentTypes.ANSIBLE_DEPLOYMENT,
+      deploymentType: deploymentTypes.OTOPI_DEPLOYMENT,
       state: heSetupState.POLLING,
       gdeployAvailable: false,
       gdeployFilesFound: false,
@@ -158,8 +158,8 @@ const Curtains = ({callback, cancelled, deploymentOption, deploymentType, deploy
     "Gluster volume will be provisioned using gdeploy and hosted engine will be deployed on gluster" :
     "Gdeploy utility is not installed. Install gdeploy to enable gluster deployment";
   const deploymentTypeOptions = [
-      { key: deploymentTypes.ANSIBLE_DEPLOYMENT, title: "Ansible-based Deployment (Recommended)" },
-      { key: deploymentTypes.OTOPI_DEPLOYMENT, title: "Vintage (OTOPI-based) Deployment" }
+      { key: deploymentTypes.ANSIBLE_DEPLOYMENT, title: "Ansible-based Deployment (Preview)" },
+      { key: deploymentTypes.OTOPI_DEPLOYMENT, title: "OTOPI-based Deployment (Recommended)" }
   ];
   return (
     <div className="curtains curtains-ct blank-slate-pf">
