@@ -85,6 +85,9 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Thu Feb 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.8-0.1
+- Move the default to otopi deployment
+
 * Wed Jan 31 2018 Ryan Barry <rbarry@redhat.com> - 0.11.7-0.1
 - Correct the domain type for vintage deployments
 
