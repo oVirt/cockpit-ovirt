@@ -23,6 +23,8 @@ class RunSetup {
         cmd.push(`--config-append=${file}`)
       })
     }
+
+    console.log(cmd);
     this.channel = cockpit.channel({
       "payload": "stream",
       "environ": [

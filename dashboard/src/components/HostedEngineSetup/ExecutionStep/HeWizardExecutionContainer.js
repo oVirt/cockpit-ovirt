@@ -12,43 +12,45 @@ class HeWizardExecutionContainer extends Component {
             heSetupStatus: deploymentStatus.RUNNING
         };
 
-        this.setup = this.getSetup();
+        // this.setup = this.getSetup();
 
-        this.getSetup = this.getSetup.bind(this);
-        this.startSetup = this.startSetup.bind(this);
+        // this.getSetup = this.getSetup.bind(this);
+        // this.startSetup = this.startSetup.bind(this);
     }
 
-    componentWillMount() {
-        this.startSetup();
-    }
+    // componentWillMount() {
+    //     this.startSetup();
+    // }
 
-    getSetup() {
-        let answerFiles = [];
-
-        if (typeof this.props.gDeployAnswerFilePaths !== 'undefined') {
-            answerFiles = this.props.gDeployAnswerFilePaths.slice();
-        }
-
-        answerFiles.push(configValues.ANSWER_FILE_PATH);
-        return new RunSetup(this.props.abortCallback, answerFiles);
-    }
-
-    startSetup() {
-        const fileGenerator = new AnswerFileGenerator(this.props.heSetupModel);
-        const self = this;
-        const prom = fileGenerator.writeConfigToFile();
-
-        prom.done(function() {
-            self.setup = self.getSetup();
-        });
-    }
+    // getSetup(answerFilePath) {
+    //     let answerFiles = [];
+    //
+    //     if (typeof this.props.gDeployAnswerFilePaths !== 'undefined') {
+    //         answerFiles = this.props.gDeployAnswerFilePaths.slice();
+    //     }
+    //
+    //     answerFiles.push(answerFilePath);
+    //     return new RunSetup(this.props.abortCallback, answerFiles);
+    // }
+    //
+    // startSetup() {
+    //     const fileGenerator = new AnswerFileGenerator(this.props.heSetupModel);
+    //     const self = this;
+    //     fileGenerator.writeConfigToFile()
+    //         .then(filePath => {
+    //             self.setup = self.getSetup(filePath)
+    //         });
+    // }
 
     render() {
         return (
             <HeWizardExecution
                 heSetupStatus={this.state.heSetupStatus}
-                setup={this.setup}
-                startSetup={this.startSetup}/>
+                gDeployAnswerFilePaths={this.props.gDeployAnswerFilePaths}
+                heSetupModel={this.props.heSetupModel}
+                abortCallback={this.props.abortCallback} />
+                // setup={this.setup}
+                // startSetup={this.startSetup}/>
         )
 
     }
