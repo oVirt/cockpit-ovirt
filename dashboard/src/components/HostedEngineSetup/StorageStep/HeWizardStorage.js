@@ -241,44 +241,52 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                         </span>
                     }
 
-                    <div className="form-group">
-                        <span className="col-md-offset-3 col-md-6">
-                            <button type="button"
-                                    className={targetRetrievalBtnClasses}
-                                    onClick={handleIscsiTargetRequest}>
-                                Retrieve Target List
-                            </button>
+                    {deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT &&
+                        <span>
+                            <div className="form-group">
+                                <span className="col-md-offset-3 col-md-6">
+                                    <button type="button"
+                                            className={targetRetrievalBtnClasses}
+                                            onClick={handleIscsiTargetRequest}>
+                                        Retrieve Target List
+                                    </button>
+                                </span>
+                            </div>
+
+                            {targetRetrievalStatus === status.POLLING &&
+                                <div className="form-group" style={{marginTop: "20px"}}>
+                                    <div className="col-md-9 horizontal-center">
+                                        <div className="spinner blank-slate-pf-icon storage-retrieval-spinner vertical-center"/>
+                                        <div className="vertical-center storage-retrieval-msg">
+                                            Retrieving iSCSI Targets
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            {iscsiTargetData !== null &&
+                                <TargetListContainer targetList={iscsiTargetData}
+                                                     handleTargetSelection={handleTargetSelection}
+                                                     selectedTarget={selectedIscsiTarget} />
+                            }
+
+                            {lunRetrievalStatus === status.POLLING &&
+                                <div className="form-group" style={{marginTop: "20px"}}>
+                                    <div className="col-md-9 horizontal-center">
+                                        <div className="spinner blank-slate-pf-icon storage-retrieval-spinner vertical-center"/>
+                                        <div className="vertical-center storage-retrieval-msg">
+                                            Retrieving LUNs
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            {iscsiLunData !== null &&
+                                <LunListContainer lunList={iscsiLunData}
+                                                  handleLunSelection={handleLunSelection}
+                                                  selectedLun={selectedLun} />
+                            }
                         </span>
-                    </div>
-
-                    {targetRetrievalStatus === status.POLLING &&
-                        <div className="form-group" style={{ marginTop: "20px"}}>
-                            <div className="col-md-9 horizontal-center">
-                                <div className="spinner blank-slate-pf-icon storage-retrieval-spinner vertical-center"/>
-                                <div className="vertical-center storage-retrieval-msg">Retrieving iSCSI Targets</div>
-                            </div>
-                        </div>
-                    }
-
-                    {iscsiTargetData !== null &&
-                        <TargetListContainer targetList={iscsiTargetData}
-                                             handleTargetSelection={handleTargetSelection}
-                                             selectedTarget={selectedIscsiTarget} />
-                    }
-
-                    {lunRetrievalStatus === status.POLLING &&
-                        <div className="form-group" style={{ marginTop: "20px"}}>
-                            <div className="col-md-9 horizontal-center">
-                                <div className="spinner blank-slate-pf-icon storage-retrieval-spinner vertical-center"/>
-                                <div className="vertical-center storage-retrieval-msg">Retrieving LUNs</div>
-                            </div>
-                        </div>
-                    }
-
-                    {iscsiLunData !== null &&
-                        <LunListContainer lunList={iscsiLunData}
-                                          handleLunSelection={handleLunSelection}
-                                          selectedLun={selectedLun} />
                     }
                 </div>
 
