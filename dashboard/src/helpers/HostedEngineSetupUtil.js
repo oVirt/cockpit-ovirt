@@ -1108,7 +1108,7 @@ export class AnswerFileGenerator {
                 propNames.forEach(
                     function(propName) {
                         const prop = section[propName];
-                        const value = this.checkValue(propName, prop.value);
+                        const value = this.checkValue(prop);
 
                         if (prop.useInAnswerFile) {
                             configString += this.createLine(sectionName, propName, value, prop.type);
@@ -1119,11 +1119,15 @@ export class AnswerFileGenerator {
         return configString;
     }
 
-    checkValue(propName, value) {
-        let retVal = value;
+    checkValue(prop) {
+        let retVal = prop.value;
 
-        if (propName === "domainType" && value === "nfs") {
-            retVal = value + this.model.storage.nfsVersion.value;
+        if (prop.name === "domainType" && prop.value === "nfs") {
+            retVal = prop.value + this.model.storage.nfsVersion.value;
+        }
+
+        if (prop.type === types.STRING && prop.value === "") {
+            retVal = "None";
         }
 
         return retVal;
@@ -1134,7 +1138,13 @@ export class AnswerFileGenerator {
 
         line += answerFilePrefixes[sectionName.toUpperCase()];
         line += key + "=";
-        line += type + ":";
+
+        if (value === "None") {
+            line += types.NONE + ":";
+        } else {
+            line += type + ":";
+        }
+
         line += value + "\n";
 
         return line;
