@@ -85,6 +85,9 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Mon Feb 05 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.11-0.1
+- wizard: Replace empty strings with none:None
+
 * Fri Feb 02 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.10-0.1
 - iscsi: pass None on empty values
 
