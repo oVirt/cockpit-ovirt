@@ -152,12 +152,13 @@ export class HeSetupModel {
                     ansibleVarName: "DISK_SIZE",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "Disk Size (GB)",
-                    value: "50",
+                    value: resourceConstants.VM_DISK_MIN_GB,
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "VM",
                     useInAnswerFile: true,
-                    required: true
+                    required: true,
+                    range: {min: resourceConstants.VM_DISK_MIN_MB, max: 4096}
                 },
                 storagePath: {
                     name: "storagePath",
