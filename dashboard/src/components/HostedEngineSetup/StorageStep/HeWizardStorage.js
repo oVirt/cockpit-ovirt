@@ -61,6 +61,8 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                     <label className="col-md-3 control-label">Disk Size (GB)</label>
                     <div className="col-md-6 he-text-with-units">
                         <input type="number" style={{width: "60px"}}
+                               min={storageConfig.imgSizeGB.range.min}
+                               max={storageConfig.imgSizeGB.range.max}
                                placeholder="Disk Size"
                                title="Enter the disk size for the VM."
                                className="form-control"

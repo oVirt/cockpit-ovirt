@@ -91,6 +91,7 @@ export const resourceConstants = {
     VDSM_VM_OVERHEAD_MB: 64,
     VM_MEM_MIN_MB: 2048,
     VM_MEM_MIN_RECOMMENDED_MB: 16348
+    VM_DISK_MIN_GB: 58
 };
 
 export const messages = {
