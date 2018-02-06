@@ -143,8 +143,8 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                         <input type="number"
                                min={vmConfig.vmMemSizeMB.range.min}
                                max={vmConfig.vmMemSizeMB.range.max}
-                               placeholder="Disk Size"
-                               title="Enter the disk size for the VM."
+                               placeholder="Allocated memory"
+                               title="Enter the allocated memory for the VM."
                                className="form-control he-mem-input"
                                value={vmConfig.vmMemSizeMB.value}
                                onChange={(e) => handleVmConfigUpdate("vmMemSizeMB", e.target.value, "vm")}
