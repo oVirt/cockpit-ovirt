@@ -111,6 +111,8 @@ class HeWizardVmContainer extends Component {
         const defaultsProvider = this.props.defaultsProvider;
         const heSetupModel = this.state.heSetupModel;
 
+        heSetupModel.vm.vmVCpus.value = defaultsProvider.getMaxVCpus() > 4 ?
+            4 : defaultsProvider.getMaxVCpus() ;
         heSetupModel.vm.vmVCpus.range.max = defaultsProvider.getMaxVCpus();
         heSetupModel.vm.vmMemSizeMB.range.max = defaultsProvider.getMaxMemAvailable();
 
