@@ -226,20 +226,6 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                                     }
                                 </div>
                             </div>
-
-                            <div className={getClassNames("LunID", errorMsgs)}>
-                                <label className="col-md-3 control-label">Destination LUN</label>
-                                <div className="col-md-6">
-                                    <input type="text" style={{width: "250px"}}
-                                           title="Enter the iSCSI target name."
-                                           className="form-control"
-                                           value={storageConfig.LunID.value}
-                                           onChange={(e) => handleStorageConfigUpdate("LunID", e.target.value)} />
-                                    {errorMsgs.LunID &&
-                                        <span className="help-block">{errorMsgs.LunID}</span>
-                                    }
-                                </div>
-                            </div>
                         </span>
                     }
 
