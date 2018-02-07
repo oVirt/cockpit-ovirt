@@ -19,6 +19,7 @@ class HeSetupWizardContainer extends Component {
         this.virtSupported = false;
         this.systemDataRetrieved = false;
         this.sufficientMemAvail = false;
+        this.libvirtRunning = false;
         this.defaultsProvider = null;
 
         this.handleFinish = this.handleFinish.bind(this);
@@ -34,10 +35,11 @@ class HeSetupWizardContainer extends Component {
 
     init(initSuccessful) {
         this.systemDataRetrieved = initSuccessful;
+        this.libvirtRunning = this.defaultsProvider.libvirtRunning();
         this.virtSupported = this.defaultsProvider.virtSupported();
         this.sufficientMemAvail = this.defaultsProvider.sufficientMemAvail();
 
-        const loadingSuccessful = this.systemDataRetrieved && this.virtSupported && this.sufficientMemAvail;
+        const loadingSuccessful = this.systemDataRetrieved && this.libvirtRunning &&this.virtSupported && this.sufficientMemAvail;
         const loadingStatus = loadingSuccessful ? status.SUCCESS : status.FAILURE;
 
         let systemData = null;
@@ -92,6 +94,7 @@ class HeSetupWizardContainer extends Component {
                 onStepChange={this.onStepChange}
                 setup={this.props.setup}
                 systemData={this.state.systemData}
+                libvirtRunning={this.libvirtRunning}
                 virtSupported={this.virtSupported}
                 systemDataRetrieved={this.systemDataRetrieved}
                 sufficientMemAvail={this.sufficientMemAvail}
