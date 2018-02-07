@@ -10,7 +10,7 @@ import MultiPartStepContainer from '../../common/Wizard/MultiPartStep/MultiPartS
 import AnsiblePhasePreviewContainer from "../AnsiblePhasePreview/AnsiblePhasePreviewContainer";
 
 const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
-                           loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, virtSupported,
+                           loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, libvirtRunning, virtSupported,
                            systemDataRetrieved, gDeployAnswerFilePaths}) => {
     return (
         <div>
@@ -132,6 +132,14 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleF
                             <div className="alert alert-danger he-error-msg">
                                 <span className="pficon pficon-error-circle-o" />
                                 <strong>{ messages.INSUFFICIENT_MEM_AVAIL }</strong>
+                            </div>
+                        </div>
+                    }
+                    {!libvirtRunning &&
+                        <div className="container">
+                            <div className="alert alert-danger he-error-msg">
+                                <span className="pficon pficon-error-circle-o" />
+                                <strong>{ messages.LIBVIRT_NOT_RUNNING }</strong>
                             </div>
                         </div>
                     }

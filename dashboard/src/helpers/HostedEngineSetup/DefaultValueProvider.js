@@ -16,6 +16,7 @@ export class DefaultValueProvider {
         this.getMaxVCpus = this.getMaxVCpus.bind(this);
         this.getApplianceFiles = this.getApplianceFiles.bind(this);
         this.cleanData = this.cleanData.bind(this);
+        this.libvirtRunning = this.libvirtRunning.bind(this);
         this.virtSupported = this.virtSupported.bind(this);
         this.getTimeZone = this.getTimeZone.bind(this);
         this.getNetworkInterfaces = this.getNetworkInterfaces.bind(this);
@@ -144,6 +145,10 @@ export class DefaultValueProvider {
         }
 
         return appliances;
+    }
+
+    libvirtRunning() {
+        return this.getTaskData("Get CPU vendor")["stderr"] === "";
     }
 
     virtSupported() {

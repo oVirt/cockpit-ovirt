@@ -10,6 +10,12 @@
     ignore_errors: true
   - debug: msg={{ appliance_name.stdout_lines | to_json }}
 
+  - name: Start libvirt
+    service: name=libvirtd state=started
+    tags:
+      - restart_services
+    ignore_errors: true
+
   - name: Get CPU model
     shell: virsh -r capabilities | grep -m 1 "<model>"
     register: cpu_model
