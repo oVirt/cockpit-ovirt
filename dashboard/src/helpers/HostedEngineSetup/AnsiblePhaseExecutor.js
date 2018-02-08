@@ -14,6 +14,7 @@ class AnsiblePhaseExecutor {
         this.result = null;
         this.varFileGenerator = new AnsibleVarFilesGenerator(this.heSetupModel);
         this.varFilePaths = [];
+        this.seenOutputLines = []
 
         this.startSetup = this.startSetup.bind(this);
         this.deleteVarFiles = this.deleteVarFiles.bind(this);
@@ -212,40 +213,28 @@ class AnsiblePhaseExecutor {
 
     readOutputFile(path) {
         return new Promise((resolve, reject) => {
-            const cmd = "tail -f " + path;
+            let path = "/tmp/out.json";
+            const self = this
 
-            this.channel = cockpit.channel({
-                "payload": "stream",
-                "environ": [
-                    "TERM=xterm-256color",
-                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
-                ],
-                "spawn": cmd.split(" "),
-                "pty": true,
-                "err": "out",
-                "superuser": "require",
-            });
-
-            const self = this;
-            $(this.channel).on("close", function(ev, options) {
-                if (!self._manual_close) {
-                    if (options["exit-status"] === 0) {
-                        console.log("Read of " + path + " completed successfully.");
-                        resolve();
-                    } else {
-                        console.log(options);
-                        reject("Read of " + path + " failed to complete.");
+            const f = cockpit.file(path).watch(function(content, tag) {
+                if (!content) {
+                    return
+                }
+                let lines = content.trim().split(/\n/)
+                let payload = []
+                for (let i = 0; i < lines.length; i++) {
+                    if (self.seenOutputLines.indexOf(lines[i]) == -1) {
+                        self.seenOutputLines.push(lines[i])
+                        payload.push(lines[i])
                     }
                 }
-            });
-
-            $(this.channel).on("message", $.proxy(this.parseOutput, this));
+                self.parseOutput(payload)
+            })
         })
     }
 
-    parseOutput(ev, payload) {
+    parseOutput(payload) {
         const returnValue = { info: [], warnings: [], errors: [], debug: [], results: [], lines: [] };
-        payload = payload.trim().split(/\n/);
         const self = this;
 
         payload.forEach(function(line) {
