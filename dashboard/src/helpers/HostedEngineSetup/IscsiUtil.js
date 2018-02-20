@@ -40,7 +40,7 @@ class IscsiUtil {
         const self = this;
         return new Promise((resolve, reject) => {
             console.log("iSCSI target discovery started.");
-            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.ISCSI_DISCOVER +
+            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.ISCSI_DISCOVER + " " +
                 "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
 
             const env = [
