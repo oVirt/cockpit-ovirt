@@ -111,6 +111,7 @@ export const messages = {
     ADD_GDEPLOY_PROPS_TO_ANS_FILE: "Attempting to add gdeploy properties to the answer file.",
     NO_GDEPLOY_ANSWER_FILES_FOUND: "No gdeploy answer files found.",
     ANSIBLE_PHASE_SUCCESSFUL: "Execution completed successfully. Please proceed to the next step.",
+    ANSIBLE_LAST_PHASE_SUCCESSFUL: "Hosted engine deployment complete!",
     TARGET_RETRIEVAL_FAILED: "Retrieval of iSCSI targets failed.",
     LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed."
 };
