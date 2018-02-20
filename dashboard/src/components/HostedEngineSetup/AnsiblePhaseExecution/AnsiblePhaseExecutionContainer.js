@@ -58,6 +58,7 @@ class AnsiblePhaseExecutionContainer extends Component {
 
     render() {
         return <AnsiblePhaseExecution phaseExecutionStatus={this.state.phaseExecutionStatus}
+                                      isLastStep={this.props.isLastStep}
                                       output={this.state.output}
                                       restartCallBack={this.restartCallBack}/>
     }

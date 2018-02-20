@@ -1,9 +1,10 @@
 import React from 'react'
 import {deploymentStatus as status, messages} from '../constants';
 
-const AnsiblePhaseExecution = ({output, phaseExecutionStatus, restartCallBack}) => {
+const AnsiblePhaseExecution = ({isLastStep, output, phaseExecutionStatus, restartCallBack}) => {
     if (phaseExecutionStatus === status.SUCCESS) {
-        return <DeploymentSuccessPanel restartCallBack={restartCallBack}/>
+        return <DeploymentSuccessPanel isLastStep={isLastStep}
+                                       restartCallBack={restartCallBack}/>
     } else {
         return <OutputPanel output={output}
                             phaseExecutionStatus={phaseExecutionStatus}
@@ -42,7 +43,7 @@ const OutputPanel = ({output, phaseExecutionStatus, reDeployCallback}) => {
     )
 };
 
-const Status = ({ phaseExecutionStatus, reDeployCallback }) => {
+const Status = ({phaseExecutionStatus, reDeployCallback}) => {
     let msg = "Deployment in progress";
     let statusIcon = <div className="spinner blank-slate-pf-icon deployment-status-spinner vertical-center"/>;
     if (phaseExecutionStatus === status.FAILURE) {
@@ -65,19 +66,20 @@ const Status = ({ phaseExecutionStatus, reDeployCallback }) => {
     )
 };
 
-const DeploymentSuccessPanel = ({ restartCallBack }) => {
+const DeploymentSuccessPanel = ({isLastStep, restartCallBack}) => {
+    const message = isLastStep ? messages.ANSIBLE_LAST_PHASE_SUCCESSFUL : messages.ANSIBLE_PHASE_SUCCESSFUL;
     return (
         <div className="wizard-pf-complete blank-slate-pf">
             <div className="wizard-pf-success-icon">
                 <span className="glyphicon glyphicon-ok-circle" />
             </div>
             <h3 className="blank-slate-pf-main-action">
-                {messages.ANSIBLE_PHASE_SUCCESSFUL}
+                {message}
             </h3>
             <br />
             <button className="btn btn-primary" onClick={restartCallBack}>
                 <span className="pficon pficon-restart">&nbsp;</span>
-                Rerun Setup
+                Rerun Step
             </button>
         </div>
     )
