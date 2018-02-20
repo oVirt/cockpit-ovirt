@@ -85,6 +85,10 @@ make install DESTDIR=%{buildroot}
 %{_plugindir}/ovirt-dashboard
 
 %changelog
+* Tue Feb 20 2018 Ryan Barry <rbarry@redhat.com> - 0.11.12-0.1
+- wizard: Lots of otopi bug fixes
+- Better ansible parsing
+
 * Mon Feb 05 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.11-0.1
 - wizard: Replace empty strings with none:None
 
