@@ -34,29 +34,46 @@ class GdeploySetup extends Component {
         this.setState({ isDeploymentStarted: false })
     }
     render() {
+        let wizardChildren = []
+        let index = 1;
+        wizardChildren.push(<WizardHostStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+            stepName="Hosts"
+            hosts={this.state.glusterModel.hosts}
+            />)
+        if (this.props.gdeployWizardType === "setup") {
+            wizardChildren.push(<WizardPackageStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+                stepName="Packages"
+                subscription={this.state.glusterModel.subscription}
+                />)
+        }
+        wizardChildren.push(<WizardVolumesStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+            stepName="Volumes"
+            volumes={this.state.glusterModel.volumes}
+            />)
+        wizardChildren.push(<WizardBricksStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+            stepName="Bricks"
+            glusterModel={this.state.glusterModel}
+            bricks={this.state.glusterModel.bricks}
+            raidConfig={this.state.glusterModel.raidConfig}
+            hosts={this.state.glusterModel.hosts}
+            lvCacheConfig={this.state.glusterModel.lvCacheConfig}
+            />)
+        wizardChildren.push(<WizardPreviewStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+            stepName="Review"
+            glusterModel={this.state.glusterModel}
+            configFilePath={CONFIG_FILES.gdeployConfigFile}
+            heAnsweFilePath={CONFIG_FILES.heAnsfileFile}
+            heCommanAnswer={CONFIG_FILES.heCommonAnsFile}
+            templatePath={CONFIG_FILES.gdeployTemplate}
+            onSuccess={this.props.onSuccess}
+            reDeployCallback={this.handleReDeploy}
+            isDeploymentStarted={this.state.isDeploymentStarted}
+            />)
         return (
             <Wizard title="Gluster Deployment" onClose={this.props.onClose}
                 onFinish={this.handleFinish} onStepChange={this.onStepChange}
                 isDeploymentStarted={this.state.isDeploymentStarted}>
-                <WizardHostStep stepName="Hosts" hosts={this.state.glusterModel.hosts} />
-                <WizardPackageStep stepName="Packages" subscription={this.state.glusterModel.subscription} />
-                <WizardVolumesStep stepName="Volumes" volumes={this.state.glusterModel.volumes} />
-                <WizardBricksStep stepName="Bricks"
-                    glusterModel={this.state.glusterModel}
-                    bricks={this.state.glusterModel.bricks}
-                    raidConfig={this.state.glusterModel.raidConfig}
-                    hosts={this.state.glusterModel.hosts}
-                    lvCacheConfig={this.state.glusterModel.lvCacheConfig}
-                    />
-                <WizardPreviewStep stepName="Review" glusterModel={this.state.glusterModel}
-                    configFilePath={CONFIG_FILES.gdeployConfigFile}
-                    heAnsweFilePath={CONFIG_FILES.heAnsfileFile}
-                    heCommanAnswer={CONFIG_FILES.heCommonAnsFile}
-                    templatePath={CONFIG_FILES.gdeployTemplate}
-                    onSuccess={this.props.onSuccess}
-                    reDeployCallback={this.handleReDeploy}
-                    isDeploymentStarted={this.state.isDeploymentStarted}
-                    />
+                {wizardChildren}
             </Wizard>
         )
     }

@@ -19,6 +19,7 @@ class HostedEngineSetup extends Component {
       state: heSetupState.POLLING,
       gdeployAvailable: false,
       gdeployFilesFound: false,
+      gdeployWizardType: "setup",
       registered: false,
       registeredTo: "",
       answerFiles: []
@@ -48,7 +49,7 @@ class HostedEngineSetup extends Component {
   }
 
   onClick() {
-    this.setState({ cancelled: false });
+    this.setState({ cancelled: false, gdeployWizardType: "setup" });
 
     if (this.state.deploymentOption === deploymentOption.REGULAR) {
       this.startSetup();
@@ -134,7 +135,7 @@ class HostedEngineSetup extends Component {
           />
         }
         { this.state.state === heSetupState.GDEPLOY &&
-          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} />
+          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} gdeployWizardType={this.state.gdeployWizardType} />
         }
       </div>
     )

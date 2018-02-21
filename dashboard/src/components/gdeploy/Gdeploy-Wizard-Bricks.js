@@ -19,7 +19,7 @@ class WizardBricksStep extends Component {
             raidConfig: props.raidConfig,
             hostTypes: [],
             selectedHost: {hostName: "", hostIndex: 0},
-            enabledFields: ['device', 'size'],
+            enabledFields: ['name', 'device', 'brick_dir', 'size', 'thinp'],
             hostArbiterVolumes: [],
             arbiterVolumes: [],
             lvCacheConfig: props.lvCacheConfig,
@@ -32,6 +32,9 @@ class WizardBricksStep extends Component {
         this.handleRaidConfigUpdate = this.handleRaidConfigUpdate.bind(this)
         this.handleLvCacheConfig = this.handleLvCacheConfig.bind(this)
         this.handleSelectedHostUpdate = this.handleSelectedHostUpdate.bind(this)
+        this.updateBrickHosts = this.updateBrickHosts.bind(this)
+        this.updateBrickDetails = this.updateBrickDetails.bind(this)
+        this.updateArbiterHostBricks = this.updateArbiterHostBricks.bind(this)
     }
     componentDidMount(){
         let bricksList = this.state.bricksList
@@ -49,6 +52,11 @@ class WizardBricksStep extends Component {
                 arbiterVolumes.push(volume.name)
             }
         })
+        let enabledFields = this.state.enabledFields
+        if (this.props.gdeployWizardType === "setup") {
+            enabledFields = ['device', 'size']
+        }
+        this.setState({bricksList, arbiterVolumes, enabledFields})
 
         // Checking for VDO support
         let isVdoSupported = false
@@ -62,7 +70,6 @@ class WizardBricksStep extends Component {
             })
             that.setState({bricksList, lvCacheConfig, arbiterVolumes, isVdoSupported})
         });
-
     }
     componentWillReceiveProps(nextProps){
         let hostsHaveChanged = false;
@@ -93,24 +100,85 @@ class WizardBricksStep extends Component {
             selectedHost.hostName = nextProps.hosts[0]
             this.setState({hostTypes, selectedHost, bricksList, lvCacheConfig})
             this.handleSelectedHostUpdate(selectedHost.hostName)
+            this.updateBrickHosts(nextProps.hosts)
+        }
+        // Modify bricks according to volume details
+        if (this.props.gdeployWizardType === "create_volume") {
+            let new_volumes = []
+            let new_brick_dirs = []
+            nextProps.glusterModel.volumes.forEach(function (volume, index) {
+              new_volumes.push(volume.name)
+              new_brick_dirs.push(volume.brick_dir)
+            })
+            let old_volumes = []
+            let old_brick_dirs = []
+            this.state.bricksList[0].host_bricks.forEach(function (brick, index) {
+              old_volumes.push(brick.name)
+              old_brick_dirs.push(brick.brick_dir)
+            })
+            if (old_volumes.join() != new_volumes.join() || old_brick_dirs.join() != new_brick_dirs.join()) {
+                this.updateBrickDetails(nextProps.glusterModel.volumes)
+            }
         }
         // Check for arbiter volume and update respective brick in the arbiter host
         let bricksList = this.state.bricksList
-        let bricksHaveChanged = false
         let arbiterVolumes = []
         nextProps.glusterModel.volumes.forEach(function(volume, index) {
-          if(volume.is_arbiter){
-            arbiterVolumes.push(volume.name)
-          }
+            if(volume.is_arbiter){
+                arbiterVolumes.push(volume.name)
+            }
         })
-        nextProps.glusterModel.volumes.forEach(function(volume, index) {
+        if (arbiterVolumes.join() != this.state.arbiterVolumes.join()) {
+            this.updateArbiterHostBricks(arbiterVolumes, nextProps.glusterModel.volumes, bricksList)
+        }
+        this.handleSelectedHostUpdate(nextProps.hosts[0])
+    }
+    updateBrickHosts(hosts){
+        let hostTypes = []
+        let bricksList = []
+        let lvCacheConfig = this.state.lvCacheConfig
+        let that = this
+        hosts.map(function(host, i) {
+            let hostType = {key: host, title: host}
+            hostTypes.push(hostType)
+            let brickHost = that.state.bricksList[i]
+            brickHost.host = host
+            bricksList.push(brickHost)
+            lvCacheConfig[i].host = host
+        })
+        this.setState({hostTypes, bricksList, lvCacheConfig})
+    }
+    updateBrickDetails(newVolumes){
+        let newHostBricks = []
+        let brickTemplate = this.state.bricksList[0].host_bricks[0]
+        newVolumes.forEach(function (volume, index) {
+            brickTemplate.name = volume.name
+            brickTemplate.brick_dir = volume.brick_dir
+            brickTemplate.thinp = true
+            brickTemplate.size = "500"
+            newHostBricks.push(JSON.parse(JSON.stringify(brickTemplate)))
+        })
+
+        let bricksList = this.state.bricksList
+        bricksList.forEach(function (bricksHost, hostIndex) {
+            bricksHost.host_bricks = JSON.parse(JSON.stringify(newHostBricks))
+        })
+        this.setState({ bricksList })
+    }
+    updateArbiterHostBricks(arbiterVolumes, volumes, bricksList){
+        let bricksHaveChanged = false
+        volumes.forEach(function(volume, index) {
             if((this.state.arbiterVolumes.indexOf(volume.name) < 0 ^ arbiterVolumes.indexOf(volume.name) < 0) == 1){
                 if(volume.is_arbiter){
                     let arbiterBrickSize = GdeployUtil.getArbiterBrickSize(parseInt(bricksList[2].host_bricks[index].size))
                     bricksList[2].host_bricks[index].size = JSON.stringify(arbiterBrickSize)
                 }
                 else{
-                    bricksList[2].host_bricks[index].size = bricksList[1].host_bricks[index].size
+                    if (this.props.gdeployWizardType === "setup" && bricksList[2].host_bricks[index].name === "engine") {
+                        bricksList[2].host_bricks[index].size = "100"
+                    } else {
+                        bricksList[2].host_bricks[index].size = "500"
+                    }
                 }
                 bricksHaveChanged = true
             }
@@ -162,12 +230,14 @@ class WizardBricksStep extends Component {
                 hostArbiterVolumes.push(volume.name)
             }
         })
-        let enabledFields = []
-        if(hostIndex % 3 == 0) {
-            enabledFields = ['device', 'size']
-        }
-        else {
-            enabledFields = ['device']
+        let enabledFields = Object.keys(this.state.bricksList[0].host_bricks[0])
+        if (this.props.gdeployWizardType === "setup") {
+            if(hostIndex % 3 == 0) {
+              enabledFields = ['device', 'size']
+            }
+            else {
+              enabledFields = ['device']
+            }
         }
         this.setState({selectedHost, enabledFields, hostArbiterVolumes})
     }

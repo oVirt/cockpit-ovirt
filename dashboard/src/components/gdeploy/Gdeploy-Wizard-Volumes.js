@@ -79,6 +79,14 @@ class WizardVolumesStep extends Component {
         }
         return true;
     }
+    componentDidMount(){
+        if (this.props.gdeployWizardType === "create_volume") {
+            let volumes = this.state.volumes
+            volumes.splice(0)
+            volumes.push(this.getEmptyRow())
+            this.setState({ volumes })
+        }
+    }
     render() {
         const volumeRows = [];
         const that = this
@@ -119,12 +127,14 @@ class WizardVolumesStep extends Component {
                         <strong> Add Volume</strong>
                     </span>
                 </a>
-                <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
-                    <span className="pficon pficon-info"></span>
-                    <strong>
-                        First volume in the list will be used for hosted-engine deployment
-                    </strong>
-                </div>
+                {(this.props.gdeployWizardType === "setup") &&
+                    <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
+                        <span className="pficon pficon-info"></span>
+                        <strong>
+                            First volume in the list will be used for hosted-engine deployment
+                        </strong>
+                    </div>
+                }
             </div>
         )
     }
