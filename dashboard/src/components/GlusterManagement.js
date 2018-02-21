@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import GdeploySetup from './gdeploy/GdeploySetup'
 
 const classNames = require('classnames');
 
@@ -15,12 +16,17 @@ class GlusterManagement extends Component {
       hostStatus: false,
       volumeStatusStatus: false,
       volumeInfoStatus: false,
-      volumeBricksStatus: false
+      volumeBricksStatus: false,
+      gdeployState: "",
+      gdeployWizardType: ""
 		};
     this.handleVolumeRowClick = this.handleVolumeRowClick.bind(this);
     this.getVolumeStatus = this.getVolumeStatus.bind(this);
     this.getVolumeStatus = this.getVolumeStatus.bind(this);
     this.getHostList = this.getHostList.bind(this);
+    this.startGlusterManagement = this.startGlusterManagement.bind(this);
+    this.applyGlusterChanges = this.applyGlusterChanges.bind(this);
+    this.abortCallback = this.abortCallback.bind(this);
 	}
 
   componentDidMount() {
@@ -105,6 +111,23 @@ class GlusterManagement extends Component {
     this.setState({
       volumeSelectedRow: this.state.volumeSelectedRow == volume ? 'None':volume
     })
+  }
+
+  startGlusterManagement(action) {
+      let gdeployWizardType = action
+      let gdeployState = "MANAGE"
+      this.setState({ gdeployWizardType, gdeployState })
+  }
+
+  applyGlusterChanges(){
+
+  }
+
+  abortCallback(){
+      this.setState({
+          gdeployState: "",
+          gdeployWizardType: ""
+      })
   }
 
   render() {
@@ -315,7 +338,7 @@ class GlusterManagement extends Component {
                 {volumesTable}
               </ul>
               <div className="manageGlusterButtons">
-                <button>Create Volume</button>
+                <button onClick={this.startGlusterManagement.bind(this, 'create_volume')} >Create Volume</button>
               </div>
             </div>
             <div className="modal fade" id="about-modal" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -336,6 +359,9 @@ class GlusterManagement extends Component {
               </div>
             </div>
           </div>
+        }
+        {this.state.gdeployState === "MANAGE" &&
+            <GdeploySetup onSuccess={this.applyGlusterChanges} onClose={this.abortCallback} gdeployWizardType={this.state.gdeployWizardType} />
         }
       </div>
     )
