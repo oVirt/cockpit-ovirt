@@ -36,6 +36,10 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
     const maxAvailMem = vmConfig.vmMemSizeMB.range.max.toLocaleString();
     const memWarningMessage = messages.RECOMMENDED_MIN_MEM_AVAIL_WARNING + ` Currently, only ${maxAvailMem}MB is available.`;
 
+    const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
+    const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
+    const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
+
     return (
         <div>
             <form className="form-horizontal he-form-container">
@@ -93,7 +97,7 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                     </div>
                 </div>
 
-                {deploymentType === deploymentTypes.OTOPI_DEPLOYMENT &&
+                {isOtopiDeployment &&
                     <span>
                         <div className={getClassNames("cpu", errorMsgs) + " he-cpu-select-row"} >
                             <label className="col-md-3 control-label">CPU Type</label>
@@ -168,15 +172,17 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label className="col-md-3 control-label">Console Type</label>
-                    <div className="col-md-2">
-                        <Selectbox optionList={consoleTypes}
-                                   selectedOption={vdsmConfig.consoleType.value}
-                                   callBack={(e) => handleVmConfigUpdate("consoleType", e, "vdsm")}
-                        />
+                {isOtopiDeployment &&
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">Console Type</label>
+                        <div className="col-md-2">
+                            <Selectbox optionList={consoleTypes}
+                                       selectedOption={vdsmConfig.consoleType.value}
+                                       callBack={(e) => handleVmConfigUpdate("consoleType", e, "vdsm")}
+                            />
+                        </div>
                     </div>
-                </div>
+                }
 
                 <div className={getClassNames("host_name", errorMsgs)}>
                     <label className="col-md-3 control-label">Host FQDN</label>
@@ -192,47 +198,47 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                     </div>
                 </div>
 
-                <div className={getClassNames("cloudinitVMTZ", errorMsgs)}>
-                    <label className="col-md-3 control-label">Host Time Zone</label>
-                    <div className="col-md-3">
-                        <input type="text" placeholder="Host Time Zone"
-                               className="form-control"
-                               value={vmConfig.cloudinitVMTZ.value}
-                               onChange={(e) => handleVmConfigUpdate("cloudinitVMTZ", e.target.value, "vm")}
-                        />
-                        {errorMsgs.cloudinitVMTZ && <span className="help-block">{errorMsgs.cloudinitVMTZ}</span>}
-                    </div>
-                </div>
-
-                <div className="form-group">
-                    <div className="col-md-9 he-stage-header">
-                        <h3>Cloud Init Settings</h3>
-                    </div>
-                </div>
-
-                <div className="form-group">
-                    <label className="col-md-3 control-label">Use Cloud-Init &nbsp;
-                        <i className="pficon pficon-info info-icon" rel="tooltip"
-                           title="Use cloud-init to customize the appliance on the first boot" />
-                    </label>
-                    <div className="col-md-3">
-                        <input type="checkbox"
-                               checked={vmConfig.cloudInitCustomize.value}
-                               onChange={(e) => handleVmConfigUpdate("cloudInitCustomize", e.target.checked, "vm")}
-                        />
-                    </div>
-                </div>
-
-                <div style={heSetupModel.vm.cloudInitCustomize.value ? {} : {display: 'none'}}>
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Cloud-Init Image</label>
-                        <div className="col-md-3">
-                            <Selectbox optionList={cloudInitOptions}
-                                       selectedOption={vmConfig.cloudInitISO.value}
-                                       callBack={(e) => handleVmConfigUpdate("cloudInitISO", e, "vm")}
-                            />
+                {isOtopiDeployment &&
+                    <span>
+                        <div className={getClassNames("cloudinitVMTZ", errorMsgs)}>
+                            <label className="col-md-3 control-label">Host Time Zone</label>
+                            <div className="col-md-3">
+                                <input type="text" placeholder="Host Time Zone"
+                                       className="form-control"
+                                       value={vmConfig.cloudinitVMTZ.value}
+                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMTZ", e.target.value, "vm")}
+                                />
+                                {errorMsgs.cloudinitVMTZ && <span className="help-block">{errorMsgs.cloudinitVMTZ}</span>}
+                            </div>
                         </div>
-                    </div>
+
+                        <div className="form-group">
+                            <label className="col-md-3 control-label">Use Cloud-Init &nbsp;
+                                <i className="pficon pficon-info info-icon" rel="tooltip"
+                                   title="Use cloud-init to customize the appliance on the first boot" />
+                            </label>
+                            <div className="col-md-3">
+                                <input type="checkbox"
+                                       checked={vmConfig.cloudInitCustomize.value}
+                                       onChange={(e) => handleVmConfigUpdate("cloudInitCustomize", e.target.checked, "vm")}
+                                />
+                            </div>
+                        </div>
+                    </span>
+                }
+
+                <div style={showCloudInitFields ? {} : {display: 'none'}}>
+                    {isOtopiDeployment &&
+                        <div className="form-group">
+                            <label className="col-md-3 control-label">Cloud-Init Image</label>
+                            <div className="col-md-3">
+                                <Selectbox optionList={cloudInitOptions}
+                                           selectedOption={vmConfig.cloudInitISO.value}
+                                           callBack={(e) => handleVmConfigUpdate("cloudInitISO", e, "vm")}
+                                />
+                            </div>
+                        </div>
+                    }
 
                     <div className={getClassNames("fqdn", errorMsgs)}>
                         <label className="col-md-3 control-label">Engine VM FQDN</label>
@@ -352,31 +358,35 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Engine Setup &nbsp;
-                            <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_setup"
-                               title="Automatically execute engine-setup on the first boot" />
-                        </label>
-                        <div className="col-md-1">
-                            <input type="checkbox"
-                                   checked={vmConfig.cloudinitExecuteEngineSetup.value}
-                                   onChange={(e) => handleVmConfigUpdate("cloudinitExecuteEngineSetup", e.target.checked, "vm")}
-                            />
-                        </div>
-                    </div>
+                    {isOtopiDeployment &&
+                        <span>
+                            <div className="form-group">
+                                <label className="col-md-3 control-label">Engine Setup &nbsp;
+                                    <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_setup"
+                                       title="Automatically execute engine-setup on the first boot" />
+                                </label>
+                                <div className="col-md-1">
+                                    <input type="checkbox"
+                                           checked={vmConfig.cloudinitExecuteEngineSetup.value}
+                                           onChange={(e) => handleVmConfigUpdate("cloudinitExecuteEngineSetup", e.target.checked, "vm")}
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Engine Restart &nbsp;
-                            <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_restart"
-                               title="Automatically restart the engine VM as a monitored service after engine-setup" />
-                        </label>
-                        <div className="col-md-1">
-                            <input type="checkbox"
-                                   checked={vmConfig.automateVMShutdown.value}
-                                   onChange={(e) => handleVmConfigUpdate("automateVMShutdown", e.target.checked, "vm")}
-                            />
-                        </div>
-                    </div>
+                            <div className="form-group">
+                                <label className="col-md-3 control-label">Engine Restart &nbsp;
+                                    <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_restart"
+                                       title="Automatically restart the engine VM as a monitored service after engine-setup" />
+                                </label>
+                                <div className="col-md-1">
+                                    <input type="checkbox"
+                                           checked={vmConfig.automateVMShutdown.value}
+                                           onChange={(e) => handleVmConfigUpdate("automateVMShutdown", e.target.checked, "vm")}
+                                    />
+                                </div>
+                            </div>
+                        </span>
+                    }
                 </div>
             </form>
         </div>
