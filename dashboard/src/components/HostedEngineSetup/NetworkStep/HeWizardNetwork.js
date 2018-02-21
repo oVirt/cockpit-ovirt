@@ -1,11 +1,12 @@
 import React from 'react'
 import Selectbox from '../../common/Selectbox'
-import { status as gwState } from '../constants'
+import {deploymentTypes, status as gwState} from '../constants'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 
 const HeWizardNetwork = ({deploymentType, errorMsg, errorMsgs, gatewayState, interfaces, networkConfig,
                              handleNetworkConfigUpdate}) => {
     const gatewayPingPending = gatewayState === gwState.POLLING;
+    const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
 
     return (
         <div>
@@ -44,15 +45,17 @@ const HeWizardNetwork = ({deploymentType, errorMsg, errorMsgs, gatewayState, int
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label className="col-md-3 control-label">Configure iptables</label>
-                    <div className="col-md-5">
-                        <input type="checkbox"
-                               checked={networkConfig.firewallManager.value === "iptables"}
-                               onChange={(e) => handleNetworkConfigUpdate("firewallManager", e.target.checked)}
-                        />
+                {isOtopiDeployment &&
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">Configure iptables</label>
+                        <div className="col-md-5">
+                            <input type="checkbox"
+                                   checked={networkConfig.firewallManager.value === "iptables"}
+                                   onChange={(e) => handleNetworkConfigUpdate("firewallManager", e.target.checked)}
+                            />
+                        </div>
                     </div>
-                </div>
+                }
 
                 <div className={getClassNames("gateway", errorMsgs)}>
                     <label className="col-md-3 control-label">Gateway Address</label>
