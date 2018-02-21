@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import HostedEngineSetup from './HostedEngineSetup'
+import GlusterManagement from './GlusterManagement'
 import {checkDeployed, checkInstalled, getMetrics, getHostname, setMaintenance}
   from '../helpers/HostedEngineStatus'
 var classNames = require('classnames')
@@ -8,8 +9,10 @@ class HostedEngine extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      deployed: null
+      deployed: null,
+      manageGluster: false
     }
+    this.manageGluster = this.manageGluster.bind(this);
     this.deployedCallback = this.deployedCallback.bind(this)
     this.determineComponent = this.determineComponent.bind(this)
     this.installedCallback = this.installedCallback.bind(this)
@@ -38,9 +41,16 @@ class HostedEngine extends Component {
         )
       }
       else {
-        return (
-          <Status />
-        )
+        if(this.state.manageGluster === true) {
+          return (
+            <GlusterManagement />
+          )
+        }
+        else {
+          return (
+            <Status handleManageGluster={this.manageGluster}/>
+          )
+        }
       }
     }
   }
@@ -48,6 +58,12 @@ class HostedEngine extends Component {
     checkDeployed(this.deployedCallback)
     checkInstalled(this.installedCallback)
   }
+  manageGluster() {
+    this.setState({
+      manageGluster: true
+    })
+  }
+
   render() {
     return (
       <div>
@@ -132,7 +148,8 @@ class Status extends Component {
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">
-              Hosts in this cluster
+              <span>Hosts in this cluster</span>
+              <button className="manageGlusterButton" onClick={this.props.handleManageGluster}>Manage Gluster</button>
             </h3>
           </div>
           <div className="panel-body">
