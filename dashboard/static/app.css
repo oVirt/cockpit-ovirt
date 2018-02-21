@@ -536,3 +536,47 @@ span.iscsi-target-name, span.lun-prop-label {
 div.lun-prop {
     margin-left: 17px;
 }
+
+.glusterHeading {
+    height: auto;
+    vertical-align: middle;
+    padding-top: 3px;
+    padding-left: 5px;
+}
+
+.manageGlusterButtons {
+    text-align: right;
+}
+
+.hostList, .volumeList {
+    width: 90%;
+    margin: auto;
+    margin-bottom: 30px;
+}
+
+.bricksList {
+    width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}
+
+.statusIcon {
+    margin-right: 3px;
+    margin-left: 3px;
+}
+
+.fa-caret-up.statusIcon {
+    color: green;
+}
+
+.fa-caret-down.statusIcon {
+    color: red;
+}
+
+.manageGlusterButton {
+    float: right;
+    background-color: black;
+    color: white;
+}
