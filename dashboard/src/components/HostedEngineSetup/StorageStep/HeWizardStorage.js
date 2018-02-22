@@ -24,6 +24,8 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
     const nfsSelected = storageConfig.domainType.value.includes("nfs");
     const iscsiSelected = storageConfig.domainType.value === "iscsi";
     const glusterSelected = storageConfig.domainType.value === "glusterfs";
+    const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
+    const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     let targetRetrievalBtnClasses = "btn btn-primary";
     targetRetrievalBtnClasses += targetRetrievalStatus === status.POLLING ? " disabled" : "";
 
@@ -57,19 +59,10 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                     </div>
                 }
 
-                <div className={getClassNames("imgSizeGB", errorMsgs)}>
-                    <label className="col-md-3 control-label">Disk Size (GB)</label>
-                    <div className="col-md-6 he-text-with-units">
-                        <input type="number" style={{width: "60px"}}
-                               min={storageConfig.imgSizeGB.range.min}
-                               max={storageConfig.imgSizeGB.range.max}
-                               placeholder="Disk Size"
-                               title="Enter the disk size for the VM."
-                               className="form-control"
-                               value={storageConfig.imgSizeGB.value}
-                               onChange={(e) => handleStorageConfigUpdate("imgSizeGB", e.target.value)}
-                        />
-                        {errorMsgs.imgSizeGB && <span className="help-block">{errorMsgs.imgSizeGB}</span>}
+                <div className="form-group">
+                    <div className="col-md-9">
+                        {/*<span className="pficon fas fa-angle-down" />*/}
+                        <h3>Storage Settings</h3>
                     </div>
                 </div>
 
@@ -81,35 +74,6 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                                        selectedOption={storageConfig.domainType.value}
                                        callBack={(e) => handleStorageConfigUpdate("domainType", e)}
                             />
-                        </div>
-                    </div>
-                </div>
-
-                <div style={nfsSelected ? {} : { display: 'none' }}>
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">NFS Version</label>
-                        <div className="col-md-6">
-                            <div style={{width: "120px"}}>
-                                <Selectbox optionList={nfsVersions}
-                                           selectedOption={storageConfig.nfsVersion.value}
-                                           callBack={(e) => handleStorageConfigUpdate("nfsVersion", e)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className={getClassNames("storageDomain", errorMsgs)}>
-                        <label className="col-md-3 control-label">Storage Domain Name</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "250px"}}
-                                   title=""
-                                   className="form-control"
-                                   value={storageConfig.storageDomain.value}
-                                   onChange={(e) => handleStorageConfigUpdate("storageDomain", e.target.value)}
-                            />
-                            {errorMsgs.storageDomain &&
-                                <span className="help-block">{errorMsgs.storageDomain}</span>
-                            }
                         </div>
                     </div>
                 </div>
@@ -145,7 +109,7 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                         </div>
                     </div>
 
-                    {deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT &&
+                    {isAnsibleDeployment &&
                         <div className={getClassNames("iSCSIDiscoverUser", errorMsgs)}>
                             <label className="col-md-3 control-label">Discovery Username</label>
                             <div className="col-md-6">
@@ -162,7 +126,7 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                         </div>
                     }
 
-                    {deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT &&
+                    {isAnsibleDeployment &&
                         <div className={getClassNames("iSCSIDiscoverPassword", errorMsgs)}>
                             <label className="col-md-3 control-label">Discovery Password</label>
                             <div className="col-md-6">
@@ -211,7 +175,7 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                         </div>
                     </div>
 
-                    {deploymentType === deploymentTypes.OTOPI_DEPLOYMENT &&
+                    {isOtopiDeployment &&
                         <span>
                             <div className={getClassNames("iSCSITargetName", errorMsgs)}>
                                 <label className="col-md-3 control-label">Target Name</label>
@@ -229,7 +193,7 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                         </span>
                     }
 
-                    {deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT &&
+                    {isAnsibleDeployment &&
                         <span>
                             <div className="form-group">
                                 <span className="col-md-offset-3 col-md-6">
@@ -306,6 +270,58 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
                             />
                             {errorMsgs.mntOptions &&
                                 <span className="help-block">{errorMsgs.mntOptions}</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div className="form-group">
+                    <div className="col-md-9">
+                        {/*<span className="pficon fas fa-angle-down" />*/}
+                        <h3>Advanced</h3>
+                    </div>
+                </div>
+
+                <div className={getClassNames("imgSizeGB", errorMsgs)}>
+                    <label className="col-md-3 control-label">Disk Size (GB)</label>
+                    <div className="col-md-6 he-text-with-units">
+                        <input type="number" style={{width: "60px"}}
+                               min={storageConfig.imgSizeGB.range.min}
+                               max={storageConfig.imgSizeGB.range.max}
+                               placeholder="Disk Size"
+                               title="Enter the disk size for the VM."
+                               className="form-control"
+                               value={storageConfig.imgSizeGB.value}
+                               onChange={(e) => handleStorageConfigUpdate("imgSizeGB", e.target.value)}
+                        />
+                        {errorMsgs.imgSizeGB && <span className="help-block">{errorMsgs.imgSizeGB}</span>}
+                    </div>
+                </div>
+
+                <div style={nfsSelected ? {} : { display: 'none' }}>
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">NFS Version</label>
+                        <div className="col-md-6">
+                            <div style={{width: "120px"}}>
+                                <Selectbox optionList={nfsVersions}
+                                           selectedOption={storageConfig.nfsVersion.value}
+                                           callBack={(e) => handleStorageConfigUpdate("nfsVersion", e)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={getClassNames("storageDomain", errorMsgs)}>
+                        <label className="col-md-3 control-label">Storage Domain Name</label>
+                        <div className="col-md-6">
+                            <input type="text" style={{width: "250px"}}
+                                   title=""
+                                   className="form-control"
+                                   value={storageConfig.storageDomain.value}
+                                   onChange={(e) => handleStorageConfigUpdate("storageDomain", e.target.value)}
+                            />
+                            {errorMsgs.storageDomain &&
+                            <span className="help-block">{errorMsgs.storageDomain}</span>
                             }
                         </div>
                     </div>
