@@ -1,11 +1,13 @@
 import React from 'react'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
+import {deploymentTypes} from "../constants";
 
 const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, handleEngineConfigUpdate,
                             handleRecipientAddressUpdate, handleRecipientAddressDelete}) => {
     const engineConfig = heSetupModel.engine;
     const notificationsConfig = heSetupModel.notifications;
+    const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
 
     return (
         <div>
@@ -19,18 +21,26 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
                 }
 
-                <div className={getClassNames("adminUsername", errorMsgs)}>
-                    <label className="col-md-3 control-label">Admin Username</label>
-                    <div className="col-md-6">
-                        <input type="text" style={{width: "140px"}}
-                               title="Enter the admin username."
-                               className="form-control"
-                               value={engineConfig.adminUsername.value}
-                               onChange={(e) => handleEngineConfigUpdate("adminUsername", e.target.value, "engine")}
-                        />
-                        {errorMsgs.adminUsername && <span className="help-block">{errorMsgs.adminUsername}</span>}
+                <div className="form-group">
+                    <div className="col-md-9">
+                        <h3>Engine Credentials</h3>
                     </div>
                 </div>
+
+                {isOtopiDeployment &&
+                    <div className={getClassNames("adminUsername", errorMsgs)}>
+                        <label className="col-md-3 control-label">Admin Portal Username</label>
+                        <div className="col-md-6">
+                            <input type="text" style={{width: "140px"}}
+                                   title="Enter the admin portal username."
+                                   className="form-control"
+                                   value={engineConfig.adminUsername.value}
+                                   onChange={(e) => handleEngineConfigUpdate("adminUsername", e.target.value, "engine")}
+                            />
+                            {errorMsgs.adminUsername && <span className="help-block">{errorMsgs.adminUsername}</span>}
+                        </div>
+                    </div>
+                }
 
                 <div className={getClassNames("adminPassword", errorMsgs)}>
                     <label className="col-md-3 control-label">Admin Portal Password</label>
@@ -60,8 +70,8 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 </div>
 
                 <div className="form-group">
-                    <div className="col-md-9 he-stage-header">
-                        <h3>Notification Server (SMTP) Settings</h3>
+                    <div className="col-md-9">
+                        <h3>Notification Settings</h3>
                     </div>
                 </div>
 
