@@ -61,39 +61,61 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                 </div>
                 }
 
+                {isOtopiDeployment &&
+                    <span>
+                        <div className="form-group">
+                            <div className="col-md-9">
+                                {/*<span className="pficon fas fa-angle-down" />*/}
+                                <h3>Host Settings</h3>
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("cloudinitVMTZ", errorMsgs)}>
+                            <label className="col-md-3 control-label">Host Time Zone</label>
+                            <div className="col-md-3">
+                                <input type="text" placeholder="Host Time Zone"
+                                       className="form-control"
+                                       value={vmConfig.cloudinitVMTZ.value}
+                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMTZ", e.target.value, "vm")}
+                                />
+                                {errorMsgs.cloudinitVMTZ && <span className="help-block">{errorMsgs.cloudinitVMTZ}</span>}
+                            </div>
+                        </div>
+                    </span>
+                }
+
                 <div className="form-group">
-                    <label className="col-md-3 control-label">Auto-import Appliance</label>
-                    <div className="col-md-3">
-                        <input type="checkbox"
-                               checked={importAppliance}
-                               onChange={(e) => handleImportApplianceUpdate(e.target.checked)}
-                        />
+                    <div className="col-md-9">
+                        <h3>VM Settings</h3>
                     </div>
                 </div>
 
-                <div style={importAppliance ? {display: 'none'} : {}}>
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Appliance File</label>
-                        <div className="col-md-6">
-                            <Selectbox optionList={appliances}
-                                       selectedOption={applPathSelection}
-                                       callBack={(e) => handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
-                            />
-                        </div>
+                <div className={getClassNames("fqdn", errorMsgs)}>
+                    <label className="col-md-3 control-label">Engine VM FQDN</label>
+                    <div className="col-md-4">
+                        <input type="text"
+                               placeholder="ovirt-engine.example.com"
+                               title="Enter the engine FQDN."
+                               className="form-control"
+                               value={networkConfig.fqdn.value}
+                               onChange={(e) => handleVmConfigUpdate("fqdn", e.target.value, "network")}
+                               onBlur={(e) => verifyDns(e.target.value)}
+                        />
+                        {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
                     </div>
+                </div>
 
-                    <div className={getClassNames("ovfArchive", errorMsgs)}
-                         style={showApplPath ? {} : { display: 'none' }}>
-                        <label className="col-md-3 control-label">Appliance File Path</label>
-                        <div className="col-md-6">
-                            <input type="text" placeholder="Installation File Path"
-                                   title="Enter the path for the installation file to install."
-                                   className="form-control"
-                                   value={vmConfig.ovfArchive.value}
-                                   onChange={(e) => handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
-                            />
-                            {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
-                        </div>
+                <div className={getClassNames("vmMACAddr", errorMsgs)}>
+                    <label className="col-md-3 control-label">MAC Address</label>
+                    <div className="col-md-6">
+                        <input type="text" style={{width:"120px"}}
+                               placeholder="00:11:22:33:44:55"
+                               title="Enter the MAC address for the VM."
+                               className="form-control"
+                               value={vmConfig.vmMACAddr.value}
+                               onChange={(e) => handleVmConfigUpdate("vmMACAddr", e.target.value, "vm")}
+                        />
+                        {errorMsgs.vmMACAddr && <span className="help-block">{errorMsgs.vmMACAddr}</span>}
                     </div>
                 </div>
 
@@ -125,6 +147,82 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                     </span>
                 }
 
+                <div className="form-group">
+                    <label className="col-md-3 control-label">Network Configuration</label>
+                    <div className="col-md-3">
+                        <Selectbox optionList={networkConfigTypes}
+                                   selectedOption={vmConfig.networkConfigType.value}
+                                   callBack={(e) => handleVmConfigUpdate("networkConfigType", e, "vm")}
+                        />
+                    </div>
+                </div>
+
+                <div style={heSetupModel.vm.networkConfigType.value === "static" ? {} : {display: 'none'}}>
+                    <div className={getClassNames("cloudinitVMStaticCIDR", errorMsgs)}>
+                        <label className="col-md-3 control-label">VM IP Address</label>
+                        <div className="col-md-6">
+                            <input type="text" style={{width: "110px"}}
+                                   placeholder="192.168.1.2"
+                                   title="Enter the desired IP address for the VM."
+                                   className="form-control"
+                                   value={vmConfig.cloudinitVMStaticCIDR.value}
+                                   onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDR", e.target.value, "vm")}
+                                   onBlur={(e) => verifyReverseDns(e.target.value)}
+                            />
+                            {errorMsgs.cloudinitVMStaticCIDR && <span className="help-block">{errorMsgs.cloudinitVMStaticCIDR}</span>}
+                        </div>
+                    </div>
+
+                    <div className={getClassNames("cloudinitVMDNS", errorMsgs)}>
+                        <label className="col-md-3 control-label">DNS Servers</label>
+                        <div className="col-md-6">
+                            <div style={{width: "220px"}}>
+                                <MultiRowTextBoxContainer values={vmConfig.cloudinitVMDNS.value}
+                                                          itemType={"Address"}
+                                                          rowLimit={3}
+                                                          handleValueUpdate={handleDnsAddressUpdate}
+                                                          handleValueDelete={handleDnsAddressDelete}/>
+                                {errorMsgs.cloudinitVMDNS && <span className="help-block">{errorMsgs.cloudinitVMDNS}</span>}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={getClassNames("cloudinitRootPwd", errorMsgs)}>
+                    <label className="col-md-3 control-label">Root Password</label>
+                    <div className="col-md-3">
+                        <input type="password"
+                               className="form-control"
+                               value={vmConfig.cloudinitRootPwd.value}
+                               onChange={(e) => handleVmConfigUpdate("cloudinitRootPwd", e.target.value, "vm")}
+                        />
+                        {errorMsgs.cloudinitRootPwd && <span className="help-block">{errorMsgs.cloudinitRootPwd}</span>}
+                    </div>
+                </div>
+
+                <div className={getClassNames("confirmRootPassword", errorMsgs)}
+                     style={vmConfig.cloudinitRootPwd.value !== "" ? {} : {display: 'none'}}>
+                    <label className="col-md-3 control-label">Confirm Root Password</label>
+                    <div className="col-md-3">
+                        <input type="password"
+                               className="form-control"
+                               value={vmConfig.confirmRootPassword.value}
+                               onChange={(e) => handleVmConfigUpdate("confirmRootPassword", e.target.value, "vm")}
+                        />
+                        {errorMsgs.confirmRootPassword && <span className="help-block">{errorMsgs.confirmRootPassword}</span>}
+                    </div>
+                </div>
+
+                <div className="form-group">
+                    <label className="col-md-3 control-label">Root SSH Access</label>
+                    <div className="col-md-3">
+                        <Selectbox optionList={rootSshAccessOptions}
+                                   selectedOption={vmConfig.rootSshAccess.value}
+                                   callBack={(e) => handleVmConfigUpdate("rootSshAccess", e, "vm")}
+                        />
+                    </div>
+                </div>
+
                 <div className={getClassNames("vmVCpus", errorMsgs)}>
                     <label className="col-md-3 control-label">Number of Virtual CPUs</label>
                     <div className="col-md-6">
@@ -132,7 +230,7 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                                min={vmConfig.vmVCpus.range.min}
                                max={vmConfig.vmVCpus.range.max}
                                placeholder="Number of CPUs"
-                               title="Enter the path for the installation file to install."
+                               title="Select number of virtual CPUs."
                                className="form-control"
                                value={vmConfig.vmVCpus.value}
                                onChange={(e) => handleVmConfigUpdate("vmVCpus", e.target.value, "vm")}
@@ -158,20 +256,6 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                     </div>
                 </div>
 
-                <div className={getClassNames("vmMACAddr", errorMsgs)}>
-                    <label className="col-md-3 control-label">MAC Address</label>
-                    <div className="col-md-6">
-                        <input type="text" style={{width:"120px"}}
-                               placeholder="00:11:22:33:44:55"
-                               title="Enter the MAC address for the VM."
-                               className="form-control"
-                               value={vmConfig.vmMACAddr.value}
-                               onChange={(e) => handleVmConfigUpdate("vmMACAddr", e.target.value, "vm")}
-                        />
-                        {errorMsgs.vmMACAddr && <span className="help-block">{errorMsgs.vmMACAddr}</span>}
-                    </div>
-                </div>
-
                 {isOtopiDeployment &&
                     <div className="form-group">
                         <label className="col-md-3 control-label">Console Type</label>
@@ -184,47 +268,19 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                     </div>
                 }
 
-                <div className={getClassNames("host_name", errorMsgs)}>
-                    <label className="col-md-3 control-label">Host FQDN</label>
-                    <div className="col-md-4">
-                        <input type="text"
-                               placeholder="engine-host.example.com"
-                               title="Enter the host's FQDN."
-                               className="form-control"
-                               value={networkConfig.host_name.value}
-                               onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
-                        />
-                        {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
-                    </div>
-                </div>
-
                 {isOtopiDeployment &&
-                    <span>
-                        <div className={getClassNames("cloudinitVMTZ", errorMsgs)}>
-                            <label className="col-md-3 control-label">Host Time Zone</label>
-                            <div className="col-md-3">
-                                <input type="text" placeholder="Host Time Zone"
-                                       className="form-control"
-                                       value={vmConfig.cloudinitVMTZ.value}
-                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMTZ", e.target.value, "vm")}
-                                />
-                                {errorMsgs.cloudinitVMTZ && <span className="help-block">{errorMsgs.cloudinitVMTZ}</span>}
-                            </div>
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">Use Cloud-Init &nbsp;
+                            <i className="pficon pficon-info info-icon" rel="tooltip"
+                               title="Use cloud-init to customize the appliance on the first boot" />
+                        </label>
+                        <div className="col-md-3">
+                            <input type="checkbox"
+                                   checked={vmConfig.cloudInitCustomize.value}
+                                   onChange={(e) => handleVmConfigUpdate("cloudInitCustomize", e.target.checked, "vm")}
+                            />
                         </div>
-
-                        <div className="form-group">
-                            <label className="col-md-3 control-label">Use Cloud-Init &nbsp;
-                                <i className="pficon pficon-info info-icon" rel="tooltip"
-                                   title="Use cloud-init to customize the appliance on the first boot" />
-                            </label>
-                            <div className="col-md-3">
-                                <input type="checkbox"
-                                       checked={vmConfig.cloudInitCustomize.value}
-                                       onChange={(e) => handleVmConfigUpdate("cloudInitCustomize", e.target.checked, "vm")}
-                                />
-                            </div>
-                        </div>
-                    </span>
+                    </div>
                 }
 
                 <div style={showCloudInitFields ? {} : {display: 'none'}}>
@@ -240,94 +296,10 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                         </div>
                     }
 
-                    <div className={getClassNames("fqdn", errorMsgs)}>
-                        <label className="col-md-3 control-label">Engine VM FQDN</label>
-                        <div className="col-md-4">
-                            <input type="text"
-                                   placeholder="ovirt-engine.example.com"
-                                   title="Enter the engine FQDN."
-                                   className="form-control"
-                                   value={networkConfig.fqdn.value}
-                                   onChange={(e) => handleVmConfigUpdate("fqdn", e.target.value, "network")}
-                                   onBlur={(e) => verifyDns(e.target.value)}
-                            />
-                            {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
-                        </div>
-                    </div>
-
                     <div className="form-group">
-                        <label className="col-md-3 control-label">Network Configuration</label>
-                        <div className="col-md-3">
-                            <Selectbox optionList={networkConfigTypes}
-                                       selectedOption={vmConfig.networkConfigType.value}
-                                       callBack={(e) => handleVmConfigUpdate("networkConfigType", e, "vm")}
-                            />
-                        </div>
-                    </div>
-
-                    <div style={heSetupModel.vm.networkConfigType.value === "static" ? {} : {display: 'none'}}>
-                        <div className={getClassNames("cloudinitVMStaticCIDR", errorMsgs)}>
-                            <label className="col-md-3 control-label">VM IP Address</label>
-                            <div className="col-md-6">
-                                <input type="text" style={{width: "110px"}}
-                                       placeholder="192.168.1.2"
-                                       title="Enter the desired IP address for the VM."
-                                       className="form-control"
-                                       value={vmConfig.cloudinitVMStaticCIDR.value}
-                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDR", e.target.value, "vm")}
-                                       onBlur={(e) => verifyReverseDns(e.target.value)}
-                                />
-                                {errorMsgs.cloudinitVMStaticCIDR && <span className="help-block">{errorMsgs.cloudinitVMStaticCIDR}</span>}
-                            </div>
-                        </div>
-
-                        <div className={getClassNames("cloudinitVMDNS", errorMsgs)}>
-                            <label className="col-md-3 control-label">DNS Servers</label>
-                            <div className="col-md-6">
-                                <div style={{width: "220px"}}>
-                                    <MultiRowTextBoxContainer values={vmConfig.cloudinitVMDNS.value}
-                                                              itemType={"Address"}
-                                                              rowLimit={3}
-                                                              handleValueUpdate={handleDnsAddressUpdate}
-                                                              handleValueDelete={handleDnsAddressDelete}/>
-                                    {errorMsgs.cloudinitVMDNS && <span className="help-block">{errorMsgs.cloudinitVMDNS}</span>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className={getClassNames("cloudinitRootPwd", errorMsgs)}>
-                        <label className="col-md-3 control-label">Root Password</label>
-                        <div className="col-md-3">
-                            <input type="password"
-                                   className="form-control"
-                                   value={vmConfig.cloudinitRootPwd.value}
-                                   onChange={(e) => handleVmConfigUpdate("cloudinitRootPwd", e.target.value, "vm")}
-                            />
-                            {errorMsgs.cloudinitRootPwd && <span className="help-block">{errorMsgs.cloudinitRootPwd}</span>}
-                        </div>
-                    </div>
-
-                    <div className={getClassNames("confirmRootPassword", errorMsgs)}
-                         style={vmConfig.cloudinitRootPwd.value !== "" ? {} : {display: 'none'}}>
-                        <label className="col-md-3 control-label">Confirm Root Password</label>
-                        <div className="col-md-3">
-                            <input type="password"
-                                   className="form-control"
-                                   value={vmConfig.confirmRootPassword.value}
-                                   onChange={(e) => handleVmConfigUpdate("confirmRootPassword", e.target.value, "vm")}
-                            />
-                            {errorMsgs.confirmRootPassword && <span className="help-block">{errorMsgs.confirmRootPassword}</span>}
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Root SSH Access</label>
-                        <div className="col-md-3">
-                            <Selectbox optionList={rootSshAccessOptions}
-                                       selectedOption={vmConfig.rootSshAccess.value}
-                                       callBack={(e) => handleVmConfigUpdate("rootSshAccess", e, "vm")}
-                            />
+                        <div className="col-md-9">
+                            {/*<span className="pficon fas fa-angle-down" />*/}
+                            <h3>Advanced</h3>
                         </div>
                     </div>
 
@@ -340,6 +312,42 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                                           onChange={(e) => handleVmConfigUpdate("rootSshPubkey", e.target.value, "vm")}
                                 />
                             {errorMsgs.rootSshPubkey && <span className="help-block">{errorMsgs.rootSshPubkey}</span>}
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">Auto-import Appliance</label>
+                        <div className="col-md-3">
+                            <input type="checkbox"
+                                   checked={importAppliance}
+                                   onChange={(e) => handleImportApplianceUpdate(e.target.checked)}
+                            />
+                        </div>
+                    </div>
+
+                    <div style={importAppliance ? {display: 'none'} : {}}>
+                        <div className="form-group">
+                            <label className="col-md-3 control-label">Appliance File</label>
+                            <div className="col-md-6">
+                                <Selectbox optionList={appliances}
+                                           selectedOption={applPathSelection}
+                                           callBack={(e) => handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
+                                />
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("ovfArchive", errorMsgs)}
+                             style={showApplPath ? {} : { display: 'none' }}>
+                            <label className="col-md-3 control-label">Appliance File Path</label>
+                            <div className="col-md-6">
+                                <input type="text" placeholder="Installation File Path"
+                                       title="Enter the path for the installation file to install."
+                                       className="form-control"
+                                       value={vmConfig.ovfArchive.value}
+                                       onChange={(e) => handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
+                                />
+                                {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
+                            </div>
                         </div>
                     </div>
 
@@ -387,6 +395,20 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
                             </div>
                         </span>
                     }
+
+                    <div className={getClassNames("host_name", errorMsgs)}>
+                        <label className="col-md-3 control-label">Host FQDN</label>
+                        <div className="col-md-4">
+                            <input type="text"
+                                   placeholder="engine-host.example.com"
+                                   title="Enter the host's FQDN."
+                                   className="form-control"
+                                   value={networkConfig.host_name.value}
+                                   onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
+                            />
+                            {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
