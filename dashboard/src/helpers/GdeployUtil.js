@@ -434,7 +434,7 @@ var GdeployUtil = {
             if (brick.is_vdo_supported) {
               devices.push(brick.device)
               names.push(brick.name)
-              logicalSizes.push(brick.logicalSize)
+              logicalSizes.push((Number(brick.size) * 10)+"G")
               if (Number(logicalSizes) >= 1000) {
                 slabsizes.push("32GB")
               }
