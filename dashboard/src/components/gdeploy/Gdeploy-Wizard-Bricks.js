@@ -611,6 +611,7 @@ WizardBricksStep.propTypes = {
 }
 
 const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack}) => {
+    brick.logicalSize = (Number(brick.size) * 10).toString()
     const name = classNames(
         { "has-error": errorMsgs && errorMsgs.name }
     )
