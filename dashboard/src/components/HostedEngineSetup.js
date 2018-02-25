@@ -177,12 +177,14 @@ const Curtains = ({callback, cancelled, deploymentOption, deploymentType, deploy
         <form>
           <div className="radio">
             <label>
-              <input type="radio" value="regular"
-                checked={deploymentOption === "regular"}
-                onChange={selectionChangeCallback} />
-              Hosted Engine Only Deployment <span className="fa fa-lg fa-info-circle"
-                            title="Use when storage has already been provisioned."></span>
-              </label>
+              <input type="radio"
+                     value="regular"
+                     checked={deploymentOption === "regular"}
+                     onChange={selectionChangeCallback} />
+              Hosted Engine Only Deployment
+              <span className="fa fa-lg fa-info-circle"
+                    title="Use when storage has already been provisioned." />
+            </label>
           </div>
           {gdeployFilesFound &&
           <div className="radio">
@@ -208,13 +210,57 @@ const Curtains = ({callback, cancelled, deploymentOption, deploymentType, deploy
             className="btn btn-lg btn-primary"
             onClick={callback}>{button_text}</button>
         </div>
-          <div className="deployment-type-dropbox horizontal-center">
-            <Selectbox optionList={deploymentTypeOptions}
-                       selectedOption={deploymentType}
-                       callBack={(e) => deploymentTypeChangeCallback(e)}/>
-          </div>
+        <div className="deployment-type-dropbox horizontal-center">
+          <Selectbox optionList={deploymentTypeOptions}
+                     selectedOption={deploymentType}
+                     callBack={(e) => deploymentTypeChangeCallback(e)}/>
+        </div>
+        <HeWizardFooter />
       </div>
     </div>
+  )
+};
+
+const HeWizardFooter = () => {
+  return (
+      <div className="he-wizard-footer">
+        <div className="container">
+          <div className="row he-wizard-footer-content">
+            <div className="col-sm-6">
+              <div className="row">
+                <div className="col-sm-3 he-wizard-footer-header">
+                  Getting Started
+                </div>
+                <div className="col-sm-6">
+                  <ul className="he-wizard-footer-links">
+                    <li>
+                      <a href="http://www.ovirt.org">oVirt Homepage</a>
+                    </li>
+                    <li>
+                      <a href="http://www.ovirt.org">oVirt Link 2</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-sm-6">
+              <div className="row">
+                <div className="col-sm-4 he-wizard-footer-header">
+                  More Information
+                </div>
+                <div className="col-sm-6">
+                  <ul className="he-wizard-footer-links">
+                    <li>
+                      <a href="http://www.ovirt.org">oVirt Homepage</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
   )
 };
 

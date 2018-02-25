@@ -580,3 +580,31 @@ div.lun-prop {
     background-color: black;
     color: white;
 }
+
+div.he-wizard-footer {
+    position: fixed;
+    left: 90px;
+    height: 125px;
+    width: 100%;
+    bottom: 0;
+    background-color: #eceff1;
+    border-top: solid lightgray 1px;
+}
+
+div.he-wizard-footer-content {
+    margin-top: 20px;
+}
+
+div.he-wizard-footer-header {
+    font-size: 14px;
+    font-weight: bold;
+    color: darkslategray;
+    text-align: right;
+}
+
+ul.he-wizard-footer-links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
