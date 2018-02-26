@@ -1,7 +1,7 @@
 import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
-import { deploymentTypes, messages, status } from "../constants";
+import {deploymentTypes, headers, messages, status} from "../constants";
 import TargetListContainer from "./iSCSI/TargetList/TargetListContainer";
 import LunListContainer from "./iSCSI/LunList/LunListContainer";
 
@@ -47,9 +47,14 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                     </div>
                 }
 
+                <div className="row">
+                    <div className="col-md-11 he-wizard-step-header">
+                        { headers.STORAGE_STEP }
+                    </div>
+                </div>
+
                 <div className="form-group">
                     <div className="col-md-9">
-                        {/*<span className="pficon fas fa-angle-down" />*/}
                         <h3>Storage Settings</h3>
                     </div>
                 </div>

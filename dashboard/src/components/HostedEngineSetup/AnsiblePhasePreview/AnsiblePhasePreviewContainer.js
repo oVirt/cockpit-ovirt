@@ -104,6 +104,7 @@ class AnsiblePhasePreviewContainer extends Component {
 
         return (
             <AnsiblePhasePreview abortCallBack={this.props.abortCallBack}
+                                 headerText={this.props.headerText}
                                  sections={sections}
                                  executionStarted={this.state.executionStarted}
                                  heSetupModel={this.state.heSetupModel}
@@ -116,6 +117,7 @@ class AnsiblePhasePreviewContainer extends Component {
 }
 
 AnsiblePhasePreviewContainer.propTypes = {
+    headerText: React.PropTypes.string,
     stepName: React.PropTypes.string.isRequired,
     heSetupModel: React.PropTypes.object.isRequired,
     sections: React.PropTypes.array.isRequired,

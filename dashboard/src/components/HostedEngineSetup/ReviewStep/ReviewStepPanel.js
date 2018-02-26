@@ -11,16 +11,18 @@ class ReviewStepPanelContainer extends Component {
 
     render() {
         return (
-            <ReviewStepPanel reviewSteps={this.props.reviewSteps.steps} />
+            <ReviewStepPanel headerText={this.props.headerText}
+                             reviewSteps={this.props.reviewSteps.steps} />
         )
     }
 }
 
 ReviewStepPanelContainer.propTypes = {
+    headerText: React.PropTypes.string,
     reviewSteps: React.PropTypes.object.isRequired
 };
 
-const ReviewStepPanel = ({reviewSteps}) => {
+const ReviewStepPanel = ({headerText, reviewSteps}) => {
     const steps = [];
     let idx = 0;
     reviewSteps.forEach(
@@ -33,10 +35,17 @@ const ReviewStepPanel = ({reviewSteps}) => {
     );
 
     return (
-        <div className="wizard-pf-review-steps">
-            <ul className="list-group">
-                { steps }
-            </ul>
+        <div className="form-horizontal he-form-container">
+            <div className="row">
+                <div className="col-md-11 he-wizard-step-header he-wizard-preview-step-header">
+                    { headerText }
+                </div>
+            </div>
+            <div className="wizard-pf-review-steps">
+                <ul className="list-group">
+                    { steps }
+                </ul>
+            </div>
         </div>
     )
 };

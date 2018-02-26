@@ -131,6 +131,12 @@ export const messages = {
     LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed."
 };
 
+export const headers = {
+    PREPARE_VM_STEP: "Please review the configuration. Once you click the 'Prepare VM' button, a local virtual machine will be started and used to prepare the management services and their data. This operation may take some time depending on your hardware.",
+    STORAGE_STEP: "Please configure the storage domain that will be used to host the disk for the management VM. Please note that the management VM needs to be responsive and reliable enough to be able to manage all resources of your deployment, so highly available storage is preferred.",
+    FINISH_STEP: "Please review the configuration. Once you click the 'Finish Deployment' button, the management VM will be transferred to the configured storage and the configuration of your hosted engine cluster will be finalized. You will be able to use your hosted engine once this step finishes."
+};
+
 export const allowedIntelCpus = [
     "model_Broadwell",
     "model_Broadwell-noTSX",
