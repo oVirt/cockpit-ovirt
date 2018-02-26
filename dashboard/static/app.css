@@ -645,3 +645,20 @@ div.deployment-option-panel-sub-text {
 h3.deployment-option-panel-sub-text {
     width: 250px;
 }
+
+.he-wizard-collapsible-section-icon {
+    display: inline-block;
+    font-size: 20px;
+    margin-right: 5px;
+    width: 13px;
+}
+
+.he-wizard-collapsible-section-header {
+    display: inline-block;
+}
+
+.he-wizard-collapse-section-link, .he-wizard-collapse-section-link:hover {
+    color: #363636;
+    border-bottom: none;
+    text-decoration: none;
+}

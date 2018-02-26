@@ -25,12 +25,12 @@ const rootSshAccessOptions = [
     { key: "without-password", title: "Without Password" }
 ];
 
-const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, errorMsg, errorMsgs,
-                    handleDnsAddressUpdate, handleDnsAddressDelete, handleImportApplianceUpdate, handleVmConfigUpdate,
-                    heSetupModel, importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
+const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
+                        handleDnsAddressUpdate, handleDnsAddressDelete, handleImportApplianceUpdate,
+                        handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel, importAppliance,
+                        showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
     const vmConfig = heSetupModel.vm;
     const vdsmConfig = heSetupModel.vdsm;
-    const storageConfig = heSetupModel.storage;
     const networkConfig = heSetupModel.network;
 
     const maxAvailMem = vmConfig.vmMemSizeMB.range.max.toLocaleString();
@@ -39,6 +39,10 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
     const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
+
+    let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
+    advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
+    const advancedSectionClasses = collapsibleSections["advanced"] ? "collapse" : "";
 
     return (
         <div>
@@ -298,117 +302,124 @@ const HeWizardVm = ({appliances, applPathSelection, cpuArch, deploymentType, err
 
                     <div className="form-group">
                         <div className="col-md-9">
-                            {/*<span className="pficon fas fa-angle-down" />*/}
-                            <h3>Advanced</h3>
+                            <span className={advancedSectionIconClasses} />
+                            <h3 className="he-wizard-collapsible-section-header">
+                                <a className="he-wizard-collapse-section-link"
+                                   onClick={(e) => handleCollapsibleSectionChange("advanced")}>
+                                    Advanced
+                                </a>
+                            </h3>
                         </div>
                     </div>
 
-                    <div className={getClassNames("rootSshPubkey", errorMsgs)}>
-                        <label className="col-md-3 control-label">Root SSH Public Key</label>
-                        <div className="col-md-6">
-                                <textarea className="form-control" style={{width: "250px"}}
-                                          rows={"2"}
-                                          value={vmConfig.rootSshPubkey.value}
-                                          onChange={(e) => handleVmConfigUpdate("rootSshPubkey", e.target.value, "vm")}
-                                />
-                            {errorMsgs.rootSshPubkey && <span className="help-block">{errorMsgs.rootSshPubkey}</span>}
+                    <span className={advancedSectionClasses}>
+                        <div className={getClassNames("rootSshPubkey", errorMsgs)}>
+                            <label className="col-md-3 control-label">Root SSH Public Key</label>
+                            <div className="col-md-6">
+                                    <textarea className="form-control" style={{width: "250px"}}
+                                              rows={"2"}
+                                              value={vmConfig.rootSshPubkey.value}
+                                              onChange={(e) => handleVmConfigUpdate("rootSshPubkey", e.target.value, "vm")}
+                                    />
+                                {errorMsgs.rootSshPubkey && <span className="help-block">{errorMsgs.rootSshPubkey}</span>}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Auto-import Appliance</label>
-                        <div className="col-md-3">
-                            <input type="checkbox"
-                                   checked={importAppliance}
-                                   onChange={(e) => handleImportApplianceUpdate(e.target.checked)}
-                            />
-                        </div>
-                    </div>
-
-                    <div style={importAppliance ? {display: 'none'} : {}}>
                         <div className="form-group">
-                            <label className="col-md-3 control-label">Appliance File</label>
-                            <div className="col-md-6">
-                                <Selectbox optionList={appliances}
-                                           selectedOption={applPathSelection}
-                                           callBack={(e) => handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
+                            <label className="col-md-3 control-label">Auto-import Appliance</label>
+                            <div className="col-md-3">
+                                <input type="checkbox"
+                                       checked={importAppliance}
+                                       onChange={(e) => handleImportApplianceUpdate(e.target.checked)}
                                 />
                             </div>
                         </div>
 
-                        <div className={getClassNames("ovfArchive", errorMsgs)}
-                             style={showApplPath ? {} : { display: 'none' }}>
-                            <label className="col-md-3 control-label">Appliance File Path</label>
-                            <div className="col-md-6">
-                                <input type="text" placeholder="Installation File Path"
-                                       title="Enter the path for the installation file to install."
+                        <div style={importAppliance ? {display: 'none'} : {}}>
+                            <div className="form-group">
+                                <label className="col-md-3 control-label">Appliance File</label>
+                                <div className="col-md-6">
+                                    <Selectbox optionList={appliances}
+                                               selectedOption={applPathSelection}
+                                               callBack={(e) => handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className={getClassNames("ovfArchive", errorMsgs)}
+                                 style={showApplPath ? {} : { display: 'none' }}>
+                                <label className="col-md-3 control-label">Appliance File Path</label>
+                                <div className="col-md-6">
+                                    <input type="text" placeholder="Installation File Path"
+                                           title="Enter the path for the installation file to install."
+                                           className="form-control"
+                                           value={vmConfig.ovfArchive.value}
+                                           onChange={(e) => handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
+                                    />
+                                    {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="col-md-3 control-label">Edit Hosts File &nbsp;
+                                <i className="pficon pficon-info info-icon" rel="tooltip" id="hosts_file"
+                                   title="Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?
+                                              Note: ensuring that this host could resolve the engine VM hostname is still up to you."
+                                />
+                            </label>
+                            <div className="col-md-5">
+                                <input type="checkbox"
+                                       checked={vmConfig.cloudinitVMETCHOSTS.value}
+                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMETCHOSTS", e.target.checked, "vm")}
+                                />
+                            </div>
+                        </div>
+
+                        {isOtopiDeployment &&
+                            <span>
+                                <div className="form-group">
+                                    <label className="col-md-3 control-label">Engine Setup &nbsp;
+                                        <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_setup"
+                                           title="Automatically execute engine-setup on the first boot" />
+                                    </label>
+                                    <div className="col-md-1">
+                                        <input type="checkbox"
+                                               checked={vmConfig.cloudinitExecuteEngineSetup.value}
+                                               onChange={(e) => handleVmConfigUpdate("cloudinitExecuteEngineSetup", e.target.checked, "vm")}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="col-md-3 control-label">Engine Restart &nbsp;
+                                        <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_restart"
+                                           title="Automatically restart the engine VM as a monitored service after engine-setup" />
+                                    </label>
+                                    <div className="col-md-1">
+                                        <input type="checkbox"
+                                               checked={vmConfig.automateVMShutdown.value}
+                                               onChange={(e) => handleVmConfigUpdate("automateVMShutdown", e.target.checked, "vm")}
+                                        />
+                                    </div>
+                                </div>
+                            </span>
+                        }
+
+                        <div className={getClassNames("host_name", errorMsgs)}>
+                            <label className="col-md-3 control-label">Host FQDN</label>
+                            <div className="col-md-4">
+                                <input type="text"
+                                       placeholder="engine-host.example.com"
+                                       title="Enter the host's FQDN."
                                        className="form-control"
-                                       value={vmConfig.ovfArchive.value}
-                                       onChange={(e) => handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
+                                       value={networkConfig.host_name.value}
+                                       onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
                                 />
-                                {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
+                                {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
                             </div>
                         </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Edit Hosts File &nbsp;
-                            <i className="pficon pficon-info info-icon" rel="tooltip" id="hosts_file"
-                               title="Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?
-                                          Note: ensuring that this host could resolve the engine VM hostname is still up to you."
-                            />
-                        </label>
-                        <div className="col-md-5">
-                            <input type="checkbox"
-                                   checked={vmConfig.cloudinitVMETCHOSTS.value}
-                                   onChange={(e) => handleVmConfigUpdate("cloudinitVMETCHOSTS", e.target.checked, "vm")}
-                            />
-                        </div>
-                    </div>
-
-                    {isOtopiDeployment &&
-                        <span>
-                            <div className="form-group">
-                                <label className="col-md-3 control-label">Engine Setup &nbsp;
-                                    <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_setup"
-                                       title="Automatically execute engine-setup on the first boot" />
-                                </label>
-                                <div className="col-md-1">
-                                    <input type="checkbox"
-                                           checked={vmConfig.cloudinitExecuteEngineSetup.value}
-                                           onChange={(e) => handleVmConfigUpdate("cloudinitExecuteEngineSetup", e.target.checked, "vm")}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label className="col-md-3 control-label">Engine Restart &nbsp;
-                                    <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_restart"
-                                       title="Automatically restart the engine VM as a monitored service after engine-setup" />
-                                </label>
-                                <div className="col-md-1">
-                                    <input type="checkbox"
-                                           checked={vmConfig.automateVMShutdown.value}
-                                           onChange={(e) => handleVmConfigUpdate("automateVMShutdown", e.target.checked, "vm")}
-                                    />
-                                </div>
-                            </div>
-                        </span>
-                    }
-
-                    <div className={getClassNames("host_name", errorMsgs)}>
-                        <label className="col-md-3 control-label">Host FQDN</label>
-                        <div className="col-md-4">
-                            <input type="text"
-                                   placeholder="engine-host.example.com"
-                                   title="Enter the host's FQDN."
-                                   className="form-control"
-                                   value={networkConfig.host_name.value}
-                                   onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
-                            />
-                            {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
-                        </div>
-                    </div>
+                    </span>
                 </div>
             </form>
         </div>

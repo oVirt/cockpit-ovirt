@@ -38,7 +38,10 @@ class HeWizardStorageContainer extends Component {
             lunRetrievalStatus: status.EMPTY,
             storageConfig: props.model.model.storage,
             errorMsg: "",
-            errorMsgs: {}
+            errorMsgs: {},
+            collapsibleSections: {
+                advanced: true
+            }
         };
 
         this.iscsiUtil = new IscsiUtil(props.model.model);
@@ -51,6 +54,7 @@ class HeWizardStorageContainer extends Component {
         this.getIscsiLunList = this.getIscsiLunList.bind(this);
         this.handleTargetSelection = this.handleTargetSelection.bind(this);
         this.handleLunSelection = this.handleLunSelection.bind(this);
+        this.handleCollapsibleSectionChange = this.handleCollapsibleSectionChange.bind(this);
     }
 
     componentWillMount() {
@@ -121,6 +125,12 @@ class HeWizardStorageContainer extends Component {
         this.setState({ errorMsg, errorMsgs });
     }
 
+    handleCollapsibleSectionChange(sectionName) {
+        const sections = this.state.collapsibleSections;
+        sections[sectionName] = !sections[sectionName];
+        this.setState(sections);
+    }
+
     validateAllInputs() {
         let errorMsg = "";
         let errorMsgs = {};
@@ -182,9 +192,11 @@ class HeWizardStorageContainer extends Component {
     render() {
         return (
             <HeWizardStorage
+                collapsibleSections={this.state.collapsibleSections}
                 deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
+                handleCollapsibleSectionChange={this.handleCollapsibleSectionChange}
                 handleIscsiTargetRequest={this.getIscsiTargetList}
                 handleLunSelection={this.handleLunSelection}
                 handleTargetSelection={this.handleTargetSelection}
