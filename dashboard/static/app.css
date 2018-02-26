@@ -469,8 +469,9 @@ label.value-label {
 }
 
 .deployment-type-dropbox {
+    display: inline-block;
     width: 300px;
-    margin-top: 30px;
+    margin-top: 50px;
 }
 
 .horizontal-center {
@@ -607,4 +608,40 @@ ul.he-wizard-footer-links {
     padding: 0;
     list-style: none;
     text-align: left;
+}
+
+div.he-wizard-deployment-options-container {
+    margin-top: 30px;
+}
+
+span.deployment-option-panel-container {
+    display: inline-block;
+    margin-right: 100px;
+    vertical-align: top;
+}
+
+span.last-deployment-option-panel-container {
+    margin-right: 0;
+}
+
+div.deployment-option-panel-icon {
+    font-size: 100px;
+    line-height: 100px;
+    color: #9c9c9c;
+}
+
+span.deployment-option-panel-main-text {
+    width: 150px;
+}
+
+h3.deployment-option-panel-main-text {
+    line-height: 1.5;
+}
+
+div.deployment-option-panel-sub-text {
+    width: 250px;
+}
+
+h3.deployment-option-panel-sub-text {
+    width: 250px;
 }

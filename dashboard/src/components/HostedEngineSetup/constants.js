@@ -83,7 +83,8 @@ export const status = {
 
 export const deploymentOption = {
     REGULAR: "regular",
-    HYPERCONVERGED: "hci"
+    HYPERCONVERGED: "hci",
+    USE_EXISTING_GLUSTER_CONFIG: "useExistingConfig"
 };
 
 export const resourceConstants = {
