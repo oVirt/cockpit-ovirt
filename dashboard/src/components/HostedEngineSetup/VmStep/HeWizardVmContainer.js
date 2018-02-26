@@ -21,7 +21,10 @@ class HeWizardVmContainer extends Component {
             cpuArch: {},
             errorMsg: "",
             errorMsgs: {},
-            warningMsgs: {}
+            warningMsgs: {},
+            collapsibleSections: {
+                advanced: true
+            }
         };
 
         this.handleDnsAddressDelete = this.handleDnsAddressDelete.bind(this);
@@ -33,6 +36,7 @@ class HeWizardVmContainer extends Component {
         this.setApplianceFiles = this.setApplianceFiles.bind(this);
         this.setValidationValues = this.setValidationValues.bind(this);
         this.handleVmConfigUpdate = this.handleVmConfigUpdate.bind(this);
+        this.handleCollapsibleSectionChange = this.handleCollapsibleSectionChange.bind(this);
         this.handleApplianceFileUpdate = this.handleApplianceFileUpdate.bind(this);
         this.handleImportApplianceUpdate = this.handleImportApplianceUpdate.bind(this);
         this.setNetworkConfigDisplaySettings = this.setNetworkConfigDisplaySettings.bind(this);
@@ -154,6 +158,12 @@ class HeWizardVmContainer extends Component {
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
         this.setState({ heSetupModel });
+    }
+
+    handleCollapsibleSectionChange(sectionName) {
+        const sections = this.state.collapsibleSections;
+        sections[sectionName] = !sections[sectionName];
+        this.setState(sections);
     }
 
     handleApplianceFileUpdate(value) {
@@ -297,6 +307,7 @@ class HeWizardVmContainer extends Component {
             <HeWizardVm
                 appliances={this.state.appliances}
                 applPathSelection={this.state.applPathSelection}
+                collapsibleSections={this.state.collapsibleSections}
                 cpuArch={this.state.cpuArch}
                 deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
@@ -305,6 +316,7 @@ class HeWizardVmContainer extends Component {
                 handleDnsAddressDelete={this.handleDnsAddressDelete}
                 handleImportApplianceUpdate={this.handleImportApplianceUpdate}
                 handleVmConfigUpdate={this.handleVmConfigUpdate}
+                handleCollapsibleSectionChange={this.handleCollapsibleSectionChange}
                 heSetupModel={this.state.heSetupModel}
                 importAppliance={this.state.importAppliance}
                 showApplPath={this.state.showApplPath}

@@ -17,10 +17,10 @@ const nfsVersions = [
     { key: "4", title: "v4" }
 ];
 
-const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTargetRequest, handleStorageConfigUpdate,
-                             handleLunSelection, handleTargetSelection, iscsiLunData, iscsiTargetData,
-                             lunRetrievalStatus, selectedIscsiTarget, selectedLun, storageConfig,
-                             targetRetrievalStatus}) => {
+const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMsgs, handleCollapsibleSectionChange,
+                             handleIscsiTargetRequest, handleStorageConfigUpdate, handleLunSelection,
+                             handleTargetSelection, iscsiLunData, iscsiTargetData, lunRetrievalStatus,
+                             selectedIscsiTarget, selectedLun, storageConfig, targetRetrievalStatus}) => {
     const nfsSelected = storageConfig.domainType.value.includes("nfs");
     const iscsiSelected = storageConfig.domainType.value === "iscsi";
     const glusterSelected = storageConfig.domainType.value === "glusterfs";
@@ -28,6 +28,10 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     let targetRetrievalBtnClasses = "btn btn-primary";
     targetRetrievalBtnClasses += targetRetrievalStatus === status.POLLING ? " disabled" : "";
+
+    let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
+    advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
+    const advancedSectionClasses = collapsibleSections["advanced"] ? "collapse" : "";
 
     return (
         <div>
@@ -277,55 +281,62 @@ const HeWizardStorage = ({deploymentType, errorMsg, errorMsgs, handleIscsiTarget
 
                 <div className="form-group">
                     <div className="col-md-9">
-                        {/*<span className="pficon fas fa-angle-down" />*/}
-                        <h3>Advanced</h3>
+                        <span className={advancedSectionIconClasses} />
+                        <h3 className="he-wizard-collapsible-section-header">
+                            <a className="he-wizard-collapse-section-link"
+                               onClick={(e) => handleCollapsibleSectionChange("advanced")}>
+                                Advanced
+                            </a>
+                        </h3>
                     </div>
                 </div>
 
-                <div className={getClassNames("imgSizeGB", errorMsgs)}>
-                    <label className="col-md-3 control-label">Disk Size (GB)</label>
-                    <div className="col-md-6 he-text-with-units">
-                        <input type="number" style={{width: "60px"}}
-                               min={storageConfig.imgSizeGB.range.min}
-                               max={storageConfig.imgSizeGB.range.max}
-                               placeholder="Disk Size"
-                               title="Enter the disk size for the VM."
-                               className="form-control"
-                               value={storageConfig.imgSizeGB.value}
-                               onChange={(e) => handleStorageConfigUpdate("imgSizeGB", e.target.value)}
-                        />
-                        {errorMsgs.imgSizeGB && <span className="help-block">{errorMsgs.imgSizeGB}</span>}
+                <span className={advancedSectionClasses}>
+                    <div className={getClassNames("imgSizeGB", errorMsgs)}>
+                        <label className="col-md-3 control-label">Disk Size (GB)</label>
+                        <div className="col-md-6 he-text-with-units">
+                            <input type="number" style={{width: "60px"}}
+                                   min={storageConfig.imgSizeGB.range.min}
+                                   max={storageConfig.imgSizeGB.range.max}
+                                   placeholder="Disk Size"
+                                   title="Enter the disk size for the VM."
+                                   className="form-control"
+                                   value={storageConfig.imgSizeGB.value}
+                                   onChange={(e) => handleStorageConfigUpdate("imgSizeGB", e.target.value)}
+                            />
+                            {errorMsgs.imgSizeGB && <span className="help-block">{errorMsgs.imgSizeGB}</span>}
+                        </div>
                     </div>
-                </div>
 
-                <div style={nfsSelected ? {} : { display: 'none' }}>
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">NFS Version</label>
-                        <div className="col-md-6">
-                            <div style={{width: "120px"}}>
-                                <Selectbox optionList={nfsVersions}
-                                           selectedOption={storageConfig.nfsVersion.value}
-                                           callBack={(e) => handleStorageConfigUpdate("nfsVersion", e)}
+                    <div style={nfsSelected ? {} : { display: 'none' }}>
+                        <div className="form-group">
+                            <label className="col-md-3 control-label">NFS Version</label>
+                            <div className="col-md-6">
+                                <div style={{width: "120px"}}>
+                                    <Selectbox optionList={nfsVersions}
+                                               selectedOption={storageConfig.nfsVersion.value}
+                                               callBack={(e) => handleStorageConfigUpdate("nfsVersion", e)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("storageDomain", errorMsgs)}>
+                            <label className="col-md-3 control-label">Storage Domain Name</label>
+                            <div className="col-md-6">
+                                <input type="text" style={{width: "250px"}}
+                                       title=""
+                                       className="form-control"
+                                       value={storageConfig.storageDomain.value}
+                                       onChange={(e) => handleStorageConfigUpdate("storageDomain", e.target.value)}
                                 />
+                                {errorMsgs.storageDomain &&
+                                <span className="help-block">{errorMsgs.storageDomain}</span>
+                                }
                             </div>
                         </div>
                     </div>
-
-                    <div className={getClassNames("storageDomain", errorMsgs)}>
-                        <label className="col-md-3 control-label">Storage Domain Name</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "250px"}}
-                                   title=""
-                                   className="form-control"
-                                   value={storageConfig.storageDomain.value}
-                                   onChange={(e) => handleStorageConfigUpdate("storageDomain", e.target.value)}
-                            />
-                            {errorMsgs.storageDomain &&
-                            <span className="help-block">{errorMsgs.storageDomain}</span>
-                            }
-                        </div>
-                    </div>
-                </div>
+                </span>
             </form>
         </div>
     )
