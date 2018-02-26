@@ -15,7 +15,7 @@ class HostedEngineSetup extends Component {
     this.state = {
       cancelled: false,
       deploymentOption: deploymentOption.REGULAR,
-      deploymentType: deploymentTypes.OTOPI_DEPLOYMENT,
+      deploymentType: deploymentTypes.ANSIBLE_DEPLOYMENT,
       state: heSetupState.POLLING,
       gdeployAvailable: false,
       gdeployFilesFound: false,
@@ -33,6 +33,7 @@ class HostedEngineSetup extends Component {
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.redeploy = this.redeploy.bind(this);
     this.deploymentTypeChange = this.deploymentTypeChange.bind(this);
+    this.startButtonHandler = this.startButtonHandler.bind(this);
 
     CheckIfRegistered(this.registeredCallback);
   }
@@ -55,8 +56,20 @@ class HostedEngineSetup extends Component {
       this.startSetup();
     } else if (this.state.deploymentOption === deploymentOption.HYPERCONVERGED) {
       this.startGdeploy();
-    } else if (this.state.deploymentOption === 'useExistingConfig') {
-        this.startSetup([ constants.heAnsfileFile, constants.heCommonAnsFile ]);
+    } else if (this.state.deploymentOption === deploymentOption.USE_EXISTING_GLUSTER_CONFIG) {
+        this.startSetup([constants.heAnsfileFile, constants.heCommonAnsFile]);
+    }
+  }
+
+  startButtonHandler(option) {
+    this.setState({ cancelled: false });
+
+    if (option === deploymentOption.REGULAR) {
+      this.startSetup();
+    } else if (option === deploymentOption.HYPERCONVERGED) {
+      this.startGdeploy();
+    } else if (option === deploymentOption.USE_EXISTING_GLUSTER_CONFIG) {
+      this.startSetup([constants.heAnsfileFile, constants.heCommonAnsFile]);
     }
   }
 
@@ -124,6 +137,7 @@ class HostedEngineSetup extends Component {
             gdeployAvailable={this.state.gdeployAvailable}
             gdeployFilesFound={this.state.gdeployFilesFound}
             selectionChangeCallback={this.handleOptionChange}
+            startButtonHandler={this.startButtonHandler}
             />
         }
         {this.state.state === heSetupState.HOSTED_ENGINE &&
@@ -142,8 +156,8 @@ class HostedEngineSetup extends Component {
   }
 }
 
-const Curtains = ({callback, cancelled, deploymentOption, deploymentType, deploymentTypeChangeCallback,
-                      gdeployAvailable, gdeployFilesFound, selectionChangeCallback}) => {
+const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, deploymentTypeChangeCallback,
+                      gdeployAvailable, gdeployFilesFound, selectionChangeCallback, startButtonHandler}) => {
   let message = cancelled ?
     "Hosted engine setup was aborted" :
     "Configure and install a highly-available virtual machine which will \
@@ -174,50 +188,48 @@ const Curtains = ({callback, cancelled, deploymentOption, deploymentType, deploy
         <p className="curtains-message">
           {message}
         </p>
-        <form>
-          <div className="radio">
-            <label>
-              <input type="radio"
-                     value="regular"
-                     checked={deploymentOption === "regular"}
-                     onChange={selectionChangeCallback} />
-              Hosted Engine Only Deployment
-              <span className="fa fa-lg fa-info-circle"
-                    title="Use when storage has already been provisioned." />
-            </label>
-          </div>
-          {gdeployFilesFound &&
-          <div className="radio">
-            <label>
-              <input type="radio" value="useExistingConfig"
-                     checked={deploymentOption === 'useExistingConfig'}
-                     onChange={selectionChangeCallback} />
-              Hosted Engine using existing Gluster configuration
-            </label>
-          </div>
-          }
-          <div className={gdeployClass}  data-placement="top" title={gdeployTitle}>
-            <label>
-              <input type="radio" value="hci" disabled={!gdeployAvailable}
-                checked={deploymentOption === "hci"}
-                onChange={selectionChangeCallback} />
-              Hosted Engine with Gluster
-              </label>
-          </div>
-        </form>
-        <div className="blank-slate-pf-main-action">
-          <button
-            className="btn btn-lg btn-primary"
-            onClick={callback}>{button_text}</button>
-        </div>
-        <div className="deployment-type-dropbox horizontal-center">
-          <Selectbox optionList={deploymentTypeOptions}
-                     selectedOption={deploymentType}
-                     callBack={(e) => deploymentTypeChangeCallback(e)}/>
+        <div className="he-wizard-deployment-options-container">
+          <DeploymentOptionPanel iconType={"pficon-cluster"}
+                                 deploymentTypeOption={deploymentOption.REGULAR}
+                                 mainText={"Hosted Engine"}
+                                 subText={"Deploy oVirt hosted engine on storage that has already been provisioned"}
+                                 buttonText={"Start"}
+                                 buttonCallback={startButtonHandler} />
+
+          <DeploymentOptionPanel iconType={"fa-database"}
+                                 deploymentTypeOption={deploymentOption.HYPERCONVERGED}
+                                 isLastOption
+                                 mainText={"Hyperconverged"}
+                                 subText={"Configure gluster storage and oVirt hosted engine"}
+                                 buttonText={"Start"}
+                                 buttonCallback={startButtonHandler} />
         </div>
         <HeWizardFooter />
       </div>
     </div>
+  )
+};
+
+const DeploymentOptionPanel = ({iconType, mainText, subText, buttonText, buttonCallback, deploymentTypeOption,
+                                   isLastOption}) => {
+  let containerClasses = "deployment-option-panel-container";
+  containerClasses += isLastOption ? " last-deployment-option-panel-container" : "";
+
+  return (
+    <span className={containerClasses}>
+     <div className="deployment-option-panel-icon">
+       <span className={iconType} />
+     </div>
+     <span className="deployment-option-panel-main-text">
+       <h3>{mainText}</h3>
+     </span>
+     <div className="deployment-option-panel-sub-text">
+       <h5>{subText}</h5>
+     </div>
+     <button className="btn btn-primary" onClick={() => buttonCallback(deploymentTypeOption)}>
+       {buttonText}
+     </button>
+   </span>
   )
 };
 
@@ -234,10 +246,9 @@ const HeWizardFooter = () => {
                 <div className="col-sm-6">
                   <ul className="he-wizard-footer-links">
                     <li>
-                      <a href="http://www.ovirt.org">oVirt Homepage</a>
-                    </li>
-                    <li>
-                      <a href="http://www.ovirt.org">oVirt Link 2</a>
+                      <a href="https://ovirt.org/documentation/self-hosted/Self-Hosted_Engine_Guide/">
+                        Installation Guide
+                      </a>
                     </li>
                   </ul>
                 </div>
