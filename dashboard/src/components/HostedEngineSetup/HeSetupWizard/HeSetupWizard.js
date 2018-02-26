@@ -1,5 +1,5 @@
 import React from 'react'
-import { deploymentTypes, status, messages, ansiblePhases, wizardSections as sectNames } from '../constants'
+import {deploymentTypes, status, messages, ansiblePhases, wizardSections as sectNames, headers} from '../constants'
 import HeWizardNetworkContainer from '../NetworkStep/HeWizardNetworkContainer'
 import HeWizardEngineContainer from '../EngineStep/HeWizardEngineContainer'
 import HeWizardStorageContainer from '../StorageStep/HeWizardStorageContainer'
@@ -40,6 +40,7 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleF
                                              heSetupModel={heSetupModel.model}/>
                     <AnsiblePhasePreviewContainer abortCallBack={abortCallback}
                                                   stepName="Prepare VM"
+                                                  headerText={headers.PREPARE_VM_STEP}
                                                   executeBtnText="Prepare VM"
                                                   heSetupModel={heSetupModel.model}
                                                   sections={[sectNames.VM, sectNames.ENGINE]}
@@ -50,6 +51,7 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleF
                     <AnsiblePhasePreviewContainer abortCallBack={abortCallback}
                                                   isLastStep={true}
                                                   stepName="Finish"
+                                                  headerText={headers.FINISH_STEP}
                                                   executeBtnText="Finish Deployment"
                                                   reattemptBtnText="Redeploy"
                                                   heSetupModel={heSetupModel.model}

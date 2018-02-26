@@ -21,6 +21,12 @@ const HeWizardNetwork = ({deploymentType, errorMsg, errorMsgs, gatewayState, int
                 }
 
                 <div className="form-group">
+                    <div className="col-md-9">
+                        <h3>Network Settings</h3>
+                    </div>
+                </div>
+
+                <div className="form-group">
                     <label className="col-md-3 control-label">Bridge Interface</label>
                     <div className="col-md-6">
                         <div style={{width: "120px"}}>

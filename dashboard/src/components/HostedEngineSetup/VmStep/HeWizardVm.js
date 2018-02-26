@@ -70,7 +70,6 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                     <span>
                         <div className="form-group">
                             <div className="col-md-9">
-                                {/*<span className="pficon fas fa-angle-down" />*/}
                                 <h3>Host Settings</h3>
                             </div>
                         </div>
