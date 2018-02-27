@@ -294,7 +294,7 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
 
                 <span className={advancedSectionClasses}>
                     <div className={getClassNames("imgSizeGB", errorMsgs)}>
-                        <label className="col-md-3 control-label">Disk Size (GB)</label>
+                        <label className="col-md-3 control-label">Disk Size (GiB)</label>
                         <div className="col-md-6 he-text-with-units">
                             <input type="number" style={{width: "60px"}}
                                    min={storageConfig.imgSizeGB.range.min}
