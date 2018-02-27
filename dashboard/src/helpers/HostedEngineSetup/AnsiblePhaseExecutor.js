@@ -48,10 +48,12 @@ class AnsiblePhaseExecutor {
                         self._exitCallback(options["exit-status"], denied);
                     });
                 break;
-            case phases.TARGET_VM:
-                self.performSetupJobs([outputPaths.FINAL_CLEAN, outputPaths.TARGET_VM])
+            case phases.CREATE_STORAGE:
+                self.performSetupJobs([outputPaths.CREATE_STORAGE, outputPaths.FINAL_CLEAN, outputPaths.TARGET_VM])
+                    .then(() => self.varFileGenerator.writeVarFileForPhase(phases.CREATE_STORAGE))
+                    .then(varFilePath => self.executePlaybook(phases.CREATE_STORAGE, varFilePath))
                     .then(() => self.varFileGenerator.writeVarFileForPhase(phases.TARGET_VM))
-                    .then(varFilePath => self.executePlaybook(phase, varFilePath))
+                    .then(varFilePath => self.executePlaybook(phases.TARGET_VM, varFilePath))
                     .then(() => self.varFileGenerator.writeVarFileForPhase(phases.FINAL_CLEAN))
                     .then(varFilePath => self.executePlaybook(phases.FINAL_CLEAN, varFilePath))
                     .then(options => self._exitCallback(options["exit-status"]))

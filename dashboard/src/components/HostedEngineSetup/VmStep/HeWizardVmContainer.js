@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
 import { getErrorMsgForProperty, validatePropsForUiStage } from '../Validation'
-import { allIntelCpus, amdCpuTypes, configValues, intelCpuTypes, messages, resourceConstants } from '../constants'
+import { allIntelCpus, amdCpuTypes, configValues, defaultInterfaces, intelCpuTypes, messages,
+    resourceConstants, status as gwState } from '../constants'
 import HeWizardVm from './HeWizardVm'
+import { pingGateway } from '../../../helpers/HostedEngineSetupUtil'
 
 const defaultAppliances = [
     { key: "Manually Select", title: "Manually Select" }
@@ -19,6 +21,8 @@ class HeWizardVmContainer extends Component {
             applPathSelection: "",
             appliances: defaultAppliances,
             cpuArch: {},
+            gatewayState: gwState.EMPTY,
+            interfaces: defaultInterfaces,
             errorMsg: "",
             errorMsgs: {},
             warningMsgs: {},
@@ -26,6 +30,8 @@ class HeWizardVmContainer extends Component {
                 advanced: true
             }
         };
+
+        this.lastGatewayAddress = "";
 
         this.handleDnsAddressDelete = this.handleDnsAddressDelete.bind(this);
         this.handleDnsAddressUpdate = this.handleDnsAddressUpdate.bind(this);
@@ -40,6 +46,7 @@ class HeWizardVmContainer extends Component {
         this.handleApplianceFileUpdate = this.handleApplianceFileUpdate.bind(this);
         this.handleImportApplianceUpdate = this.handleImportApplianceUpdate.bind(this);
         this.setNetworkConfigDisplaySettings = this.setNetworkConfigDisplaySettings.bind(this);
+        this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
         this.validateRootPasswordMatch = this.validateRootPasswordMatch.bind(this);
         this.validateCpuModelSelection = this.validateCpuModelSelection.bind(this);
@@ -81,8 +88,13 @@ class HeWizardVmContainer extends Component {
 
     setDefaultValues() {
         const heSetupModel = this.state.heSetupModel;
-        const cpuArch = this.props.defaultsProvider.getCpuArchitecture();
+        const defaultsProvider = this.props.defaultsProvider;
 
+        this.setState({ interfaces: defaultsProvider.getNetworkInterfaces() });
+        this.handleVmConfigUpdate("bridgeIf", defaultsProvider.getDefaultInterface(), "network");
+        this.handleVmConfigUpdate("gateway", defaultsProvider.getDefaultGateway(), "network");
+
+        const cpuArch = defaultsProvider.getCpuArchitecture();
         this.setCpuModel(cpuArch, heSetupModel);
         this.setApplianceFiles();
 
@@ -211,6 +223,38 @@ class HeWizardVmContainer extends Component {
         this.setState({ model });
     }
 
+    checkGatewayPingability(address) {
+        let errorMsg = this.state.errorMsg;
+        errorMsg = "";
+
+        let errorMsgs = this.state.errorMsgs;
+        errorMsgs.gateway = "";
+
+        let gatewayState = this.state.gatewayState;
+        gatewayState = gwState.POLLING;
+
+        this.setState({ gatewayState, errorMsg, errorMsgs });
+
+        this.lastGatewayAddress = address;
+
+        let self = this;
+        pingGateway(address)
+            .done(function() {
+                if (address === self.lastGatewayAddress) {
+                    gatewayState = gwState.SUCCESS;
+                    self.setState({errorMsg, gatewayState});
+                }
+            })
+            .fail(function() {
+                if (address === self.lastGatewayAddress) {
+                    errorMsg = messages.GENERAL_ERROR_MSG;
+                    errorMsgs.gateway = messages.IP_NOT_PINGABLE;
+                    gatewayState = gwState.FAILURE;
+                    self.setState({errorMsg, errorMsgs, gatewayState});
+                }
+            });
+    }
+
     validateConfigUpdate(propName, config) {
         let errorMsg = this.state.errorMsg;
         const errorMsgs = {};
@@ -229,6 +273,10 @@ class HeWizardVmContainer extends Component {
 
         if (propName === "cpu") {
             this.validateCpuModelSelection(errorMsgs);
+        }
+
+        if (propName === "gateway" && propErrorMsg === "") {
+            this.checkGatewayPingability(prop.value);
         }
 
         this.setState({ errorMsg, errorMsgs });
@@ -282,7 +330,8 @@ class HeWizardVmContainer extends Component {
     validateAllInputs() {
         let errorMsg = "";
         let errorMsgs = {};
-        let propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs);
+        let propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs) ||
+            this.state.gatewayState === gwState.FAILURE;
         let passwordsMatch = this.validateRootPasswordMatch(errorMsgs);
 
         if (!propsAreValid || !passwordsMatch) {
@@ -294,7 +343,6 @@ class HeWizardVmContainer extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState){
-
         if(!this.props.validating && nextProps.validating){
             this.props.validationCallBack(this.validateAllInputs())
         }
@@ -316,6 +364,8 @@ class HeWizardVmContainer extends Component {
                 deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
+                gatewayState={this.state.gatewayState}
+                interfaces={this.state.interfaces}
                 handleDnsAddressUpdate={this.handleDnsAddressUpdate}
                 handleDnsAddressDelete={this.handleDnsAddressDelete}
                 handleImportApplianceUpdate={this.handleImportApplianceUpdate}

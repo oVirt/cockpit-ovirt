@@ -353,23 +353,25 @@ export class HeSetupModel {
             network: {
                 bridgeIf: {
                     name: "bridgeIf",
+                    ansibleVarName: "BRIDGE_IF",
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "Bridge Interface",
                     value: "",
                     type: types.STRING,
                     showInReview: true,
-                    uiStage: "Network",
+                    uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
                 },
                 bridgeName: {
                     name: "bridgeName",
                     ansibleVarName: "BRIDGE",
-                    ansiblePhasesUsed: [phases.TARGET_VM],
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Bridge Name",
                     value: "ovirtmgmt",
                     type: types.STRING,
                     showInReview: true,
-                    uiStage: "Network",
+                    uiStage: "VM",
                     useInAnswerFile: true,
                     required: true
                 },
@@ -391,7 +393,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: true,
-                    uiStage: "Network",
+                    uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
                     regex: Validation.ipAddress,
@@ -553,7 +555,7 @@ export class HeSetupModel {
                 cloudinitVMStaticCIDR: {
                     name: "cloudinitVMStaticCIDR",
                     ansibleVarName: "VM_IP_ADDR",
-                    ansiblePhasesUsed: [phases.TARGET_VM],
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "IP Address",
                     value: "",
                     type: types.STRING,

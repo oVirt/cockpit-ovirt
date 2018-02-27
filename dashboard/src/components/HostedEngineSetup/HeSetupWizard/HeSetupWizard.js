@@ -56,18 +56,6 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleF
                                                       sections={[sectNames.STORAGE]}
                                                       phase={ansiblePhases.CREATE_STORAGE}/>
                     </MultiPartStepContainer>
-                    <MultiPartStepContainer stepName={"Network"}>
-                        <HeWizardNetworkContainer stepName="Network"
-                                                  deploymentType={deploymentType}
-                                                  heSetupModel={heSetupModel.model}
-                                                  systemData={systemData}
-                                                  defaultsProvider={defaultsProvider}/>
-                        <AnsiblePhasePreviewContainer abortCallBack={abortCallback}
-                                                      stepName={"Preview"}
-                                                      heSetupModel={heSetupModel.model}
-                                                      sections={[sectNames.NETWORK]}
-                                                      phase={ansiblePhases.TARGET_VM}/>
-                    </MultiPartStepContainer>
                 </Wizard>
             }
 
