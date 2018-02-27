@@ -257,7 +257,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                 </div>
 
                 <div className={getClassNames("vmMemSizeMB", errorMsgs)}>
-                    <label className="col-md-3 control-label">Memory Size (MB)</label>
+                    <label className="col-md-3 control-label">Memory Size (MiB)</label>
                     <div className="col-md-6 he-text-with-units">
                         <input type="number"
                                min={vmConfig.vmMemSizeMB.range.min}
