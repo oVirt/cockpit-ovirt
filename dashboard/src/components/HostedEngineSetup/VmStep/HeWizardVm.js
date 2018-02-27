@@ -326,42 +326,6 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                         </div>
 
                         <div className="form-group">
-                            <label className="col-md-3 control-label">Auto-import Appliance</label>
-                            <div className="col-md-3">
-                                <input type="checkbox"
-                                       checked={importAppliance}
-                                       onChange={(e) => handleImportApplianceUpdate(e.target.checked)}
-                                />
-                            </div>
-                        </div>
-
-                        <div style={importAppliance ? {display: 'none'} : {}}>
-                            <div className="form-group">
-                                <label className="col-md-3 control-label">Appliance File</label>
-                                <div className="col-md-6">
-                                    <Selectbox optionList={appliances}
-                                               selectedOption={applPathSelection}
-                                               callBack={(e) => handleVmConfigUpdate("ovfArchiveSelect", e, "vm")}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className={getClassNames("ovfArchive", errorMsgs)}
-                                 style={showApplPath ? {} : { display: 'none' }}>
-                                <label className="col-md-3 control-label">Appliance File Path</label>
-                                <div className="col-md-6">
-                                    <input type="text" placeholder="Installation File Path"
-                                           title="Enter the path for the installation file to install."
-                                           className="form-control"
-                                           value={vmConfig.ovfArchive.value}
-                                           onChange={(e) => handleVmConfigUpdate("ovfArchive", e.target.value, "vm")}
-                                    />
-                                    {errorMsgs.ovfArchive && <span className="help-block">{errorMsgs.ovfArchive}</span>}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="form-group">
                             <label className="col-md-3 control-label">Edit Hosts File &nbsp;
                                 <i className="pficon pficon-info info-icon" rel="tooltip" id="hosts_file"
                                    title="Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?
