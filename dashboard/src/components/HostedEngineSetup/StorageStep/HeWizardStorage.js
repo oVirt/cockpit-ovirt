@@ -13,6 +13,7 @@ const storageTypes = [
 ];
 
 const nfsVersions = [
+    { key: "auto", title: "Auto" },
     { key: "3", title: "v3" },
     { key: "4", title: "v4" }
 ];

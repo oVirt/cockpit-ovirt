@@ -140,7 +140,7 @@ export class HeSetupModel {
                     ansibleVarName: "NFS_VERSION",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "NFS Version",
-                    value: "3",
+                    value: "auto",
                     type: types.STRING,
                     showInReview: true,
                     uiStage: "Storage",
