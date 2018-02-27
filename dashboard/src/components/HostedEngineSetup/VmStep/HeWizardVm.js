@@ -2,7 +2,7 @@ import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
-import {amdCpuTypes, deploymentTypes, intelCpuTypes, messages} from "../constants"
+import {amdCpuTypes, deploymentTypes, intelCpuTypes, messages, status as gwState} from "../constants"
 
 const consoleTypes = [
     { key: "vnc", title: "VNC" },
@@ -26,9 +26,9 @@ const rootSshAccessOptions = [
 ];
 
 const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
-                        handleDnsAddressUpdate, handleDnsAddressDelete, handleImportApplianceUpdate,
-                        handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel, importAppliance,
-                        showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
+                        gatewayState, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete,
+                        handleImportApplianceUpdate, handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel,
+                        importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
     const vmConfig = heSetupModel.vm;
     const vdsmConfig = heSetupModel.vdsm;
     const networkConfig = heSetupModel.network;
@@ -39,6 +39,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
     const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
+    const gatewayPingPending = gatewayState === gwState.POLLING;
 
     let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
@@ -192,6 +193,18 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                     </div>
                 </div>
 
+                <div className="form-group">
+                    <label className="col-md-3 control-label">Bridge Interface</label>
+                    <div className="col-md-6">
+                        <div style={{width: "120px"}}>
+                            <Selectbox optionList={interfaces}
+                                       selectedOption={networkConfig.bridgeIf.value}
+                                       callBack={(e) => handleVmConfigUpdate("bridgeIf", e, "network")}
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div className={getClassNames("cloudinitRootPwd", errorMsgs)}>
                     <label className="col-md-3 control-label">Root Password</label>
                     <div className="col-md-3">
@@ -337,6 +350,37 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                        checked={vmConfig.cloudinitVMETCHOSTS.value}
                                        onChange={(e) => handleVmConfigUpdate("cloudinitVMETCHOSTS", e.target.checked, "vm")}
                                 />
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("bridgeName", errorMsgs)}>
+                            <label className="col-md-3 control-label">Bridge Name</label>
+                            <div className="col-md-6">
+                                <input type="text" style={{width: "110px"}}
+                                   title="Enter the bridge name."
+                                   className="form-control"
+                                   value={networkConfig.bridgeName.value}
+                                   onChange={(e) => handleVmConfigUpdate("bridgeName", e.target.value, "network")} />
+                                {errorMsgs.bridgeName && <span className="help-block">{errorMsgs.bridgeName}</span>}
+                            </div>
+                        </div>
+
+                        <div className={getClassNames("gateway", errorMsgs)}>
+                            <label className="col-md-3 control-label">Gateway Address</label>
+                            <div className="col-md-6">
+                                <input type="text" style={{width: "110px"}}
+                                       title="Enter a pingable gateway address."
+                                       className="form-control"
+                                       value={networkConfig.gateway.value}
+                                    // onBlur={(e) => this.checkGatewayPingability(e.target.value)}
+                                       onChange={(e) => handleVmConfigUpdate("gateway", e.target.value, "network")} />
+                                {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
+                                {gatewayPingPending &&
+                                   <div className="gateway-message-container">
+                                       <span><div className="spinner" /></span>
+                                       <span className="gateway-message">Verifying IP address...</span>
+                                   </div>
+                                }
                             </div>
                         </div>
 
