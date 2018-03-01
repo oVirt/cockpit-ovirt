@@ -63,7 +63,8 @@ class GlusterManagement extends Component {
   getHostList(callback){
     cockpit.spawn(
       [ "vdsm-client", "--gluster-enabled", "GlusterHost", "list" ]
-    ).done(function(poolList){
+    ).done(function(list){
+      let poolList = JSON.parse(list)
       cockpit.spawn(
         [ "hostname" ]
       ).done(function(hostname){
@@ -89,7 +90,7 @@ class GlusterManagement extends Component {
     cockpit.spawn(
       ["vdsm-client", "--gluster-enabled", "GlusterVolume", "status", "volumeName=all"]
     ).done(function(volumeStatusList){
-      callback(volumeStatusList)
+      callback(JSON.parse(volumeStatusList))
     }).fail(function(err){
       console.log("Error while fetching volume status: ", err);
       callback({})
@@ -100,7 +101,7 @@ class GlusterManagement extends Component {
     cockpit.spawn(
       ["vdsm-client", "--gluster-enabled", "GlusterVolume", "list"]
     ).done(function(volumeInfoList){
-      callback(volumeInfoList)
+      callback(JSON.parse(volumeInfoList))
     }).fail(function(err){
       console.log("Error while fetching volume info: ", err);
       callback({})

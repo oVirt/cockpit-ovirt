@@ -1,4 +1,5 @@
 import ini from 'ini'
+import constants from '../components/gdeploy/constants'
 
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
@@ -112,6 +113,24 @@ var GdeployUtil = {
         })
         return preFlightCheck
     },
+    createExpandClusterConfig(glusterModel, expandClusterConfigFilePath){
+        let filePath = expandClusterConfigFilePath
+        cockpit.spawn(
+          [ "hostname" ]
+        ).done(function(hostname){
+          var configString = "[hosts]" + "\n" + hostname + "\n"
+          for (var i = 0; i < glusterModel.hosts.length; i++) {
+            configString += glusterModel.hosts[i] + "\n"
+          }
+          configString += [peer] + "\n" + "action=probe"
+          this.handleDirAndFileCreation(filePath, configString, function(result){
+            console.log("Result after creating expand cluster config file: ", result);
+          })
+        }).fail(function(err){
+          console.log("Error while fetching hostname: ", err);
+        })
+    },
+
     createYumConfig(subscription) {
         //Required only if we have to install some packages.
         if (subscription.rpms.length > 0) {
@@ -466,6 +485,18 @@ var GdeployUtil = {
         this.handleDirAndFileCreation(filePath, configString, function(result){
           callback(true)
         })
+    },
+    runExpandCluster(expandClusterConfigFile, successCallback){
+        let proc = cockpit.spawn(
+            ["gdeploy",
+                "-c",
+                expandClusterConfigFile
+            ]
+        )
+        .done(successCallback(true))
+        .fail(successCallback(false))
+        // .stream(stdoutCallback)
+        return proc
     },
     runGdeploy(configFile, stdoutCallback, successCallback, failCallback) {
         //gdeploy -c /cockpit-gluster/src/gdeploy-templat.conf

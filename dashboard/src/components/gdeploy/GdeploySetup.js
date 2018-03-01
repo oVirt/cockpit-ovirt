@@ -68,6 +68,7 @@ class GdeploySetup extends Component {
             onSuccess={this.props.onSuccess}
             reDeployCallback={this.handleReDeploy}
             isDeploymentStarted={this.state.isDeploymentStarted}
+            expandClusterConfigFilePath={CONFIG_FILES.expandClusterConfigFile}
             />)
         return (
             <Wizard title="Gluster Deployment" onClose={this.props.onClose}
