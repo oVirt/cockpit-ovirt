@@ -158,7 +158,7 @@ export class HeSetupModel {
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
-                    range: {min: resourceConstants.VM_DISK_MIN_MB, max: 4096}
+                    range: {min: resourceConstants.VM_DISK_MIN_GB, max: 4096}
                 },
                 storagePath: {
                     name: "storagePath",
