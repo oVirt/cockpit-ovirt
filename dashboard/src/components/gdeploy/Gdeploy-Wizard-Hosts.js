@@ -7,7 +7,7 @@ class WizardHostStep extends Component {
         super(props);
         this.state = {
             hosts: props.hosts,
-            hostTypes: [],
+            hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
             errorMsgs: {}
         }
@@ -94,7 +94,7 @@ class WizardHostStep extends Component {
                     hostTypes.push(hostType)
                 })
                 let hosts = that.state.hosts
-                for (var i = 0; i < hosts.length; i++) {
+                for (var i = 0; i < hostList.length; i++) {
                     hosts[i] = hostList.hosts[i].hostname
                 }
                 that.setState({ hostTypes, hosts })
@@ -104,7 +104,8 @@ class WizardHostStep extends Component {
     getHostList(callback){
         cockpit.spawn(
           [ "vdsm-client", "--gluster-enabled", "GlusterHost", "list" ]
-        ).done(function(poolList){
+        ).done(function(list){
+          let poolList = JSON.parse(list)
           cockpit.spawn(
             [ "hostname" ]
           ).done(function(hostname){

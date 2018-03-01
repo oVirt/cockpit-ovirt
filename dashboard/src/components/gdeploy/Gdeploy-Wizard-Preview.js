@@ -28,6 +28,9 @@ class WizardPreviewStep extends Component {
             .done(function(template) {
                 if (template != null) {
                     const configTemplate = ini.parse(template)
+                    if (that.props.gdeployWizardType === "expand_cluster") {
+                        GdeployUtil.createExpandClusterConfig(that.props.glusterModel, that.props.expandClusterConfigFilePath)
+                    }
                     GdeployUtil.createGdeployConfig(that.props.glusterModel,
                         configTemplate,
                         that.props.configFilePath,
@@ -82,6 +85,8 @@ class WizardPreviewStep extends Component {
                     heCommanAnswer={this.props.heCommanAnswer}
                     onSuccess={this.props.onSuccess}
                     reDeployCallback={this.props.reDeployCallback}
+                    gdeployWizardType={this.props.gdeployWizardType}
+                    expandClusterConfigFilePath={this.props.expandClusterConfigFilePath}
                     />
             )
         } else {
