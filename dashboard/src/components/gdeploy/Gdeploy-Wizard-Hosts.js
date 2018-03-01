@@ -200,7 +200,7 @@ const HostRow = ({host, hostNo, gdeployWizardType, hostTypes, errorMsg, changeCa
                 }
                 </label>
                 <div className="col-md-6">
-                    {gdeployWizardType === "setup" && <input type="text" placeholder="Gluster network address"
+                    {(gdeployWizardType === "setup" || gdeployWizardType === "expand_cluster") && <input type="text" placeholder="Gluster network address"
                         title="Enter the address of gluster network which will be used for gluster data traffic."
                         className="form-control"
                         value={host}
