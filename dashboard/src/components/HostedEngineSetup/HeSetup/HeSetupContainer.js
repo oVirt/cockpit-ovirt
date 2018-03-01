@@ -70,6 +70,7 @@ class HeSetupContainer extends Component {
         fileGenerator.writeConfigToFile()
             .then(filePath => {
                 self.setup = self.getSetup(filePath)
+                self.setState({ setup: self.setup.start(self.parseOutput, self.processExit) });
             });
     }
 

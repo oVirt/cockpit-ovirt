@@ -64,7 +64,6 @@ done
 ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules"
 ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/node_modules
 
-
 %build
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
 %if 0%{?use_rhev}
@@ -79,10 +78,15 @@ make
 %install
 make install DESTDIR=%{buildroot}
 
+# Create /var/lib/ovirt-hosted-engine-setup/cockpit
+mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
+
+
 %files dashboard
 %doc README.md
 %license LICENSE
 %{_plugindir}/ovirt-dashboard
+%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
 * Fri Sep  1 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.0-1
