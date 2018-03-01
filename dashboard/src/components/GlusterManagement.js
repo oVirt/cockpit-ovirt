@@ -6,8 +6,8 @@ const classNames = require('classnames');
 class GlusterManagement extends Component {
 
   constructor(props) {
-		super(props);
-		this.state = {
+    super(props);
+    this.state = {
       volumeSelectedRow: 'None',
       host: {},
       volumeBricks: {},
@@ -19,7 +19,7 @@ class GlusterManagement extends Component {
       volumeBricksStatus: false,
       gdeployState: "",
       gdeployWizardType: ""
-		};
+    };
     this.handleVolumeRowClick = this.handleVolumeRowClick.bind(this);
     this.getVolumeStatus = this.getVolumeStatus.bind(this);
     this.getVolumeStatus = this.getVolumeStatus.bind(this);
@@ -27,7 +27,7 @@ class GlusterManagement extends Component {
     this.startGlusterManagement = this.startGlusterManagement.bind(this);
     this.applyGlusterChanges = this.applyGlusterChanges.bind(this);
     this.abortCallback = this.abortCallback.bind(this);
-	}
+  }
 
   componentDidMount() {
     let that = this
@@ -305,7 +305,7 @@ class GlusterManagement extends Component {
                 {hostsTable}
               </ul>
               <div className="manageGlusterButtons">
-                <button>Expand Cluster</button>
+                <button onClick={this.startGlusterManagement.bind(this, 'expand_cluster')}>Expand Cluster</button>
               </div>
             </div>
             <div className="volumeList">

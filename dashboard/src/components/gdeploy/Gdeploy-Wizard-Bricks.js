@@ -103,7 +103,7 @@ class WizardBricksStep extends Component {
             this.updateBrickHosts(nextProps.hosts)
         }
         // Modify bricks according to volume details
-        if (this.props.gdeployWizardType === "create_volume") {
+        if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
             let new_volumes = []
             let new_brick_dirs = []
             nextProps.glusterModel.volumes.forEach(function (volume, index) {
