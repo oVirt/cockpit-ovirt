@@ -87,7 +87,7 @@ class HeSetupContainer extends Component {
     }
 
     componentWillUnmount() {
-        this.props.setup.close();
+        this.setup.close();
         $(ReactDOM.findDOMNode(this)).modal('hide');
     }
 
@@ -100,7 +100,7 @@ class HeSetupContainer extends Component {
 
     passInput(input) {
         if (this.state.question.prompt.length > 0) {
-            this.props.setup.handleInput(input);
+            this.setup.handleInput(input);
             this.resetState()
         }
     }
