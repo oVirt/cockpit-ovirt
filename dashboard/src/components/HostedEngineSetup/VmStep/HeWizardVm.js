@@ -166,14 +166,19 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                     <div className={getClassNames("cloudinitVMStaticCIDR", errorMsgs)}>
                         <label className="col-md-3 control-label">VM IP Address</label>
                         <div className="col-md-6">
-                            <input type="text" style={{width: "110px"}}
+                            <input type="text" style={{width: "110px", display: "inline-block"}}
                                    placeholder="192.168.1.2"
                                    title="Enter the desired IP address for the VM."
                                    className="form-control"
                                    value={vmConfig.cloudinitVMStaticCIDR.value}
                                    onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDR", e.target.value, "vm")}
                                    onBlur={(e) => verifyReverseDns(e.target.value)}
-                            />
+                            />&nbsp;/&nbsp;
+                            <input type="text" style={{width: "40px", display: "inline-block"}}
+                                   placeholder="24"
+                                   className="form-control"
+                                   value={vmConfig.cloudinitVMStaticCIDRPrefix.value}
+                                   onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDRPrefix", e.target.value, "vm")} />
                             {errorMsgs.cloudinitVMStaticCIDR && <span className="help-block">{errorMsgs.cloudinitVMStaticCIDR}</span>}
                         </div>
                     </div>
