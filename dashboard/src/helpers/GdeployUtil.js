@@ -114,16 +114,17 @@ var GdeployUtil = {
         return preFlightCheck
     },
     createExpandClusterConfig(glusterModel, expandClusterConfigFilePath){
+        const that = this
         let filePath = expandClusterConfigFilePath
         cockpit.spawn(
           [ "hostname" ]
         ).done(function(hostname){
-          var configString = "[hosts]" + "\n" + hostname + "\n"
+          var configString = "[hosts]" + "\n" + hostname
           for (var i = 0; i < glusterModel.hosts.length; i++) {
             configString += glusterModel.hosts[i] + "\n"
           }
-          configString += [peer] + "\n" + "action=probe"
-          this.handleDirAndFileCreation(filePath, configString, function(result){
+          configString += "\n[peer]\n" + "action=probe"
+          that.handleDirAndFileCreation(filePath, configString, function(result){
             console.log("Result after creating expand cluster config file: ", result);
           })
         }).fail(function(err){

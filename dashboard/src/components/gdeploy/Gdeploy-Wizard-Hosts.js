@@ -135,7 +135,7 @@ class WizardHostStep extends Component {
         const hostRows = [];
         const that = this
         this.state.hosts.forEach(function (host, index) {
-            if (this.props.gdeployWizardType === "setup") {
+            if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
                 hostRows.push(
                   <HostRow host={host} key={index} hostNo={index + 1}
                     gdeployWizardType={that.props.gdeployWizardType}
