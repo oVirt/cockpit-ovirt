@@ -178,6 +178,25 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                         </div>
                     </div>
 
+                    <div className={getClassNames("gateway", errorMsgs)}>
+                        <label className="col-md-3 control-label">Gateway Address</label>
+                        <div className="col-md-6">
+                            <input type="text" style={{width: "110px"}}
+                                   title="Enter a pingable gateway address."
+                                   className="form-control"
+                                   value={networkConfig.gateway.value}
+                                // onBlur={(e) => this.checkGatewayPingability(e.target.value)}
+                                   onChange={(e) => handleVmConfigUpdate("gateway", e.target.value, "network")} />
+                            {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
+                            {gatewayPingPending &&
+                            <div className="gateway-message-container">
+                                <span><div className="spinner" /></span>
+                                <span className="gateway-message">Verifying IP address...</span>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
                     <div className={getClassNames("cloudinitVMDNS", errorMsgs)}>
                         <label className="col-md-3 control-label">DNS Servers</label>
                         <div className="col-md-6">
