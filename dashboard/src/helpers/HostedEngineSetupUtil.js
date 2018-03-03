@@ -566,6 +566,16 @@ export class HeSetupModel {
                     regex: Validation.ipAddress,
                     errorMsg: "Invalid format for IP address"
                 },
+                cloudinitVMStaticCIDRPrefix: {
+                    name: "cloudinitVMStaticCIDRPrefix",
+                    description: "IP Address Prefix",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "VM",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 cloudinitVMDNS: {
                     name: "cloudinitVMDNS",
                     ansibleVarName: "DNS_ADDR",

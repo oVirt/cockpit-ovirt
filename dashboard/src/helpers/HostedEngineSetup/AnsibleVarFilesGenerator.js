@@ -35,6 +35,11 @@ class AnsibleVarFilesGenerator {
             retVal = "";
         }
 
+        if (propName === "cloudinitVMStaticCIDR") {
+            const prefix = this.model.vm.cloudinitVMStaticCIDRPrefix.value;
+            retVal = value + "/" + prefix;
+        }
+
         return retVal;
     }
 
@@ -75,6 +80,7 @@ class AnsibleVarFilesGenerator {
                     }, this)
             }, this);
 
+        console.log(varString);
         return varString;
     }
 
