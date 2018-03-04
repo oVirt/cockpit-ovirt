@@ -213,7 +213,6 @@ class AnsiblePhaseExecutor {
 
     readOutputFile(path) {
         return new Promise((resolve, reject) => {
-            let path = "/tmp/out.json";
             const self = this
 
             const f = cockpit.file(path).watch(function(content, tag) {
