@@ -14,7 +14,7 @@ class AnsiblePhaseExecutor {
         this.result = null;
         this.varFileGenerator = new AnsibleVarFilesGenerator(this.heSetupModel);
         this.varFilePaths = [];
-        this.seenOutputLines = []
+        this.seenOutputLines = [];
 
         this.startSetup = this.startSetup.bind(this);
         this.deleteVarFiles = this.deleteVarFiles.bind(this);
@@ -102,6 +102,7 @@ class AnsiblePhaseExecutor {
 
     performSetupJobs(paths) {
         const promises = [];
+        this.seenOutputLines = [];
         promises.concat(this.clearOutputFiles(paths));
         promises.push(this.createVarFileDir());
         return Promise.all(promises);
@@ -213,21 +214,23 @@ class AnsiblePhaseExecutor {
 
     readOutputFile(path) {
         return new Promise((resolve, reject) => {
-            const self = this
+            const self = this;
 
             const f = cockpit.file(path).watch(function(content, tag) {
                 if (!content) {
-                    return
+                    reject();
+                    return;
                 }
-                let lines = content.trim().split(/\n/)
-                let payload = []
+                let lines = content.trim().split(/\n/);
+                let payload = [];
                 for (let i = 0; i < lines.length; i++) {
-                    if (self.seenOutputLines.indexOf(lines[i]) == -1) {
-                        self.seenOutputLines.push(lines[i])
+                    if (self.seenOutputLines.indexOf(lines[i]) === -1) {
+                        self.seenOutputLines.push(lines[i]);
                         payload.push(lines[i])
                     }
                 }
-                self.parseOutput(payload)
+                self.parseOutput(payload);
+                resolve();
             })
         })
     }
