@@ -131,6 +131,7 @@ export class HeSetupModel {
                     value: "nfs",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 0,
                     uiStage: "Storage",
                     useInAnswerFile: true,
                     required: false
@@ -143,6 +144,7 @@ export class HeSetupModel {
                     value: "auto",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 5,
                     uiStage: "Storage",
                     useInAnswerFile: false,
                     required: false
@@ -155,7 +157,8 @@ export class HeSetupModel {
                     value: resourceConstants.VM_DISK_MIN_GB,
                     type: types.STRING,
                     showInReview: true,
-                    uiStage: "VM",
+                    reviewOrder: 100,
+                    uiStage: "Storage",
                     useInAnswerFile: true,
                     required: true,
                     range: {min: resourceConstants.VM_DISK_MIN_GB, max: resourceConstants.VM_DISK_MAX_GB}
@@ -180,6 +183,7 @@ export class HeSetupModel {
                     value: "hosted_storage",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 110,
                     uiStage: "Storage",
                     useInAnswerFile: true,
                     required: true
@@ -204,6 +208,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: false,
+                    reviewOrder: 10,
                     uiStage: "Storage",
                     useInAnswerFile: false,
                     required: true
@@ -216,6 +221,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: false,
+                    reviewOrder: 10,
                     uiStage: "Storage",
                     useInAnswerFile: false,
                     required: false
@@ -228,6 +234,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 20,
                     uiStage: "Storage",
                     useInAnswerFile: true,
                     required: false
@@ -359,6 +366,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 60,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -371,6 +379,7 @@ export class HeSetupModel {
                     value: "ovirtmgmt",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 130,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true
@@ -393,6 +402,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 40,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
@@ -413,6 +423,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 0,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true
@@ -425,6 +436,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: false,
+                    reviewOrder: 140,
                     uiStage: "VM",
                     useInAnswerFile: false,
                     required: false
@@ -449,6 +461,7 @@ export class HeSetupModel {
                     value: "1",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 90,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
@@ -510,6 +523,7 @@ export class HeSetupModel {
                     value: "00:16:3E:6A:7A:F9",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 10,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false,
@@ -523,7 +537,7 @@ export class HeSetupModel {
                     description: "VM IP Prefix",
                     value: "",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
                     useInAnswerFile: false,
                     required: false
@@ -537,6 +551,7 @@ export class HeSetupModel {
                     unit: "MB",
                     type: types.INTEGER,
                     showInReview: true,
+                    reviewOrder: 100,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
@@ -548,6 +563,7 @@ export class HeSetupModel {
                     value: "dhcp",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 20,
                     uiStage: "VM",
                     useInAnswerFile: false,
                     required: false
@@ -556,10 +572,11 @@ export class HeSetupModel {
                     name: "cloudinitVMStaticCIDR",
                     ansibleVarName: "VM_IP_ADDR",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
-                    description: "IP Address",
+                    description: "VM IP Address",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
+                    reviewOrder: 30,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false,
@@ -584,6 +601,7 @@ export class HeSetupModel {
                     value: [""],
                     type: types.STRING,
                     showInReview: false,
+                    reviewOrder: 50,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -605,7 +623,7 @@ export class HeSetupModel {
                     description: "Host Time Zone",
                     value: "America/New_York",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -639,7 +657,7 @@ export class HeSetupModel {
                     description: "Engine VM Host Name",
                     value: "ovirt-engine",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -651,7 +669,7 @@ export class HeSetupModel {
                     description: "Engine VM Domain",
                     value: "localdomain",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -684,6 +702,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: false,
+                    reviewOrder: 70,
                     uiStage: "VM",
                     useInAnswerFile: false,
                     required: false
@@ -706,6 +725,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 110,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -718,6 +738,7 @@ export class HeSetupModel {
                     value: "yes",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 80,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -730,6 +751,7 @@ export class HeSetupModel {
                     value: true,
                     type: types.BOOLEAN,
                     showInReview: true,
+                    reviewOrder: 120,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -865,6 +887,7 @@ export class HeSetupModel {
                     value: "",
                     type: types.STRING,
                     showInReview: false,
+                    reviewOrder: 0,
                     uiStage: "Engine",
                     useInAnswerFile: false,
                     required: false
@@ -917,7 +940,7 @@ export class HeSetupModel {
                     description: "Console Type",
                     value: "vnc",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -929,7 +952,7 @@ export class HeSetupModel {
                     description: "CPU Type",
                     value: "Conroe",
                     type: types.STRING,
-                    showInReview: true,
+                    showInReview: false,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: false
@@ -974,6 +997,7 @@ export class HeSetupModel {
                     value: "localhost",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 10,
                     uiStage: "Engine",
                     useInAnswerFile: true,
                     required: false
@@ -986,6 +1010,7 @@ export class HeSetupModel {
                     value: "25",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 20,
                     uiStage: "Engine",
                     useInAnswerFile: true,
                     required: false,
@@ -1000,6 +1025,7 @@ export class HeSetupModel {
                     value: "root@localhost",
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 30,
                     uiStage: "Engine",
                     useInAnswerFile: true,
                     required: false
@@ -1012,6 +1038,7 @@ export class HeSetupModel {
                     value: ["root@localhost"],
                     type: types.STRING,
                     showInReview: true,
+                    reviewOrder: 40,
                     uiStage: "Engine",
                     useInAnswerFile: true,
                     required: false
