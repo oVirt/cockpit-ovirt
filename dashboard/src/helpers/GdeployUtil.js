@@ -69,8 +69,8 @@ var GdeployUtil = {
         const template = JSON.parse(JSON.stringify(templateModel));
         const volumeTemplate = template.volume
         const volumeConfigs = this.createVolumeConfigs(glusterModel.volumes, glusterModel.hosts, volumeTemplate)
-        const brickConfig = this.createBrickConfig(glusterModel)
         const vdoConfig = this.createVdoConfig(glusterModel)
+        const brickConfig = this.createBrickConfig(glusterModel, vdoConfig)
         const preFlightCheck = this.createPreFlightCheck(glusterModel.hosts, brickConfig.pvConfig)
         const redhatSubscription = this.createRedhatSubscription(glusterModel.subscription)
         const yumConfig = this.createYumConfig(glusterModel.subscription)
@@ -174,7 +174,7 @@ var GdeployUtil = {
 
         return null
     },
-    createBrickConfig(glusterModel) {
+    createBrickConfig(glusterModel, vdoConfig) {
         const brickConfig = {
             pvConfig: [], vgConfig: [],
             lvConfig: [], thinPoolConfig: [],
@@ -191,12 +191,25 @@ var GdeployUtil = {
             brickConfig.vgConfig.push({host: brickHost.host})
             brickConfig.lvConfig.push({host: brickHost.host, host_lvConfig: []})
             brickConfig.thinPoolConfig.push({host: brickHost.host})
+            let vdoHostIndex = vdoConfig.findIndex(function (hostVdoConfig) {
+                return hostVdoConfig.host == brickHost.host
+            })
             brickHost.host_bricks.forEach(function(brick, index) {
+                let device = brick.device
+                if (vdoHostIndex >= 0) {
+                    let devices = vdoConfig[vdoHostIndex].vdoConfig.devices.split(",")
+                    let names = vdoConfig[vdoHostIndex].vdoConfig.names.split(",")
+                    let deviceIndex = devices.indexOf(device)
+                    if (deviceIndex >= 0) {
+                        let name = names[deviceIndex]
+                        device = "/dev/mapper/" + name
+                    }
+                }
                 //If there is no PV added for the given device, add it now.
                 if (!brickConfig.pvConfig[hostIndex].hasOwnProperty(brick.device)) {
                     brickConfig.pvConfig[hostIndex][brick.device] = {
                         action: 'create',
-                        devices: brick.device,
+                        devices: device,
                         ignore_pv_errors: 'no'
                     }
                 }
@@ -205,7 +218,7 @@ var GdeployUtil = {
                     brickConfig.vgConfig[hostIndex][brick.device] = {
                         action: 'create',
                         vgname: VG_NAME + brick.device,
-                        pvname: brick.device,
+                        pvname: device,
                         ignore_vg_errors: 'no'
                     }
                 }
