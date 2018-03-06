@@ -3,6 +3,7 @@ import AnsiblePhasePreview from './AnsiblePhasePreview'
 import PreviewGenerator from '../../../helpers/HostedEngineSetup/PreviewGenerator'
 import {deploymentStatus as status} from "../constants";
 import {footerButtons} from "../../common/Wizard/Wizard";
+import ReviewGenerator from "../../../helpers/HostedEngineSetup/ReviewGenerator";
 
 class AnsiblePhasePreviewContainer extends Component {
     constructor(props) {
@@ -82,8 +83,8 @@ class AnsiblePhasePreviewContainer extends Component {
     }
 
     render() {
-        const previewGen = new PreviewGenerator(this.state.heSetupModel);
-        const sections = previewGen.getPreviewSections(this.props.sections);
+        const reviewGen = new ReviewGenerator(this.state.heSetupModel);
+        const sections = reviewGen.getReviewSections(this.props.sections);
 
         return (
             <AnsiblePhasePreview abortCallBack={this.props.abortCallBack}

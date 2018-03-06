@@ -90,7 +90,9 @@ class HeWizardVmContainer extends Component {
         const heSetupModel = this.state.heSetupModel;
         const defaultsProvider = this.props.defaultsProvider;
 
-        this.setState({ interfaces: defaultsProvider.getNetworkInterfaces() });
+        const networkInterfaces = defaultsProvider.getNetworkInterfaces();
+        this.setState({ interfaces: networkInterfaces });
+        heSetupModel.network.bridgeIf.showInReview = networkInterfaces > 1;
         this.handleVmConfigUpdate("bridgeIf", defaultsProvider.getDefaultInterface(), "network");
         this.handleVmConfigUpdate("gateway", defaultsProvider.getDefaultGateway(), "network");
 
