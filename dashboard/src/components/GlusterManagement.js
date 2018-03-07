@@ -35,7 +35,7 @@ class GlusterManagement extends Component {
       that.getVolumeStatus(function (volumeStatusJson) {
         that.getVolumeInfo(function (volumeInfoJson) {
           let volumeBricks = {}
-          if(Object.keys(volumeInfoJson).length != 0) {
+          if(Object.keys(volumeInfoJson).length != 0 && Object.keys(volumeStatusJson).length != 0) {
             Object.keys(volumeInfoJson.volumes).forEach(function (volume) {
               volumeBricks[volume] = []
               Object.values(volumeStatusJson.volumeStatus.bricks).forEach(function (brick) {
@@ -67,7 +67,8 @@ class GlusterManagement extends Component {
       let poolList = JSON.parse(list)
       cockpit.spawn(
         [ "hostname" ]
-      ).done(function(hostname){
+      ).done(function(current_hostname){
+        let hostname = current_hostname.replace(/-nic[\d\w]*\./g, ".")
         let regexAlpha = /localhost/
         let regexNum = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/
         poolList.hosts.forEach(function (host, index) {
@@ -121,7 +122,10 @@ class GlusterManagement extends Component {
   }
 
   applyGlusterChanges(){
-
+      this.setState({
+          gdeployState: "",
+          gdeployWizardType: ""
+      })
   }
 
   abortCallback(){

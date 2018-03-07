@@ -44,19 +44,19 @@ var GdeployUtil = {
                         brick_dir: "/gluster_bricks/engine", size: "100",
                         thinp: false,
                         is_vdo_supported: false,
-                        logicalSize: "400"
+                        logicalSize: "1000"
                     },
                     { name: "data", device: "sdb",
                         brick_dir: "/gluster_bricks/data", size: "500",
                         thinp: true,
                         is_vdo_supported: false,
-                        logicalSize: "2000"
+                        logicalSize: "5000"
                     },
                     { name: "vmstore", device: "sdb",
                         brick_dir: "/gluster_bricks/vmstore", size: "500",
                         thinp: true,
                         is_vdo_supported: false,
-                        logicalSize: "2000"
+                        logicalSize: "5000"
                     },
                 ]
             }],
@@ -397,7 +397,7 @@ var GdeployUtil = {
                     vgname: VG_NAME + brick.device,
                     poolname: POOL_NAME + brick.device,
                     cache_lv: 'lvcache',
-                    cache_lvsize: lvConfig[hostIndex].lvCacheSize,
+                    cache_lvsize: lvConfig[hostIndex].lvCacheSize + "GB",
                     cachemode: lvConfig[hostIndex].cacheMode.trim(),
                     ignore_lv_errors: 'yes'
                   }
@@ -432,13 +432,21 @@ var GdeployUtil = {
 
           bricksHost.host_bricks.forEach(function(brick, index) {
             if (brick.is_vdo_supported) {
-              devices.push(brick.device)
-              names.push(brick.name)
-              logicalSizes.push((Number(brick.size) * 10)+"G")
-              if (Number(logicalSizes) >= 1000) {
-                slabsizes.push("32GB")
+                  let deviceIndex = devices.indexOf(brick.device)
+                  if (deviceIndex === -1) {
+                      devices.push(brick.device)
+                      names.push(brick.name)
+                      logicalSizes.push(brick.logicalSize+"G")
+                  }
+                  else {
+                      logicalSizes[deviceIndex] = (parseInt(logicalSizes[deviceIndex]) + (brick.logicalSize)) + "G"
+                  }
               }
-            }
+          })
+          logicalSizes.forEach(function(logicalSize, index) {
+              if (parseInt(logicalSize) >= 1000) {
+                  slabsizes.push("32GB")
+              }
           })
           hostVdoConfigs.vdoConfig.devices = devices.join()
           hostVdoConfigs.vdoConfig.names = names.join()

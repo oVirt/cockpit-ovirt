@@ -75,7 +75,9 @@ class WizardPreviewStep extends Component {
     }
     handleSave() {
         this.setState({ isEditing: false })
-        GdeployUtil.writeConfigFile(this.props.configFilePath, this.state.gdeployConfig)
+        GdeployUtil.writeConfigFile(this.props.configFilePath, this.state.gdeployConfig, function (result) {
+            console.log("Result after editing and saving config file: ", result)
+        })
     }
     render() {
         if (this.props.isDeploymentStarted) {

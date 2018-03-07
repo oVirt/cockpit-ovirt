@@ -40,7 +40,7 @@ class GdeploySetup extends Component {
             stepName="Hosts"
             hosts={this.state.glusterModel.hosts}
             />)
-        if (this.props.gdeployWizardType === "setup") {
+        if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
             wizardChildren.push(<WizardPackageStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
                 stepName="Packages"
                 subscription={this.state.glusterModel.subscription}

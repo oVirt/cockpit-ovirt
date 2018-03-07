@@ -44,15 +44,20 @@ class WizardExecutionStep extends Component {
         }
     }
     callBack() {
-        this.props.onSuccess(
-            [this.props.heAnsweFilePath,
-            this.props.heCommanAnswer
-            ]
-        )
+        if (this.props.gdeployWizardType === "setup") {
+            this.props.onSuccess(
+              [this.props.heAnsweFilePath,
+                this.props.heCommanAnswer
+              ]
+            )
+        }
+        else {
+            this.props.onSuccess()
+        }
     }
     render() {
         if (this.state.gdeployStatus === 0) {
-            return <SuccessPanel callBack={this.callBack} />
+            return <SuccessPanel callBack={this.callBack} gdeployWizardType={this.props.gdeployWizardType} />
         }
         return (
             <div className="col-sm-12">
@@ -102,18 +107,34 @@ const Status = ({ status, reDeployCallback }) => {
     )
 }
 
-const SuccessPanel = ({ callBack }) => {
+const SuccessPanel = ({ callBack, gdeployWizardType }) => {
+    // Message to display in SuccessPanel
+    let message = ""
+    if (gdeployWizardType === "setup") {
+        message = "Successfully deployed Gluster"
+    } else if (gdeployWizardType === "expand_cluster") {
+        message = "Successfully expanded cluster"
+    } else {
+        message = "Successfully created volume"
+    }
+    // Button Label 
+    let buttonLabel = ""
+    if (gdeployWizardType === "setup") {
+        buttonLabel = "Continue to Hosted Engine Deployment"
+    } else {
+        buttonLabel = "Close"
+    }
     return (
         <div className="wizard-pf-complete blank-slate-pf">
             <div className="wizard-pf-success-icon">
                 <span className="glyphicon glyphicon-ok-circle"></span>
             </div>
             <h5 className="blank-slate-pf-main-action">
-                Successfully deployed Gluster
+                {message}
             </h5>
             <button type="button" className="btn btn-lg btn-primary"
                 onClick={callBack}>
-                Continue to Hosted Engine Deployment
+                {buttonLabel}
         </button>
         </div>
     )
