@@ -38,8 +38,15 @@ class WizardBricksStep extends Component {
     }
     componentDidMount(){
         let bricksList = this.state.bricksList
-        bricksList.push(JSON.parse(JSON.stringify(this.props.bricks[0])))
-        bricksList.push(JSON.parse(JSON.stringify(this.props.bricks[0])))
+
+        // Set bricks size to 500 if gdeployType is create_volume or expand_cluster
+        if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
+            bricksList[0].host_bricks[0].thinp = true
+            bricksList[0].host_bricks[0].size = "500"
+        }
+
+        bricksList.push(JSON.parse(JSON.stringify(bricksList[0])))
+        bricksList.push(JSON.parse(JSON.stringify(bricksList[0])))
 
         let lvCacheConfig = this.state.lvCacheConfig
         lvCacheConfig.push(JSON.parse(JSON.stringify(this.props.lvCacheConfig[0])))
@@ -67,48 +74,51 @@ class WizardBricksStep extends Component {
                 bricksHost.host_bricks.forEach(function(brick, index){
                     brick['isVdoSupported'] = res
                 })
+                if (that.props.gdeployWizardType !== "setup") {
+                  bricksHost.host_bricks[0].logicalSize = "5000"
+                }
             })
             that.setState({bricksList, lvCacheConfig, arbiterVolumes, isVdoSupported})
         });
     }
     componentWillReceiveProps(nextProps){
-        let hostsHaveChanged = false;
+        // Checking if hosts have changed
+        let hostsHaveChanged = false
         if(nextProps.hosts.length !== this.state.hostTypes.length) {
             hostsHaveChanged = true
         }else{
             for(var i = 0; i < nextProps.hosts.length; i++) {
-                if(nextProps.hosts[i] !== this.state.hostTypes[i]){
+                if(nextProps.hosts[i] !== this.state.hostTypes[i].title){
                     hostsHaveChanged = true;
                     break;
                 }
             }
         }
+
+        // Updating hostTypes, bricksList and lvCacheConfig if hosts have changed
         if(hostsHaveChanged){
-            let hostTypes = []
-            let bricksList = []
-            let lvCacheConfig = this.state.lvCacheConfig
-            let that = this
-            nextProps.hosts.map(function(host, i) {
-                let hostType = {key: host, title: host}
-                hostTypes.push(hostType)
-                let brickHost = that.state.bricksList[i]
-                brickHost.host = host
-                bricksList.push(brickHost)
-                lvCacheConfig[i].host = host
-            })
-            let selectedHost = this.state.selectedHost
-            selectedHost.hostName = nextProps.hosts[0]
-            this.setState({hostTypes, selectedHost, bricksList, lvCacheConfig})
-            this.handleSelectedHostUpdate(selectedHost.hostName)
             this.updateBrickHosts(nextProps.hosts)
         }
+
         // Modify bricks according to volume details
         if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
             let new_volumes = []
             let new_brick_dirs = []
             nextProps.glusterModel.volumes.forEach(function (volume, index) {
               new_volumes.push(volume.name)
-              new_brick_dirs.push(volume.brick_dir)
+
+              // Get volume brick_dir in the form of bricksList brick_dir
+              let brick_dir = ""
+              let brick_dir_split = volume.brick_dir.split('/')
+              let length = brick_dir_split.length
+              let lastIndex = volume.brick_dir.lastIndexOf('/')
+              if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
+                  brick_dir = volume.brick_dir.slice(0, lastIndex)
+              }
+              else {
+                  brick_dir = volume.brick_dir
+              }
+              new_brick_dirs.push(brick_dir)
             })
             let old_volumes = []
             let old_brick_dirs = []
@@ -116,12 +126,13 @@ class WizardBricksStep extends Component {
               old_volumes.push(brick.name)
               old_brick_dirs.push(brick.brick_dir)
             })
-            if (old_volumes.join() != new_volumes.join() || old_brick_dirs.join() != new_brick_dirs.join()) {
-                this.updateBrickDetails(nextProps.glusterModel.volumes)
+            if (old_volumes.join() != new_volumes.join() ||
+                old_brick_dirs.join() != new_brick_dirs.join()) {
+                    this.updateBrickDetails(nextProps.glusterModel.volumes)
             }
         }
+
         // Check for arbiter volume and update respective brick in the arbiter host
-        let bricksList = this.state.bricksList
         let arbiterVolumes = []
         nextProps.glusterModel.volumes.forEach(function(volume, index) {
             if(volume.is_arbiter){
@@ -129,7 +140,7 @@ class WizardBricksStep extends Component {
             }
         })
         if (arbiterVolumes.join() != this.state.arbiterVolumes.join()) {
-            this.updateArbiterHostBricks(arbiterVolumes, nextProps.glusterModel.volumes, bricksList)
+            this.updateArbiterHostBricks(arbiterVolumes, nextProps.glusterModel.volumes)
         }
         this.handleSelectedHostUpdate(nextProps.hosts[0])
     }
@@ -149,13 +160,25 @@ class WizardBricksStep extends Component {
         this.setState({hostTypes, bricksList, lvCacheConfig})
     }
     updateBrickDetails(newVolumes){
+        let that = this
         let newHostBricks = []
         let brickTemplate = this.state.bricksList[0].host_bricks[0]
         newVolumes.forEach(function (volume, index) {
             brickTemplate.name = volume.name
-            brickTemplate.brick_dir = volume.brick_dir
-            brickTemplate.thinp = true
-            brickTemplate.size = "500"
+            if (that.props.gdeployWizardType !== "setup") {
+                let brick_dir_split = volume.brick_dir.split('/')
+                let length = brick_dir_split.length
+                let lastIndex = volume.brick_dir.lastIndexOf('/')
+                if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
+                    brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
+                }
+                else {
+                    brickTemplate.brick_dir = volume.brick_dir
+                }
+            }
+            else {
+                brickTemplate.brick_dir = volume.brick_dir
+            }
             newHostBricks.push(JSON.parse(JSON.stringify(brickTemplate)))
         })
 
@@ -165,7 +188,8 @@ class WizardBricksStep extends Component {
         })
         this.setState({ bricksList })
     }
-    updateArbiterHostBricks(arbiterVolumes, volumes, bricksList){
+    updateArbiterHostBricks(arbiterVolumes, volumes){
+        let bricksList = this.state.bricksList
         let bricksHaveChanged = false
         volumes.forEach(function(volume, index) {
             if((this.state.arbiterVolumes.indexOf(volume.name) < 0 ^ arbiterVolumes.indexOf(volume.name) < 0) == 1){
@@ -188,9 +212,11 @@ class WizardBricksStep extends Component {
         }
     }
     handleDelete(index) {
-        const bricks = this.state.bricks
-        bricks.splice(index, 1)
-        this.setState({ bricks, errorMsgs: {} })
+        const bricksList = this.state.bricksList
+        bricksList.forEach(function (bricksHost, hostIndex) {
+            bricksHost.host_bricks.splice(index, 1)
+        })
+        this.setState({ bricksList, errorMsgs: {} })
     }
     getEmptyRow() {
         return { name: "", device: "", brick_dir: "", thinp: true, size:"1", is_vdo_supported: false, logicalSize: "0" }
@@ -251,6 +277,9 @@ class WizardBricksStep extends Component {
             }
             else {
                 bricksList[i].host_bricks[index][property] = value
+            }
+            if(property == "size") {
+                bricksList[i].host_bricks[index]['logicalSize'] = JSON.stringify(bricksList[i].host_bricks[index][property] * 10)
             }
         }
         this.validateBrick(bricksList[this.state.selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
@@ -611,7 +640,6 @@ WizardBricksStep.propTypes = {
 }
 
 const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack}) => {
-    brick.logicalSize = (Number(brick.size) * 10).toString()
     const name = classNames(
         { "has-error": errorMsgs && errorMsgs.name }
     )
