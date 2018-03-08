@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
 import { getErrorMsgForProperty, validatePropsForUiStage } from '../Validation'
-import { allIntelCpus, amdCpuTypes, configValues, intelCpuTypes, messages, resourceConstants } from '../constants'
+import { allIntelCpus, amdCpuTypes, configValues, intelCpuTypes, messages, resourceConstants as constants } from '../constants'
 import HeWizardVm from './HeWizardVm'
 
 const defaultAppliances = [
@@ -111,14 +111,10 @@ class HeWizardVmContainer extends Component {
         const defaultsProvider = this.props.defaultsProvider;
         const heSetupModel = this.state.heSetupModel;
 
-        const maxVCpus = defaultsProvider.getMaxVCpus();
-        heSetupModel.vm.vmVCpus.value = maxVCpus > 4 ? 4 : maxVCpus;
-        heSetupModel.vm.vmVCpus.range.max = maxVCpus;
-
-        const maxMemAvail = defaultsProvider.getMaxMemAvailable();
-        const minRecVmMem = resourceConstants.VM_MEM_MIN_RECOMMENDED_MB;
-        heSetupModel.vm.vmMemSizeMB.range.max = maxMemAvail;
-        heSetupModel.vm.vmMemSizeMB.value = maxMemAvail < minRecVmMem ? maxMemAvail : minRecVmMem;
+        heSetupModel.vm.vmVCpus.value = defaultsProvider.getMaxVCpus() > 4 ?
+            4 : defaultsProvider.getMaxVCpus() ;
+        heSetupModel.vm.vmVCpus.range.max = defaultsProvider.getMaxVCpus();
+        heSetupModel.vm.vmMemSizeMB.range.max = defaultsProvider.getMaxMemAvailable();
 
         this.setState({ heSetupModel });
     }

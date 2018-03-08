@@ -531,14 +531,14 @@ export class HeSetupModel {
                     ansibleVarName: "MEM_SIZE",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Memory Size (MB)",
-                    value: resourceConstants.VM_MEM_MIN_RECOMMENDED_MB,
+                    value: "16384",
                     unit: "MB",
                     type: types.INTEGER,
                     showInReview: true,
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
-                    range: {min: resourceConstants.VM_MEM_MIN_MB, max: resourceConstants.VM_MEM_MIN_RECOMMENDED_MB}
+                    range: {min: resourceConstants.VM_MEM_MIN_MB, max: 16384}
                 },
                 networkConfigType: {
                     name: "networkConfigType",
