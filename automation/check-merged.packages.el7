@@ -2,7 +2,9 @@ autoconf
 automake
 gcc-c++
 git
+pyflakes
 python
+python-pep8
 rpm-build
-dnf-utils
-dnf
+yum-utils
+yum

@@ -4,5 +4,5 @@ gcc-c++
 git
 python
 rpm-build
-dnf-utils
-dnf
+yum-utils
+yum

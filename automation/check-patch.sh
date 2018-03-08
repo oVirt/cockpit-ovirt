@@ -2,8 +2,8 @@
 
 # Force CI to get the latest version of these packages:
 dependencies="$(sed -e '/^[ \t]*$/d' -e '/^#/d' automation/packages.force)"
-yum-deprecated clean metadata || yum clean metadata
-yum-deprecated -y install ${dependencies} || yum -y install ${dependencies}
+dnf clean metadata || yum clean metadata
+dnf -y install ${dependencies} || yum -y install ${dependencies}
 
 export PATH=/usr/share/ovirt-engine-nodejs/bin:${PATH}
 
