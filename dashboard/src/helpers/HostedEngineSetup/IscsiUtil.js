@@ -1,5 +1,5 @@
 import {
-    ansibleOutputTypes as outputTypes, ansiblePhases as phases, playbookOutputPaths as outputPaths, playbookPaths
+    ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues as configValue, playbookOutputPaths as outputPaths, playbookPaths
 } from "../../components/HostedEngineSetup/constants"
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator";
 
@@ -44,7 +44,8 @@ class IscsiUtil {
                 "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
 
             const env = [
-                "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
+                `${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
+                `ANSIBLE_CALLBACK_WHITELIST=${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_DISCOVER
             ];
@@ -125,7 +126,7 @@ class IscsiUtil {
                 "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
 
             const env = [
-                "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
+                `ANSIBLE_CALLBACK_WHITELIST=${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_GET_DEVICES
             ];
