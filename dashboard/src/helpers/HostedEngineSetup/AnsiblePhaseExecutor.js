@@ -168,7 +168,7 @@ class AnsiblePhaseExecutor {
         return new Promise((resolve, reject) => {
             const cmd = this.getPlaybookCommand(phase, varFilePath);
             const env = [
-                "ANSIBLE_CALLBACK_WHITELIST=1_otopi_json",
+                `ANSIBLE_CALLBACK_WHITELIST=${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPaths[phase]
             ];
