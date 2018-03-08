@@ -408,7 +408,6 @@ var GdeployUtil = {
     },
     createVdoConfig(glusterModel){
         const vdoConfigs = []
-
         glusterModel.bricks.forEach(function(bricksHost, hostIndex) {
           const hostVdoConfigs = {
             host: bricksHost.host,
@@ -416,23 +415,36 @@ var GdeployUtil = {
               action: 'create',
               devices: "",
               names: "",
-              logicalsize: ""
+              logicalsize: "",
+              blockmapcachesize: "128M",
+              readcache: "enabled",
+              readcachesize: "20M",
+              emulate512: "enabled",
+              writepolicy: "sync",
+              ignore_vdo_errors: "no"
             }
           }
           const devices = []
           const names = []
           const logicalSizes = []
+          const slabsizes = []
 
           bricksHost.host_bricks.forEach(function(brick, index) {
             if (brick.is_vdo_supported) {
               devices.push(brick.device)
               names.push(brick.name)
               logicalSizes.push(brick.logicalSize)
+              if (Number(logicalSizes) >= 1000) {
+                slabsizes.push("32GB")
+              }
             }
           })
           hostVdoConfigs.vdoConfig.devices = devices.join()
           hostVdoConfigs.vdoConfig.names = names.join()
           hostVdoConfigs.vdoConfig.logicalsize = logicalSizes.join()
+          if (slabsizes.length != 0) {
+            hostVdoConfigs.vdoConfig['slabsize'] = slabsizes.join()
+          }
           vdoConfigs.push(hostVdoConfigs)
         })
         return vdoConfigs
