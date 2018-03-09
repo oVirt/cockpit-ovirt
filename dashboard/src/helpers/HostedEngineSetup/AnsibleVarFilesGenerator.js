@@ -79,8 +79,7 @@ class AnsibleVarFilesGenerator {
                         }
                     }, this)
             }, this);
-
-        console.log(varString);
+        
         return varString;
     }
 
