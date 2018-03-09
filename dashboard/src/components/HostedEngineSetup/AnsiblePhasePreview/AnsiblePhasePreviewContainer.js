@@ -22,6 +22,7 @@ class AnsiblePhasePreviewContainer extends Component {
     customActionBtnCallback() {
         this.setState({ executionStarted: true });
         const newBtnState = {
+            buttonText: this.props.executeBtnText,
             disabled: true,
             disableBtnsList: [footerButtons.BACK],
             hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH, footerButtons.CLOSE]
@@ -37,7 +38,7 @@ class AnsiblePhasePreviewContainer extends Component {
         let btnState = {};
         if (executionStatus === status.FAILURE) {
             btnState = {
-                buttonText: "Execute",
+                buttonText: this.props.executeBtnText,
                 hideBtnsList: [footerButtons.NEXT],
                 buttonCallBack: function() {
                     buttonCallBack();
@@ -59,7 +60,7 @@ class AnsiblePhasePreviewContainer extends Component {
             this.state.executionStatus !== status.SUCCESS) {
             const self = this;
             const newBtnState = {
-                buttonText: "Execute",
+                buttonText: this.props.executeBtnText,
                 buttonCallBack: self.customActionBtnCallback,
                 moveNext: false,
                 overrideFinish: true
@@ -72,7 +73,7 @@ class AnsiblePhasePreviewContainer extends Component {
         let newBtnState = {};
         if (this.state.executionStatus !== status.SUCCESS) {
             newBtnState = {
-                buttonText: "Execute",
+                buttonText: this.props.executeBtnText,
                 buttonCallBack: this.customActionBtnCallback,
                 hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH]
             };
