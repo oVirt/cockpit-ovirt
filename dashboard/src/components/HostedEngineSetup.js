@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import {CheckIfRegistered, checkForGdeployAnsFiles} from '../helpers/HostedEngineSetup'
 import HeSetupWizardContainer from './HostedEngineSetup/HeSetupWizard/HeSetupWizardContainer'
 import GdeploySetup from './gdeploy/GdeploySetup'
 import GdeployUtil from '../helpers/GdeployUtil'
-import { heSetupState, deploymentOption, deploymentTypes } from './HostedEngineSetup/constants'
+import {heSetupState, deploymentOption, deploymentTypes, messages} from './HostedEngineSetup/constants'
 import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
 import Selectbox from './common/Selectbox'
 
@@ -34,6 +35,7 @@ class HostedEngineSetup extends Component {
     this.redeploy = this.redeploy.bind(this);
     this.deploymentTypeChange = this.deploymentTypeChange.bind(this);
     this.startButtonHandler = this.startButtonHandler.bind(this);
+    this.handleExistingGlusterConfigSelection = this.handleExistingGlusterConfigSelection.bind(this);
 
     CheckIfRegistered(this.registeredCallback);
   }
@@ -66,10 +68,10 @@ class HostedEngineSetup extends Component {
 
     if (option === deploymentOption.REGULAR) {
       this.startSetup();
-    } else if (option === deploymentOption.HYPERCONVERGED) {
+    } else if (option === deploymentOption.HYPERCONVERGED && !this.state.gdeployFilesFound) {
       this.startGdeploy();
-    } else if (option === deploymentOption.USE_EXISTING_GLUSTER_CONFIG) {
-      this.startSetup([constants.heAnsfileFile, constants.heCommonAnsFile]);
+    } else if (option === deploymentOption.HYPERCONVERGED && this.state.gdeployFilesFound) {
+      this.setState({ state: heSetupState.GLUSTER_CONFIG_CHOICE_REQD });
     }
   }
 
@@ -111,6 +113,14 @@ class HostedEngineSetup extends Component {
     });
   }
 
+  handleExistingGlusterConfigSelection(option) {
+    if (option === deploymentOption.USE_EXISTING_GLUSTER_CONFIG) {
+      this.startSetup([constants.heAnsfileFile, constants.heCommonAnsFile]);
+    } else if (option === deploymentOption.HYPERCONVERGED) {
+      this.startGdeploy();
+    }
+  }
+
   deploymentTypeChange(type) {
     this.setState({ deploymentType: type });
   }
@@ -148,8 +158,12 @@ class HostedEngineSetup extends Component {
               onClose={this.abortCallback}
           />
         }
-        { this.state.state === heSetupState.GDEPLOY &&
-          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} gdeployWizardType={this.state.gdeployWizardType} />
+        {this.state.state === heSetupState.GLUSTER_CONFIG_CHOICE_REQD &&
+          <ExistingGlusterConfigDialog glusterConfigSelectionHandler={this.handleExistingGlusterConfigSelection}
+                                       onClose={this.abortCallback} />
+        }
+        {this.state.state === heSetupState.GDEPLOY &&
+          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} />
         }
       </div>
     )
@@ -273,6 +287,80 @@ const HeWizardFooter = () => {
         </div>
       </div>
   )
+};
+
+class ExistingGlusterConfigDialog extends Component  {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+      $(ReactDOM.findDOMNode(this)).modal('show')
+  }
+
+  componentWillUnmount() {
+      $(ReactDOM.findDOMNode(this)).modal('hide')
+  }
+
+  render() {
+      return (
+          <div className="modal" data-backdrop="static" role="dialog">
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button"
+                          className="close wizard-pf-dismiss"
+                          aria-label="Close" onClick={this.props.onClose}
+                          data-dismiss="modal" aria-hidden="true" >
+                    <span className="pficon pficon-close" />
+                  </button>
+                  <dt className="modal-title">Gluster Configuration Found</dt>
+                </div>
+                <div className="modal-body clearfix">
+                  <div>
+                    <div className="row">
+                      <div className="col-sm-10 col-sm-offset-1">
+                        <div className="existing-gluster-config-dialog-text">
+                            {messages.GLUSTER_CONFIGURATION_FOUND}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="row existing-gluster-config-note-row">
+                      <div className="col-sm-10 col-sm-offset-1">
+                        <div className="existing-gluster-config-dialog-note">
+                          Note: To view existing gluster configuration details, see the Storage section in the main Cockpit tab.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="row existing-gluster-config-dialog-btn-row">
+                      <div className="col-sm-3 col-sm-offset-3">
+                        <button type="button"
+                                className="btn btn-default existing-gluster-config-dialog-btn"
+                                aria-label="Use existing configuration"
+                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.USE_EXISTING_GLUSTER_CONFIG)}>
+                          Use Existing Configuration
+                        </button>
+                      </div>
+
+                      <div className="col-sm-3">
+                        <button type="button"
+                                className="btn btn-default existing-gluster-config-dialog-btn"
+                                aria-label="Run gluster wizard"
+                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED)}>
+                          Run Gluster Wizard
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+      )
+  }
 };
 
 const Registered = ({callback, engine}) => {

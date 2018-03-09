@@ -75,6 +75,8 @@ class HeSetupWizardContainer extends Component {
             const glusterAnsFile = gdeployAnsFiles[0];
             const setupModel = this.state.heSetupModel.model;
             this.state.heSetupModel.addGlusterValues(glusterAnsFile, setupModel);
+            setupModel.storage.domainType.value = "glusterfs";
+            this.setState({ setupModel });
         } else {
             console.log(messages.NO_GDEPLOY_ANSWER_FILES_FOUND);
         }
