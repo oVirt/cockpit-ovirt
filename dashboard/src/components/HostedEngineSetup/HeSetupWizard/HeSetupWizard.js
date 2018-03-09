@@ -29,33 +29,28 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleF
                         onClose={abortCallback}
                         onFinish={handleFinish}
                         onStepChange={onStepChange}
-                        isDeploymentStarted={isDeploymentStarted}
-                        width={"1100px"}>
-                    <MultiPartStepContainer stepName="VM/Engine">
-                        <HeWizardVmContainer stepName="VM"
+                        isDeploymentStarted={isDeploymentStarted}>
+                    <HeWizardVmContainer stepName="VM"
+                                         deploymentType={deploymentType}
+                                         model={heSetupModel}
+                                         systemData={systemData}
+                                         defaultsProvider={defaultsProvider}/>
+                    <HeWizardEngineContainer stepName="Engine"
                                              deploymentType={deploymentType}
-                                             model={heSetupModel}
-                                             systemData={systemData}
-                                             defaultsProvider={defaultsProvider}/>
-                        <HeWizardEngineContainer stepName="Engine"
-                                                 deploymentType={deploymentType}
-                                                 heSetupModel={heSetupModel.model}/>
-                        <AnsiblePhasePreviewContainer abortCallBack={abortCallback}
-                                                      stepName={"Preview"}
-                                                      heSetupModel={heSetupModel.model}
-                                                      sections={[sectNames.VM, sectNames.ENGINE]}
-                                                      phase={ansiblePhases.BOOTSTRAP_VM}/>
-                    </MultiPartStepContainer>
-                    <MultiPartStepContainer stepName={"Storage"}>
-                        <HeWizardStorageContainer stepName="Storage"
+                                             heSetupModel={heSetupModel.model}/>
+                    <AnsiblePhasePreviewContainer abortCallBack={abortCallback}
+                                                  stepName="Prepare VM"
+                                                  heSetupModel={heSetupModel.model}
+                                                  sections={[sectNames.VM, sectNames.ENGINE]}
+                                                  phase={ansiblePhases.BOOTSTRAP_VM}/>
+                    <HeWizardStorageContainer stepName="Storage"
                                               deploymentType={deploymentType}
                                               model={heSetupModel}/>
-                        <AnsiblePhasePreviewContainer abortCallBack={abortCallback}
-                                                      stepName={"Preview"}
-                                                      heSetupModel={heSetupModel.model}
-                                                      sections={[sectNames.STORAGE]}
-                                                      phase={ansiblePhases.CREATE_STORAGE}/>
-                    </MultiPartStepContainer>
+                    <AnsiblePhasePreviewContainer abortCallBack={abortCallback}
+                                                  stepName="Finish"
+                                                  heSetupModel={heSetupModel.model}
+                                                  sections={[sectNames.STORAGE]}
+                                                  phase={ansiblePhases.CREATE_STORAGE}/>
                 </Wizard>
             }
 
