@@ -72,7 +72,8 @@ export const heSetupState = {
     POLLING: "polling",
     REGISTERED: "registered",
     GDEPLOY: "gdeploy",
-    HOSTED_ENGINE: "he"
+    HOSTED_ENGINE: "he",
+    GLUSTER_CONFIG_CHOICE_REQD: "glusterConfigChoiceReqd"
 };
 
 export const status = {
@@ -113,6 +114,7 @@ export const messages = {
     DEPLOYMENT_SUCCESSFUL: "Hosted Engine has been successfully deployed!",
     DEPLOYMENT_FAILED: "Deployment Failed",
     DEPLOYMENT_IN_PROGRESS: "Deployment in Progress",
+    GLUSTER_CONFIGURATION_FOUND: "An existing gluster configuration has been found.",
     ADD_GDEPLOY_PROPS_TO_ANS_FILE: "Attempting to add gdeploy properties to the answer file.",
     NO_GDEPLOY_ANSWER_FILES_FOUND: "No gdeploy answer files found.",
     ANSIBLE_PHASE_SUCCESSFUL: "Execution completed successfully. Please proceed to the next step.",

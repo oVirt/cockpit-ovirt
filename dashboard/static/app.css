@@ -662,3 +662,25 @@ h3.deployment-option-panel-sub-text {
     border-bottom: none;
     text-decoration: none;
 }
+
+.he-wizard-step-header {
+    font-size: 13px;
+}
+
+div.existing-gluster-config-dialog-btn-row {
+    margin-top: 30px;
+}
+
+div.existing-gluster-config-dialog-text {
+    font-size: 14px;
+    text-align: center;
+}
+
+div.existing-gluster-config-dialog-note {
+    font-size: 13px;
+    text-align: center;
+}
+
+div.existing-gluster-config-note-row {
+    margin-top: 15px;
+}
