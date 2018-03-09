@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Fri Mar 09 2018 Ryan Barry <rbarry@redhat.com> - 0.11.15-0.1
+- More hosted engine fixes
+
 * Thu Mar 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.14-0.1
 - Fix hosted engine otopi deployments
 
