@@ -83,6 +83,15 @@ class AnsiblePhasePreviewContainer extends Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!this.props.validating && nextProps.validating) {
+            const allowFwdStepChg = this.state.executionTerminated && this.state.executionStatus === status.SUCCESS;
+            this.props.validationCallBack(allowFwdStepChg);
+        }
+
+        return true;
+    }
+
     render() {
         const reviewGen = new ReviewGenerator(this.state.heSetupModel);
         const sections = reviewGen.getReviewSections(this.props.sections);
