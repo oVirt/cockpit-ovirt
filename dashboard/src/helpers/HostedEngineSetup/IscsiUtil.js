@@ -1,13 +1,12 @@
-import {
-    ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues as configValue, playbookOutputPaths as outputPaths, playbookPaths
-} from "../../components/HostedEngineSetup/constants"
+import { ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues as configValue,
+    playbookOutputPaths as outputPaths, playbookPaths } from "../../components/HostedEngineSetup/constants"
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator";
 
 const varFileProps = {
     ISCSI_DISCOVER: ["iSCSIPortalIPAddress", "iSCSIPortalPort", "iSCSIDiscoverUser",
         "iSCSIDiscoverPassword", "adminPassword", "fqdn", "appHostName"],
-    ISCSI_GET_DEVICES: ["iSCSIPortalUser", "iSCSIPortalPassword", "iSCSITargetName",
-        "iSCSIPortalIPAddress", "iSCSIPortalPort"]
+    ISCSI_GET_DEVICES: ["adminPassword", "fqdn", "appHostName", "iSCSIPortalUser", "iSCSIPortalPassword",
+        "iSCSITargetName", "iSCSIPortalIPAddress", "iSCSIPortalPort"]
 };
 
 class IscsiUtil {
@@ -114,8 +113,7 @@ class IscsiUtil {
         const varFileStr = this.getVarFileString(varFileProps[phases.ISCSI_GET_DEVICES]);
         return varFileGen.writeVarFile(varFileStr, phases.ISCSI_GET_DEVICES)
             .then(varFilePath => self.runGetDevicesPlaybook(varFilePath))
-            .then(() => self.readOutputFile(outputPaths.ISCSI_GET_DEVICES, phases.ISCSI_GET_DEVICES))
-            .catch(error => console.log(error));
+            .then(() => self.readOutputFile(outputPaths.ISCSI_GET_DEVICES, phases.ISCSI_GET_DEVICES));
     }
 
     runGetDevicesPlaybook(varFilePath) {
@@ -218,10 +216,14 @@ class IscsiUtil {
         let results = null;
 
         lines.forEach(function(line) {
-            const json = JSON.parse(line);
-            if (json["OVEHOSTED_AC/type"] === outputTypes.RESULT) {
-                results = json["OVEHOSTED_AC/body"];
-            }
+           try {
+                const json = JSON.parse(line);
+                if (json["OVEHOSTED_AC/type"] === outputTypes.RESULT) {
+                    results = json["OVEHOSTED_AC/body"];
+                }
+           } catch (error) {
+               console.log(error);
+           }
         });
 
         return results;
