@@ -193,7 +193,7 @@ class AnsiblePhaseExecutor {
                         reject(options, accessDenied);
                     } else if (options["exit-status"] === 0) {
                         console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
-                        resolve({options: options, varFilePath: varFilePath});
+                        resolve(options);
                     } else {
                         console.log("Execution of " + playbookPaths[phase] + " failed to complete.");
                         reject(options, accessDenied);
@@ -201,7 +201,7 @@ class AnsiblePhaseExecutor {
                 } else if (options["exit-status"] === 0) {
                     console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
                     self.processResult();
-                    resolve({options: options, varFilePath: varFilePath});
+                    resolve(options);
                 } else {
                     console.log("hosted-engine-setup exited");
                     console.log(ev);
