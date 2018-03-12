@@ -38,7 +38,7 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
         <div>
             <form className="form-horizontal he-form-container">
                 {errorMsg &&
-                    <div className="row" style={{marginLeft: "40px"}}>
+                    <div className="row">
                         <div className="alert alert-danger col-sm-8">
                             <span className="pficon pficon-error-circle-o" />
                             <strong>{errorMsg}</strong>
@@ -47,7 +47,7 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                 }
 
                 {targetRetrievalStatus === status.FAILURE &&
-                    <div className="row" style={{marginLeft: "40px"}}>
+                    <div className="row">
                         <div className="alert alert-danger col-sm-8">
                             <span className="pficon pficon-error-circle-o" />
                             <strong>{ messages.TARGET_RETRIEVAL_FAILED }</strong>
@@ -56,7 +56,7 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                 }
 
                 {lunRetrievalStatus === status.FAILURE &&
-                    <div className="row" style={{marginLeft: "40px"}}>
+                    <div className="row">
                         <div className="alert alert-danger col-sm-8">
                             <span className="pficon pficon-error-circle-o" />
                             <strong>{ messages.LUN_RETRIEVAL_FAILED }</strong>
