@@ -56,9 +56,20 @@ div.curtains-with-footer {
     overflow-y: auto;
 }
 
+.curtains-header {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    font-size: 30px;
+}
+
+.curtains-logo {
+    width: 250px;
+}
+
 .curtains-message {
-    margin-left: 80px;
-    margin-right: 90px;
+    margin-left: 160px;
+    margin-right: 170px;
+    font-size: 13px;
 }
 
 .container-fluid {
