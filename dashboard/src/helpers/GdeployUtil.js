@@ -412,7 +412,7 @@ var GdeployUtil = {
                     cache_lv: 'lvcache',
                     cache_lvsize: lvConfig[hostIndex].lvCacheSize + "GB",
                     cachemode: lvConfig[hostIndex].cacheMode.trim(),
-                    ignore_lv_errors: 'yes'
+                    ignore_lv_errors: 'no'
                   }
                 }
                 lvCacheConfig.push(hostLvCacheConfig)
