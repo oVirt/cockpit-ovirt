@@ -89,6 +89,10 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed Mar 14 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.16-1
+- More hosted engine wizard fixes and improvements
+- Gluster Management fixes
+
 * Fri Mar 09 2018 Ryan Barry <rbarry@redhat.com> - 0.11.15-0.1
 - More hosted engine fixes
 
