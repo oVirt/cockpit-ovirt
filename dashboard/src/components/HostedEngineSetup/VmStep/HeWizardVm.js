@@ -40,7 +40,6 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
     const gatewayPingPending = gatewayState === gwState.POLLING;
-    const showBridgeIntField = interfaces.length  > 1;
 
     let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
@@ -218,19 +217,17 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                     </div>
                 </div>
 
-                {showBridgeIntField &&
-                    <div className="form-group">
-                        <label className="col-md-3 control-label">Bridge Interface</label>
-                        <div className="col-md-6">
-                            <div style={{width: "120px"}}>
-                                <Selectbox optionList={interfaces}
-                                           selectedOption={networkConfig.bridgeIf.value}
-                                           callBack={(e) => handleVmConfigUpdate("bridgeIf", e, "network")}
-                                />
-                            </div>
+                <div className="form-group">
+                    <label className="col-md-3 control-label">Bridge Interface</label>
+                    <div className="col-md-6">
+                        <div style={{width: "120px"}}>
+                            <Selectbox optionList={interfaces}
+                                       selectedOption={networkConfig.bridgeIf.value}
+                                       callBack={(e) => handleVmConfigUpdate("bridgeIf", e, "network")}
+                            />
                         </div>
                     </div>
-                }
+                </div>
 
                 <div className={getClassNames("cloudinitRootPwd", errorMsgs)}>
                     <label className="col-md-3 control-label">Root Password</label>
