@@ -190,7 +190,7 @@ export class HeSetupModel {
                 },
                 storageAddress: {
                     name: "storageAddress",
-                    ansibleVarName: "STORAGE_DOMAIN_ADDRESS",
+                    ansibleVarName: "STORAGE_DOMAIN_ADDR",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE],
                     description: "Storage Address",
                     value: "",
