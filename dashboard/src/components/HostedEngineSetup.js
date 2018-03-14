@@ -191,36 +191,38 @@ const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, de
       { key: deploymentTypes.OTOPI_DEPLOYMENT, title: "OTOPI-based Deployment (Recommended)" }
   ];
   return (
-    <div className="curtains curtains-ct blank-slate-pf">
-      <div className="container-center">
-        <div className="blank-slate-pf-icon">
-          <i className="pficon-cluster" />
-        </div>
-        <h1>
-          Hosted Engine Setup
-        </h1>
-        <p className="curtains-message">
-          {message}
-        </p>
-        <div className="he-wizard-deployment-options-container">
-          <DeploymentOptionPanel iconType={"pficon-cluster"}
-                                 deploymentTypeOption={deploymentOption.REGULAR}
-                                 mainText={"Hosted Engine"}
-                                 subText={"Deploy oVirt hosted engine on storage that has already been provisioned"}
-                                 buttonText={"Start"}
-                                 buttonCallback={startButtonHandler} />
+      <div>
+        <div className="curtains curtains-with-footer blank-slate-pf">
+          <div className="wizard-container-center">
+            <div className="blank-slate-pf-icon">
+              <i className="pficon-cluster" />
+            </div>
+            <h1>
+              Hosted Engine Setup
+            </h1>
+            <p className="curtains-message">
+              {message}
+            </p>
+            <div className="he-wizard-deployment-options-container">
+              <DeploymentOptionPanel iconType={"pficon-cluster"}
+                                     deploymentTypeOption={deploymentOption.REGULAR}
+                                     mainText={"Hosted Engine"}
+                                     subText={"Deploy oVirt hosted engine on storage that has already been provisioned"}
+                                     buttonText={"Start"}
+                                     buttonCallback={startButtonHandler} />
 
-          <DeploymentOptionPanel iconType={"fa-database"}
-                                 deploymentTypeOption={deploymentOption.HYPERCONVERGED}
-                                 isLastOption
-                                 mainText={"Hyperconverged"}
-                                 subText={"Configure gluster storage and oVirt hosted engine"}
-                                 buttonText={"Start"}
-                                 buttonCallback={startButtonHandler} />
+              <DeploymentOptionPanel iconType={"fa-database"}
+                                     deploymentTypeOption={deploymentOption.HYPERCONVERGED}
+                                     isLastOption
+                                     mainText={"Hyperconverged"}
+                                     subText={"Configure gluster storage and oVirt hosted engine"}
+                                     buttonText={"Start"}
+                                     buttonCallback={startButtonHandler} />
+            </div>
+          </div>
         </div>
         <HeWizardFooter />
       </div>
-    </div>
   )
 };
 
@@ -367,24 +369,27 @@ const Registered = ({callback, engine}) => {
   let message = `This system is already registered to ${engine}!`
   let button_text = "Redeploy"
   return (
-    <div className="curtains curtains-ct blank-slate-pf">
-      <div className="container-center">
-        <div className="blank-slate-pf-icon">
-          <i className="pficon-cluster" />
+      <div>
+        <div className="curtains curtains-with-footer blank-slate-pf">
+          <div className="container-center">
+            <div className="blank-slate-pf-icon">
+              <i className="pficon-cluster" />
+            </div>
+            <h1>
+              Hosted Engine Setup
+            </h1>
+            <p className="curtains-message">
+              {message}
+            </p>
+            <div className="blank-slate-pf-main-action">
+              <button
+                className="btn btn-lg btn-primary"
+                onClick={callback}>{button_text}</button>
+            </div>
+          </div>
         </div>
-        <h1>
-          Hosted Engine Setup
-        </h1>
-        <p className="curtains-message">
-          {message}
-        </p>
-        <div className="blank-slate-pf-main-action">
-          <button
-            className="btn btn-lg btn-primary"
-            onClick={callback}>{button_text}</button>
-        </div>
+        <HeWizardFooter />
       </div>
-    </div>
   )
 };
 

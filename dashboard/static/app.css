@@ -46,6 +46,16 @@ path.line.highlight {
     position: fixed;
 }
 
+div.curtains-with-footer {
+    height: calc(100% - 125px);
+    width: calc(100% - 90px);
+    position: fixed;
+    padding-bottom: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow-y: auto;
+}
+
 .curtains-message {
     margin-left: 80px;
     margin-right: 90px;
@@ -160,6 +170,10 @@ path.line.highlight {
   max-height: 200px;
   overflow: auto;
   padding-left: 15px;
+}
+
+.wizard-container-center {
+    width: 100%;
 }
 
 .container-center {
