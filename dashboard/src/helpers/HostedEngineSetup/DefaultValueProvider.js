@@ -1,13 +1,20 @@
-import { allIntelCpus, allowedIntelCpus, configValues, defaultInterfaces, filteredNetworkInterfaces,
-         resourceConstants, status } from "../../components/HostedEngineSetup/constants"
+import {
+    allIntelCpus, allowedIntelCpus, configValues, defaultInterfaces, filteredNetworkInterfaces, playbookOutputPaths as outputPaths,
+    playbookPaths,
+    resourceConstants, status
+} from "../../components/HostedEngineSetup/constants"
+import PlaybookUtil from './PlaybookUtil'
 
 export class DefaultValueProvider {
     constructor(registeredCallback) {
         this.systemData = null;
+        this.networkInterfaces = null;
         this.registeredCallback = registeredCallback;
         this.ready = status.POLLING;
 
+        this.init = this.init.bind(this);
         this.getSystemData = this.getSystemData.bind(this);
+        this.retrieveNetworkInterfaces = this.retrieveNetworkInterfaces.bind(this);
         this.getTaskData = this.getTaskData.bind(this);
         this.getCpuArchitecture = this.getCpuArchitecture.bind(this);
         this.getCpuModel = this.getCpuModel.bind(this);
@@ -20,12 +27,31 @@ export class DefaultValueProvider {
         this.virtSupported = this.virtSupported.bind(this);
         this.getTimeZone = this.getTimeZone.bind(this);
         this.getNetworkInterfaces = this.getNetworkInterfaces.bind(this);
+        this.setNetworkInterfaces = this.setNetworkInterfaces.bind(this);
         this.getIpAddress = this.getIpAddress.bind(this);
         this.getIpData = this.getIpData.bind(this);
         this.getFQDN = this.getFQDN.bind(this);
         this.isEmptyObject = this.isEmptyObject.bind(this);
 
-        this.getSystemData();
+        this.init();
+    }
+
+    init() {
+        const sysDataProm = this.getSystemData();
+        const netIfaceProm = this.retrieveNetworkInterfaces();
+        const proms = [sysDataProm, netIfaceProm];
+
+        const self = this;
+        Promise.all(proms)
+            .then(() => {
+                self.ready = status.SUCCESS;
+                self.registeredCallback(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                self.ready = status.FAILURE;
+                self.registeredCallback(false);
+            });
     }
 
     getSystemData() {
@@ -33,18 +59,20 @@ export class DefaultValueProvider {
         const options = { "environ": ["ANSIBLE_STDOUT_CALLBACK=json"] };
         const self = this;
 
-        cockpit.spawn(cmd.split(" "), options)
-            .done(function(json) {
-                let data = self.cleanData(json);
-                self.systemData = JSON.parse(data);
-                self.ready = status.SUCCESS;
-                self.registeredCallback(true);
-            })
-            .fail(function(error) {
-                console.log(error);
-                self.ready = status.FAILURE;
-                self.registeredCallback(false);
-            });
+        return new Promise((resolve, reject) => {
+            cockpit.spawn(cmd.split(" "), options)
+                .done(function(json) {
+                    console.log("System data retrieved successfully");
+                    let data = self.cleanData(json);
+                    self.systemData = JSON.parse(data);
+                    resolve(true);
+                })
+                .fail(function(error) {
+                    console.log("System data retrieval failed");
+                    console.log(error);
+                    throw new Error(error);
+                });
+        });
     }
 
     cleanData(data) {
@@ -54,6 +82,44 @@ export class DefaultValueProvider {
         }
 
         return data;
+    }
+
+    retrieveNetworkInterfaces() {
+        const playbookUtil = new PlaybookUtil();
+        const playbookPath = playbookPaths.GET_NETWORK_INTERFACES;
+        const outputPath = outputPaths.GET_NETWORK_INTERFACES;
+        const self = this;
+        return playbookUtil.runPlaybook("", playbookPath, "Get network interfaces", outputPath)
+            .then(() => playbookUtil.readOutputFile(outputPath))
+            .then(output => self.setNetworkInterfaces(output))
+            .catch(error => {
+                throw new Error(error)
+            });
+    }
+
+    setNetworkInterfaces(output) {
+        return new Promise((resolve, reject) => {
+            const playbookUtil = new PlaybookUtil();
+            const data = playbookUtil.getResultsData(output);
+            const interfaces = data.otopi_host_net.ansible_facts.otopi_host_net;
+            const interfacesArray = [];
+
+            if (typeof interfaces !== "undefined" && interfaces.length > 0) {
+                interfaces.forEach(function (iface) {
+                    interfacesArray.push({key: iface, title: iface});
+                });
+            } else {
+                reject(new Error("Unable to retrieve valid network interfaces data"));
+            }
+
+            this.networkInterfaces = interfacesArray;
+            resolve();
+        })
+
+    }
+
+    getNetworkInterfaces() {
+        return this.networkInterfaces;
     }
 
     getTaskData(taskName) {
@@ -168,25 +234,11 @@ export class DefaultValueProvider {
         return sufficientMemAvail;
     }
 
-    getNetworkInterfaces() {
-        let interfaces = defaultInterfaces;
-
-        const ansibleInterfaces = this.getTaskData("Gathering Facts")["ansible_facts"]["ansible_interfaces"];
-
-        if (typeof ansibleInterfaces !== "undefined" && ansibleInterfaces.length > 0) {
-            const filteredInterfaces = ansibleInterfaces.filter(iface => !filteredNetworkInterfaces.includes(iface));
-            const interfacesArray = [];
-            filteredInterfaces.forEach(function (iface) {
-                interfacesArray.push({key: iface, title: iface});
-            });
-
-            interfaces = interfacesArray;
+    getDefaultInterface() {
+        if (typeof this.networkInterfaces !== "undefined" && this.networkInterfaces.length === 1) {
+            return this.networkInterfaces[0].key;
         }
 
-        return interfaces;
-    }
-
-    getDefaultInterface() {
         let defaultInterface = "";
         const ipData = this.getIpData();
 

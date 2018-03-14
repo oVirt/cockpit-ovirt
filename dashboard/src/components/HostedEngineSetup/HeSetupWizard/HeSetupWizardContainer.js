@@ -39,7 +39,7 @@ class HeSetupWizardContainer extends Component {
         this.virtSupported = this.defaultsProvider.virtSupported();
         this.sufficientMemAvail = this.defaultsProvider.sufficientMemAvail();
 
-        const loadingSuccessful = this.systemDataRetrieved && this.libvirtRunning &&this.virtSupported && this.sufficientMemAvail;
+        const loadingSuccessful = this.systemDataRetrieved && this.libvirtRunning && this.virtSupported && this.sufficientMemAvail;
         const loadingStatus = loadingSuccessful ? status.SUCCESS : status.FAILURE;
 
         let systemData = null;

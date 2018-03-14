@@ -24,7 +24,8 @@ export const playbookPaths = {
     TARGET_VM: "/usr/share/ovirt-hosted-engine-setup/ansible/create_target_vm.yml",
     FINAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml",
     ISCSI_DISCOVER: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_discover.yml",
-    ISCSI_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_getdevices.yml"
+    ISCSI_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_getdevices.yml",
+    GET_NETWORK_INTERFACES: "/usr/share/ovirt-hosted-engine-setup/ansible/get_network_interfaces.yml"
 };
 
 export const playbookOutputPaths = {
@@ -34,7 +35,8 @@ export const playbookOutputPaths = {
     TARGET_VM: "/tmp/create_target_vm_out.json",
     FINAL_CLEAN: "/tmp/final_clean_out.json",
     ISCSI_DISCOVER: "/tmp/iscsi_discover_out.json",
-    ISCSI_GET_DEVICES: "/tmp/iscsi_getdevices_out.json"
+    ISCSI_GET_DEVICES: "/tmp/iscsi_getdevices_out.json",
+    GET_NETWORK_INTERFACES: "/tmp/get_network_interfaces.json"
 };
 
 export const configFileTypes = {
