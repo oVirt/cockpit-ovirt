@@ -163,7 +163,7 @@ class HostedEngineSetup extends Component {
                                        onClose={this.abortCallback} />
         }
         {this.state.state === heSetupState.GDEPLOY &&
-          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} />
+          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} gdeployWizardType={this.state.gdeployWizardType} />
         }
       </div>
     )
