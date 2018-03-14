@@ -260,7 +260,7 @@ const HeWizardFooter = () => {
                 <div className="col-sm-6">
                   <ul className="he-wizard-footer-links">
                     <li>
-                      <a href="https://ovirt.org/documentation/self-hosted/Self-Hosted_Engine_Guide/">
+                      <a href="https://ovirt.org/documentation/self-hosted/Self-Hosted_Engine_Guide/" target="_blank">
                         Installation Guide
                       </a>
                     </li>
@@ -277,7 +277,7 @@ const HeWizardFooter = () => {
                 <div className="col-sm-6">
                   <ul className="he-wizard-footer-links">
                     <li>
-                      <a href="http://www.ovirt.org">oVirt Homepage</a>
+                      <a href="http://www.ovirt.org" target="_blank">oVirt Homepage</a>
                     </li>
                   </ul>
                 </div>
