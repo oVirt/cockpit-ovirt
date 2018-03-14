@@ -452,7 +452,7 @@ var GdeployUtil = {
                       logicalSizes.push(brick.logicalSize+"G")
                   }
                   else {
-                      logicalSizes[deviceIndex] = (parseInt(logicalSizes[deviceIndex]) + (brick.logicalSize)) + "G"
+                      logicalSizes[deviceIndex] = (parseInt(logicalSizes[deviceIndex]) + parseInt(brick.logicalSize)) + "G"
                   }
               }
           })
