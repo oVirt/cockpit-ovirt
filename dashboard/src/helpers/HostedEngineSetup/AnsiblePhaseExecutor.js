@@ -1,8 +1,9 @@
 import {
-    ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues as configValue,
+    ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues,
     deploymentStatus as status, playbookOutputPaths as outputPaths, playbookPaths
 } from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator"
+import { getAnsibleLogPath } from "../HostedEngineSetupUtil"
 
 class AnsiblePhaseExecutor {
     constructor(abortCallback, heSetupModel) {
@@ -134,7 +135,7 @@ class AnsiblePhaseExecutor {
 
     createVarFileDir() {
         return new Promise((resolve, reject) => {
-            cockpit.spawn(["mkdir", "-p", configValue.ANSIBLE_VAR_FILE_PATH_PREFIX], { "superuser": "require" })
+            cockpit.spawn(["mkdir", "-p", configValues.ANSIBLE_VAR_FILE_PATH_PREFIX], { "superuser": "require" })
                 .done(function() {
                     console.log("Var file directory created successfully.");
                     resolve();
@@ -163,13 +164,15 @@ class AnsiblePhaseExecutor {
         return cmd;
     }
 
+    // TODO Refactor to use PlaybookUtil
     executePlaybook(phase, varFilePath) {
         this.varFilePaths.push(varFilePath);
         return new Promise((resolve, reject) => {
             const cmd = this.getPlaybookCommand(phase, varFilePath);
             const env = [
-                `ANSIBLE_CALLBACK_WHITELIST=${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
+                `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
+                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPaths[phase]),
                 "OTOPI_CALLBACK_OF=" + outputPaths[phase]
             ];
 

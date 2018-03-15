@@ -1308,11 +1308,25 @@ export function getTaskData(ansibleData, taskName) {
 export function generateRandomString() {
     let str = "";
     const strLength = 6;
-    const possChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const possChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     for(let i = 0; i < strLength; i++) {
         str += possChars.charAt(Math.floor(Math.random() * possChars.length));
     }
 
     return str;
+}
+
+export function getAnsibleLogPath(playbookPath) {
+    const playbookName = playbookPath.substring(playbookPath.lastIndexOf("/") + 1, playbookPath.lastIndexOf("."));
+    const now = new Date()
+    const dateFormat = [
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate(),
+        d.getHours(),
+        d.getMinutes(),
+        d.getSeconds()
+    ].join("")
+    return `${configValues.ANSIBLE_LOG_DIR}ovirt-hosted-engine-setup-ansible-${playbookName}-${dateFormat}-${generateRandomString()}.log`;
 }
