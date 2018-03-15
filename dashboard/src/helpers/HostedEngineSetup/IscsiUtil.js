@@ -1,6 +1,7 @@
-import { ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues as configValue,
-    playbookOutputPaths as outputPaths, playbookPaths } from "../../components/HostedEngineSetup/constants"
+import { ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues,
+    playbookOutputPaths as outputPaths, playbookPaths } from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator";
+import { getAnsibleLogPath } from "../HostedEngineSetupUtil";
 
 const varFileProps = {
     ISCSI_DISCOVER: ["iSCSIPortalIPAddress", "iSCSIPortalPort", "iSCSIDiscoverUser",
@@ -35,6 +36,7 @@ class IscsiUtil {
             .then(() => self.readOutputFile(outputPaths.ISCSI_DISCOVER, phases.ISCSI_DISCOVER));
     }
 
+    // TODO Refactor to use PlaybookUtil
     runDiscoveryPlaybook(varFilePath) {
         const self = this;
         return new Promise((resolve, reject) => {
@@ -43,8 +45,9 @@ class IscsiUtil {
                 "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
 
             const env = [
-                `${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
-                `ANSIBLE_CALLBACK_WHITELIST=${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
+                `${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
+                `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
+                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPaths.ISCSI_DISCOVER),
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_DISCOVER
             ];
@@ -116,6 +119,7 @@ class IscsiUtil {
             .then(() => self.readOutputFile(outputPaths.ISCSI_GET_DEVICES, phases.ISCSI_GET_DEVICES));
     }
 
+    // TODO Refactor to use PlaybookUtil
     runGetDevicesPlaybook(varFilePath) {
         const self = this;
         return new Promise((resolve, reject) => {
@@ -124,7 +128,8 @@ class IscsiUtil {
                 "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
 
             const env = [
-                `ANSIBLE_CALLBACK_WHITELIST=${configValue.ANSIBLE_CALLBACK_WHITELIST}`,
+                `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
+                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPaths.ISCSI_GET_DEVICES),
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_GET_DEVICES
             ];

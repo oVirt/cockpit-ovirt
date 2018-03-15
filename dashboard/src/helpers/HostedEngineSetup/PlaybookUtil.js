@@ -1,5 +1,6 @@
 import { ansibleOutputTypes as outputTypes, configValues }
     from "../../components/HostedEngineSetup/constants"
+import { getAnsibleLogPath } from "../HostedEngineSetupUtil"
 
 class PlaybookUtil {
     constructor() {
@@ -24,11 +25,10 @@ class PlaybookUtil {
                 "--inventory=localhost"
             ]);
 
-            console.log(cmd);
-
             const env = [
                 `${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
                 `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
+                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPath),
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPath
             ];
