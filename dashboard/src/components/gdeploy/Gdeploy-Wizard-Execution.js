@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import GdeployUtil from '../../helpers/GdeployUtil'
+import ReactDOM from 'react-dom'
 
 class WizardExecutionStep extends Component {
     constructor(props) {
@@ -55,6 +56,15 @@ class WizardExecutionStep extends Component {
             this.props.onSuccess()
         }
     }
+    componentDidUpdate(){
+        this.scrollToBottom()
+    }
+    scrollToBottom(){
+        const scrollHeight = this.gdeployLogText.scrollHeight;
+        const height = this.gdeployLogText.clientHeight;
+        const maxScrollTop = scrollHeight - height;
+        ReactDOM.findDOMNode(this.gdeployLogText).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+    }
     render() {
         if (this.state.gdeployStatus === 0) {
             return <SuccessPanel callBack={this.callBack} gdeployWizardType={this.props.gdeployWizardType} />
@@ -68,6 +78,7 @@ class WizardExecutionStep extends Component {
                     <div className="list-group">
                         <div className="list-group-item">
                             <textarea className="gdeploy-wizard-config-preview"
+                                ref={(input) => { this.gdeployLogText = input }}
                                 value={this.state.gdeployLog}>
                             </textarea>
                         </div>
@@ -117,7 +128,7 @@ const SuccessPanel = ({ callBack, gdeployWizardType }) => {
     } else {
         message = "Successfully created volume"
     }
-    // Button Label 
+    // Button Label
     let buttonLabel = ""
     if (gdeployWizardType === "setup") {
         buttonLabel = "Continue to Hosted Engine Deployment"
