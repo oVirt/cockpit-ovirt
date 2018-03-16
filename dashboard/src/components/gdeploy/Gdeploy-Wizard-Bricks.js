@@ -101,35 +101,33 @@ class WizardBricksStep extends Component {
         }
 
         // Modify bricks according to volume details
-        if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
-            let new_volumes = []
-            let new_brick_dirs = []
-            nextProps.glusterModel.volumes.forEach(function (volume, index) {
-              new_volumes.push(volume.name)
+        let new_volumes = []
+        let new_brick_dirs = []
+        nextProps.glusterModel.volumes.forEach(function (volume, index) {
+          new_volumes.push(volume.name)
 
-              // Get volume brick_dir in the form of bricksList brick_dir
-              let brick_dir = ""
-              let brick_dir_split = volume.brick_dir.split('/')
-              let length = brick_dir_split.length
-              let lastIndex = volume.brick_dir.lastIndexOf('/')
-              if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
-                  brick_dir = volume.brick_dir.slice(0, lastIndex)
-              }
-              else {
-                  brick_dir = volume.brick_dir
-              }
-              new_brick_dirs.push(brick_dir)
-            })
-            let old_volumes = []
-            let old_brick_dirs = []
-            this.state.bricksList[0].host_bricks.forEach(function (brick, index) {
-              old_volumes.push(brick.name)
-              old_brick_dirs.push(brick.brick_dir)
-            })
-            if (old_volumes.join() != new_volumes.join() ||
-                old_brick_dirs.join() != new_brick_dirs.join()) {
-                    this.updateBrickDetails(nextProps.glusterModel.volumes)
-            }
+          // Get volume brick_dir in the form of bricksList brick_dir
+          let brick_dir = ""
+          let brick_dir_split = volume.brick_dir.split('/')
+          let length = brick_dir_split.length
+          let lastIndex = volume.brick_dir.lastIndexOf('/')
+          if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
+              brick_dir = volume.brick_dir.slice(0, lastIndex)
+          }
+          else {
+              brick_dir = volume.brick_dir
+          }
+          new_brick_dirs.push(brick_dir)
+        })
+        let old_volumes = []
+        let old_brick_dirs = []
+        this.state.bricksList[0].host_bricks.forEach(function (brick, index) {
+          old_volumes.push(brick.name)
+          old_brick_dirs.push(brick.brick_dir)
+        })
+        if (old_volumes.join() != new_volumes.join() ||
+            old_brick_dirs.join() != new_brick_dirs.join()) {
+                this.updateBrickDetails(nextProps.glusterModel.volumes)
         }
 
         // Check for arbiter volume and update respective brick in the arbiter host
@@ -162,22 +160,28 @@ class WizardBricksStep extends Component {
     updateBrickDetails(newVolumes){
         let that = this
         let newHostBricks = []
-        let brickTemplate = this.state.bricksList[0].host_bricks[0]
+        let brickTemplate = this.getEmptyRow()
         newVolumes.forEach(function (volume, index) {
             brickTemplate.name = volume.name
-            if (that.props.gdeployWizardType !== "setup") {
-                let brick_dir_split = volume.brick_dir.split('/')
-                let length = brick_dir_split.length
-                let lastIndex = volume.brick_dir.lastIndexOf('/')
-                if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
-                    brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
-                }
-                else {
-                    brickTemplate.brick_dir = volume.brick_dir
-                }
+            brickTemplate.device = "sdb"
+            let brick_dir_split = volume.brick_dir.split('/')
+            let length = brick_dir_split.length
+            let lastIndex = volume.brick_dir.lastIndexOf('/')
+            if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
+                brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
             }
             else {
                 brickTemplate.brick_dir = volume.brick_dir
+            }
+            if (that.props.gdeployWizardType === "setup" && volume.name === "engine") {
+                brickTemplate.size = "100"
+                brickTemplate.thinp = false
+                brickTemplate.logicalSize = "1000"
+            }
+            else {
+                brickTemplate.size = "500"
+                brickTemplate.thinp = true
+                brickTemplate.logicalSize = "5000"
             }
             newHostBricks.push(JSON.parse(JSON.stringify(brickTemplate)))
         })
@@ -196,12 +200,15 @@ class WizardBricksStep extends Component {
                 if(volume.is_arbiter){
                     let arbiterBrickSize = GdeployUtil.getArbiterBrickSize(parseInt(bricksList[2].host_bricks[index].size))
                     bricksList[2].host_bricks[index].size = JSON.stringify(arbiterBrickSize)
+                    bricksList[2].host_bricks[index].logicalSize = JSON.stringify(arbiterBrickSize * 10)
                 }
                 else{
                     if (this.props.gdeployWizardType === "setup" && bricksList[2].host_bricks[index].name === "engine") {
                         bricksList[2].host_bricks[index].size = "100"
+                        bricksList[2].host_bricks[index].logicalSize = "1000"
                     } else {
                         bricksList[2].host_bricks[index].size = "500"
+                        bricksList[2].host_bricks[index].logicalSize = "5000"
                     }
                 }
                 bricksHaveChanged = true
@@ -219,7 +226,8 @@ class WizardBricksStep extends Component {
         this.setState({ bricksList, errorMsgs: {} })
     }
     getEmptyRow() {
-        return { name: "", device: "", brick_dir: "", thinp: true, size:"1", is_vdo_supported: false, logicalSize: "0" }
+        let isVdoSupported = this.state.isVdoSupported
+        return { name: "", device: "", brick_dir: "", thinp: true, size:"1", is_vdo_supported: false, logicalSize: "0", isVdoSupported: isVdoSupported }
     }
     handleAdd() {
         let bricksList = this.state.bricksList
@@ -460,6 +468,7 @@ class WizardBricksStep extends Component {
                     errorMsgs = {that.state.errorMsgs[index]}
                     changeCallBack={this.handleUpdate}
                     deleteCallBack={() => this.handleDelete(index)}
+                    gdeployWizardType={this.props.gdeployWizardType}
                     />
             )
         }, this)
@@ -565,11 +574,13 @@ class WizardBricksStep extends Component {
                     </div>
                 }
                 </form>
-                <a onClick={this.handleAdd} className="col-md-offset-4">
-                    <span className="pficon pficon-add-circle-o">
-                        <strong> Add Bricks</strong>
-                    </span>
-                </a>
+                {this.props.gdeployWizardType !== "setup" &&
+                    <a onClick={this.handleAdd} className="col-md-offset-4">
+                        <span className="pficon pficon-add-circle-o">
+                            <strong> Add Bricks</strong>
+                        </span>
+                    </a>
+                }
                 <form className="form-horizontal">
                     <div className="panel-heading gdeploy-wizard-section-title">
                         <input type="checkbox"
@@ -639,7 +650,7 @@ WizardBricksStep.propTypes = {
     lvCacheConfig: React.PropTypes.array.isRequired
 }
 
-const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack}) => {
+const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack, gdeployWizardType}) => {
     const name = classNames(
         { "has-error": errorMsgs && errorMsgs.name }
     )
@@ -722,10 +733,12 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                 </div>
             </td>
             <td className="col-sm-1 gdeploy-wizard-bricks-delete">
-                <a onClick={deleteCallBack}>
-                    <span className="pficon pficon-delete gdeploy-wizard-delete-icon">
-                    </span>
-                </a>
+                {gdeployWizardType !== "setup" &&
+                    <a onClick={deleteCallBack}>
+                        <span className="pficon pficon-delete gdeploy-wizard-delete-icon">
+                        </span>
+                    </a>
+                }
             </td>
         </tr>
     )
