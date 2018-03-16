@@ -106,9 +106,12 @@ var GdeployUtil = {
             if(disksArray.indexOf('host') >= 0){
                 disksArray.splice(disksArray.indexOf('host'), 1)
             }
+            disksArray.forEach(function(disk, index){
+                let trimmedDisk = disk.split('/').pop()
+                disksArray[index] = trimmedDisk
+            })
             let disks = disksArray.join()
             hostPreFlightCheckObject.hostPreFlightCheck.file = `${PRE_FLIGHT_CHECK_SCRIPT} -d ${disks} -h ${hosts.join()}`
-
             preFlightCheck.push(hostPreFlightCheckObject)
         })
         return preFlightCheck
@@ -217,7 +220,7 @@ var GdeployUtil = {
                 if (!brickConfig.vgConfig[hostIndex].hasOwnProperty(brick.device)) {
                     brickConfig.vgConfig[hostIndex][brick.device] = {
                         action: 'create',
-                        vgname: VG_NAME + brick.device,
+                        vgname: VG_NAME + brick.device.split('/').pop(),
                         pvname: device,
                         ignore_vg_errors: 'no'
                     }
@@ -230,7 +233,7 @@ var GdeployUtil = {
                     lvname: LV_NAME + brick.name,
                     ignore_lv_errors: 'no'
                 }
-                lvConfig.vgname = VG_NAME + brick.device
+                lvConfig.vgname = VG_NAME + brick.device.split('/').pop()
                 lvConfig.mount = brick.brick_dir
                 if (brick.thinp) {
                     //If it is a thinlv, check if there is a thinpool already created for the device.
@@ -245,10 +248,10 @@ var GdeployUtil = {
                         //Create a thinpool if it is not created already
                         const thinpool = {
                             action: 'create',
-                            poolname: POOL_NAME + brick.device,
+                            poolname: POOL_NAME + brick.device.split('/').pop(),
                             ignore_lv_errors: 'no'
                         }
-                        thinpool.vgname = VG_NAME + brick.device
+                        thinpool.vgname = VG_NAME + brick.device.split('/').pop()
                         thinpool.lvtype = 'thinpool'
                         thinpool.size = parseInt(brick.size)
                         thinpool.poolmetadatasize = that.getPoolMetadataSize(thinpool.size) + "GB"
@@ -256,7 +259,7 @@ var GdeployUtil = {
                     }
                     //If thinlv, then we need to add the thinpoolname, virtualsize and lvtype as 'thinlv'
                     lvConfig.lvtype = 'thinlv'
-                    lvConfig.poolname = POOL_NAME + brick.device
+                    lvConfig.poolname = POOL_NAME + brick.device.split('/').pop()
                     lvConfig.virtualsize = brick.size + "GB"
                 } else {
                     lvConfig.size = brick.size + "GB"
@@ -407,8 +410,8 @@ var GdeployUtil = {
                   lvCacheConfig: {
                     action: 'setup-cache',
                     ssd: lvConfig[hostIndex].ssd.trim(),
-                    vgname: VG_NAME + brick.device,
-                    poolname: POOL_NAME + brick.device,
+                    vgname: VG_NAME + brick.device.split('/').pop(),
+                    poolname: POOL_NAME + brick.device.split('/').pop(),
                     cache_lv: 'lvcache',
                     cache_lvsize: lvConfig[hostIndex].lvCacheSize + "GB",
                     cachemode: lvConfig[hostIndex].cacheMode.trim(),
