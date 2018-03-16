@@ -35,10 +35,13 @@ class AnsibleVarFilesGenerator {
             retVal = "";
         }
 
-        if (propName === "cloudinitVMStaticCIDR") {
+        /* This is nonsense for now, since the ansible playbooks do not allow this.
+         * If we want to do this, we should file an RFE to support netmasking in the playbook */
+
+        /* if (propName === "cloudinitVMStaticCIDR") {
             const prefix = this.model.vm.cloudinitVMStaticCIDRPrefix.value;
             retVal = value + "/" + prefix;
-        }
+        } */
 
         return retVal;
     }
