@@ -31,6 +31,7 @@ DISTCLEANDIRS = \
 	ovirt-dashboard
 
 ovirt-dashboard:
+	sed -i "s/\"version\":.*$$/\"version\": \"${VERSION}\",/" package.json
 	test -z "$(NPMINSTALL)" || $(NPM) i
 	$(NPM) run build
 	mv dist ovirt-dashboard
