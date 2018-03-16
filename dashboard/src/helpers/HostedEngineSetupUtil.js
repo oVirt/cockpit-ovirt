@@ -301,11 +301,11 @@ export class HeSetupModel {
                     regex: Validation.ipAddress,
                     errorMsg: "Invalid format for IP address"
                 },
-                iSCSIIPTPGT: {
-                    name: "iSCSIIPTPGT",
-                    ansibleVarName: "ISCSI_IP_TPGT",
+                iSCSITPGT: {
+                    name: "iSCSITPGT",
+                    ansibleVarName: "ISCSI_TPGT",
                     ansiblePhasesUsed: [phases.TARGET_VM],
-                    description: "iSCSI IP TPGT",
+                    description: "iSCSI Target Portal Group Tag",
                     value: "",
                     type: types.STRING,
                     showInReview: false,
