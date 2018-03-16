@@ -92,14 +92,14 @@ class AnsiblePhaseExecutor {
     deleteFile(filePath) {
         return new Promise((resolve, reject) => {
             cockpit.spawn(["rm", "-f", filePath], { "superuser": "require" })
-                .done(function() {
-                    console.log("File " + filePath + " deleted.");
-                    resolve();
-                })
-                .fail(function(error) {
-                    console.log("Problem deleting " + filePath + ". Error: " + error);
-                    reject(error);
-                })
+                 .done(function() {
+                      console.log("File " + filePath + " deleted.");
+                      resolve();
+                 })
+                 .fail(function(error) {
+                      console.log("Problem deleting " + filePath + ". Error: " + error);
+                      reject(error);
+                 })
         });
     }
 
@@ -244,6 +244,7 @@ class AnsiblePhaseExecutor {
     parseOutput(payload) {
         const returnValue = { info: [], warnings: [], errors: [], debug: [], results: [], lines: [] };
         const self = this;
+        payload = payload.filter(n => n)
 
         payload.forEach(function(line) {
             try {

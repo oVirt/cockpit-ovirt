@@ -75,7 +75,9 @@ class PlaybookUtil {
     }
 
     getResultsData(fileContents) {
-        const lines = fileContents.split('\n');
+        let lines = fileContents.split('\n');
+        // Filter blank lines
+        lines = lines.filter(n => n);
         let results = null;
 
         lines.forEach(function(line) {
@@ -88,7 +90,6 @@ class PlaybookUtil {
                 console.log(error);
             }
         });
-
         return results;
     }
 }

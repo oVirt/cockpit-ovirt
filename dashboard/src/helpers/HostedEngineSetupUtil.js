@@ -1319,7 +1319,7 @@ export function generateRandomString() {
 
 export function getAnsibleLogPath(playbookPath) {
     const playbookName = playbookPath.substring(playbookPath.lastIndexOf("/") + 1, playbookPath.lastIndexOf("."));
-    const now = new Date()
+    const d = new Date();
     const dateFormat = [
         d.getFullYear(),
         d.getMonth(),
@@ -1327,6 +1327,6 @@ export function getAnsibleLogPath(playbookPath) {
         d.getHours(),
         d.getMinutes(),
         d.getSeconds()
-    ].join("")
+    ].join("");
     return `${configValues.ANSIBLE_LOG_DIR}ovirt-hosted-engine-setup-ansible-${playbookName}-${dateFormat}-${generateRandomString()}.log`;
 }

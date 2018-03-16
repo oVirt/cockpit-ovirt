@@ -15,6 +15,7 @@ const AnsiblePhaseExecution = ({isLastStep, output, phaseExecutionStatus, restar
 export default AnsiblePhaseExecution;
 
 const OutputPanel = ({output, phaseExecutionStatus, reDeployCallback}) => {
+    output.lines = output.lines.filter(n => n)
     const outputDiv = output.lines.map(function(line, i) {
         try {
             const ln = JSON.parse(line);
