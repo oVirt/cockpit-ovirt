@@ -75,7 +75,6 @@ AC_CHECK_PROGS([PEP8], [pep8])
 AC_CONFIG_FILES([
 	Makefile
 	dashboard/Makefile
-	dashboard/package.json
 	dashboard/src/routes/routes.js
 	cockpit-ovirt.spec
 ])

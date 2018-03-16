@@ -1,4 +1,4 @@
-#    Copyright 2016-2018 Red Hat Inc.
+#    Copyright 2016 Red Hat Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ EXTRA_DIST = \
 	src \
 	static \
 	package.json \
-	package.json.in \
 	yarn.lock \
 	webpack.config.js
 
