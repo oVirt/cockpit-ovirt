@@ -586,6 +586,8 @@ export class HeSetupModel {
                 },
                 cloudinitVMStaticCIDRPrefix: {
                     name: "cloudinitVMStaticCIDRPrefix",
+                    ansibleVarName: "VM_IP_PREFIX",
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "IP Address Prefix",
                     value: "",
                     type: types.STRING,
