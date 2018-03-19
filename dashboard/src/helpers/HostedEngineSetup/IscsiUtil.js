@@ -217,7 +217,7 @@ class IscsiUtil {
     }
 
     getResultsData(file) {
-        const lines = file.split('\n');
+        const lines = file.split('\n').filter(n => n);
         let results = null;
 
         lines.forEach(function(line) {
