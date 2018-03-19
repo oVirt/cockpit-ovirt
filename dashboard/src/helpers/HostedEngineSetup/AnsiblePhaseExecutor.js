@@ -153,14 +153,8 @@ class AnsiblePhaseExecutor {
 
         let cmd = ['ansible-playbook', '-e', varFileParam, playbookParam,
             '--module-path=/usr/share/ovirt-hosted-engine-setup/ansible',
-            '--inventory=localhost'];
+            '--inventory=localhost,'];
 
-        let inv = '--inventory=localhost';
-        if (phase === phases.BOOTSTRAP_VM) {
-            inv += ',' + this.heSetupModel.network.fqdn.value;
-        }
-
-        cmd.push(inv);
         return cmd;
     }
 
