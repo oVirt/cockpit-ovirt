@@ -161,6 +161,7 @@ class AnsiblePhaseExecutor {
     // TODO Refactor to use PlaybookUtil
     executePlaybook(phase, varFilePath) {
         this.varFilePaths.push(varFilePath);
+        this.result = null;
         return new Promise((resolve, reject) => {
             const cmd = this.getPlaybookCommand(phase, varFilePath);
             const env = [
