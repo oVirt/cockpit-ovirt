@@ -15,7 +15,7 @@ class AnsiblePhaseExecutor {
         this.result = null;
         this.varFileGenerator = new AnsibleVarFilesGenerator(this.heSetupModel);
         this.varFilePaths = [];
-        this.seenOutputLines = [];
+        this.lastLineSeen = -1;
 
         this.startSetup = this.startSetup.bind(this);
         this.deleteVarFiles = this.deleteVarFiles.bind(this);
@@ -105,7 +105,6 @@ class AnsiblePhaseExecutor {
 
     performSetupJobs(paths) {
         const promises = [];
-        this.seenOutputLines = [];
         promises.concat(this.clearOutputFiles(paths));
         promises.push(this.createVarFileDir());
         return Promise.all(promises);
@@ -160,6 +159,7 @@ class AnsiblePhaseExecutor {
 
     // TODO Refactor to use PlaybookUtil
     executePlaybook(phase, varFilePath) {
+        this.lastLineSeen = -1;
         this.varFilePaths.push(varFilePath);
         this.result = null;
         return new Promise((resolve, reject) => {
@@ -191,16 +191,26 @@ class AnsiblePhaseExecutor {
                         reject(options, accessDenied);
                     } else if (options["exit-status"] === 0) {
                         console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
-                        self.processResult();
-                        resolve(options);
+                        self.readOutputFile(outputPaths[phase])
+                            .then(() => {
+                                self.processResult();
+                            })
+                            .then(() => {
+                                resolve(options);
+                            });
                     } else {
                         console.log("Execution of " + playbookPaths[phase] + " failed to complete.");
                         reject(options, accessDenied);
                     }
                 } else if (options["exit-status"] === 0) {
                     console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
-                    self.processResult();
-                    resolve(options);
+                    self.readOutputFile(outputPaths[phase])
+                        .then(() => {
+                            self.processResult();
+                        })
+                        .then(() => {
+                            resolve(options);
+                        });
                 } else {
                     console.log("hosted-engine-setup exited");
                     console.log(ev);
@@ -214,22 +224,20 @@ class AnsiblePhaseExecutor {
     }
 
     readOutputFile(path) {
+        const self = this;
         return new Promise((resolve, reject) => {
-            const self = this;
-
             const f = cockpit.file(path).watch(function(content, tag) {
                 if (!content) {
                     reject();
-                    return;
                 }
                 let lines = content.trim().split(/\n/);
+
                 let payload = [];
-                for (let i = 0; i < lines.length; i++) {
-                    if (self.seenOutputLines.indexOf(lines[i]) === -1) {
-                        self.seenOutputLines.push(lines[i]);
-                        payload.push(lines[i])
-                    }
+                for (let i = self.lastLineSeen + 1; i < lines.length; i++) {
+                    payload.push(lines[i])
                 }
+
+                self.lastLineSeen = lines.length - 1;
                 self.parseOutput(payload);
                 resolve();
             })
@@ -280,15 +288,20 @@ class AnsiblePhaseExecutor {
     }
 
     processResult() {
-        if (this.result === null || typeof this.result === "undefined") {
-            return;
-        }
-
-        if (this.result.hasOwnProperty("otopi_localvm_dir")) {
-            if (this.result["otopi_localvm_dir"].hasOwnProperty("path")) {
-                this.heSetupModel.core.localVmDir.value = this.result["otopi_localvm_dir"].path;
+        return new Promise((resolve, reject) => {
+            if (this.result === null || typeof this.result === "undefined") {
+                resolve();
             }
-        }
+
+            if (this.result.hasOwnProperty("otopi_localvm_dir")) {
+                if (this.result["otopi_localvm_dir"].hasOwnProperty("path")) {
+                    this.heSetupModel.core.localVmDir.value = this.result["otopi_localvm_dir"].path;
+                }
+            }
+
+            resolve();
+        })
+
     }
 
     close() {
