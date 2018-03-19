@@ -1,9 +1,9 @@
 import {
-    allIntelCpus, allowedIntelCpus, configValues, defaultInterfaces, filteredNetworkInterfaces, playbookOutputPaths as outputPaths,
-    playbookPaths,
-    resourceConstants, status
+    allIntelCpus, allowedIntelCpus, configValues, defaultValueProviderTasks as tasks, defaultInterfaces,
+    filteredNetworkInterfaces, playbookOutputPaths as outputPaths, playbookPaths, resourceConstants, status
 } from "../../components/HostedEngineSetup/constants"
 import PlaybookUtil from './PlaybookUtil'
+import { isEmptyObject } from "../HostedEngineSetupUtil";
 
 export class DefaultValueProvider {
     constructor(registeredCallback) {
@@ -13,6 +13,7 @@ export class DefaultValueProvider {
         this.ready = status.POLLING;
 
         this.init = this.init.bind(this);
+        this.processResults = this.processResults.bind(this);
         this.getSystemData = this.getSystemData.bind(this);
         this.retrieveNetworkInterfaces = this.retrieveNetworkInterfaces.bind(this);
         this.getTaskData = this.getTaskData.bind(this);
@@ -31,7 +32,6 @@ export class DefaultValueProvider {
         this.getIpAddress = this.getIpAddress.bind(this);
         this.getIpData = this.getIpData.bind(this);
         this.getFQDN = this.getFQDN.bind(this);
-        this.isEmptyObject = this.isEmptyObject.bind(this);
 
         this.init();
     }
@@ -41,17 +41,30 @@ export class DefaultValueProvider {
         const netIfaceProm = this.retrieveNetworkInterfaces();
         const proms = [sysDataProm, netIfaceProm];
 
+        const successHandler = result => ({ payload: result, resolved: true, task: result.task });
+        const catchHandler = error => ({ payload: error.error, resolved: false, task: error.task });
+
         const self = this;
-        Promise.all(proms)
-            .then(() => {
+        Promise.all(proms.map(result => result.then(successHandler).catch(catchHandler)))
+            .then(results => {
                 self.ready = status.SUCCESS;
-                self.registeredCallback(true);
+                self.registeredCallback(self.processResults(results));
             })
-            .catch((error) => {
+            .catch(error => {
+                console.log('Promise.all failed');
                 console.log(error);
                 self.ready = status.FAILURE;
-                self.registeredCallback(false);
+                self.registeredCallback({});
             });
+    }
+
+    processResults(results) {
+        const retVal = {};
+        results.forEach(
+            function(initTask) {
+                retVal[initTask.task] = initTask.resolved;
+            });
+        return retVal;
     }
 
     getSystemData() {
@@ -65,12 +78,12 @@ export class DefaultValueProvider {
                     console.log("System data retrieved successfully");
                     let data = self.cleanData(json);
                     self.systemData = JSON.parse(data);
-                    resolve(true);
+                    resolve({task: tasks.GET_SYSTEM_DATA, error: null});
                 })
                 .fail(function(error) {
                     console.log("System data retrieval failed");
                     console.log(error);
-                    throw new Error(error);
+                    reject({task: tasks.GET_SYSTEM_DATA, error: error});
                 });
         });
     }
@@ -89,12 +102,20 @@ export class DefaultValueProvider {
         const playbookPath = playbookPaths.GET_NETWORK_INTERFACES;
         const outputPath = outputPaths.GET_NETWORK_INTERFACES;
         const self = this;
-        return playbookUtil.runPlaybook("", playbookPath, "Get network interfaces", outputPath)
-            .then(() => playbookUtil.readOutputFile(outputPath))
-            .then(output => self.setNetworkInterfaces(output))
-            .catch(error => {
-                throw new Error(error)
-            });
+
+        return new Promise((resolve, reject) => {
+            playbookUtil.runPlaybook("", playbookPath, "Get network interfaces", outputPath)
+                .then(() => playbookUtil.readOutputFile(outputPath))
+                .then(output => self.setNetworkInterfaces(output))
+                .then(() => {
+                    console.log("Network interfaces retrieved successfully");
+                    resolve({task: tasks.RETRIEVE_NETWORK_INTERFACES, error: null});
+                })
+                .catch(error => {
+                    console.log("Network interfaces retrieval failed");
+                    reject({task: tasks.RETRIEVE_NETWORK_INTERFACES, error: error});
+                });
+        });
     }
 
     setNetworkInterfaces(output) {
@@ -269,7 +290,7 @@ export class DefaultValueProvider {
         const ipv4Data = ansibleFacts["ansible_default_ipv4"];
         const ipv6Data = ansibleFacts["ansible_default_ipv6"];
 
-        if (!this.isEmptyObject(ipv4Data)) {
+        if (!isEmptyObject(ipv4Data)) {
             ipData = ipv4Data;
         } else if (!this.isEmptyObject(ipv6Data)) {
             ipData = ipv6Data;
@@ -285,10 +306,6 @@ export class DefaultValueProvider {
             fqdn = fqdnData["stdout"];
         }
         return fqdn;
-    }
-
-    isEmptyObject(obj) {
-        return Object.keys(obj).length === 0 && obj.constructor === Object;
     }
 }
 

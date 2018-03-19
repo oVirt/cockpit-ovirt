@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import HeSetupWizard from './HeSetupWizard'
-import { HeSetupModel } from '../../../helpers/HostedEngineSetupUtil'
-import { messages, status } from '../constants'
+import { HeSetupModel, isEmptyObject } from '../../../helpers/HostedEngineSetupUtil'
+import { messages, status, defaultValueProviderTasks as tasks } from '../constants'
 import DefaultValueProvider from '../../../helpers/HostedEngineSetup/DefaultValueProvider'
 
 class HeSetupWizardContainer extends Component {
@@ -16,11 +16,12 @@ class HeSetupWizardContainer extends Component {
         };
 
         this.state.heSetupModel = new HeSetupModel();
-        this.virtSupported = false;
-        this.systemDataRetrieved = false;
-        this.sufficientMemAvail = false;
-        this.libvirtRunning = false;
         this.defaultsProvider = null;
+        this.allSystemDataRetrieved = false;
+
+        this.virtSupported = true;
+        this.sufficientMemAvail = true;
+        this.libvirtRunning = true;
 
         this.handleFinish = this.handleFinish.bind(this);
         this.onStepChange = this.onStepChange.bind(this);
@@ -33,19 +34,30 @@ class HeSetupWizardContainer extends Component {
 
     }
 
-    init(initSuccessful) {
-        this.systemDataRetrieved = initSuccessful;
-        this.libvirtRunning = this.defaultsProvider.libvirtRunning();
-        this.virtSupported = this.defaultsProvider.virtSupported();
-        this.sufficientMemAvail = this.defaultsProvider.sufficientMemAvail();
-
-        const loadingSuccessful = this.systemDataRetrieved && this.libvirtRunning && this.virtSupported && this.sufficientMemAvail;
-        const loadingStatus = loadingSuccessful ? status.SUCCESS : status.FAILURE;
-
+    init(initResults) {
+        let loadingStatus = status.POLLING;
         let systemData = null;
-        if (initSuccessful) {
+        let sysDataRetrieved = false;
+        let networkIfacesRetrieved = false;
+
+        if (!isEmptyObject(initResults)) {
+            sysDataRetrieved = initResults[tasks.GET_SYSTEM_DATA] === true;
+            networkIfacesRetrieved = initResults[tasks.RETRIEVE_NETWORK_INTERFACES] === true;
+        }
+
+        if (sysDataRetrieved) {
+            this.libvirtRunning = this.defaultsProvider.libvirtRunning();
+            this.virtSupported = this.defaultsProvider.virtSupported();
+            this.sufficientMemAvail = this.defaultsProvider.sufficientMemAvail();
+            this.allSystemDataRetrieved = sysDataRetrieved && networkIfacesRetrieved;
+
+            const loadingSuccessful = this.allSystemDataRetrieved && this.libvirtRunning &&
+                this.virtSupported && this.sufficientMemAvail;
+            loadingStatus = loadingSuccessful ? status.SUCCESS : status.FAILURE;
             systemData = this.defaultsProvider.systemData;
             this.state.heSetupModel.setDefaultValues(this.defaultsProvider);
+        } else {
+            loadingStatus = status.FAILURE;
         }
 
         this.setState({ loadingState: loadingStatus, systemData: systemData });
@@ -98,7 +110,7 @@ class HeSetupWizardContainer extends Component {
                 systemData={this.state.systemData}
                 libvirtRunning={this.libvirtRunning}
                 virtSupported={this.virtSupported}
-                systemDataRetrieved={this.systemDataRetrieved}
+                systemDataRetrieved={this.allSystemDataRetrieved}
                 sufficientMemAvail={this.sufficientMemAvail}
                 gDeployAnswerFilePaths={this.state.gDeployAnswerFilePaths}
                 deploymentType={this.props.deploymentType}/>

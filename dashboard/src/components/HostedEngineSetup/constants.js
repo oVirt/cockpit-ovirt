@@ -101,6 +101,11 @@ export const resourceConstants = {
     VM_DISK_MAX_GB: 4096
 };
 
+export const defaultValueProviderTasks = {
+    GET_SYSTEM_DATA: "getSystemData",
+    RETRIEVE_NETWORK_INTERFACES: "retrieveNetworkInterfaces"
+};
+
 export const messages = {
     GENERAL_ERROR_MSG: "Please correct errors before moving to the next step.",
     PASSWORD_MISMATCH: "Passwords do not match",
