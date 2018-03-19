@@ -1332,3 +1332,7 @@ export function getAnsibleLogPath(playbookPath) {
     ].join("");
     return `${configValues.ANSIBLE_LOG_DIR}ovirt-hosted-engine-setup-ansible-${playbookName}-${dateFormat}-${generateRandomString()}.log`;
 }
+
+export function isEmptyObject(obj) {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+}

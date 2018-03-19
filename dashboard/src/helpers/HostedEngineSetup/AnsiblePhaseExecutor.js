@@ -239,7 +239,7 @@ class AnsiblePhaseExecutor {
     parseOutput(payload) {
         const returnValue = { info: [], warnings: [], errors: [], debug: [], results: [], lines: [] };
         const self = this;
-        payload = payload.filter(n => n)
+        payload = payload.filter(n => n);
 
         payload.forEach(function(line) {
             try {
