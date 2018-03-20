@@ -451,7 +451,7 @@ var GdeployUtil = {
                   let deviceIndex = devices.indexOf(brick.device)
                   if (deviceIndex === -1) {
                       devices.push(brick.device)
-                      names.push(brick.name)
+                      names.push("vdo_" + brick.device)
                       logicalSizes.push(brick.logicalSize+"G")
                   }
                   else {
@@ -461,7 +461,7 @@ var GdeployUtil = {
           })
           logicalSizes.forEach(function(logicalSize, index) {
               if (parseInt(logicalSize) >= 1000) {
-                  slabsizes.push("32GB")
+                  slabsizes.push("32G")
               }
           })
           hostVdoConfigs.vdoConfig.devices = devices.join()
