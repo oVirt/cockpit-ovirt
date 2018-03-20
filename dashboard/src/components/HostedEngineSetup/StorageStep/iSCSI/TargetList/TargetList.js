@@ -13,7 +13,7 @@ const TargetList = ({handleTargetSelection, selectedTarget, targetList}) => {
 
     return (
         <div className="form-group">
-            <div className="col-md-8">The following targets have been found:</div>
+            <div className="col-md-12">The following targets have been found:</div>
             { targets }
         </div>
     )
