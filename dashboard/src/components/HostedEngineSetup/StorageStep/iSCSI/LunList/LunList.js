@@ -13,7 +13,7 @@ const LunList = ({handleLunSelection, lunList, selectedLun}) => {
 
     return (
         <div className="form-group">
-            <div className="col-md-8">The following luns have been found on the requested target:</div>
+            <div className="col-md-12">The following luns have been found on the requested target:</div>
             { luns }
         </div>
     )

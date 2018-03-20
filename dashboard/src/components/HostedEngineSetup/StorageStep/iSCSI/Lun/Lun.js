@@ -4,7 +4,7 @@ const Lun = ({handleLunSelection, lun, selectedLun}) => {
 
     return (
         <div className="form-group">
-            <div className="col-md-6 lun">
+            <div className="col-md-12 lun">
                 <div>
                     <input type="radio"
                            name="lun"

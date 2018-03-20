@@ -9,7 +9,7 @@ const TargetPortalGroup = ({targetPortalGroup}) => {
                 TPGT: { targetPortalGroup.name }
             </span>
             <div className="row">
-                <div className="col-md-6 target-portal-group">
+                <div className="col-md-12 target-portal-group">
                     <PortalListContainer portalList={targetPortalGroup.portals} />
                 </div>
             </div>

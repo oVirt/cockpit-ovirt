@@ -5,7 +5,7 @@ const Target = ({handleTargetSelection, selectedTarget, target}) => {
 
     return (
         <div className="form-group">
-            <div className="col-md-6 iscsi-target">
+            <div className="col-md-12 iscsi-target">
                 <input type="radio"
                        className="iscsi-target-radio-button "
                        name="target"
