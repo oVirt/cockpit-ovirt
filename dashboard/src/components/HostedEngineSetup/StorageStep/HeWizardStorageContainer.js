@@ -149,7 +149,8 @@ class HeWizardStorageContainer extends Component {
     }
 
     getIscsiTargetList() {
-        this.setState({ targetRetrievalStatus: status.POLLING });
+        this.setState({ targetRetrievalStatus: status.POLLING,
+           lunRetrievalStatus: status.EMPTY });
         const self = this;
         this.iscsiUtil.getTargetList()
             .then(targetData => self.setState({ targetRetrievalStatus: status.SUCCESS, iscsiTargetData: targetData }))
