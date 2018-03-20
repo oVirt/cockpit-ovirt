@@ -47,24 +47,6 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                     </div>
                 }
 
-                {targetRetrievalStatus === status.FAILURE &&
-                    <div className="row">
-                        <div className="alert alert-danger col-sm-8">
-                            <span className="pficon pficon-error-circle-o" />
-                            <strong>{ messages.TARGET_RETRIEVAL_FAILED }</strong>
-                        </div>
-                    </div>
-                }
-
-                {lunRetrievalStatus === status.FAILURE &&
-                    <div className="row">
-                        <div className="alert alert-danger col-sm-8">
-                            <span className="pficon pficon-error-circle-o" />
-                            <strong>{ messages.LUN_RETRIEVAL_FAILED }</strong>
-                        </div>
-                    </div>
-                }
-
                 <div className="form-group">
                     <div className="col-md-9">
                         {/*<span className="pficon fas fa-angle-down" />*/}
@@ -210,6 +192,24 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                                     </button>
                                 </span>
                             </div>
+
+                            {targetRetrievalStatus === status.FAILURE &&
+                                <div className="row">
+                                    <div className="alert alert-danger col-sm-8">
+                                        <span className="pficon pficon-error-circle-o" />
+                                        <strong>{ messages.TARGET_RETRIEVAL_FAILED }</strong>
+                                    </div>
+                                </div>
+                            }
+
+                            {lunRetrievalStatus === status.FAILURE &&
+                                <div className="row">
+                                    <div className="alert alert-danger col-sm-8">
+                                        <span className="pficon pficon-error-circle-o" />
+                                        <strong>{ messages.LUN_RETRIEVAL_FAILED }</strong>
+                                    </div>
+                                </div>
+                            }
 
                             {targetRetrievalStatus === status.POLLING &&
                                 <div className="form-group" style={{marginTop: "20px"}}>
