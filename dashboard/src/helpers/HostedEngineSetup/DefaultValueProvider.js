@@ -73,15 +73,16 @@ export class DefaultValueProvider {
         const self = this;
 
         return new Promise((resolve, reject) => {
+            console.log("General system data retrieval started.");
             cockpit.spawn(cmd.split(" "), options)
                 .done(function(json) {
-                    console.log("System data retrieved successfully");
+                    console.log("General system data retrieved successfully.");
                     let data = self.cleanData(json);
                     self.systemData = JSON.parse(data);
                     resolve({task: tasks.GET_SYSTEM_DATA, error: null});
                 })
                 .fail(function(error) {
-                    console.log("System data retrieval failed");
+                    console.log("General system data retrieval failed.");
                     console.log(error);
                     reject({task: tasks.GET_SYSTEM_DATA, error: error});
                 });
