@@ -159,10 +159,14 @@ class HeWizardStorageContainer extends Component {
             });
     }
 
-    handleTargetSelection(target) {
+    handleTargetSelection(target, tpgts) {
         this.setState({ selectedIscsiTarget: target, iscsiLunData: null });
         const config = this.state.storageConfig;
+
+        const tpgtArr = Object.getOwnPropertyNames(tpgts);
+        config.iSCSITPGT.value = tpgtArr.length > 0 ? tpgts[tpgtArr[0]].name : "";
         config.iSCSITargetName.value = target;
+
         this.setState({ config });
         this.getIscsiLunList();
     }
