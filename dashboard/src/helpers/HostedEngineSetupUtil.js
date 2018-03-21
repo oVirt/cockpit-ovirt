@@ -298,6 +298,18 @@ export class HeSetupModel {
                     useInAnswerFile: false,
                     required: false
                 },
+                iSCSIDiscoveryPortalPort: {
+                    name: "iSCSIDiscoveryPortalPort",
+                    description: "Portal Port",
+                    value: "3260",
+                    type: types.STRING,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: false,
+                    required: false,
+                    range: {min: 0, max: 65536},
+                    errorMsg: "Port numbers must be between 0 and 65,536"
+                },
                 iSCSIPortalPort: {
                     name: "iSCSIPortalPort",
                     ansibleVarName: "ISCSI_PORTAL_PORT",
@@ -308,14 +320,12 @@ export class HeSetupModel {
                         phases.ISCSI_GET_DEVICES
                     ],
                     description: "Portal Port",
-                    value: "3260",
+                    value: [],
                     type: types.STRING,
                     showInReview: false,
                     uiStage: "Storage",
                     useInAnswerFile: false,
-                    required: false,
-                    range: {min: 0, max: 65536},
-                    errorMsg: "Port numbers must be between 0 and 65,536"
+                    required: false
                 },
                 iSCSITargetName: {
                     name: "iSCSITargetName",

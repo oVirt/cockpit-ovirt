@@ -87,18 +87,18 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                         </div>
                     </div>
 
-                    <div className={getClassNames("iSCSIPortalPort", errorMsgs)}>
+                    <div className={getClassNames("iSCSIDiscoveryPortalPort", errorMsgs)}>
                         <label className="col-md-3 control-label">Portal Port</label>
                         <div className="col-md-6">
                             <input type="number" style={{width: "75px"}}
                                    placeholder="3260"
                                    title="Enter the port for the iSCSI portal you wish to use."
                                    className="form-control"
-                                   value={storageConfig.iSCSIPortalPort.value}
-                                   onChange={(e) => handleStorageConfigUpdate("iSCSIPortalPort", e.target.value)}
+                                   value={storageConfig.iSCSIDiscoveryPortalPort.value}
+                                   onChange={(e) => handleStorageConfigUpdate("iSCSIDiscoveryPortalPort", e.target.value)}
                             />
-                            {errorMsgs.iSCSIPortalPort &&
-                            <span className="help-block">{errorMsgs.iSCSIPortalPort}</span>
+                            {errorMsgs.iSCSIDiscoveryPortalPort &&
+                            <span className="help-block">{errorMsgs.iSCSIDiscoveryPortalPort}</span>
                             }
                         </div>
                     </div>

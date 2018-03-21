@@ -163,12 +163,36 @@ class HeWizardStorageContainer extends Component {
         this.setState({ selectedIscsiTarget: target, iscsiLunData: null });
         const config = this.state.storageConfig;
 
-        const tpgtArr = Object.getOwnPropertyNames(tpgts);
-        config.iSCSITPGT.value = tpgtArr.length > 0 ? tpgts[tpgtArr[0]].name : "";
+        const tpgtData = this.getTpgtData(tpgts);
+        config.iSCSITPGT.value = tpgtData.name;
+        config.storageAddress.value = tpgtData.portalAddresses.toString();
+        config.iSCSIPortalPort.value = tpgtData.portalPorts.toString();
         config.iSCSITargetName.value = target;
 
         this.setState({ config });
         this.getIscsiLunList();
+    }
+
+    getTpgtData(tpgts) {
+        const tpgtData = {
+            name: "",
+            portalAddresses: [],
+            portalPorts: []
+        };
+
+        const tpgtArr = Object.getOwnPropertyNames(tpgts);
+        if (tpgtArr.length <= 0) {
+            return tpgtData;
+        }
+
+        const tpgt = tpgts[tpgtArr[0]];
+        tpgtData.name = tpgt.name;
+        tpgt.portals.forEach(function(portal) {
+            tpgtData.portalAddresses.push(portal.address);
+            tpgtData.portalPorts.push(portal.port);
+        });
+
+        return tpgtData;
     }
 
     getIscsiLunList() {
