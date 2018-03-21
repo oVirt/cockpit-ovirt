@@ -3,8 +3,7 @@ import {deploymentStatus as status, messages} from '../constants';
 
 const AnsiblePhaseExecution = ({isLastStep, output, phaseExecutionStatus, restartCallBack}) => {
     if (phaseExecutionStatus === status.SUCCESS) {
-        return <DeploymentSuccessPanel isLastStep={isLastStep}
-                                       restartCallBack={restartCallBack}/>
+        return <DeploymentSuccessPanel isLastStep={isLastStep} />
     } else {
         return <OutputPanel output={output}
                             phaseExecutionStatus={phaseExecutionStatus}
@@ -67,7 +66,7 @@ const Status = ({phaseExecutionStatus, reDeployCallback}) => {
     )
 };
 
-const DeploymentSuccessPanel = ({isLastStep, restartCallBack}) => {
+const DeploymentSuccessPanel = ({isLastStep}) => {
     const message = isLastStep ? messages.ANSIBLE_LAST_PHASE_SUCCESSFUL : messages.ANSIBLE_PHASE_SUCCESSFUL;
     return (
         <div className="wizard-pf-complete blank-slate-pf">
@@ -77,11 +76,6 @@ const DeploymentSuccessPanel = ({isLastStep, restartCallBack}) => {
             <h3 className="blank-slate-pf-main-action">
                 {message}
             </h3>
-            <br />
-            <button className="btn btn-primary" onClick={restartCallBack}>
-                <span className="pficon pficon-restart">&nbsp;</span>
-                Rerun Step
-            </button>
         </div>
     )
 };
