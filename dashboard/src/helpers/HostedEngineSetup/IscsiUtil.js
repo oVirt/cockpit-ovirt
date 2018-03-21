@@ -4,10 +4,10 @@ import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator";
 import { getAnsibleLogPath } from "../HostedEngineSetupUtil";
 
 const varFileProps = {
-    ISCSI_DISCOVER: ["iSCSIPortalIPAddress", "iSCSIPortalPort", "iSCSIDiscoverUser",
+    ISCSI_DISCOVER: ["iSCSIPortalIPAddress", "iSCSIDiscoveryPortalPort", "iSCSIDiscoverUser",
         "iSCSIDiscoverPassword", "adminPassword", "fqdn", "appHostName"],
     ISCSI_GET_DEVICES: ["adminPassword", "fqdn", "appHostName", "iSCSIPortalUser", "iSCSIPortalPassword",
-        "iSCSITargetName", "iSCSIPortalIPAddress", "iSCSIPortalPort"]
+        "iSCSITargetName", "storageAddress", "iSCSIPortalPort"]
 };
 
 class IscsiUtil {
@@ -30,7 +30,7 @@ class IscsiUtil {
     getTargetList() {
         const self = this;
         const varFileGen = new AnsibleVarFilesGenerator(this.model);
-        const varFileStr = this.getVarFileString(varFileProps[phases.ISCSI_DISCOVER]);
+        const varFileStr = this.getVarFileString(phases.ISCSI_DISCOVER);
         return varFileGen.writeVarFile(varFileStr, phases.ISCSI_DISCOVER)
             .then(varFilePath => self.runDiscoveryPlaybook(varFilePath))
             .then(() => self.readOutputFile(outputPaths.ISCSI_DISCOVER, phases.ISCSI_DISCOVER));
@@ -113,7 +113,7 @@ class IscsiUtil {
     getLunList() {
         const self = this;
         const varFileGen = new AnsibleVarFilesGenerator(this.model);
-        const varFileStr = this.getVarFileString(varFileProps[phases.ISCSI_GET_DEVICES]);
+        const varFileStr = this.getVarFileString(phases.ISCSI_GET_DEVICES);
         return varFileGen.writeVarFile(varFileStr, phases.ISCSI_GET_DEVICES)
             .then(varFilePath => self.runGetDevicesPlaybook(varFilePath))
             .then(() => self.readOutputFile(outputPaths.ISCSI_GET_DEVICES, phases.ISCSI_GET_DEVICES));
@@ -234,14 +234,22 @@ class IscsiUtil {
         return results;
     }
 
-    getVarFileString(props) {
+    getVarFileString(phase) {
+        const props = varFileProps[phase];
         let varString = "";
         const separator = ": ";
         const self = this;
 
         props.forEach(function(propName) {
             const prop = self.getProp(propName);
-            const ansibleVarName = prop.ansibleVarName;
+
+            let ansibleVarName = prop.ansibleVarName ? prop.ansibleVarName : "";
+            if (propName === "storageAddress") {
+                ansibleVarName = "ISCSI_PORTAL_ADDR";
+            } else if (propName === "iSCSIDiscoveryPortalPort") {
+                ansibleVarName = "ISCSI_PORTAL_PORT";
+            }
+
             const val = self.formatValue(propName, prop.value);
             varString += ansibleVarName + separator + val + '\n';
         });
