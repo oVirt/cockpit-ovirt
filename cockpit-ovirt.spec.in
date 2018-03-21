@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed Mar 21 2018 Ryan Barry <rbarry@redhat.com> - 0.11.18-1
+- Even more hosted engines fixes and improvements for ansible
+
 * Wed Mar 14 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.17-1
 - More hosted engine wizard fixes and improvements
 - Gluster Management fixes
