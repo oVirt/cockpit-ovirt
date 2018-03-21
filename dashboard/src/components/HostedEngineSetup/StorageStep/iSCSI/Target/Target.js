@@ -11,7 +11,7 @@ const Target = ({handleTargetSelection, selectedTarget, target}) => {
                        name="target"
                        value={target.name}
                        checked={selectedTarget === target.name}
-                       onChange={(e) => handleTargetSelection(e.target.value)} />
+                       onChange={(e) => handleTargetSelection(e.target.value, target.tpgts)} />
                 &nbsp;<span className="iscsi-target-name">{ target.name }</span>,&nbsp;
                 <TargetPortalGroupListContainer tpgtList={target.tpgts} />
             </div>
