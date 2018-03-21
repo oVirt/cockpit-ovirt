@@ -166,7 +166,7 @@ export class HeSetupModel {
                 storagePath: {
                     name: "storagePath",
                     ansibleVarName: "STORAGE_DOMAIN_PATH",
-                    ansiblePhasesUsed: [phases.CREATE_STORAGE],
+                    ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Storage Path",
                     value: "",
                     type: types.STRING,
@@ -191,7 +191,7 @@ export class HeSetupModel {
                 storageAddress: {
                     name: "storageAddress",
                     ansibleVarName: "STORAGE_DOMAIN_ADDR",
-                    ansiblePhasesUsed: [phases.CREATE_STORAGE],
+                    ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Storage Address",
                     value: "",
                     type: types.STRING,
@@ -202,8 +202,6 @@ export class HeSetupModel {
                 },
                 storageDomainConnection: {
                     name: "storageDomainConnection",
-                    ansibleVarName: "STORAGE_DOMAIN_CONNECTION",
-                    ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "Storage Domain Connection",
                     value: "",
                     type: types.STRING,
@@ -212,19 +210,6 @@ export class HeSetupModel {
                     uiStage: "Storage",
                     useInAnswerFile: false,
                     required: true
-                },
-                storage: {
-                    name: "storage",
-                    ansibleVarName: "STORAGE",
-                    ansiblePhasesUsed: [phases.TARGET_VM],
-                    description: "Storage Domain Connection",
-                    value: "",
-                    type: types.STRING,
-                    showInReview: false,
-                    reviewOrder: 10,
-                    uiStage: "Storage",
-                    useInAnswerFile: false,
-                    required: false
                 },
                 mntOptions: {
                     name: "mntOptions",

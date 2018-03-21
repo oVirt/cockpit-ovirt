@@ -69,7 +69,6 @@ class HeWizardStorageContainer extends Component {
             const storageConn = value.split(":");
             storageConfig.storageAddress.value = storageConn[0];
             storageConfig.storagePath.value = storageConn[1];
-            storageConfig.storage.value = value;
         }
 
         if (propName === "iSCSIPortalIPAddress") {

@@ -14,18 +14,6 @@ class AnsibleVarFilesGenerator {
 
     checkValue(propName, value) {
         let retVal = value;
-        if (propName === "storageDomainConnection" || propName === "storage") {
-            switch (this.model.storage.domainType.value.toLowerCase()) {
-                case "iscsi":
-                    retVal = this.model.storage.LunID.value;
-                    break;
-                case "fc":
-                    retVal = "";
-                    break;
-                default:
-                    break;
-            }
-        }
 
         if (propName === "domainType" && value.includes("nfs")) {
             retVal = "nfs";
