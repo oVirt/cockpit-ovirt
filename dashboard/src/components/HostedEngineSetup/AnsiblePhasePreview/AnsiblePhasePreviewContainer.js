@@ -39,12 +39,18 @@ class AnsiblePhasePreviewContainer extends Component {
         let btnState = {};
         if (executionStatus === status.FAILURE) {
             btnState = {
-                buttonText: this.props.executeBtnText,
-                hideBtnsList: [footerButtons.NEXT],
+                buttonText: this.props.reattemptBtnText ? this.props.reattemptBtnText : this.props.executeBtnText,
+                hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH],
                 buttonCallBack: function() {
                     buttonCallBack();
                     self.props.registerCustomActionBtnStateCallback({ disableBtnsList: [footerButtons.NEXT] });
                 }
+            };
+        } else if (this.props.isLastStep && executionStatus === status.SUCCESS) {
+            btnState = {
+                buttonText: "Close",
+                buttonCallBack: this.props.abortCallBack,
+                hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH, footerButtons.CANCEL, footerButtons.BACK]
             };
         }
         this.props.registerCustomActionBtnStateCallback(btnState, this.props.stepIndex, this.props.subStepIndex);

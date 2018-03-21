@@ -291,6 +291,8 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
         nextBtnClasses = classNames(
             "btn", "btn-primary", "wizard-pf-next",
             { "hidden": (!hasSubSteps && isLastStep) || (hasSubSteps && isLastStep && isLastSubStep) }
+        ), cancelBtnClasses = classNames(
+            "btn", "btn-default", "btn-cancel", "wizard-pf-cancel", "wizard-pf-dismiss"
         );
 
     let customActionBtnClasses = "hidden";
@@ -322,6 +324,9 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
         closeBtnClasses += disableList.includes(footerButtons.CLOSE) ? " disabled" : "";
         closeBtnClasses += hideList.includes(footerButtons.CLOSE) ? " hidden" : "";
 
+        cancelBtnClasses += disableList.includes(footerButtons.CANCEL) ? " disabled" : "";
+        cancelBtnClasses += hideList.includes(footerButtons.CANCEL) ? " hidden" : "";
+
         if (typeof btnState.buttonCallBack === "function") {
             customActionBtnCallback = btnState.buttonCallBack;
         }
@@ -329,9 +334,9 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
 
     return (
         <div className="modal-footer wizard-pf-footer">
-            <button type="button"
-                className="btn btn-default btn-cancel wizard-pf-cancel wizard-pf-dismiss"
-                onClick={cancel} data-dismiss="modal" aria-hidden="true">Cancel
+            <button type="button" className={cancelBtnClasses} onClick={cancel} data-dismiss="modal"
+                    aria-hidden="true">
+                Cancel
             </button>
             <button type="button" className={backBtnClasses} onClick={moveBack}>
                 <span className="i fa fa-angle-left"/>Back
@@ -349,7 +354,8 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
                 Deploy
             </button>
             <button type="button" className={closeBtnClasses} onClick={close}
-                data-dismiss="modal" aria-hidden="true">Close
+                    data-dismiss="modal" aria-hidden="true">
+                Close
             </button>
         </div>
     )
