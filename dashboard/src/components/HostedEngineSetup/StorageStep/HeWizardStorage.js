@@ -72,6 +72,37 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                 </div>
 
                 <div style={iscsiSelected ? {} : {display: 'none'}}>
+                    <div className={getClassNames("iSCSIPortalIPAddress", errorMsgs)}>
+                        <label className="col-md-3 control-label">Portal IP Address</label>
+                        <div className="col-md-6">
+                            <input type="text" style={{width: "110px"}}
+                                   title="Enter the IP address for the iSCSI portal you wish to use."
+                                   className="form-control"
+                                   value={storageConfig.iSCSIPortalIPAddress.value}
+                                   onChange={(e) => handleStorageConfigUpdate("iSCSIPortalIPAddress", e.target.value)}
+                            />
+                            {errorMsgs.iSCSIPortalIPAddress &&
+                            <span className="help-block">{errorMsgs.iSCSIPortalIPAddress}</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div className={getClassNames("iSCSIPortalPort", errorMsgs)}>
+                        <label className="col-md-3 control-label">Portal Port</label>
+                        <div className="col-md-6">
+                            <input type="number" style={{width: "75px"}}
+                                   placeholder="3260"
+                                   title="Enter the port for the iSCSI portal you wish to use."
+                                   className="form-control"
+                                   value={storageConfig.iSCSIPortalPort.value}
+                                   onChange={(e) => handleStorageConfigUpdate("iSCSIPortalPort", e.target.value)}
+                            />
+                            {errorMsgs.iSCSIPortalPort &&
+                            <span className="help-block">{errorMsgs.iSCSIPortalPort}</span>
+                            }
+                        </div>
+                    </div>
+
                     <div className={getClassNames("iSCSIPortalUser", errorMsgs)}>
                         <label className="col-md-3 control-label">Portal Username</label>
                         <div className="col-md-6">
@@ -98,72 +129,6 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                             />
                             {errorMsgs.iSCSIPortalPassword &&
                                 <span className="help-block">{errorMsgs.iSCSIPortalPassword}</span>
-                            }
-                        </div>
-                    </div>
-
-                    {isAnsibleDeployment &&
-                        <div className={getClassNames("iSCSIDiscoverUser", errorMsgs)}>
-                            <label className="col-md-3 control-label">Discovery Username</label>
-                            <div className="col-md-6">
-                                <input type="text" style={{width: "150px"}}
-                                       title="Enter the user for the iSCSI portal you wish to use."
-                                       className="form-control"
-                                       value={storageConfig.iSCSIDiscoverUser.value}
-                                       onChange={(e) => handleStorageConfigUpdate("iSCSIDiscoverUser", e.target.value)}
-                                />
-                                {errorMsgs.iSCSIDiscoverUser &&
-                                    <span className="help-block">{errorMsgs.iSCSIDiscoverUser}</span>
-                                }
-                            </div>
-                        </div>
-                    }
-
-                    {isAnsibleDeployment &&
-                        <div className={getClassNames("iSCSIDiscoverPassword", errorMsgs)}>
-                            <label className="col-md-3 control-label">Discovery Password</label>
-                            <div className="col-md-6">
-                                <input type="password" style={{width: "150px"}}
-                                       title="Enter the user for the iSCSI portal you wish to use."
-                                       className="form-control"
-                                       value={storageConfig.iSCSIDiscoverPassword.value}
-                                       onChange={(e) => handleStorageConfigUpdate("iSCSIDiscoverPassword", e.target.value)}
-                                />
-                                {errorMsgs.iSCSIDiscoverPassword &&
-                                    <span className="help-block">{errorMsgs.iSCSIDiscoverPassword}</span>
-                                }
-                            </div>
-                        </div>
-                    }
-
-
-                    <div className={getClassNames("iSCSIPortalIPAddress", errorMsgs)}>
-                        <label className="col-md-3 control-label">Portal IP Address</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "110px"}}
-                                   title="Enter the IP address for the iSCSI portal you wish to use."
-                                   className="form-control"
-                                   value={storageConfig.iSCSIPortalIPAddress.value}
-                                   onChange={(e) => handleStorageConfigUpdate("iSCSIPortalIPAddress", e.target.value)}
-                            />
-                            {errorMsgs.iSCSIPortalIPAddress &&
-                                <span className="help-block">{errorMsgs.iSCSIPortalIPAddress}</span>
-                            }
-                        </div>
-                    </div>
-
-                    <div className={getClassNames("iSCSIPortalPort", errorMsgs)}>
-                        <label className="col-md-3 control-label">Portal Port</label>
-                        <div className="col-md-6">
-                            <input type="number" style={{width: "75px"}}
-                                   placeholder="3260"
-                                   title="Enter the port for the iSCSI portal you wish to use."
-                                   className="form-control"
-                                   value={storageConfig.iSCSIPortalPort.value}
-                                   onChange={(e) => handleStorageConfigUpdate("iSCSIPortalPort", e.target.value)}
-                            />
-                            {errorMsgs.iSCSIPortalPort &&
-                                <span className="help-block">{errorMsgs.iSCSIPortalPort}</span>
                             }
                         </div>
                     </div>
@@ -342,6 +307,42 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                                 }
                             </div>
                         </div>
+                    </div>
+
+                    <div style={iscsiSelected ? {} : {display: 'none'}}>
+                        {isAnsibleDeployment &&
+                            <div className={getClassNames("iSCSIDiscoverUser", errorMsgs)}>
+                                <label className="col-md-3 control-label">Discovery Username</label>
+                                <div className="col-md-6">
+                                    <input type="text" style={{width: "150px"}}
+                                           title="Enter the user for the iSCSI portal you wish to use."
+                                           className="form-control"
+                                           value={storageConfig.iSCSIDiscoverUser.value}
+                                           onChange={(e) => handleStorageConfigUpdate("iSCSIDiscoverUser", e.target.value)}
+                                    />
+                                    {errorMsgs.iSCSIDiscoverUser &&
+                                    <span className="help-block">{errorMsgs.iSCSIDiscoverUser}</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        {isAnsibleDeployment &&
+                            <div className={getClassNames("iSCSIDiscoverPassword", errorMsgs)}>
+                                <label className="col-md-3 control-label">Discovery Password</label>
+                                <div className="col-md-6">
+                                    <input type="password" style={{width: "150px"}}
+                                           title="Enter the user for the iSCSI portal you wish to use."
+                                           className="form-control"
+                                           value={storageConfig.iSCSIDiscoverPassword.value}
+                                           onChange={(e) => handleStorageConfigUpdate("iSCSIDiscoverPassword", e.target.value)}
+                                    />
+                                    {errorMsgs.iSCSIDiscoverPassword &&
+                                    <span className="help-block">{errorMsgs.iSCSIDiscoverPassword}</span>
+                                    }
+                                </div>
+                            </div>
+                        }
                     </div>
                 </span>
             </form>
