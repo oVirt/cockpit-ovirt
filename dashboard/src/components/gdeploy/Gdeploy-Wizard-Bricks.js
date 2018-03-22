@@ -278,16 +278,36 @@ class WizardBricksStep extends Component {
     handleUpdate(index, property, value) {
         let bricksList = this.state.bricksList
         const errorMsgs= this.state.errorMsgs
-        for(var i = 2; i >= this.state.selectedHost.hostIndex; i--){
-            if(this.state.selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
-                const arbiterValue = GdeployUtil.getArbiterBrickSize(parseInt(value))
-                bricksList[i].host_bricks[index][property] = JSON.stringify(arbiterValue)
-            }
-            else {
-                bricksList[i].host_bricks[index][property] = value
-            }
-            if(property == "size") {
-                bricksList[i].host_bricks[index]['logicalSize'] = JSON.stringify(bricksList[i].host_bricks[index][property] * 10)
+        let that = this
+        if (property == "is_vdo_supported") {
+            bricksList[that.state.selectedHost.hostIndex].host_bricks.forEach(function (brick, brickIndex) {
+                if (brick['device'] == bricksList[that.state.selectedHost.hostIndex].host_bricks[index]['device']) {
+                    brick[property] = value
+                }
+            })
+        }
+        else if (property == "logicalSize") {
+            bricksList[this.state.selectedHost.hostIndex].host_bricks[index][property] = value
+        }
+        else {
+            for(var i = 2; i >= this.state.selectedHost.hostIndex; i--){
+                if(this.state.selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
+                    const arbiterValue = GdeployUtil.getArbiterBrickSize(parseInt(value))
+                    bricksList[i].host_bricks[index][property] = JSON.stringify(arbiterValue)
+                }
+                else {
+                    bricksList[i].host_bricks[index][property] = value
+                }
+                if(property == "size") {
+                    bricksList[i].host_bricks[index]['logicalSize'] = JSON.stringify(bricksList[i].host_bricks[index][property] * 10)
+                }
+                if (property == "device") {
+                    let device = bricksList[i].host_bricks[index][property]
+                    let isDeviceVdoEnabled = bricksList[i].host_bricks.some((brick, brickIndex) => {
+                        return (brickIndex != index && brick["device"] == device &&  brick["is_vdo_supported"])
+                    })
+                    bricksList[i].host_bricks[index]["is_vdo_supported"] = isDeviceVdoEnabled
+                }
             }
         }
         this.validateBrick(bricksList[this.state.selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
