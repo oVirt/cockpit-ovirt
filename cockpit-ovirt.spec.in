@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Thu Mar 22 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.19-1
+- iSCSI related fixes for hosted engine
+
 * Wed Mar 21 2018 Ryan Barry <rbarry@redhat.com> - 0.11.18-1
 - Even more hosted engines fixes and improvements for ansible
 
