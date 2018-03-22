@@ -114,6 +114,7 @@ class HeWizardStorageContainer extends Component {
 
         model.setBooleanValues(iscsiAnsFileFields, fieldProps, isIscsi);
         model.setBooleanValues(requiredIscsiFields, ["required"], isIscsi);
+        model.model.storage.iSCSIPortalPassword.showInReview = false;
 
         model.setBooleanValues(glusterAnsFileFields, fieldProps, isGluster);
 
