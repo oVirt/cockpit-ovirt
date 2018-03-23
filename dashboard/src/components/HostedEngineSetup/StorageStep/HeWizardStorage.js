@@ -213,7 +213,8 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                             {iscsiLunData !== null &&
                                 <LunListContainer lunList={iscsiLunData}
                                                   handleLunSelection={handleLunSelection}
-                                                  selectedLun={selectedLun} />
+                                                  selectedLun={selectedLun}
+                                                  storageConfig={storageConfig} />
                             }
                         </span>
                     }
