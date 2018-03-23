@@ -550,7 +550,7 @@ input[type="radio"].iscsi-target-radio-button {
 }
 
 div.iscsi-target, div.lun {
-    margin-left: 20px
+    margin-left: 40px
 }
 
 div.target-portal-group {
@@ -744,4 +744,8 @@ span.nested-input .form-control:hover {
 
 #he-wizard-dns-error-container {
     margin-top: -10px;
+}
+i.lun-size-warning-icon {
+    margin-left: -20px;
+    margin-right: 5px;
 }

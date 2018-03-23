@@ -136,6 +136,7 @@ export const messages = {
     LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed.",
     FC_LUN_DISCOVERY_FAILED: "Retrieval of fiber channel LUNs failed.",
     NO_LUNS_FOUND: "No LUNS found"
+    LUN_IS_TOO_SMALL: "This LUN has been disabled because it does not have sufficient storage capacity to support the hosted engine VM."
 };
 
 export const headers = {

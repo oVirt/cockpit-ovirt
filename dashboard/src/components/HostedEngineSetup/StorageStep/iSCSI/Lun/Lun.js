@@ -1,5 +1,5 @@
 import React from 'react'
-import { resourceConstants } from "../../../constants";
+import { messages, resourceConstants } from "../../../constants";
 
 const Lun = ({handleLunSelection, lun, selectedLun, storageConfig}) => {
 
@@ -15,6 +15,11 @@ const Lun = ({handleLunSelection, lun, selectedLun, storageConfig}) => {
         <div className="form-group">
             <div className="col-md-12 lun">
                 <div>
+                    {lunTooSmall &&
+                        <i className="pficon pficon-warning-triangle-o he-warning-icon lun-size-warning-icon"
+                           rel="tooltip"
+                           title={messages.LUN_IS_TOO_SMALL} />
+                    }
                     <input type="radio"
                            name="lun"
                            value={lun.guid}
