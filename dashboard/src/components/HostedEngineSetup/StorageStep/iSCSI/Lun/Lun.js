@@ -1,12 +1,15 @@
 import React from 'react'
+import { resourceConstants } from "../../../constants";
 
-const Lun = ({handleLunSelection, lun, selectedLun}) => {
+const Lun = ({handleLunSelection, lun, selectedLun, storageConfig}) => {
 
     function bytesToGiB(bytes) {
         return bytes / Math.pow(2, 30);
     }
 
+    const minLunSizeInGiB = storageConfig.imgSizeGB.value + resourceConstants.LUN_STORAGE_OVERHEAD_GIB;
     const lunSizeInGiB = bytesToGiB(lun.size);
+    const lunTooSmall = lunSizeInGiB < minLunSizeInGiB;
 
     return (
         <div className="form-group">
@@ -15,6 +18,7 @@ const Lun = ({handleLunSelection, lun, selectedLun}) => {
                     <input type="radio"
                            name="lun"
                            value={lun.guid}
+                           disabled={lunTooSmall}
                            checked={selectedLun === lun.guid}
                            onChange={(e) => handleLunSelection(e.target.value)} />
                     &nbsp;<span className="lun-prop-label">ID:</span> { lun.guid }

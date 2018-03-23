@@ -14,7 +14,8 @@ class LunListContainer extends Component {
     render() {
         return <LunList lunList={this.state.lunList}
                         handleLunSelection={this.props.handleLunSelection}
-                        selectedLun={this.props.selectedLun} />
+                        selectedLun={this.props.selectedLun}
+                        storageConfig={this.props.storageConfig} />
     }
 }
 

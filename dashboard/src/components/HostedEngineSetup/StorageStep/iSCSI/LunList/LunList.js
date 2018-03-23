@@ -1,13 +1,14 @@
 import React from 'react'
 import LunContainer from '../Lun/LunContainer'
 
-const LunList = ({handleLunSelection, lunList, selectedLun}) => {
+const LunList = ({handleLunSelection, lunList, selectedLun, storageConfig}) => {
     const luns = [];
 
     lunList.forEach(function(lun, idx) {
         luns.push(<LunContainer lun={lun}
                                 handleLunSelection={handleLunSelection}
                                 selectedLun={selectedLun}
+                                storageConfig={storageConfig}
                                 key={idx} />);
     });
 
