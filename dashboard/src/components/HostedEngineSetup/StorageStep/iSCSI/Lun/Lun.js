@@ -2,6 +2,12 @@ import React from 'react'
 
 const Lun = ({handleLunSelection, lun, selectedLun}) => {
 
+    function bytesToGiB(bytes) {
+        return bytes / Math.pow(2, 30);
+    }
+
+    const lunSizeInGiB = bytesToGiB(lun.size);
+
     return (
         <div className="form-group">
             <div className="col-md-12 lun">
@@ -13,7 +19,7 @@ const Lun = ({handleLunSelection, lun, selectedLun}) => {
                            onChange={(e) => handleLunSelection(e.target.value)} />
                     &nbsp;<span className="lun-prop-label">ID:</span> { lun.guid }
                 </div>
-                <div className="lun-prop"><span className="lun-prop-label">Size:</span> { lun.size }</div>
+                <div className="lun-prop"><span className="lun-prop-label">Size (GiB):</span> { lunSizeInGiB.toFixed(2) }</div>
                 <div className="lun-prop"><span className="lun-prop-label">Description:</span> { lun.description }</div>
                 <div className="lun-prop"><span className="lun-prop-label">Status:</span> { lun.status }</div>
                 <div className="lun-prop"><span className="lun-prop-label">Number of Paths:</span> { lun.numPaths }</div>
