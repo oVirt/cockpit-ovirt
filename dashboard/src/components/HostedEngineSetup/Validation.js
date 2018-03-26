@@ -54,6 +54,12 @@ export function getErrorMsgForProperty(prop) {
 }
 
 function isRequiredAndEmpty(prop) {
+    if (prop.name === "cloudinitVMDNS") {
+        const dnsList = prop.value;
+        const isEmptyArr = dnsList.length < 1 || (dnsList.length === 1 && dnsList[0] === "");
+        return prop.required && isEmptyArr;
+    }
+
     const propType = typeof prop.value;
     const isValidType = propType === 'string' || propType === 'number';
     const isEmpty = prop.value === "";

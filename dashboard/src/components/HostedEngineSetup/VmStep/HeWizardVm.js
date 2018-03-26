@@ -219,7 +219,11 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                                           rowLimit={3}
                                                           handleValueUpdate={handleDnsAddressUpdate}
                                                           handleValueDelete={handleDnsAddressDelete}/>
-                                {errorMsgs.cloudinitVMDNS && <span className="help-block">{errorMsgs.cloudinitVMDNS}</span>}
+                                {errorMsgs.cloudinitVMDNS &&
+                                    <span className="help-block" id="he-wizard-dns-error-container">
+                                        {errorMsgs.cloudinitVMDNS}
+                                    </span>
+                                }
                             </div>
                         </div>
                     </div>

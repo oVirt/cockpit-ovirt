@@ -10,7 +10,7 @@ const defaultAppliances = [
     { key: "Manually Select", title: "Manually Select" }
 ];
 
-const requiredStaticNetworkFields = ["cloudinitVMStaticCIDR", "cloudinitVMStaticCIDRPrefix"];
+const requiredStaticNetworkFields = ["cloudinitVMStaticCIDR", "cloudinitVMStaticCIDRPrefix", "cloudinitVMDNS"];
 
 class HeWizardVmContainer extends Component {
     constructor(props) {
@@ -59,14 +59,15 @@ class HeWizardVmContainer extends Component {
     handleDnsAddressDelete(index) {
         const addresses = this.state.heSetupModel.vm.cloudinitVMDNS.value;
         addresses.splice(index, 1);
-        this.setState({ addresses, errorMsgs: {} });
+        this.validateConfigUpdate("cloudinitVMDNS", this.state.heSetupModel.vm);
+        this.setState({ addresses });
     }
 
     handleDnsAddressUpdate(index, address) {
         const addresses = this.state.heSetupModel.vm.cloudinitVMDNS.value;
         addresses[index] = address;
-        const errorMsgs= this.state.errorMsgs;
-        this.setState({ addresses, errorMsgs });
+        this.validateConfigUpdate("cloudinitVMDNS", this.state.heSetupModel.vm);
+        this.setState({ addresses });
     }
 
     verifyDns(fqdn) {
