@@ -739,3 +739,7 @@ span.nested-input .form-control:hover {
     width: 40px;
     display: inline-block;
 }
+
+#he-wizard-dns-error-container {
+    margin-top: -10px;
+}
