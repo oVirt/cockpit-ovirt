@@ -400,7 +400,7 @@ export class HeSetupModel {
                     reviewOrder: 40,
                     uiStage: "VM",
                     useInAnswerFile: true,
-                    required: true,
+                    required: false,
                     regex: Validation.ipAddress,
                     errorMsg: "Invalid format for IP address"
                 },
