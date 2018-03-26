@@ -26,7 +26,7 @@ const rootSshAccessOptions = [
 ];
 
 const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
-                        gatewayState, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete,
+                        gatewayState, getCidrErrorMsg, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete,
                         handleImportApplianceUpdate, handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel,
                         importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
     const vmConfig = heSetupModel.vm;
@@ -44,6 +44,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
     let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
     const advancedSectionClasses = collapsibleSections["advanced"] ? "collapse" : "";
+
+    const cidrPrefixClasses = errorMsgs["cloudinitVMStaticCIDRPrefix"] ? "form-group has-error" : "form-group nested-input";
 
     return (
         <div>
@@ -171,14 +173,21 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                    className="form-control"
                                    value={vmConfig.cloudinitVMStaticCIDR.value}
                                    onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDR", e.target.value, "vm")}
-                                   onBlur={(e) => verifyReverseDns(e.target.value)}
-                            />&nbsp;/&nbsp;
-                            <input type="text" style={{width: "40px", display: "inline-block"}}
-                                   placeholder="24"
-                                   className="form-control"
-                                   value={vmConfig.cloudinitVMStaticCIDRPrefix.value}
-                                   onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDRPrefix", e.target.value, "vm")} />
-                            {errorMsgs.cloudinitVMStaticCIDR && <span className="help-block">{errorMsgs.cloudinitVMStaticCIDR}</span>}
+                                   onBlur={(e) => verifyReverseDns(e.target.value)} />
+                            &nbsp;/&nbsp;
+                            <span className={cidrPrefixClasses} id="he-wizard-cidr-container">
+                                <input id="he-wizard-cidr"
+                                       type="text"
+                                       placeholder="24"
+                                       className="form-control"
+                                       value={vmConfig.cloudinitVMStaticCIDRPrefix.value}
+                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDRPrefix", e.target.value, "vm")} />
+                            </span>
+                            {(errorMsgs.cloudinitVMStaticCIDRPrefix || errorMsgs.cloudinitVMStaticCIDR) &&
+                                <span className="has-error">
+                                    <span className="help-block">{getCidrErrorMsg()}</span>
+                                </span>
+                            }
                         </div>
                     </div>
 

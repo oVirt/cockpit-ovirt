@@ -10,6 +10,8 @@ const defaultAppliances = [
     { key: "Manually Select", title: "Manually Select" }
 ];
 
+const requiredStaticNetworkFields = ["cloudinitVMStaticCIDR", "cloudinitVMStaticCIDRPrefix"];
+
 class HeWizardVmContainer extends Component {
     constructor(props) {
         super(props);
@@ -48,6 +50,7 @@ class HeWizardVmContainer extends Component {
         this.setNetworkConfigDisplaySettings = this.setNetworkConfigDisplaySettings.bind(this);
         this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
+        this.getCidrErrorMsg = this.getCidrErrorMsg.bind(this);
         this.validateRootPasswordMatch = this.validateRootPasswordMatch.bind(this);
         this.validateCpuModelSelection = this.validateCpuModelSelection.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
@@ -216,10 +219,10 @@ class HeWizardVmContainer extends Component {
 
         if (networkConfigType === "dhcp") {
             model.setBooleanValues(ansFileFields, fieldProps, false);
-            model.setBooleanValue("cloudinitVMStaticCIDR", ["required"], false);
+            model.setBooleanValues(requiredStaticNetworkFields, ["required"], false);
         } else if (networkConfigType === "static") {
             model.setBooleanValues(ansFileFields, fieldProps, true);
-            model.setBooleanValue("cloudinitVMStaticCIDR", ["required"], true);
+            model.setBooleanValues(requiredStaticNetworkFields, ["required"], true);
         }
 
         this.setState({ model });
@@ -257,6 +260,20 @@ class HeWizardVmContainer extends Component {
             });
     }
 
+    getCidrErrorMsg() {
+        const prefixErrorMsg = this.state.errorMsgs.cloudinitVMStaticCIDRPrefix;
+        const ipErrorMsg = this.state.errorMsgs.cloudinitVMStaticCIDR;
+        let cidrErrorMsg = "";
+
+        if (typeof ipErrorMsg !== "undefined") {
+            cidrErrorMsg = ipErrorMsg;
+        } else if (typeof prefixErrorMsg !== "undefined") {
+            cidrErrorMsg =  prefixErrorMsg;
+        }
+
+        return cidrErrorMsg;
+    }
+
     validateConfigUpdate(propName, config) {
         let errorMsg = this.state.errorMsg;
         const errorMsgs = {};
@@ -279,6 +296,19 @@ class HeWizardVmContainer extends Component {
 
         if (propName === "gateway" && propErrorMsg === "") {
             this.checkGatewayPingability(prop.value);
+        }
+
+        // Display of errors for IP and CIDR are linked - Register errors for both if either is edited
+        if (propName === "cloudinitVMStaticCIDR") {
+            const prefixErrorMsg = getErrorMsgForProperty(config["cloudinitVMStaticCIDRPrefix"]);
+            if (prefixErrorMsg !== "") {
+                errorMsgs["cloudinitVMStaticCIDRPrefix"] = prefixErrorMsg;
+            }
+        } else if (propName === "cloudinitVMStaticCIDRPrefix") {
+            const ipErrorMsg = getErrorMsgForProperty(config["cloudinitVMStaticCIDR"]);
+            if (ipErrorMsg !== "") {
+                errorMsgs["cloudinitVMStaticCIDR"] = ipErrorMsg;
+            }
         }
 
         this.setState({ errorMsg, errorMsgs });
@@ -367,6 +397,7 @@ class HeWizardVmContainer extends Component {
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
                 gatewayState={this.state.gatewayState}
+                getCidrErrorMsg={this.getCidrErrorMsg}
                 interfaces={this.state.interfaces}
                 handleDnsAddressUpdate={this.handleDnsAddressUpdate}
                 handleDnsAddressDelete={this.handleDnsAddressDelete}

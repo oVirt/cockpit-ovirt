@@ -714,3 +714,28 @@ div.existing-gluster-config-note-row {
 .he-wizard-preview-step-header {
     margin-bottom: 15px;
 }
+
+span.nested-input .form-control {
+    border-color: #bbb;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+span.nested-input .form-control:focus {
+    border-color: #0088ce;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 136, 206, 0.6);
+}
+
+span.nested-input .form-control:hover {
+    border-color: #7dc3e8;
+}
+
+#he-wizard-cidr-container {
+    display: inline-block;
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+#he-wizard-cidr {
+    width: 40px;
+    display: inline-block;
+}
