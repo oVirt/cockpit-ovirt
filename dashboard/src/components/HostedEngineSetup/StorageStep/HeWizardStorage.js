@@ -41,6 +41,10 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
     const advancedSectionClasses = collapsibleSections["advanced"] ? "collapse" : "";
 
+    const targetsRetrieved = iscsiTargetData !== null;
+    const targetSelected = selectedIscsiTarget !== "";
+    const lunSelected = selectedLun !== "";
+
     return (
         <div>
             <form className="form-horizontal he-form-container">
@@ -169,6 +173,15 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                                 </span>
                             </div>
 
+                            {(errorMsgs.LunID && !targetsRetrieved) &&
+                                <div className="row">
+                                    <div className="alert alert-danger col-sm-8">
+                                        <span className="pficon pficon-error-circle-o" />
+                                        <strong>{ messages.TARGET_RETRIEVAL_REQUIRED }</strong>
+                                    </div>
+                                </div>
+                            }
+
                             {targetRetrievalStatus === status.FAILURE &&
                                 <div className="row">
                                     <div className="alert alert-danger col-sm-8">
@@ -183,6 +196,15 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                                     <div className="alert alert-danger col-sm-8">
                                         <span className="pficon pficon-error-circle-o" />
                                         <strong>{ messages.LUN_RETRIEVAL_FAILED }</strong>
+                                    </div>
+                                </div>
+                            }
+
+                            {(errorMsgs.LunID && targetsRetrieved && !targetSelected) &&
+                                <div className="row">
+                                    <div className="alert alert-danger col-sm-8">
+                                        <span className="pficon pficon-error-circle-o" />
+                                        <strong>{ messages.TARGET_SELECTION_REQUIRED }</strong>
                                     </div>
                                 </div>
                             }
@@ -211,6 +233,15 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                                         <div className="vertical-center storage-retrieval-msg">
                                             Retrieving LUNs
                                         </div>
+                                    </div>
+                                </div>
+                            }
+
+                            {(errorMsgs.LunID && targetSelected && !lunSelected) &&
+                                <div className="row">
+                                    <div className="alert alert-danger col-sm-8">
+                                        <span className="pficon pficon-error-circle-o" />
+                                        <strong>{ messages.LUN_SELECTION_REQUIRED }</strong>
                                     </div>
                                 </div>
                             }
