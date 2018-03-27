@@ -67,6 +67,7 @@ class HeWizardStorageContainer extends Component {
     }
 
     handleStorageConfigUpdate(propName, value) {
+        this.setState({ errorMsg: "", errorMsgs: {} });
         const storageConfig = this.state.storageConfig;
         storageConfig[propName].value = value;
 
@@ -126,18 +127,15 @@ class HeWizardStorageContainer extends Component {
 
     validateConfigUpdate(propName) {
         const config = this.state.storageConfig;
-        let errorMsg = this.state.errorMsg;
         const errorMsgs = {};
         const prop = config[propName];
         const propErrorMsg = getErrorMsgForProperty(prop);
 
         if (propErrorMsg !== "") {
             errorMsgs[propName] = propErrorMsg;
-        } else {
-            errorMsg = "";
         }
 
-        this.setState({ errorMsg, errorMsgs });
+        this.setState({ errorMsg: "", errorMsgs });
     }
 
     handleCollapsibleSectionChange(sectionName) {
