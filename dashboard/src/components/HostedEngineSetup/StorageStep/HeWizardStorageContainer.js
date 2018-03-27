@@ -13,7 +13,7 @@ const iscsiAnsFileFields = [
     "iSCSITargetName", "LunID"
 ];
 
-const requiredIscsiFieldsBase = ["iSCSIPortalIPAddress", "iSCSIPortalPort"];
+const requiredIscsiFieldsBase = ["iSCSIPortalIPAddress", "iSCSIPortalPort", "LunID"];
 
 const glusterAnsFileFields = ["storageDomainConnection"];
 
@@ -160,8 +160,8 @@ class HeWizardStorageContainer extends Component {
     }
 
     getIscsiTargetList() {
-        this.setState({ targetRetrievalStatus: status.POLLING,
-           lunRetrievalStatus: status.EMPTY });
+        this.setState({ targetRetrievalStatus: status.POLLING, lunRetrievalStatus: status.EMPTY,
+            errorMsg: "", errorMsgs: {} });
         const self = this;
         this.storageUtil.getTargetList()
             .then(targetData => self.setState({ targetRetrievalStatus: status.SUCCESS, iscsiTargetData: targetData }))
@@ -172,7 +172,7 @@ class HeWizardStorageContainer extends Component {
     }
 
     handleTargetSelection(target, tpgts) {
-        this.setState({ selectedIscsiTarget: target, iscsiLunData: null });
+        this.setState({ selectedIscsiTarget: target, iscsiLunData: null, errorMsg: "", errorMsgs: {} });
         const config = this.state.storageConfig;
 
         const tpgtData = this.getTpgtData(tpgts);
@@ -219,7 +219,7 @@ class HeWizardStorageContainer extends Component {
     }
 
     handleLunSelection(lunId) {
-        this.setState({ selectedLun: lunId });
+        this.setState({ selectedLun: lunId, errorMsg: "", errorMsgs: {} });
         const config = this.state.storageConfig;
         config.LunID.value = lunId;
         this.setState({ config });
