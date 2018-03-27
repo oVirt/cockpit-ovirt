@@ -4,7 +4,7 @@ import {deploymentTypes, messages, status} from '../constants';
 import HeWizardStorage from './HeWizardStorage'
 import StorageUtil from '../../../helpers/HostedEngineSetup/StorageUtil'
 
-const nfsAnsFileFields = ["storageDomainConnection", "storageDomain"];
+const nfsAnsFileFields = ["storageDomain"];
 
 const requiredNfsFields = nfsAnsFileFields;
 
@@ -17,9 +17,9 @@ const requiredIscsiFieldsBase = ["iSCSIPortalIPAddress", "iSCSIPortalPort", "Lun
 
 const glusterAnsFileFields = ["storageDomainConnection"];
 
-const requiredGlusterFields = glusterAnsFileFields;
-
 const glusterAndNfsAnsFileFields = ["storageDomainConnection", "mntOptions"];
+
+const requiredGlusterAndNfsFields = ["storageDomainConnection"];
 
 const fieldProps = ["showInReview", "useInAnswerFile"];
 
@@ -115,9 +115,9 @@ class HeWizardStorageContainer extends Component {
         model.setBooleanValues(requiredIscsiFields, ["required"], isIscsi);
 
         model.setBooleanValues(glusterAnsFileFields, fieldProps, isGluster);
-        model.setBooleanValues(requiredGlusterFields, ["required"], isGluster);
 
         model.setBooleanValues(glusterAndNfsAnsFileFields, fieldProps, isNfs || isGluster);
+        model.setBooleanValues(requiredGlusterAndNfsFields, ["required"], isNfs || isGluster);
 
         model.model.storage.LunID.showInReview = isIscsi || isFc;
 
