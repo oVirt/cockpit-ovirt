@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import {deploymentStatus as status, messages} from '../constants';
 
 const AnsiblePhaseExecution = ({isLastStep, output, phaseExecutionStatus, restartCallBack}) => {
@@ -7,41 +8,65 @@ const AnsiblePhaseExecution = ({isLastStep, output, phaseExecutionStatus, restar
     } else {
         return <OutputPanel output={output}
                             phaseExecutionStatus={phaseExecutionStatus}
-                            reDeployCallback={restartCallBack}/>
+                            reDeployCallback={restartCallBack} />
     }
 };
 
 export default AnsiblePhaseExecution;
 
-const OutputPanel = ({output, phaseExecutionStatus, reDeployCallback}) => {
-    output.lines = output.lines.filter(n => n)
-    const outputDiv = output.lines.map(function(line, i) {
-        try {
-            const ln = JSON.parse(line);
-            const type = ln["OVEHOSTED_AC/type"].replace("OVEHOSTED_AC/", "").toUpperCase();
-            const data = ln["OVEHOSTED_AC/body"];
+class OutputPanel extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            output: this.props.output
+        };
 
-            return (
-                <span className="ansible-output-line" key={i}>
-                    [ { type } ] { data }<br />
+        this.scrollToBottom = this.scrollToBottom.bind(this);
+    }
+
+    scrollToBottom() {
+        const scrollHeight = this.node.scrollHeight;
+        const height = this.node.clientHeight;
+        const maxScrollTop = scrollHeight - height;
+        ReactDOM.findDOMNode(this.node).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom()
+    }
+
+    render() {
+        const outputLines = this.props.output.lines.filter(n => n);
+        const outputDiv = outputLines.map(function (line, i) {
+            try {
+                const ln = JSON.parse(line);
+                const type = ln["OVEHOSTED_AC/type"].replace("OVEHOSTED_AC/", "").toUpperCase();
+                const data = ln["OVEHOSTED_AC/body"];
+
+                return (
+                    <span className="ansible-output-line" key={i}>
+                    [ {type} ] {data}<br/>
                 </span>
-            )
-        } catch (e) {
-            console.log("Error in Ansible JSON output. Error: " + e);
-        }
-    });
+                )
+            } catch (e) {
+                console.log("Error in Ansible JSON output. Error: " + e);
+            }
+        });
 
-    return (
-        <div className="panel panel-default ansible-output-container">
-            <div className="panel-heading">
-                <Status phaseExecutionStatus={phaseExecutionStatus} reDeployCallback={reDeployCallback}/>
+        return (
+            <div className="panel panel-default ansible-output-container">
+                <div className="panel-heading">
+                    <Status phaseExecutionStatus={this.props.phaseExecutionStatus}
+                            reDeployCallback={this.props.reDeployCallback}/>
+                </div>
+                <div className="he-input viewport ansible-output-panel"
+                     ref={input => this.node = input}>
+                    {outputDiv}
+                </div>
             </div>
-            <div className="he-input viewport ansible-output-panel">
-                {outputDiv}
-            </div>
-        </div>
-    )
-};
+        )
+    }
+}
 
 const Status = ({phaseExecutionStatus, reDeployCallback}) => {
     let msg = "Deployment in progress";
