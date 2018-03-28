@@ -158,8 +158,13 @@ class HeWizardStorageContainer extends Component {
     }
 
     getIscsiTargetList() {
-        this.setState({ targetRetrievalStatus: status.POLLING, lunRetrievalStatus: status.EMPTY,
-            errorMsg: "", errorMsgs: {} });
+        this.setState({ targetRetrievalStatus: status.POLLING,
+                        iscsiTargetData: null,
+                        iscsiLunData: null,
+                        lunRetrievalStatus: status.EMPTY,
+                        errorMsg: "",
+                        errorMsgs: {}
+        });
         const self = this;
         this.storageUtil.getTargetList()
             .then(targetData => self.setState({ targetRetrievalStatus: status.SUCCESS, iscsiTargetData: targetData }))
@@ -206,7 +211,7 @@ class HeWizardStorageContainer extends Component {
     }
 
     getIscsiLunList() {
-        this.setState({ lunRetrievalStatus: status.POLLING });
+        this.setState({ lunRetrievalStatus: status.POLLING, iscsiLunData: null });
         const self = this;
         this.storageUtil.getLunList()
             .then(lunData => self.setState({ lunRetrievalStatus: status.SUCCESS, iscsiLunData: lunData }))
