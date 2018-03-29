@@ -2,13 +2,12 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import {deploymentStatus as status, messages} from '../constants';
 
-const AnsiblePhaseExecution = ({isLastStep, output, phaseExecutionStatus, restartCallBack}) => {
+const AnsiblePhaseExecution = ({isLastStep, output, phaseExecutionStatus}) => {
     if (phaseExecutionStatus === status.SUCCESS) {
         return <DeploymentSuccessPanel isLastStep={isLastStep} />
     } else {
         return <OutputPanel output={output}
-                            phaseExecutionStatus={phaseExecutionStatus}
-                            reDeployCallback={restartCallBack} />
+                            phaseExecutionStatus={phaseExecutionStatus} />
     }
 };
 
@@ -56,8 +55,7 @@ class OutputPanel extends Component {
         return (
             <div className="panel panel-default ansible-output-container">
                 <div className="panel-heading">
-                    <Status phaseExecutionStatus={this.props.phaseExecutionStatus}
-                            reDeployCallback={this.props.reDeployCallback}/>
+                    <Status phaseExecutionStatus={this.props.phaseExecutionStatus} />
                 </div>
                 <div className="he-input viewport ansible-output-panel"
                      ref={input => this.node = input}>
@@ -68,7 +66,7 @@ class OutputPanel extends Component {
     }
 }
 
-const Status = ({phaseExecutionStatus, reDeployCallback}) => {
+const Status = ({phaseExecutionStatus}) => {
     let msg = "Deployment in progress";
     let statusIcon = <div className="spinner blank-slate-pf-icon deployment-status-spinner vertical-center"/>;
     if (phaseExecutionStatus === status.FAILURE) {
@@ -79,14 +77,6 @@ const Status = ({phaseExecutionStatus, reDeployCallback}) => {
         <div className="vertical-center">
             {statusIcon}
             <div className="vertical-center deployment-status-msg">{msg}</div>
-            <div className="pull-right">
-                {phaseExecutionStatus === status.FAILURE &&
-                <button className="btn btn-primary" onClick={reDeployCallback}>
-                    <span className="pficon pficon-restart">&nbsp;</span>
-                    Redeploy
-                </button>
-                }
-            </div>
         </div>
     )
 };

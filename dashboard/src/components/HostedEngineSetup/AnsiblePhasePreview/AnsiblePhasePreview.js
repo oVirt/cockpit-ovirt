@@ -3,14 +3,13 @@ import AnsiblePhaseExecutionContainer from "../AnsiblePhaseExecution/AnsiblePhas
 import ReviewStepPanelContainer from "../ReviewStep/ReviewStepPanel";
 
 const AnsiblePhasePreview = ({abortCallBack, headerText, sections, executionStarted, heSetupModel, isLastStep, phase,
-                                 restartCallBack, terminationCallBack}) => {
+                                 terminationCallBack}) => {
 
     if (executionStarted) {
         return <AnsiblePhaseExecutionContainer abortCallBack={abortCallBack}
                                                heSetupModel={heSetupModel}
                                                isLastStep={isLastStep}
                                                phase={phase}
-                                               restartCallBack={restartCallBack}
                                                terminationCallBack={terminationCallBack}/>
     } else {
         return <ReviewStepPanelContainer headerText={headerText}
