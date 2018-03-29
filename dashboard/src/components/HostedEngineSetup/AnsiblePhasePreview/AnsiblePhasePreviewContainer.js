@@ -16,7 +16,6 @@ class AnsiblePhasePreviewContainer extends Component {
         };
 
         this.customActionBtnCallback = this.customActionBtnCallback.bind(this);
-        this.restartCallBack = this.restartCallBack.bind(this);
         this.terminationCallBack = this.terminationCallBack.bind(this);
     }
 
@@ -42,8 +41,14 @@ class AnsiblePhasePreviewContainer extends Component {
                 buttonText: this.props.reattemptBtnText ? this.props.reattemptBtnText : this.props.executeBtnText,
                 hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH],
                 buttonCallBack: function() {
+                    const midRedeployBtnState = {
+                        buttonText: self.props.reattemptBtnText ? self.props.reattemptBtnText : self.props.executeBtnText,
+                        disabled: true,
+                        hideBtnsList: [footerButtons.NEXT, footerButtons.FINISH],
+                        disableBtnsList: [footerButtons.BACK]
+                    };
+                    self.props.registerCustomActionBtnStateCallback(midRedeployBtnState, self.props.stepIndex, self.props.subStepIndex);
                     buttonCallBack();
-                    self.props.registerCustomActionBtnStateCallback({ disableBtnsList: [footerButtons.NEXT] });
                 }
             };
         } else if (this.props.isLastStep && executionStatus === status.SUCCESS) {
@@ -54,11 +59,6 @@ class AnsiblePhasePreviewContainer extends Component {
             };
         }
         this.props.registerCustomActionBtnStateCallback(btnState, this.props.stepIndex, this.props.subStepIndex);
-    }
-
-    restartCallBack(buttonCallBack) {
-        buttonCallBack();
-        this.props.registerCustomActionBtnStateCallback({ disabled: true });
     }
 
     componentDidUpdate(prevProps) {
@@ -110,7 +110,6 @@ class AnsiblePhasePreviewContainer extends Component {
                                  heSetupModel={this.state.heSetupModel}
                                  isLastStep={this.props.stepIndex === (this.props.stepCount - 1)}
                                  phase={this.props.phase}
-                                 restartCallBack={this.restartCallBack}
                                  terminationCallBack={this.terminationCallBack}/>
         )
     }
