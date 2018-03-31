@@ -745,7 +745,16 @@ span.nested-input .form-control:hover {
 #he-wizard-dns-error-container {
     margin-top: -10px;
 }
+
 i.lun-size-warning-icon {
     margin-left: -20px;
     margin-right: 5px;
+}
+
+i.password-mask-icon {
+    position: absolute;
+    top: 4px;
+    margin-left: 67%;
+    font-size: 16px;
+    color: gray;
 }
