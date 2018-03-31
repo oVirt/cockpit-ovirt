@@ -706,16 +706,6 @@ export class HeSetupModel {
                     useInAnswerFile: false,
                     required: false
                 },
-                confirmRootPassword: {
-                    name: "confirmRootPassword",
-                    description: "Confirm Root password",
-                    value: "",
-                    type: types.STRING,
-                    showInReview: false,
-                    uiStage: "VM",
-                    useInAnswerFile: false,
-                    required: false
-                },
                 rootSshPubkey: {
                     name: "rootSshPubkey",
                     ansibleVarName: "ROOT_SSH_PUBKEY",
@@ -889,16 +879,6 @@ export class HeSetupModel {
                     type: types.STRING,
                     showInReview: false,
                     reviewOrder: 0,
-                    uiStage: "Engine",
-                    useInAnswerFile: false,
-                    required: false
-                },
-                confirmAdminPortalPassword: {
-                    name: "confirmAdminPortalPassword",
-                    description: "Confirm Admin Portal Password",
-                    value: "",
-                    type: types.STRING,
-                    showInReview: false,
                     uiStage: "Engine",
                     useInAnswerFile: false,
                     required: false

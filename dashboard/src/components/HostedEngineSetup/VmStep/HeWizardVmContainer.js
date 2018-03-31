@@ -37,6 +37,7 @@ class HeWizardVmContainer extends Component {
 
         this.handleDnsAddressDelete = this.handleDnsAddressDelete.bind(this);
         this.handleDnsAddressUpdate = this.handleDnsAddressUpdate.bind(this);
+        this.handleRootPwdUpdate = this.handleRootPwdUpdate.bind(this);
         this.verifyDns = this.verifyDns.bind(this);
         this.verifyReverseDns = this.verifyReverseDns.bind(this);
         this.setDefaultValues = this.setDefaultValues.bind(this);
@@ -51,7 +52,6 @@ class HeWizardVmContainer extends Component {
         this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
         this.getCidrErrorMsg = this.getCidrErrorMsg.bind(this);
-        this.validateRootPasswordMatch = this.validateRootPasswordMatch.bind(this);
         this.validateCpuModelSelection = this.validateCpuModelSelection.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
     }
@@ -68,6 +68,12 @@ class HeWizardVmContainer extends Component {
         addresses[index] = address;
         this.validateConfigUpdate("cloudinitVMDNS", this.state.heSetupModel.vm);
         this.setState({ addresses });
+    }
+
+    handleRootPwdUpdate(pwd) {
+        const config = this.state.heSetupModel.vm;
+        config.cloudinitRootPwd.value = pwd;
+        this.setState({ config });
     }
 
     verifyDns(fqdn) {
@@ -160,12 +166,7 @@ class HeWizardVmContainer extends Component {
                 this.setNetworkConfigDisplaySettings(value);
                 break;
             case "cloudinitRootPwd":
-                if (value === "") {
-                    heSetupModel.vm.confirmRootPassword.value = "";
-                    heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = false;
-                } else {
-                    heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = true;
-                }
+                heSetupModel.vm.cloudinitRootPwd.useInAnswerFile = value !== "";
                 break;
             case "fqdn":
                 heSetupModel.vm.cloudinitInstanceHostName.value = value.substring(0, value.indexOf("."));
@@ -287,10 +288,6 @@ class HeWizardVmContainer extends Component {
             errorMsg = "";
         }
 
-        if (propName === "confirmRootPassword") {
-            this.validateRootPasswordMatch(errorMsgs);
-        }
-
         if (propName === "cpu") {
             this.validateCpuModelSelection(errorMsgs);
         }
@@ -313,17 +310,6 @@ class HeWizardVmContainer extends Component {
         }
 
         this.setState({ errorMsg, errorMsgs });
-    }
-
-    validateRootPasswordMatch(errorMsgs) {
-        const vmConfig = this.state.heSetupModel.vm;
-        let passwordsMatch = vmConfig.cloudinitRootPwd.value === vmConfig.confirmRootPassword.value;
-
-        if (!passwordsMatch) {
-            errorMsgs.confirmRootPassword = messages.PASSWORD_MISMATCH;
-        }
-
-        return passwordsMatch;
     }
 
     validateCpuModelSelection(errorMsgs) {
@@ -363,16 +349,15 @@ class HeWizardVmContainer extends Component {
     validateAllInputs() {
         let errorMsg = "";
         let errorMsgs = {};
-        let propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs) ||
+        const propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs) ||
             this.state.gatewayState === gwState.FAILURE;
-        let passwordsMatch = this.validateRootPasswordMatch(errorMsgs);
 
-        if (!propsAreValid || !passwordsMatch) {
+        if (!propsAreValid) {
             errorMsg = messages.GENERAL_ERROR_MSG;
         }
 
         this.setState({ errorMsg, errorMsgs });
-        return propsAreValid && passwordsMatch;
+        return propsAreValid;
     }
 
     shouldComponentUpdate(nextProps, nextState){
@@ -402,6 +387,7 @@ class HeWizardVmContainer extends Component {
                 interfaces={this.state.interfaces}
                 handleDnsAddressUpdate={this.handleDnsAddressUpdate}
                 handleDnsAddressDelete={this.handleDnsAddressDelete}
+                handleRootPwdUpdate={this.handleRootPwdUpdate}
                 handleImportApplianceUpdate={this.handleImportApplianceUpdate}
                 handleVmConfigUpdate={this.handleVmConfigUpdate}
                 handleCollapsibleSectionChange={this.handleCollapsibleSectionChange}
