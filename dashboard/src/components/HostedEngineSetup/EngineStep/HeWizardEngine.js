@@ -2,9 +2,10 @@ import React from 'react'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 import {deploymentTypes} from "../constants";
+import UnmaskablePasswordContainer from "../UnmaskablePassword";
 
 const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, handleEngineConfigUpdate,
-                            handleRecipientAddressUpdate, handleRecipientAddressDelete}) => {
+                            handleRecipientAddressUpdate, handleRecipientAddressDelete, handleAdminPortalPwdUpdate}) => {
     const engineConfig = heSetupModel.engine;
     const notificationsConfig = heSetupModel.notifications;
     const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
@@ -44,28 +45,10 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
 
                 <div className={getClassNames("adminPassword", errorMsgs)}>
                     <label className="col-md-3 control-label">Admin Portal Password</label>
-                    <div className="col-md-6">
-                        <input type="password" style={{width: "140px"}}
-                               title="Enter the admin portal password."
-                               className="form-control"
-                               value={engineConfig.adminPassword.value}
-                               onChange={(e) => handleEngineConfigUpdate("adminPassword", e.target.value, "engine")}
-                        />
+                    <div className="col-md-3">
+                        <UnmaskablePasswordContainer value={engineConfig.adminPassword.value}
+                                                     onChangeHandler={handleAdminPortalPwdUpdate}/>
                         {errorMsgs.adminPassword && <span className="help-block">{errorMsgs.adminPassword}</span>}
-                    </div>
-                </div>
-
-                <div className={getClassNames("confirmAdminPortalPassword", errorMsgs)}
-                     style={engineConfig.adminPassword.value !== "" ? {} : {display: 'none'}}>
-                    <label className="col-md-3 control-label">Confirm Password</label>
-                    <div className="col-md-6">
-                        <input type="password" style={{width: "140px"}}
-                               title="Confirm the admin portal password."
-                               className="form-control"
-                               value={engineConfig.confirmAdminPortalPassword.value}
-                               onChange={(e) => handleEngineConfigUpdate("confirmAdminPortalPassword", e.target.value, "engine")}
-                        />
-                        {errorMsgs.confirmAdminPortalPassword && <span className="help-block">{errorMsgs.confirmAdminPortalPassword}</span>}
                     </div>
                 </div>
 

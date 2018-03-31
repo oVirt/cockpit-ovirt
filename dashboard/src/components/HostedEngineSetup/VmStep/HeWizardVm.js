@@ -3,6 +3,7 @@ import Selectbox from '../../common/Selectbox'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 import {amdCpuTypes, deploymentTypes, intelCpuTypes, messages, status as gwState} from "../constants"
+import UnmaskablePasswordContainer from "../UnmaskablePassword";
 
 const consoleTypes = [
     { key: "vnc", title: "VNC" },
@@ -26,7 +27,7 @@ const rootSshAccessOptions = [
 ];
 
 const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
-                        gatewayState, getCidrErrorMsg, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete,
+                        gatewayState, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete, handleRootPwdUpdate,
                         handleImportApplianceUpdate, handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel,
                         importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
     const vmConfig = heSetupModel.vm;
@@ -244,25 +245,9 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                 <div className={getClassNames("cloudinitRootPwd", errorMsgs)}>
                     <label className="col-md-3 control-label">Root Password</label>
                     <div className="col-md-3">
-                        <input type="password"
-                               className="form-control"
-                               value={vmConfig.cloudinitRootPwd.value}
-                               onChange={(e) => handleVmConfigUpdate("cloudinitRootPwd", e.target.value, "vm")}
-                        />
+                        <UnmaskablePasswordContainer value={vmConfig.cloudinitRootPwd.value}
+                                                     onChangeHandler={handleRootPwdUpdate}/>
                         {errorMsgs.cloudinitRootPwd && <span className="help-block">{errorMsgs.cloudinitRootPwd}</span>}
-                    </div>
-                </div>
-
-                <div className={getClassNames("confirmRootPassword", errorMsgs)}
-                     style={vmConfig.cloudinitRootPwd.value !== "" ? {} : {display: 'none'}}>
-                    <label className="col-md-3 control-label">Confirm Root Password</label>
-                    <div className="col-md-3">
-                        <input type="password"
-                               className="form-control"
-                               value={vmConfig.confirmRootPassword.value}
-                               onChange={(e) => handleVmConfigUpdate("confirmRootPassword", e.target.value, "vm")}
-                        />
-                        {errorMsgs.confirmRootPassword && <span className="help-block">{errorMsgs.confirmRootPassword}</span>}
                     </div>
                 </div>
 

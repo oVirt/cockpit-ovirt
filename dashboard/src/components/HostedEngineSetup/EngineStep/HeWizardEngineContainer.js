@@ -14,9 +14,9 @@ class HeWizardEngineContainer extends Component {
 
         this.handleRecipientAddressDelete = this.handleRecipientAddressDelete.bind(this);
         this.handleRecipientAddressUpdate = this.handleRecipientAddressUpdate.bind(this);
+        this.handleAdminPortalPwdUpdate = this.handleAdminPortalPwdUpdate.bind(this);
         this.handleEngineConfigUpdate = this.handleEngineConfigUpdate.bind(this);
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
-        this.validateAdminPasswordMatch = this.validateAdminPasswordMatch.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
     }
 
@@ -33,18 +33,19 @@ class HeWizardEngineContainer extends Component {
         this.setState({ addresses, errorMsgs });
     }
 
+    handleAdminPortalPwdUpdate(pwd) {
+        const config = this.state.heSetupModel.engine;
+        config.adminPassword.value = pwd;
+        this.setState({ config });
+    }
+
     handleEngineConfigUpdate(propName, value, configType) {
         const heSetupModel = this.state.heSetupModel;
 
         heSetupModel[configType][propName].value = value;
 
         if (propName === "adminPassword") {
-            if (value === "") {
-                heSetupModel.engine.adminPassword.useInAnswerFile = false;
-                heSetupModel.engine.confirmAdminPortalPassword.value = "";
-            } else {
-                heSetupModel.engine.adminPassword.useInAnswerFile = true;
-            }
+            heSetupModel.engine.adminPassword.useInAnswerFile = value !== "";
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
@@ -63,36 +64,20 @@ class HeWizardEngineContainer extends Component {
             errorMsg = "";
         }
 
-        if (propName === "confirmAdminPortalPassword") {
-            this.validateAdminPasswordMatch(errorMsgs);
-        }
-
         this.setState({ errorMsg, errorMsgs });
-    }
-
-    validateAdminPasswordMatch(errorMsgs) {
-        const engineConfig = this.state.heSetupModel.engine;
-        let passwordsMatch = engineConfig.adminPassword.value === engineConfig.confirmAdminPortalPassword.value;
-
-        if (!passwordsMatch) {
-            errorMsgs.confirmAdminPortalPassword = messages.PASSWORD_MISMATCH;
-        }
-
-        return passwordsMatch;
     }
 
     validateAllInputs() {
         let errorMsg = "";
         let errorMsgs = {};
         let propsAreValid = validatePropsForUiStage("Engine", this.props.heSetupModel, errorMsgs);
-        let passwordsMatch = this.validateAdminPasswordMatch(errorMsgs);
 
-        if (!propsAreValid || !passwordsMatch) {
+        if (!propsAreValid) {
             errorMsg = messages.GENERAL_ERROR_MSG;
         }
 
         this.setState({ errorMsg, errorMsgs });
-        return propsAreValid && passwordsMatch;
+        return propsAreValid;
     }
 
     shouldComponentUpdate(nextProps, nextState){
@@ -111,7 +96,8 @@ class HeWizardEngineContainer extends Component {
                 errorMsgs={this.state.errorMsgs}
                 handleEngineConfigUpdate={this.handleEngineConfigUpdate}
                 handleRecipientAddressUpdate={this.handleRecipientAddressUpdate}
-                handleRecipientAddressDelete={this.handleRecipientAddressDelete}/>
+                handleRecipientAddressDelete={this.handleRecipientAddressDelete}
+                handleAdminPortalPwdUpdate={this.handleAdminPortalPwdUpdate} />
         )
     }
 }
