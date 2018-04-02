@@ -1,4 +1,4 @@
-import { configValues as configValue } from "../../components/HostedEngineSetup/constants"
+import { configValues as configValue, ansiblePhases, ansibleVarFilePaths } from "../../components/HostedEngineSetup/constants"
 
 class AnsibleVarFilesGenerator {
     constructor(heSetupModel) {
@@ -10,6 +10,7 @@ class AnsibleVarFilesGenerator {
         this.writeVarFileForPhase = this.writeVarFileForPhase.bind(this);
         this.writeVarFile = this.writeVarFile.bind(this);
         this.generateRandomString = this.generateRandomString.bind(this);
+        this.readAnswerFile = this.readAnswerFile.bind(this);
     }
 
     checkValue(propName, value) {
@@ -101,6 +102,36 @@ class AnsibleVarFilesGenerator {
         }
 
         return str;
+    }
+
+    readAnswerFile(callback) {
+        let result = [];
+        let count = 0
+        cockpit.file(configValues.ANSWER_FILE_PATH).read()
+          .done(function (content, tag){
+            if(content != null) {
+            var ansFile = content.split("\n")
+            ansFile.forEach(function(eachLine, arrIndex){
+              count++
+              if(eachLine.indexOf("OVEHOSTED_NETWORK/fqdn") != -1){
+                result.push(eachLine.split(":")[1])
+
+              }
+              if(eachLine.indexOf("OVEHOSTED_ENGINE/adminPassword") != -1){
+                result.push(eachLine.split(":")[1])
+              }
+              if(count == ansFile.length){
+                callback(result)
+              }
+           })
+         } else {
+           console.log("Failed to read answer file: ", configValues.ANSWER_FILE_PATH);
+         }
+        })
+        .fail(function (error) {
+          console.log("error: ",error);
+          callback([])
+        })
     }
 }
 

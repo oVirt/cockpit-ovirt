@@ -60,10 +60,12 @@ class WizardExecutionStep extends Component {
         this.scrollToBottom()
     }
     scrollToBottom(){
+      if(this.gdeployLogText != null || this.gdeployLogText != "") {
         const scrollHeight = this.gdeployLogText.scrollHeight;
         const height = this.gdeployLogText.clientHeight;
         const maxScrollTop = scrollHeight - height;
         ReactDOM.findDOMNode(this.gdeployLogText).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+      }
     }
     render() {
         if (this.state.gdeployStatus === 0) {

@@ -1,0 +1,28 @@
+---
+- hosts: "{{ target }}"
+  tasks:
+    - name: "Set engine pub key as authorized key without validating the TLS/SSL certificates"
+      authorized_key:
+        key: "https://{{ FQDN }}/ovirt-engine/services/pki-resource?resource=engine-certificate&format=OPENSSH-PUBKEY"
+        state: present
+        user: root
+        validate_certs: false
+    - name: "Obtain SSO token using username/password credentials"
+      ovirt_auth:
+        insecure: true
+        password: "{{ ADMIN_PASSWORD }}"
+        url: "https://{{ FQDN }}/ovirt-engine/api"
+        username: admin@internal
+      register: ovirt_sso_auth
+      until: ovirt_sso_auth|succeeded
+      retries: 50
+      delay: 10
+    - name: "Add host"
+      ovirt_hosts:
+        address: "{{ HOST_ADDRESS }}"
+        name: "{{ HOST_NAME }}"
+        public_key: true
+        state: present
+        auth: "{{ ovirt_auth }}"
+        hosted_engine: deploy
+  user: root

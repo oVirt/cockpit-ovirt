@@ -1,5 +1,5 @@
 import ini from 'ini'
-import constants from '../components/gdeploy/constants'
+import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
 
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
@@ -91,6 +91,10 @@ var GdeployUtil = {
         this.handleDirAndFileCreation(filePath, configString, function(result){
           callback(true)
         })
+        // Creating new host file to maintain 2nd and 3rd host
+        // This record is required to add both host after deployment success.
+        this.writeHostFile(glusterModel)
+        this.saveGdeployJson(glusterModel)
     },
     createPreFlightCheck(hosts, pvConfig) {
         let preFlightCheck = []
@@ -115,6 +119,40 @@ var GdeployUtil = {
             preFlightCheck.push(hostPreFlightCheckObject)
         })
         return preFlightCheck
+    },
+    writeHostFile(glusterModel){
+      var configString = glusterModel.hosts[1] + "\n" + glusterModel.hosts[2]
+      var hostPath = constants.ansibleHostFile
+      var that = this
+      const dirPath = hostPath.substring(0, hostPath.lastIndexOf("/"))
+      cockpit.script("if [ ! -d " + dirPath + " ]; then mkdir " + dirPath + "; fi", { "superuser":"require" })
+      .done(function(code){
+        that.writeConfigFile(hostPath, configString, function(res) {
+          console.log("Host file created successfully : ", hostPath);
+        })
+      })
+      .fail(function(error){
+        console.log("Failed to create " + dirPath + "directory: ", error);
+      })
+    },
+    // Save complete gdeploy json Object
+    // This is required when we need volumes,bricks etc. during HE setup
+    saveGdeployJson(glusterModel){
+      var filePath = constants.gdeployJsonFile
+      var that = this
+      const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
+      cockpit.script("if [ ! -d " + dirPath + " ]; then mkdir " + dirPath + "; fi", { "superuser":"require" })
+      .done(function(code){
+        const file = cockpit.file(filePath, {"superuser":"require", syntax: JSON })
+        file.replace(glusterModel)
+            .always(function(tag) {
+              console.log(tag);
+                file.close()
+            })
+      })
+      .fail(function(error){
+        console.log("Failed to create " + dirPath + "directory: ", error);
+      })
     },
     createExpandClusterConfig(glusterModel, expandClusterConfigFilePath){
         const that = this
