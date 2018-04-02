@@ -1077,6 +1077,12 @@ export class HeSetupModel {
                 storageConfig[propName].value = value;
                 storageConfig[propName].useInAnswerFile = true;
             }
+
+            if (propName === "storageDomainConnection") {
+                const storageConn = value.split(":");
+                storageConfig.storageAddress.value = storageConn[0];
+                storageConfig.storagePath.value = storageConn[1];
+            }
         });
     }
 
