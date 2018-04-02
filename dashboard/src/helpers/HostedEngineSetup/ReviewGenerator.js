@@ -5,6 +5,7 @@ class ReviewGenerator {
         this.model = model;
         this.getDisplayValue = this.getDisplayValue.bind(this);
         this.generateReviewSections = this.generateReviewSections.bind(this);
+        this.displayPropInReview = this.displayPropInReview.bind(this);
         this.getReviewSections = this.getReviewSections.bind(this);
     }
 
@@ -31,25 +32,20 @@ class ReviewGenerator {
         sections[sectNames.VM] = {reviewItems: []};
         sections[sectNames.ENGINE] = {reviewItems: []};
 
+        const self = this;
         Object.getOwnPropertyNames(this.model).forEach(
             function(sectionName) {
                 let section = this.model[sectionName];
                 Object.getOwnPropertyNames(section).forEach(
                     function(propName) {
                         let prop = section[propName];
-                        const isAnsibleField = prop.hasOwnProperty("ansibleVarName");
-                        const isInvisibleAnsibleField = isAnsibleField && prop.showInReview === false;
-                        const isNetworkConfigField = prop.name === "networkConfigType";
-
-                        if ((!isAnsibleField || isInvisibleAnsibleField) && !isNetworkConfigField) {
-                            return;
+                        if (self.displayPropInReview(prop)) {
+                            sections[prop.uiStage].reviewItems.push({
+                                itemLabel: prop.description,
+                                itemValue: this.getDisplayValue(prop),
+                                reviewOrder: prop.reviewOrder
+                            });
                         }
-
-                        sections[prop.uiStage].reviewItems.push({
-                            itemLabel: prop.description,
-                            itemValue: this.getDisplayValue(prop),
-                            reviewOrder: prop.reviewOrder
-                        });
                     }, this)
             }, this);
 
@@ -61,6 +57,19 @@ class ReviewGenerator {
         );
 
         return sections;
+    }
+
+    displayPropInReview(prop) {
+        let displayProp = false;
+        const isAnsibleField = prop.hasOwnProperty("ansibleVarName");
+        const displayableNonAnsibleFields = ["networkConfigType", "storageDomainConnection"];
+        const isDisplayableNonAnsibleFld = displayableNonAnsibleFields.includes(prop.name);
+
+        if (isAnsibleField || isDisplayableNonAnsibleFld) {
+            displayProp = prop.showInReview;
+        }
+
+        return displayProp;
     }
 
     getReviewSections(sectionNames) {
