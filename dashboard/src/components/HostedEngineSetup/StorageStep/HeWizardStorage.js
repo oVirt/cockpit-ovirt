@@ -26,6 +26,7 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
     const nfsSelected = storageConfig.domainType.value.includes("nfs");
     const iscsiSelected = storageConfig.domainType.value === "iscsi";
     const glusterSelected = storageConfig.domainType.value === "glusterfs";
+    const fcSelected = storageConfig.domainType.value === "fc";
     const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     let targetRetrievalBtnClasses = "btn btn-primary";
@@ -246,6 +247,23 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                             />
                             {errorMsgs.mntOptions &&
                                 <span className="help-block">{errorMsgs.mntOptions}</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div style={fcSelected ? {} : {display: 'none'}}>
+                    <div className={getClassNames("LunID", errorMsgs)}>
+                        <label className="col-md-3 control-label">LUN ID</label>
+                        <div className="col-md-6">
+                            <input type="text" style={{width: "250px"}}
+                                   title="Enter the ID for the LUN you wish to use."
+                                   className="form-control"
+                                   value={storageConfig.LunID.value}
+                                   onChange={(e) => handleStorageConfigUpdate("LunID", e.target.value)}
+                            />
+                            {errorMsgs.LunID &&
+                                <span className="help-block">{errorMsgs.LunID}</span>
                             }
                         </div>
                     </div>

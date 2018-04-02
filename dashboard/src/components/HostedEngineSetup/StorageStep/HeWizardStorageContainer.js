@@ -87,9 +87,11 @@ class HeWizardStorageContainer extends Component {
     setStorageTypeDisplaySettings(storageType) {
         const model = this.state.model;
 
-        let isNfs = storageType.includes("nfs");
-        let isIscsi = storageType === "iscsi";
-        let isGluster = storageType === "glusterfs";
+        const isNfs = storageType.includes("nfs");
+        const isIscsi = storageType === "iscsi";
+        const isGluster = storageType === "glusterfs";
+        const isFc = storageType === "fc";
+
 
         let requiredIscsiFields = requiredIscsiFieldsBase;
         if (this.props.deploymentType === deploymentTypes.OTOPI_DEPLOYMENT) {
@@ -108,6 +110,8 @@ class HeWizardStorageContainer extends Component {
         model.setBooleanValues(requiredGlusterFields, ["required"], isGluster);
 
         model.setBooleanValues(glusterAndNfsAnsFileFields, fieldProps, isNfs || isGluster);
+
+        model.model.storage.LunID.showInReview = isIscsi || isFc;
 
         this.setState({ model });
     }
