@@ -15,7 +15,8 @@ export const ansiblePhases = {
     TARGET_VM: "TARGET_VM",
     FINAL_CLEAN: "FINAL_CLEAN",
     ISCSI_DISCOVER: "ISCSI_DISCOVER",
-    ISCSI_GET_DEVICES: "ISCSI_GET_DEVICES"
+    ISCSI_GET_DEVICES: "ISCSI_GET_DEVICES",
+    FC_GET_DEVICES: "FC_GET_DEVICES"
 };
 
 export const playbookPaths = {
@@ -26,7 +27,8 @@ export const playbookPaths = {
     FINAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml",
     ISCSI_DISCOVER: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_discover.yml",
     ISCSI_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_getdevices.yml",
-    GET_NETWORK_INTERFACES: "/usr/share/ovirt-hosted-engine-setup/ansible/get_network_interfaces.yml"
+    GET_NETWORK_INTERFACES: "/usr/share/ovirt-hosted-engine-setup/ansible/get_network_interfaces.yml",
+    FC_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/fc_getdevices.yml"
 };
 
 export const playbookOutputPaths = {
@@ -37,7 +39,8 @@ export const playbookOutputPaths = {
     FINAL_CLEAN: "/tmp/final_clean_out.json",
     ISCSI_DISCOVER: "/tmp/iscsi_discover_out.json",
     ISCSI_GET_DEVICES: "/tmp/iscsi_getdevices_out.json",
-    GET_NETWORK_INTERFACES: "/tmp/get_network_interfaces.json"
+    GET_NETWORK_INTERFACES: "/tmp/get_network_interfaces.json",
+    FC_GET_DEVICES: "/tmp/fc_getdevices_out.json"
 };
 
 export const configFileTypes = {
@@ -130,7 +133,9 @@ export const messages = {
     ANSIBLE_PHASE_SUCCESSFUL: "Execution completed successfully. Please proceed to the next step.",
     ANSIBLE_LAST_PHASE_SUCCESSFUL: "Hosted engine deployment complete!",
     TARGET_RETRIEVAL_FAILED: "Retrieval of iSCSI targets failed.",
-    LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed."
+    LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed.",
+    FC_LUN_DISCOVERY_FAILED: "Retrieval of fiber channel LUNs failed.",
+    NO_LUNS_FOUND: "No LUNS found"
 };
 
 export const headers = {

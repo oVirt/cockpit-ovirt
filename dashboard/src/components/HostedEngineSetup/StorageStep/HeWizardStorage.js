@@ -22,7 +22,9 @@ const nfsVersions = [
 const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMsgs, handleCollapsibleSectionChange,
                              handleIscsiTargetRequest, handleStorageConfigUpdate, handleLunSelection,
                              handleTargetSelection, iscsiLunData, iscsiTargetData, lunRetrievalStatus,
-                             selectedIscsiTarget, selectedLun, storageConfig, targetRetrievalStatus}) => {
+                             selectedIscsiTarget, selectedLun, storageConfig, targetRetrievalStatus,
+                             fcLunDiscoveryStatus, handleFcLunDiscoveryRequest, handleFcLunSelection, selectedFcLun,
+                             fcLunData}) => {
     const nfsSelected = storageConfig.domainType.value.includes("nfs");
     const iscsiSelected = storageConfig.domainType.value === "iscsi";
     const glusterSelected = storageConfig.domainType.value === "glusterfs";
@@ -31,6 +33,9 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     let targetRetrievalBtnClasses = "btn btn-primary";
     targetRetrievalBtnClasses += targetRetrievalStatus === status.POLLING ? " disabled" : "";
+
+    let fcLunDiscoveryBtnClasses = "btn btn-primary";
+    fcLunDiscoveryBtnClasses += fcLunDiscoveryStatus === status.POLLING ? " disabled" : "";
 
     let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
@@ -254,20 +259,51 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                 </div>
 
                 <div style={fcSelected ? {} : {display: 'none'}}>
-                    <div className={getClassNames("LunID", errorMsgs)}>
-                        <label className="col-md-3 control-label">LUN ID</label>
-                        <div className="col-md-6">
-                            <input type="text" style={{width: "250px"}}
-                                   title="Enter the ID for the LUN you wish to use."
-                                   className="form-control"
-                                   value={storageConfig.LunID.value}
-                                   onChange={(e) => handleStorageConfigUpdate("LunID", e.target.value)}
-                            />
-                            {errorMsgs.LunID &&
-                                <span className="help-block">{errorMsgs.LunID}</span>
-                            }
-                        </div>
-                    </div>
+                    <span>
+                        {fcLunDiscoveryStatus !== status.POLLING &&
+                            <div className="form-group">
+                                <span className="col-md-offset-3 col-md-6">
+                                    <button type="button"
+                                            className={fcLunDiscoveryBtnClasses}
+                                            onClick={handleFcLunDiscoveryRequest}>
+                                        Discover
+                                    </button>
+                                </span>
+                            </div>
+                        }
+
+                        {fcLunDiscoveryStatus === status.POLLING &&
+                            <div className="form-group" style={{marginTop: "20px"}}>
+                                <div className="col-md-offset-3 col-md-9">
+                                    <div className="spinner blank-slate-pf-icon storage-retrieval-spinner vertical-center"/>
+                                    <div className="vertical-center storage-retrieval-msg">
+                                        Retrieving LUNs
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        {fcLunDiscoveryStatus === status.FAILURE &&
+                            <div className="row">
+                                <div className="alert alert-danger col-md-offset-3 col-sm-8">
+                                    <span className="pficon pficon-error-circle-o" />
+                                    <strong>{ messages.FC_LUN_DISCOVERY_FAILED }</strong>
+                                </div>
+                            </div>
+                        }
+
+                        {fcLunData !== null && fcLunData.length !== 0 &&
+                            <LunListContainer lunList={fcLunData}
+                                              handleLunSelection={handleFcLunSelection}
+                                              selectedLun={selectedFcLun} />
+                        }
+
+                        {fcLunData !== null && fcLunData.length === 0 &&
+                            <div className="col-md-offset-3 col-md-6" style={{ paddingLeft: "10px" }}>
+                                <span style={{ fontWeight: "bold" }}>{ messages.NO_LUNS_FOUND }</span>
+                            </div>
+                        }
+                    </span>
                 </div>
 
                 <div className="form-group">
