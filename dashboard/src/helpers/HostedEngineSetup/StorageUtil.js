@@ -2,6 +2,7 @@ import { ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValue
     playbookOutputPaths as outputPaths, playbookPaths } from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator";
 import { getAnsibleLogPath } from "../HostedEngineSetupUtil";
+import PlaybookUtil from "./PlaybookUtil";
 
 const varFileProps = {
     ISCSI_DISCOVER: ["iSCSIPortalIPAddress", "iSCSIDiscoveryPortalPort", "iSCSIDiscoverUser",
@@ -10,9 +11,10 @@ const varFileProps = {
         "iSCSITargetName", "storageAddress", "iSCSIPortalPort"]
 };
 
-class IscsiUtil {
+class StorageUtil {
     constructor(model) {
         this.model = model;
+        this.varFileGen = new AnsibleVarFilesGenerator(model);
 
         this.getTargetList = this.getTargetList.bind(this);
         this.runDiscoveryPlaybook = this.runDiscoveryPlaybook.bind(this);
@@ -25,6 +27,20 @@ class IscsiUtil {
         this.formatValue = this.formatValue.bind(this);
         this.getProp = this.getProp.bind(this);
 
+    }
+
+    getFcLunsList() {
+        const self = this;
+        const playbookUtil = new PlaybookUtil();
+        const playbookPath = playbookPaths.FC_GET_DEVICES;
+        const outputPath = outputPaths.FC_GET_DEVICES;
+        return this.varFileGen.writeVarFileForPhase(phases.FC_GET_DEVICES)
+            .then(varFilePath => {
+                return playbookUtil.runPlaybook(varFilePath, playbookPath, "Get fiber channel LUNs", outputPath);
+            })
+            .then(() => playbookUtil.readOutputFile(outputPath))
+            .then(output => playbookUtil.getResultsData(output))
+            .then(results => self.parseLunData(results, "otopi_fc_devices"))
     }
 
     getTargetList() {
@@ -166,11 +182,11 @@ class IscsiUtil {
 
     getLunData(file) {
         const resultsObj = this.getResultsData(file);
-        return this.parseLunData(resultsObj);
+        return this.parseLunData(resultsObj, "otopi_iscsi_devices");
     }
 
-    parseLunData(data) {
-        const lunObjList = data.otopi_iscsi_devices.ansible_facts.ovirt_host_storages;
+    parseLunData(data, devTypeKey) {
+        const lunObjList = data[devTypeKey].ansible_facts.ovirt_host_storages;
         const luns = [];
         lunObjList.forEach(function(lun) {
             const units = lun.logical_units;
@@ -300,4 +316,4 @@ class IscsiUtil {
     }
 }
 
-export default IscsiUtil
+export default StorageUtil

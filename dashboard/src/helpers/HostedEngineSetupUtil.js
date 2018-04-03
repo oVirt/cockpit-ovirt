@@ -413,7 +413,8 @@ export class HeSetupModel {
                         phases.CREATE_STORAGE,
                         phases.TARGET_VM,
                         phases.ISCSI_DISCOVER,
-                        phases.ISCSI_GET_DEVICES
+                        phases.ISCSI_GET_DEVICES,
+                        phases.FC_GET_DEVICES
                     ],
                     description: "Engine FQDN",
                     value: "",
@@ -880,7 +881,8 @@ export class HeSetupModel {
                         phases.CREATE_STORAGE,
                         phases.TARGET_VM,
                         phases.ISCSI_DISCOVER,
-                        phases.ISCSI_GET_DEVICES
+                        phases.ISCSI_GET_DEVICES,
+                        phases.FC_GET_DEVICES
                     ],
                     description: "Admin Portal Password",
                     value: "",
@@ -921,7 +923,8 @@ export class HeSetupModel {
                         phases.CREATE_STORAGE,
                         phases.TARGET_VM,
                         phases.ISCSI_DISCOVER,
-                        phases.ISCSI_GET_DEVICES
+                        phases.ISCSI_GET_DEVICES,
+                        phases.FC_GET_DEVICES
                     ],
                     description: "Host's name",
                     value: "",

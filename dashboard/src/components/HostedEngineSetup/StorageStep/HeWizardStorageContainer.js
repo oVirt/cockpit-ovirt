@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { getErrorMsgForProperty, validatePropsForUiStage } from "../Validation";
 import {deploymentTypes, messages, status} from '../constants';
 import HeWizardStorage from './HeWizardStorage'
-import IscsiUtil from '../../../helpers/HostedEngineSetup/IscsiUtil'
+import StorageUtil from '../../../helpers/HostedEngineSetup/StorageUtil'
 
 const nfsAnsFileFields = ["storageDomainConnection", "storageDomain"];
 
@@ -30,21 +30,24 @@ class HeWizardStorageContainer extends Component {
         this.state = {
             model: props.model,
             heSetupModel: props.model.model,
-            iscsiLunData: null,
-            iscsiTargetData: null,
-            selectedIscsiTarget: "",
-            selectedLun: "",
-            targetRetrievalStatus: status.EMPTY,
-            lunRetrievalStatus: status.EMPTY,
             storageConfig: props.model.model.storage,
             errorMsg: "",
             errorMsgs: {},
+            iscsiLunData: null,
+            iscsiTargetData: null,
+            fcLunData: null,
+            selectedIscsiTarget: "",
+            selectedLun: "",
+            selectedFcLun: "",
+            targetRetrievalStatus: status.EMPTY,
+            lunRetrievalStatus: status.EMPTY,
+            fcLunDiscoveryStatus: status.EMPTY,
             collapsibleSections: {
                 advanced: true
             }
         };
 
-        this.iscsiUtil = new IscsiUtil(props.model.model);
+        this.storageUtil = new StorageUtil(props.model.model);
 
         this.handleStorageConfigUpdate = this.handleStorageConfigUpdate.bind(this);
         this.setStorageTypeDisplaySettings = this.setStorageTypeDisplaySettings.bind(this);
@@ -52,8 +55,10 @@ class HeWizardStorageContainer extends Component {
         this.validateAllInputs = this.validateAllInputs.bind(this);
         this.getIscsiTargetList = this.getIscsiTargetList.bind(this);
         this.getIscsiLunList = this.getIscsiLunList.bind(this);
+        this.getFcLunList = this.getFcLunList.bind(this);
         this.handleTargetSelection = this.handleTargetSelection.bind(this);
         this.handleLunSelection = this.handleLunSelection.bind(this);
+        this.handleFcLunSelection = this.handleFcLunSelection.bind(this);
         this.handleCollapsibleSectionChange = this.handleCollapsibleSectionChange.bind(this);
     }
 
@@ -79,6 +84,9 @@ class HeWizardStorageContainer extends Component {
 
         if (propName === "domainType") {
             this.setStorageTypeDisplaySettings(value);
+            if (value === "fc") {
+                this.getFcLunList();
+            }
         } else {
             this.validateConfigUpdate(propName);
         }
@@ -155,7 +163,7 @@ class HeWizardStorageContainer extends Component {
         this.setState({ targetRetrievalStatus: status.POLLING,
            lunRetrievalStatus: status.EMPTY });
         const self = this;
-        this.iscsiUtil.getTargetList()
+        this.storageUtil.getTargetList()
             .then(targetData => self.setState({ targetRetrievalStatus: status.SUCCESS, iscsiTargetData: targetData }))
             .catch(error => {
                 console.log("Error: " + error);
@@ -202,7 +210,7 @@ class HeWizardStorageContainer extends Component {
     getIscsiLunList() {
         this.setState({ lunRetrievalStatus: status.POLLING });
         const self = this;
-        this.iscsiUtil.getLunList()
+        this.storageUtil.getLunList()
             .then(lunData => self.setState({ lunRetrievalStatus: status.SUCCESS, iscsiLunData: lunData }))
             .catch(error => {
                 console.log("Error: " + error);
@@ -217,6 +225,23 @@ class HeWizardStorageContainer extends Component {
         this.setState({ config });
     }
 
+    getFcLunList() {
+        this.setState({ fcLunDiscoveryStatus: status.POLLING, fcLunData: null });
+        const self = this;
+        this.storageUtil.getFcLunsList()
+            .then(lunData => self.setState({ fcLunDiscoveryStatus: status.SUCCESS, fcLunData: lunData }))
+            .catch(error => {
+                console.log("Error: " + error);
+                self.setState({ fcLunDiscoveryStatus: status.FAILURE });
+            });
+    }
+
+    handleFcLunSelection(lunId) {
+        this.setState({ selectedFcLun: lunId });
+        const config = this.state.storageConfig;
+        config.LunID.value = lunId;
+        this.setState({ config });
+    }
 
     shouldComponentUpdate(nextProps, nextState){
         if(!this.props.validating && nextProps.validating){
@@ -232,18 +257,26 @@ class HeWizardStorageContainer extends Component {
                 deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
-                handleCollapsibleSectionChange={this.handleCollapsibleSectionChange}
-                handleIscsiTargetRequest={this.getIscsiTargetList}
-                handleLunSelection={this.handleLunSelection}
-                handleTargetSelection={this.handleTargetSelection}
-                handleStorageConfigUpdate={this.handleStorageConfigUpdate}
-                iscsiLunData={this.state.iscsiLunData}
-                iscsiTargetData={this.state.iscsiTargetData}
-                lunRetrievalStatus={this.state.lunRetrievalStatus}
-                selectedLun={this.state.selectedLun}
-                selectedIscsiTarget={this.state.selectedIscsiTarget}
                 storageConfig={this.state.storageConfig}
-                targetRetrievalStatus={this.state.targetRetrievalStatus} />
+                handleStorageConfigUpdate={this.handleStorageConfigUpdate}
+                handleCollapsibleSectionChange={this.handleCollapsibleSectionChange}
+                // iSCSI Targets
+                targetRetrievalStatus={this.state.targetRetrievalStatus}
+                handleIscsiTargetRequest={this.getIscsiTargetList}
+                handleTargetSelection={this.handleTargetSelection}
+                selectedIscsiTarget={this.state.selectedIscsiTarget}
+                iscsiTargetData={this.state.iscsiTargetData}
+                // iSCSI LUNs
+                lunRetrievalStatus={this.state.lunRetrievalStatus}
+                handleLunSelection={this.handleLunSelection}
+                selectedLun={this.state.selectedLun}
+                iscsiLunData={this.state.iscsiLunData}
+                // Fiber Channel LUNs
+                fcLunDiscoveryStatus={this.state.fcLunDiscoveryStatus}
+                handleFcLunDiscoveryRequest={this.getFcLunList}
+                handleFcLunSelection={this.handleFcLunSelection}
+                selectedFcLun={this.state.selectedFcLun}
+                fcLunData={this.state.fcLunData} />
         )
     }
 }
