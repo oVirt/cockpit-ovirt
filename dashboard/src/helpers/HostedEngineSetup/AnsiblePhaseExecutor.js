@@ -3,7 +3,7 @@ import {
     deploymentStatus as status, playbookOutputPaths as outputPaths, playbookPaths
 } from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator"
-import { getAnsibleLogPath,  PlayBookExecutor } from "../HostedEngineSetupUtil"
+import { getAnsibleLogPath } from "../HostedEngineSetupUtil"
 
 class AnsiblePhaseExecutor {
     constructor(abortCallback, heSetupModel) {
@@ -34,7 +34,7 @@ class AnsiblePhaseExecutor {
         this._exitCallback = exitCallback;
 
         const self = this;
-        const playBookExecutor = new PlayBookExecutor();
+
         switch(phase) {
             case phases.BOOTSTRAP_VM:
                 this.performSetupJobs([outputPaths.INITIAL_CLEAN, outputPaths.BOOTSTRAP_VM])
@@ -57,8 +57,6 @@ class AnsiblePhaseExecutor {
                     .then(varFilePath => self.executePlaybook(phases.TARGET_VM, varFilePath))
                     .then(() => self.varFileGenerator.writeVarFileForPhase(phases.FINAL_CLEAN))
                     .then(varFilePath => self.executePlaybook(phases.FINAL_CLEAN, varFilePath))
-                    .then(() => playBookExecutor.runPlaybookToAddHost())
-                    .then(() => playBookExecutor.runPlaybookToCreateSD())
                     .then(options => self._exitCallback(options["exit-status"]))
                     .then(() => self.deleteVarFiles())
                     .catch((options, denied) => {

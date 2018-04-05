@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import HeSetup from './HeSetup'
-import { AnswerFileGenerator,  PlayBookExecutor } from '../../../helpers/HostedEngineSetupUtil'
+import { AnswerFileGenerator } from '../../../helpers/HostedEngineSetupUtil'
 import RunSetup from '../../../helpers/HostedEngineSetup'
 
 class HeSetupContainer extends Component {
@@ -140,12 +140,6 @@ class HeSetupContainer extends Component {
         const showInput = !this.state.terminated &&
             (this.state.question.prompt.length > 0 &&
                 this.state.question.complete);
-        if(this.state.success) {
-          const playBookExecutor = new PlayBookExecutor();
-          playBookExecutor.runPlaybookToAddHost()
-            .then(() => {playBookExecutor.runPlaybookToCreateSD()
-          });
-        }
 
         return (
             <HeSetup
