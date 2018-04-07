@@ -324,7 +324,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                 {isOtopiDeployment &&
                     <div className="form-group">
                         <label className="col-md-3 control-label">Use Cloud-Init &nbsp;
-                            <i className="pficon pficon-info info-icon" rel="tooltip"
+                            <i className="pficon pficon-info he-wizard-info-icon" rel="tooltip"
                                title="Use cloud-init to customize the appliance on the first boot" />
                         </label>
                         <div className="col-md-3">
@@ -375,8 +375,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                         </div>
 
                         <div className="form-group">
-                            <label className="col-md-3 control-label">Edit Hosts File &nbsp;
-                                <i className="pficon pficon-info info-icon" rel="tooltip" id="hosts_file"
+                            <label className="col-md-3 control-label">Edit Hosts File
+                                <i className="pficon pficon-info he-wizard-info-icon" rel="tooltip" id="hosts_file"
                                    title="Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?
                                               Note: ensuring that this host could resolve the engine VM hostname is still up to you."
                                 />
@@ -423,8 +423,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                         {isOtopiDeployment &&
                             <span>
                                 <div className="form-group">
-                                    <label className="col-md-3 control-label">Engine Setup &nbsp;
-                                        <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_setup"
+                                    <label className="col-md-3 control-label">Engine Setup
+                                        <i className="pficon pficon-info he-wizard-info-icon" rel="tooltip" id="engine_setup"
                                            title="Automatically execute engine-setup on the first boot" />
                                     </label>
                                     <div className="col-md-1">
@@ -436,8 +436,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                 </div>
 
                                 <div className="form-group">
-                                    <label className="col-md-3 control-label">Engine Restart &nbsp;
-                                        <i className="pficon pficon-info info-icon" rel="tooltip" id="engine_restart"
+                                    <label className="col-md-3 control-label">Engine Restart
+                                        <i className="pficon pficon-info he-wizard-info-icon" rel="tooltip" id="engine_restart"
                                            title="Automatically restart the engine VM as a monitored service after engine-setup" />
                                     </label>
                                     <div className="col-md-1">
