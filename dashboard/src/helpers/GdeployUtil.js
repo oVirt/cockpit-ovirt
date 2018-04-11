@@ -1,5 +1,5 @@
 import ini from 'ini'
-import constants from '../components/gdeploy/constants'
+import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
 
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
@@ -91,6 +91,7 @@ var GdeployUtil = {
         this.handleDirAndFileCreation(filePath, configString, function(result){
           callback(true)
         })
+        this.saveGdeployInventory(glusterModel)
     },
     createPreFlightCheck(hosts, pvConfig) {
         let preFlightCheck = []
@@ -670,6 +671,46 @@ var GdeployUtil = {
       }).fail(function(code){
         callback(false)
       })
+    },
+    // Creates file required to add the 2nd and 3rd hosts and storage domain
+    //to the engine after successful HE deployment
+    saveGdeployInventory(glusterModel) {
+      let inventoryModel = {
+        "gluster": {}
+      }
+      let sdModelList = []
+      let hostList = [glusterModel.hosts[1], glusterModel.hosts[2]]
+      let firstHostFqdn = glusterModel.hosts[0]
+      inventoryModel.gluster.hosts = hostList
+      let mntOptions = "backup-volfile-servers=" + hostList.join(":")
+      glusterModel.volumes.forEach(function(volume, index) {
+        if(index !== 0) {
+          let sdModel = {}
+          sdModel.name = volume.name
+          sdModel.host = firstHostFqdn
+          sdModel.address = firstHostFqdn
+          sdModel.path = volume.name
+          sdModel.mount_options = mntOptions
+          sdModelList.push(sdModel)
+        }
+      })
+      let gdeployInventory = "gluster:\n hosts:\n  " + glusterModel.hosts[1] + ":\n  " + glusterModel.hosts[2]
+                            + ":\n vars:\n  storage_domains: " + JSON.stringify(sdModelList)
+      let filePath = constants.gdeployInventoryFile
+      const that = this
+      const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
+      cockpit.script("if [ ! -d " + dirPath + " ]; then mkdir " + dirPath + "; fi", { "superuser": "require" })
+        .done(function(exitCode) {
+          const file = cockpit.file(filePath, {"superuser": "require" })
+          file.replace(str)
+              .always(function(tag) {
+                console.log("tag: ", tag);
+                  file.close()
+              })
+        })
+        .fail(function(error) {
+          console.log("Failed to create " + dirPath + "directory: ", error);
+        })
     }
 }
 
