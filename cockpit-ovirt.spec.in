@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed Apr 11 2018 Ryan Barry <rbarry@redhat.com> - 0.11.21-1
+- Lost of hosted engine fixes
+
 * Tue Apr 03 2018 Ryan Barry <rbarry@redhat.com> - 0.11.20-1
 - Fix FC LUN discovery
 
