@@ -102,8 +102,9 @@ export const resourceConstants = {
     VM_MEM_MIN_RECOMMENDED_MB: 16348,
     VM_DISK_MIN_GB: 58,
     VM_DISK_MAX_GB: 4096,
-    // 6GB SD overhead, 3GB configuration, metadata, & lockspace vol, 1GB (x2) OVFSTORE vol = 11GB -> 10.24GiB
-    LUN_STORAGE_OVERHEAD_GIB: 10.24
+    // 6GB (SD overhead) + 3GB (configuration, metadata, & lockspace vol) + 1GB (x2) (OVFSTORE vol)= 11GB -> 10.24GiB
+    // 10.24GiB + 5GiB (critical space action blocker) = 15.24 GiB
+    LUN_STORAGE_OVERHEAD_GIB: 15.24
 };
 
 export const defaultValueProviderTasks = {
