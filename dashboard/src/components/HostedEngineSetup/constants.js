@@ -135,8 +135,8 @@ export const messages = {
     TARGET_RETRIEVAL_FAILED: "Retrieval of iSCSI targets failed.",
     LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed.",
     FC_LUN_DISCOVERY_FAILED: "Retrieval of fiber channel LUNs failed.",
-    NO_LUNS_FOUND: "No LUNS found"
-    LUN_IS_TOO_SMALL: "This LUN has been disabled because it does not have sufficient storage capacity to support the hosted engine VM."
+    NO_LUNS_FOUND: "No LUNS found",
+    LUN_IS_TOO_SMALL: "This LUN has been disabled because it does not have sufficient storage capacity to support the hosted engine VM.",
     TARGET_RETRIEVAL_REQUIRED: "A LUN must be selected before proceeding to the next step. Please ensure a valid portal IP address and port have been entered and click the \"Retrieve Target List\" button above to see a list of available targets.",
     TARGET_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a target below to see a list of available LUNs.",
     LUN_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a LUN below.",
