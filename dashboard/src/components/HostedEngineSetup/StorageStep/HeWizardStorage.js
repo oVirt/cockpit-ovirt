@@ -37,7 +37,7 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
     let fcLunDiscoveryBtnClasses = "btn btn-primary";
     fcLunDiscoveryBtnClasses += fcLunDiscoveryStatus === status.POLLING ? " disabled" : "";
 
-    let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
+    let advancedSectionIconClasses = "pficon fa he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
     const advancedSectionClasses = collapsibleSections["advanced"] ? "collapse" : "";
 

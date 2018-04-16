@@ -673,7 +673,7 @@ h3.deployment-option-panel-sub-text {
     width: 250px;
 }
 
-.he-wizard-collapsible-section-icon {
+span.he-wizard-collapsible-section-icon {
     display: inline-block;
     font-size: 20px;
     margin-right: 5px;

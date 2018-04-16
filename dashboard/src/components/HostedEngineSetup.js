@@ -234,11 +234,12 @@ const DeploymentOptionPanel = ({iconType, mainText, subText, buttonText, buttonC
                                    isLastOption}) => {
   let containerClasses = "deployment-option-panel-container";
   containerClasses += isLastOption ? " last-deployment-option-panel-container" : "";
+  const iconClasses = iconType.startsWith("fa") ? "fa " + iconType : iconType;
 
   return (
     <span className={containerClasses}>
      <div className="deployment-option-panel-icon">
-       <span className={iconType} />
+       <span className={iconClasses} />
      </div>
      <span className="deployment-option-panel-main-text">
        <h3>{mainText}</h3>
