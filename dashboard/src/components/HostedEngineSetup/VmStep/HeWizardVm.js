@@ -42,7 +42,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
     const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
     const gatewayPingPending = gatewayState === gwState.POLLING;
 
-    let advancedSectionIconClasses = "pficon fas he-wizard-collapsible-section-icon ";
+    let advancedSectionIconClasses = "pficon fa he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
     const advancedSectionClasses = collapsibleSections["advanced"] ? "collapse" : "";
 
