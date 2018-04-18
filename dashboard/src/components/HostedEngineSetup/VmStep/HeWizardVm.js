@@ -27,7 +27,7 @@ const rootSshAccessOptions = [
 ];
 
 const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
-                        gatewayState, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete, handleRootPwdUpdate,
+                        getCidrErrorMsg, gatewayState, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete, handleRootPwdUpdate,
                         handleImportApplianceUpdate, handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel,
                         importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
     const vmConfig = heSetupModel.vm;
