@@ -350,6 +350,18 @@ export class HeSetupModel {
                     uiStage: "Storage",
                     useInAnswerFile: false,
                     required: false
+                },
+                enableHcGlusterService: {
+                    name: "enableHcGlusterService",
+                    ansibleVarName: "ENABLE_HC_GLUSTER_SERVICE",
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
+                    description: "Enable Hyperconverged Gluster Service",
+                    value: false,
+                    type: types.BOOLEAN,
+                    showInReview: false,
+                    uiStage: "Storage",
+                    useInAnswerFile: true,
+                    required: false
                 }
             },
             network: {
@@ -1073,6 +1085,7 @@ export class HeSetupModel {
             .done(function(gDeployAnswerFile) {
                 self.addValuesToModel(gDeployAnswerFile, model);
                 model.storage.domainType.value = "glusterfs";
+                model.storage.enableHcGlusterService.value = true;
                 console.log("Gluster values successfully added.");
             })
             .fail(function(error) {
