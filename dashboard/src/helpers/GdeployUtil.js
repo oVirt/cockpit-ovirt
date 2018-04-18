@@ -702,7 +702,7 @@ var GdeployUtil = {
       cockpit.script("if [ ! -d " + dirPath + " ]; then mkdir " + dirPath + "; fi", { "superuser": "require" })
         .done(function(exitCode) {
           const file = cockpit.file(filePath, {"superuser": "require" })
-          file.replace(str)
+          file.replace(gdeployInventory)
               .always(function(tag) {
                 console.log("tag: ", tag);
                   file.close()
