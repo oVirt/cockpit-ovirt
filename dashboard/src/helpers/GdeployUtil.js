@@ -663,17 +663,28 @@ var GdeployUtil = {
       })
     },
     isVdoSupported(callback){
-      // Executing vdo command to know vdo support
+      // Executing vdo command and gdeploy version to know vdo support
+      const that = this
       cockpit.spawn(
         [ "vdo", "list" ], { "superuser":"require" }
-      ).done(function(code){
-        callback(true)
+      ).done(function(res){
+        cockpit.spawn(
+          [ "rpm", "-qa", "gdeploy" ], { "superuser":"require" }
+        ).done(function(gVersion){
+          if(that.isGdeploySupportVdo(gVersion)) {
+            callback(true)
+          } else {
+            callback(false)
+          }
+        }).fail(function(code){
+          callback(false)
+        })
       }).fail(function(code){
         callback(false)
       })
     },
     // Creates file required to add the 2nd and 3rd hosts and storage domain
-    //to the engine after successful HE deployment
+    // to the engine after successful HE deployment
     saveGdeployInventory(glusterModel) {
       let inventoryModel = {
         "gluster": {}
@@ -711,6 +722,20 @@ var GdeployUtil = {
         .fail(function(error) {
           console.log("Failed to create " + dirPath + "directory: ", error);
         })
+    },
+    isGdeploySupportVdo(gVersion) {
+      let gVersions = gVersion.split("-")
+      const baseVersionArr = gVersions[1].split(".")
+      const firstNumber = parseInt(baseVersionArr[0])
+      const secondNumber = parseInt(baseVersionArr[1])
+      const thirdNumber = parseInt(baseVersionArr[2])
+      if((gVersions[1] === "2.0.2" && parseInt(gVersions[2]) >= 25)
+        || firstNumber > 2 || (firstNumber === 2 &&  secondNumber > 0)
+        || (firstNumber === 2 &&  secondNumber === 0 && thirdNumber >= 7)) {
+        return true
+      } else {
+        return false
+      }
     }
 }
 
