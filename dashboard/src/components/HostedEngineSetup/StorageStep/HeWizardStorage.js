@@ -326,7 +326,8 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                         {fcLunData !== null && fcLunData.length !== 0 &&
                             <LunListContainer lunList={fcLunData}
                                               handleLunSelection={handleFcLunSelection}
-                                              selectedLun={selectedFcLun} />
+                                              selectedLun={selectedFcLun}
+                                              storageConfig={storageConfig} />
                         }
 
                         {fcLunData !== null && fcLunData.length === 0 &&
