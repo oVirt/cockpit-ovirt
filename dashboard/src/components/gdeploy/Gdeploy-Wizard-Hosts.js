@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
+import isGdeployAvailable from './../../helpers/GdeployUtil'
 
 class WizardHostStep extends Component {
     constructor(props) {
@@ -9,7 +10,8 @@ class WizardHostStep extends Component {
             hosts: props.hosts,
             hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
-            errorMsgs: {}
+            errorMsgs: {},
+            isGdeployAvailableOnHost: false
         }
         this.updateHost = this.updateHost.bind(this);
         this.getHostList = this.getHostList.bind(this);
@@ -100,6 +102,16 @@ class WizardHostStep extends Component {
                 that.setState({ hostTypes, hosts })
             })
         }
+        let that = this
+        isGdeployAvailable.isGdeployAvailable(function (boolVal) {
+            that.setState({
+              isGdeployAvailableOnHost: boolVal
+            })
+            if(that.state.isGdeployAvailableOnHost === false) {
+              let errorMsg = "Gdeploy isn't installed on Host. To continue deployment, please install Gdeploy on Host and try again."
+              that.setState({ errorMsg })
+            }
+        })
     }
     getHostList(callback){
         cockpit.spawn(
