@@ -437,7 +437,7 @@ var GdeployUtil = {
               blockmapcachesize: "128M",
               readcache: "enabled",
               readcachesize: "20M",
-              emulate512: "enabled",
+              emulate512: "on",
               writepolicy: "sync",
               ignore_vdo_errors: "no"
             }
