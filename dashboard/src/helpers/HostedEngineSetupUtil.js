@@ -120,7 +120,57 @@ export class HeSetupModel {
                     uiStage: "",
                     useInAnswerFile: false,
                     required: false
-                }
+                },
+                heFilteredTokensVars: {
+                    name: "heFilteredTokensVars",
+                    ansibleVarName: "he_filtered_tokens_vars",
+                    ansiblePhasesUsed: [
+                        phases.INITIAL_CLEAN,
+                        phases.BOOTSTRAP_VM,
+                        phases.CREATE_STORAGE,
+                        phases.TARGET_VM,
+                        phases.FINAL_CLEAN,
+                        phases.ISCSI_DISCOVER,
+                        phases.ISCSI_GET_DEVICES,
+                        phases.FC_GET_DEVICES
+                    ],
+                    description: "heFilteredTokensVars",
+                    value: [
+                        "ADMIN_PASSWORD",
+                        "APPLIANCE_PASSWORD",
+                        "ISCSI_PASSWORD",
+                        "ISCSI_DISCOVER_PASSWORD",
+                        "ROOTPWD"
+                    ],
+                    type: types.STRING,
+                    showInReview: false,
+                    reviewOrder: 0,
+                    uiStage: "",
+                    useInAnswerFile: true,
+                    required: true
+                },
+                heFilteredTokensRE: {
+                    name: "heFilteredTokensRE",
+                    ansibleVarName: "he_filtered_tokens_re",
+                    ansiblePhasesUsed: [
+                        phases.INITIAL_CLEAN,
+                        phases.BOOTSTRAP_VM,
+                        phases.CREATE_STORAGE,
+                        phases.TARGET_VM,
+                        phases.FINAL_CLEAN,
+                        phases.ISCSI_DISCOVER,
+                        phases.ISCSI_GET_DEVICES,
+                        phases.FC_GET_DEVICES
+                    ],
+                    description: "heFilteredTokensRE",
+                    value: ["BEGIN PRIVATE KEY(?P<filter>.*)END PRIVATE KEY"],
+                    type: types.STRING,
+                    showInReview: false,
+                    reviewOrder: 0,
+                    uiStage: "",
+                    useInAnswerFile: true,
+                    required: true
+                },
             },
             storage: {
                 domainType: {
