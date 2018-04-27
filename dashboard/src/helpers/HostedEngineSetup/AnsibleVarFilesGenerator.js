@@ -37,6 +37,11 @@ class AnsibleVarFilesGenerator {
             cleanedValue = "\"" + value + "\"";
         }
 
+        if (propName === "heFilteredTokensVars" || propName === "heFilteredTokensRE") {
+            let arr = "'" + value.join("','") + "'";
+            cleanedValue = "\[" + arr + "\]";
+        }
+
         return cleanedValue;
     }
 

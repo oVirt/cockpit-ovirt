@@ -6,9 +6,9 @@ import PlaybookUtil from "./PlaybookUtil";
 
 const varFileProps = {
     ISCSI_DISCOVER: ["iSCSIPortalIPAddress", "iSCSIDiscoveryPortalPort", "iSCSIDiscoverUser",
-        "iSCSIDiscoverPassword", "adminPassword", "fqdn", "appHostName"],
+        "iSCSIDiscoverPassword", "adminPassword", "fqdn", "appHostName", "heFilteredTokensVars", "heFilteredTokensRE"],
     ISCSI_GET_DEVICES: ["adminPassword", "fqdn", "appHostName", "iSCSIPortalUser", "iSCSIPortalPassword",
-        "iSCSITargetName", "storageAddress", "iSCSIPortalPort"]
+        "iSCSITargetName", "storageAddress", "iSCSIPortalPort", "heFilteredTokensVars", "heFilteredTokensRE"]
 };
 
 class StorageUtil {
