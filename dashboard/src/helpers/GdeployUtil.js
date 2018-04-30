@@ -444,7 +444,7 @@ var GdeployUtil = {
               readcache: "enabled",
               readcachesize: "20M",
               emulate512: "on",
-              writepolicy: "sync",
+              writepolicy: "auto",
               ignore_vdo_errors: "no"
             }
           }
