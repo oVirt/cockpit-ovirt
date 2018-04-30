@@ -63,24 +63,19 @@ class GlusterManagement extends Component {
   getHostList(callback){
     cockpit.spawn(
       [ "vdsm-client", "--gluster-enabled", "GlusterHost", "list" ]
-    ).done(function(list){
-      let poolList = JSON.parse(list)
-      cockpit.spawn(
-        [ "hostname" ]
-      ).done(function(current_hostname){
-        let hostname = current_hostname.replace(/-nic[\d\w]*\./g, ".")
-        let regexAlpha = /localhost/
-        let regexNum = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/
+    ).done(function(list) {
+      if(list != null || list != undefined) {
+        let poolList = JSON.parse(list)
         poolList.hosts.forEach(function (host, index) {
-          if(host.hostname.match(regexAlpha) || host.hostname.match(regexNum)){
-            host.hostname = hostname.trim()
+          if(host.hostname.indexOf("/") != -1) {
+            host.hostname = host.hostname.split("/")[0]
           }
         })
         callback(poolList)
-      }).fail(function(err){
-        console.log("Error while fetching hostname: ", err);
+      } else {
+        console.log("HostList is empty");
         callback({})
-      })
+      }
     }).fail(function(err){
       console.log("Error while fetching pool list: ", err);
       callback({})

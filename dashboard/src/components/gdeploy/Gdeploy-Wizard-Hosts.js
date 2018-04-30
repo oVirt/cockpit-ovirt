@@ -92,15 +92,15 @@ class WizardHostStep extends Component {
             let that = this
             let hostTypes = []
             this.getHostList(function (hostList) {
-                hostList.hosts.forEach(function (host) {
-                    let hostType = { key: host.hostname, title: host.hostname }
-                    hostTypes.push(hostType)
-                })
-                let hosts = that.state.hosts
-                for (var i = 0; i < hostList.hosts.length; i++) {
-                    hosts[i] = hostList.hosts[i].hostname
-                }
-                that.setState({ hostTypes, hosts })
+                  hostList.hosts.forEach(function (host) {
+                      let hostType = { key: host.hostname, title: host.hostname }
+                      hostTypes.push(hostType)
+                  })
+                  let hosts = that.state.hosts
+                  for (var i = 0; i < hostList.hosts.length; i++) {
+                      hosts[i] = hostList.hosts[i].hostname
+                  }
+                  that.setState({ hostTypes, hosts })
             })
         }
         let that = this
@@ -116,34 +116,52 @@ class WizardHostStep extends Component {
         })
     }
     getHostList(callback){
-        cockpit.spawn(
-          [ "vdsm-client", "--gluster-enabled", "GlusterHost", "list" ]
-        ).done(function(list){
+      cockpit.spawn(
+        [ "vdsm-client", "--gluster-enabled", "GlusterHost", "list" ]
+      ).done(function(list) {
+        if(list != null || list != undefined) {
           let poolList = JSON.parse(list)
-          cockpit.spawn(
-            [ "hostname" ]
-          ).done(function(current_hostname){
-            let hostname = current_hostname.replace(/-nic[\d\w]*\./g, ".")
-            let regexAlpha = /localhost/
-            let regexNum = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/
-            poolList.hosts.forEach(function (host, index) {
-              if(host.hostname.match(regexAlpha) || host.hostname.match(regexNum)){
-                host.hostname = hostname.trim()
-              }
-            })
-            callback(poolList)
-          }).fail(function(err){
-            console.log("Error while fetching hostname: ", err);
-            callback(null)
+          poolList.hosts.forEach(function (host, index) {
+            if(host.hostname.indexOf("/") != -1) {
+              host.hostname = host.hostname.split("/")[0]
+            }
           })
-        }).fail(function(err){
-          console.log("Error while fetching pool list: ", err);
-          callback(null)
-        })
+          callback(poolList)
+        } else {
+          console.log("HostList is empty");
+          callback({})
+        }
+      }).fail(function(err){
+        console.log("Error while fetching pool list: ", err);
+        callback({})
+      })
     }
     handleSelectedHostUpdate(index, value){
         let hosts = this.state.hosts
-        hosts[index] = value
+        let hostTypes = this.state.hostTypes
+        let tempValue = hosts[index]
+        let tempIndex = index
+        let swapped = false
+        hosts.forEach(function (host, index) {
+          if(host === value) {
+            swapped = true
+            tempIndex = index
+          }
+        })
+        if(swapped) {
+          hosts[index] = value
+          hostTypes[index].key = value
+          hostTypes[index].title = value
+          hosts[tempIndex] = tempValue
+          hostTypes[tempIndex].key = tempValue
+          hostTypes[tempIndex].title = tempValue
+        } else {
+          hosts[index] = value
+          hostTypes[index].key = value
+          hostTypes[index].title = value
+        }
+        this.trimHostProperties()
+        this.setState({ hostTypes })
         this.setState({ hosts })
     }
     render() {
@@ -226,6 +244,7 @@ const HostRow = ({host, hostNo, gdeployWizardType, hostTypes, errorMsg, changeCa
                     {gdeployWizardType === "create_volume" && hostTypes.length > 0 && <Selectbox optionList={hostTypes}
                         selectedOption={host}
                         callBack={(e) => changeCallBack(e)}
+                        gdeployWizardType={gdeployWizardType}
                         />
                     }
                     {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}

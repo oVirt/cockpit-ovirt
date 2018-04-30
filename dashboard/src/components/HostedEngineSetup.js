@@ -37,7 +37,6 @@ class HostedEngineSetup extends Component {
     this.deploymentTypeChange = this.deploymentTypeChange.bind(this);
     this.startButtonHandler = this.startButtonHandler.bind(this);
     this.handleExistingGlusterConfigSelection = this.handleExistingGlusterConfigSelection.bind(this);
-
     CheckIfRegistered(this.registeredCallback);
   }
 
