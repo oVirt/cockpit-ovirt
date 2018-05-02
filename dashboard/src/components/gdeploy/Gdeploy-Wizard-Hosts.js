@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
 import isGdeployAvailable from './../../helpers/GdeployUtil'
+import {footerButtons} from "../common/Wizard/Wizard";
 
 class WizardHostStep extends Component {
     constructor(props) {
@@ -108,6 +109,7 @@ class WizardHostStep extends Component {
               isGdeployAvailableOnHost: boolVal
             })
             if(that.state.isGdeployAvailableOnHost === false) {
+              that.props.registerCustomActionBtnStateCallback({disableBtnsList: [footerButtons.NEXT], hidden: true}, that.props.stepIndex)
               let errorMsg = "Gdeploy isn't installed on Host. To continue deployment, please install Gdeploy on Host and try again."
               that.setState({ errorMsg })
             }

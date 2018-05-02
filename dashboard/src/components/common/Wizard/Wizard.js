@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import SubStepTabListContainer from "./SubStepTabList/SubStepTabListContainer"
 import MultiPartStepContainer from './MultiPartStep/MultiPartStepContainer'
-import isGdeployAvailable from './../../../helpers/GdeployUtil'
 
 class Wizard extends Component {
     constructor(props) {
@@ -14,8 +13,7 @@ class Wizard extends Component {
             validating: false,
             nextStep: -1,
             nextSubStep: -1,
-            customActionBtnData: {},
-            isGdeployAvailableOnHost: false
+            customActionBtnData: {}
         };
         this.moveNext = this.moveNext.bind(this);
         this.moveBack = this.moveBack.bind(this);
@@ -32,12 +30,6 @@ class Wizard extends Component {
     }
     componentDidMount() {
         $(ReactDOM.findDOMNode(this)).modal('show')
-        let that = this
-        isGdeployAvailable.isGdeployAvailable(function (boolVal) {
-            that.setState({
-              isGdeployAvailableOnHost: boolVal
-            })
-        })
     }
     componentWillUnmount() {
         $(ReactDOM.findDOMNode(this)).modal('hide')
@@ -234,8 +226,7 @@ class Wizard extends Component {
                                       moveBack={this.moveBack} moveNext={this.moveNext}
                                       cancel={this.cancel} finish={this.finish}
                                       close={this.props.onClose}
-                                      customActionBtnState={customActionBtnState}
-                                      isGdeployAvailableOnHost={this.state.isGdeployAvailableOnHost} />
+                                      customActionBtnState={customActionBtnState} />
                     </div>
                 </div>
             </div>
@@ -249,8 +240,7 @@ Wizard.propTypes = {
     onFinish: React.PropTypes.func.isRequired,
     onStepChange: React.PropTypes.func.isRequired,
     children: React.PropTypes.array.isRequired,
-    isDeploymentStarted: React.PropTypes.bool.isRequired,
-    isGdeployAvailable: React.PropTypes.bool.isRequired
+    isDeploymentStarted: React.PropTypes.bool.isRequired
 };
 
 const WizardSteps = ({steps, activeStep, callBack}) => {
@@ -281,7 +271,7 @@ const WizardSteps = ({steps, activeStep, callBack}) => {
 };
 
 const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDeploymentStarted,
-    moveBack, moveNext, cancel, finish, close, customActionBtnState, isGdeployAvailableOnHost}) => {
+    moveBack, moveNext, cancel, finish, close, customActionBtnState}) => {
     const hasSubSteps = subStepCounts.length > 1;
     const btnState = customActionBtnState;
     const isLastStep = activeStep === stepCount - 1;
@@ -304,8 +294,7 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
         ),
         nextBtnClasses = classNames(
             "btn", "btn-primary", "wizard-pf-next",
-            { "hidden": (!hasSubSteps && isLastStep) || (hasSubSteps && isLastStep && isLastSubStep) },
-            { "disabled": !(isGdeployAvailableOnHost)}
+            { "hidden": (!hasSubSteps && isLastStep) || (hasSubSteps && isLastStep && isLastSubStep) }
         );
 
     let customActionBtnClasses = "hidden";
