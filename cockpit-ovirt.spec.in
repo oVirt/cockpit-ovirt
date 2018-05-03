@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed May 02 2018 Ryan Barry <rbarry@redhat.com> - 0.11.24-1
+- Don't rely on gdeploy to start the wizard
+
 * Wed Apr 25 2018 Ryan Barry <rbarry@redhat.com> - 0.11.23-1
 - Gdeploy and hosted engine fixes
 
