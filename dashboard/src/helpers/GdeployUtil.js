@@ -469,6 +469,8 @@ var GdeployUtil = {
           logicalSizes.forEach(function(logicalSize, index) {
               if (parseInt(logicalSize) >= 1000) {
                   slabsizes.push("32G")
+              } else {
+                slabsizes.push("2G")
               }
           })
           hostVdoConfigs.vdoConfig.devices = devices.join()
