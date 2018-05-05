@@ -15,6 +15,7 @@ var GdeployUtil = {
     getDefaultGedeployModel() {
         return {
             hosts: ['', '', ''],
+            fqdns: ['', ''],
             subscription: {
                 username: "", password: "", poolId: "", yumUpdate: false,
                 rpms: "",
@@ -687,42 +688,44 @@ var GdeployUtil = {
     // Creates file required to add the 2nd and 3rd hosts and storage domain
     // to the engine after successful HE deployment
     saveGdeployInventory(glusterModel) {
-      let inventoryModel = {
-        "gluster": {}
-      }
-      let sdModelList = []
-      let hostList = [glusterModel.hosts[1], glusterModel.hosts[2]]
-      let firstHostFqdn = glusterModel.hosts[0]
-      inventoryModel.gluster.hosts = hostList
-      let mntOptions = "backup-volfile-servers=" + hostList.join(":")
-      glusterModel.volumes.forEach(function(volume, index) {
-        if(index !== 0) {
-          let sdModel = {}
-          sdModel.name = volume.name
-          sdModel.host = firstHostFqdn
-          sdModel.address = firstHostFqdn
-          sdModel.path = volume.name
-          sdModel.mount_options = mntOptions
-          sdModelList.push(sdModel)
+      if(glusterModel.fqdns[0].length > 0 && glusterModel.fqdns[1].length > 0) {
+        let inventoryModel = {
+          "gluster": {}
         }
-      })
-      let gdeployInventory = "gluster:\n hosts:\n  " + glusterModel.hosts[1] + ":\n  " + glusterModel.hosts[2]
-                            + ":\n vars:\n  storage_domains: " + JSON.stringify(sdModelList)
-      let filePath = constants.gdeployInventoryFile
-      const that = this
-      const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
-      cockpit.script("if [ ! -d " + dirPath + " ]; then mkdir " + dirPath + "; fi", { "superuser": "require" })
-        .done(function(exitCode) {
-          const file = cockpit.file(filePath, {"superuser": "require" })
-          file.replace(gdeployInventory)
-              .always(function(tag) {
-                console.log("tag: ", tag);
-                  file.close()
-              })
+        let sdModelList = []
+        let hostList = [glusterModel.hosts[1], glusterModel.hosts[2]]
+        let firstHostFqdn = glusterModel.hosts[0]
+        inventoryModel.gluster.hosts = hostList
+        let mntOptions = "backup-volfile-servers=" + hostList.join(":")
+        glusterModel.volumes.forEach(function(volume, index) {
+          if(index !== 0) {
+            let sdModel = {}
+            sdModel.name = volume.name
+            sdModel.host = firstHostFqdn
+            sdModel.address = firstHostFqdn
+            sdModel.path = volume.name
+            sdModel.mount_options = mntOptions
+            sdModelList.push(sdModel)
+          }
         })
-        .fail(function(error) {
-          console.log("Failed to create " + dirPath + "directory: ", error);
-        })
+        let gdeployInventory = "gluster:\n hosts:\n  " + glusterModel.fqdns[0] + ":\n  " + glusterModel.fqdns[1]
+                              + ":\n vars:\n  storage_domains: " + JSON.stringify(sdModelList)
+        let filePath = constants.gdeployInventoryFile
+        const that = this
+        const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
+        cockpit.script("if [ ! -d " + dirPath + " ]; then mkdir " + dirPath + "; fi", { "superuser": "require" })
+          .done(function(exitCode) {
+            const file = cockpit.file(filePath, {"superuser": "require" })
+            file.replace(gdeployInventory)
+                .always(function(tag) {
+                  console.log("tag: ", tag);
+                    file.close()
+                })
+          })
+          .fail(function(error) {
+            console.log("Failed to create " + dirPath + "directory: ", error);
+          })
+        }
     },
     findGdeployVersion(callback) {
       const that = this
@@ -751,6 +754,19 @@ var GdeployUtil = {
       } else {
         return false
       }
+    },
+    isPingable(address, callBack) {
+      let proc = cockpit.spawn(
+          ["ping", "-w", "1",
+            address
+          ]
+      )
+      .done(function(code) {
+          callBack(true)
+      })
+      .fail(function(code) {
+          callBack(false)
+      })
     }
 }
 
