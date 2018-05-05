@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import WizardHostStep from './Gdeploy-Wizard-Hosts'
+import WizardFqdnStep from './Gdeploy-Wizard-Fqdns'
 import WizardPackageStep from './Gdeploy-Wizard-Packages'
 import WizardVolumesStep from './Gdeploy-Wizard-Volumes'
 import WizardBricksStep from './Gdeploy-Wizard-Bricks'
@@ -40,6 +41,12 @@ class GdeploySetup extends Component {
             stepName="Hosts"
             hosts={this.state.glusterModel.hosts}
             />)
+        if (this.props.gdeployWizardType === "setup" ) {
+            wizardChildren.push(<WizardFqdnStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+                stepName="Fqdns"
+                fqdns={this.state.glusterModel.fqdns}
+                />)
+        }
         if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
             wizardChildren.push(<WizardPackageStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
                 stepName="Packages"
