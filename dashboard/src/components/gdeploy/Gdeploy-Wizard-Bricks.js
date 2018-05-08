@@ -342,7 +342,19 @@ class WizardBricksStep extends Component {
     }
 
     handleLvCacheConfig(property, value) {
-        const lvCacheConfig = this.state.lvCacheConfig
+      const that =this
+      const lvCacheConfig = []
+        if(value) {
+          that.state.lvCacheConfig.forEach(function(eachConfig) {
+            eachConfig.lvCache = true
+            lvCacheConfig.push(eachConfig)
+          })
+        } else {
+          that.state.lvCacheConfig.forEach(function(eachConfig) {
+            eachConfig.lvCache = false
+            lvCacheConfig.push(eachConfig)
+          })
+        }
         const lvCacheConfigIndex = lvCacheConfig.findIndex(function(hostLvCacheConfig){
             return hostLvCacheConfig.host == this.state.selectedHost.hostName
         }, this)
