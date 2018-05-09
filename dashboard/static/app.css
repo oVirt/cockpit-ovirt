@@ -690,22 +690,26 @@ span.he-wizard-collapsible-section-icon {
     text-decoration: none;
 }
 
-div.existing-gluster-config-dialog-btn-row {
+div.popup-dialog-btn-row {
     margin-top: 30px;
 }
 
-div.existing-gluster-config-dialog-text {
+div.popup-dialog-text {
     font-size: 14px;
     text-align: center;
 }
 
-div.existing-gluster-config-dialog-note {
+div.popup-dialog-note {
     font-size: 13px;
     text-align: center;
 }
 
-div.existing-gluster-config-note-row {
+div.popup-dialog-note-row {
     margin-top: 15px;
+}
+
+button.confirm-close-dialog-btn {
+    width: 50px;
 }
 
 .he-wizard-step-header {

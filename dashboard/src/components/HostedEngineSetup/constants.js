@@ -79,7 +79,8 @@ export const heSetupState = {
     REGISTERED: "registered",
     GDEPLOY: "gdeploy",
     HOSTED_ENGINE: "he",
-    GLUSTER_CONFIG_CHOICE_REQD: "glusterConfigChoiceReqd"
+    GLUSTER_CONFIG_CHOICE_REQD: "glusterConfigChoiceReqd",
+    CLOSE_RQST_RECEIVED: "closeRequestReceived"
 };
 
 export const status = {

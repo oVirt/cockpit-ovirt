@@ -11,9 +11,9 @@ import AnsiblePhasePreviewContainer from "../AnsiblePhasePreview/AnsiblePhasePre
 
 const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
                            loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, libvirtRunning, virtSupported,
-                           systemDataRetrieved, gDeployAnswerFilePaths}) => {
+                           systemDataRetrieved, gDeployAnswerFilePaths, showWizard}) => {
     return (
-        <div>
+        <div id="wizard-outer-div" style={showWizard ? {} : {display: 'none'}}>
             {loadingState === status.POLLING &&
             <div className="curtains curtains-ct blank-slate-pf he-data-loading-container">
                 <div className="container-center">
@@ -29,6 +29,7 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleF
                         onClose={abortCallback}
                         onFinish={handleFinish}
                         onStepChange={onStepChange}
+                        suppressDataDismissAttribute={showWizard}
                         isDeploymentStarted={isDeploymentStarted}>
                     <HeWizardVmContainer stepName="VM"
                                          deploymentType={deploymentType}
