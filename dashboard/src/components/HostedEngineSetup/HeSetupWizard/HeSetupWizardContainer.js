@@ -113,7 +113,8 @@ class HeSetupWizardContainer extends Component {
                 systemDataRetrieved={this.allSystemDataRetrieved}
                 sufficientMemAvail={this.sufficientMemAvail}
                 gDeployAnswerFilePaths={this.state.gDeployAnswerFilePaths}
-                deploymentType={this.props.deploymentType}/>
+                deploymentType={this.props.deploymentType}
+                showWizard={this.props.showWizard} />
         )
     }
 }

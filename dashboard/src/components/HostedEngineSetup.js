@@ -19,6 +19,7 @@ class HostedEngineSetup extends Component {
       deploymentOption: deploymentOption.REGULAR,
       deploymentType: deploymentTypes.ANSIBLE_DEPLOYMENT,
       state: heSetupState.POLLING,
+      closeRequestRecvd: false,
       gdeployAvailable: false,
       gdeployFilesFound: false,
       gdeployWizardType: "setup",
@@ -31,6 +32,7 @@ class HostedEngineSetup extends Component {
     this.gdeployFileCallback = this.gdeployFileCallback.bind(this);
     this.onClick = this.onClick.bind(this);
     this.abortCallback = this.abortCallback.bind(this);
+    this.handleCloseSelection = this.handleCloseSelection.bind(this);
     this.startSetup = this.startSetup.bind(this);
     this.startGdeploy = this.startGdeploy.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
@@ -107,8 +109,20 @@ class HostedEngineSetup extends Component {
   }
 
   abortCallback() {
-    this.setState({ cancelled: true })
-    this.setState({ state: heSetupState.EMPTY })
+    if (this.state.state === heSetupState.HOSTED_ENGINE) {
+      this.setState({closeRequestRecvd: true});
+    } else {
+      this.setState({ cancelled: true });
+      this.setState({ state: heSetupState.EMPTY });
+    }
+  }
+
+  handleCloseSelection(closeDialog) {
+    if (closeDialog) {
+      this.setState({cancelled: true, state: heSetupState.EMPTY, closeRequestRecvd: false});
+    } else {
+      this.setState({ state: heSetupState.HOSTED_ENGINE, closeRequestRecvd: false });
+    }
   }
 
   handleOptionChange(changeEvent) {
@@ -151,23 +165,30 @@ class HostedEngineSetup extends Component {
             gdeployAvailable={this.state.gdeployAvailable}
             gdeployFilesFound={this.state.gdeployFilesFound}
             selectionChangeCallback={this.handleOptionChange}
-            startButtonHandler={this.startButtonHandler}
-            />
+            startButtonHandler={this.startButtonHandler} />
         }
         {this.state.state === heSetupState.HOSTED_ENGINE &&
-          <HeSetupWizardContainer
-              deploymentType={this.state.deploymentType}
-              gDeployAnswerFilePaths={this.state.answerFiles}
-              onSuccess={this.startSetup}
-              onClose={this.abortCallback}
-          />
+          <span>
+            <HeSetupWizardContainer
+                deploymentType={this.state.deploymentType}
+                gDeployAnswerFilePaths={this.state.answerFiles}
+                onSuccess={this.startSetup}
+                showWizard={!this.state.closeRequestRecvd}
+                onClose={this.abortCallback} />
+            <span style={this.state.closeRequestRecvd ? {} : {display: 'none'}}>
+              <CloseWizardConfirmationDialog closeSelectionHandler={this.handleCloseSelection} />
+            </span>
+          </span>
         }
         {this.state.state === heSetupState.GLUSTER_CONFIG_CHOICE_REQD &&
           <ExistingGlusterConfigDialog glusterConfigSelectionHandler={this.handleExistingGlusterConfigSelection}
                                        onClose={this.abortCallback} />
         }
         {this.state.state === heSetupState.GDEPLOY &&
-          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} gdeployWizardType={this.state.gdeployWizardType} showFqdn={this.state.showFqdn} />
+          <GdeploySetup onSuccess={this.startSetup}
+                        onClose={this.abortCallback}
+                        gdeployWizardType={this.state.gdeployWizardType}
+                        showFqdn={this.state.showFqdn} />
         }
       </div>
     )
@@ -299,6 +320,67 @@ const HeWizardFooter = () => {
   )
 };
 
+class CloseWizardConfirmationDialog extends Component  {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+      $(ReactDOM.findDOMNode(this)).modal('show')
+  }
+
+  componentWillUnmount() {
+      $(ReactDOM.findDOMNode(this)).modal('hide')
+  }
+
+  render() {
+      return (
+          <div className="modal" data-backdrop="static" role="dialog">
+            <div className="modal-dialog modal-lg" style={{ width: "400px" }}>
+              <div className="modal-content">
+                <div className="modal-header">
+                  <dt className="modal-title">Exit Wizard</dt>
+                </div>
+                <div className="modal-body clearfix">
+                  <div>
+                    <div className="row">
+                      <div className="col-sm-10 col-sm-offset-1">
+                        <div className="popup-dialog-text">
+                            Are you sure you want to exit the wizard?
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="row popup-dialog-btn-row">
+                      <div className="col-sm-3 col-sm-offset-3">
+                        <button type="button"
+                                className="btn btn-default confirm-close-dialog-btn"
+                                aria-label="Close the wizard"
+                                onClick={(e) => this.props.closeSelectionHandler(true)}>
+                          Yes
+                        </button>
+                      </div>
+
+                      <div className="col-sm-3">
+                        <button type="button"
+                                className="btn btn-default confirm-close-dialog-btn"
+                                style={{ float: "right" }}
+                                aria-label="Do not close the wizard"
+                                onClick={(e) => this.props.closeSelectionHandler(false)}>
+                          No
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+      )
+  }
+}
+
 class ExistingGlusterConfigDialog extends Component  {
   constructor(props) {
     super(props);
@@ -330,24 +412,24 @@ class ExistingGlusterConfigDialog extends Component  {
                   <div>
                     <div className="row">
                       <div className="col-sm-10 col-sm-offset-1">
-                        <div className="existing-gluster-config-dialog-text">
+                        <div className="popup-dialog-text">
                             {messages.GLUSTER_CONFIGURATION_FOUND}
                         </div>
                       </div>
                     </div>
 
-                    <div className="row existing-gluster-config-note-row">
+                    <div className="row popup-dialog-note-row">
                       <div className="col-sm-10 col-sm-offset-1">
-                        <div className="existing-gluster-config-dialog-note">
+                        <div className="popup-dialog-note">
                           Note: To view existing gluster configuration details, see the Storage section in the main Cockpit tab.
                         </div>
                       </div>
                     </div>
 
-                    <div className="row existing-gluster-config-dialog-btn-row">
+                    <div className="row popup-dialog-btn-row">
                       <div className="col-sm-3 col-sm-offset-3">
                         <button type="button"
-                                className="btn btn-default existing-gluster-config-dialog-btn"
+                                className="btn btn-default"
                                 aria-label="Use existing configuration"
                                 onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.USE_EXISTING_GLUSTER_CONFIG)}>
                           Use Existing Configuration
@@ -356,7 +438,7 @@ class ExistingGlusterConfigDialog extends Component  {
 
                       <div className="col-sm-3">
                         <button type="button"
-                                className="btn btn-default existing-gluster-config-dialog-btn"
+                                className="btn btn-default"
                                 aria-label="Run gluster wizard"
                                 onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED)}>
                           Run Gluster Wizard

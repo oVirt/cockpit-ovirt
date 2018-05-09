@@ -180,6 +180,9 @@ class Wizard extends Component {
         const wizardWidth = this.props.width ? {width: this.props.width} : {};
         const hasSidebar = subStepLists.length > 0;
         const wizardMainClasses = hasSidebar ? "wizard-pf-main" : "wizard-pf-main no-sidebar";
+        // The data-dismiss attribute must be suppressed when toggling the wizard's visibility using the close button;
+        // otherwise, the dialog is closed and has to be reloaded
+        const dataDismissValue = this.props.suppressDataDismissAttribute ? "" : "modal";
 
         let customActionBtnState = {};
         const stepData = this.state.customActionBtnData[activeStep];
@@ -191,14 +194,14 @@ class Wizard extends Component {
         }
 
         return (
-            <div className="modal" data-backdrop="static" role="dialog">
+            <div id="wizard-modal" className="modal" data-backdrop="static" role="dialog">
                 <div className="modal-dialog modal-lg wizard-pf" style={wizardWidth}>
                     <div className="modal-content">
                         <div className="modal-header">
                             <button type="button"
                                 className="close wizard-pf-dismiss"
                                 aria-label="Close" onClick={this.props.onClose}
-                                data-dismiss="modal" aria-hidden="true"
+                                data-dismiss={dataDismissValue} aria-hidden="true"
                                 >
                                 <span className="pficon pficon-close" />
                             </button>
@@ -226,7 +229,8 @@ class Wizard extends Component {
                                       moveBack={this.moveBack} moveNext={this.moveNext}
                                       cancel={this.cancel} finish={this.finish}
                                       close={this.props.onClose}
-                                      customActionBtnState={customActionBtnState} />
+                                      customActionBtnState={customActionBtnState}
+                                      dataDismissValue={dataDismissValue} />
                     </div>
                 </div>
             </div>
@@ -240,7 +244,8 @@ Wizard.propTypes = {
     onFinish: React.PropTypes.func.isRequired,
     onStepChange: React.PropTypes.func.isRequired,
     children: React.PropTypes.array.isRequired,
-    isDeploymentStarted: React.PropTypes.bool.isRequired
+    isDeploymentStarted: React.PropTypes.bool.isRequired,
+    suppressDataDismissAttribute: React.PropTypes.bool
 };
 
 const WizardSteps = ({steps, activeStep, callBack}) => {
@@ -271,7 +276,7 @@ const WizardSteps = ({steps, activeStep, callBack}) => {
 };
 
 const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDeploymentStarted,
-    moveBack, moveNext, cancel, finish, close, customActionBtnState}) => {
+    moveBack, moveNext, cancel, finish, close, customActionBtnState, dataDismissValue}) => {
     const hasSubSteps = subStepCounts.length > 1;
     const btnState = customActionBtnState;
     const isLastStep = activeStep === stepCount - 1;
@@ -339,7 +344,7 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
         <div className="modal-footer wizard-pf-footer">
             <button type="button"
                 className={cancelBtnClasses}
-                onClick={cancel} data-dismiss="modal" aria-hidden="true">Cancel
+                onClick={cancel} data-dismiss={dataDismissValue} aria-hidden="true">Cancel
             </button>
             <button type="button" className={backBtnClasses} onClick={moveBack}>
                 <span className="i fa fa-angle-left"/>Back
@@ -357,7 +362,7 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
                 Deploy
             </button>
             <button type="button" className={closeBtnClasses} onClick={close}
-                    data-dismiss="modal" aria-hidden="true">
+                    data-dismiss={dataDismissValue} aria-hidden="true">
                 Close
             </button>
         </div>
