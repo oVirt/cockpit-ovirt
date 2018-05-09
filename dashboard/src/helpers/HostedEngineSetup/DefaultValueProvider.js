@@ -23,6 +23,8 @@ export class DefaultValueProvider {
         this.sufficientMemAvail = this.sufficientMemAvail.bind(this);
         this.getMaxVCpus = this.getMaxVCpus.bind(this);
         this.getApplianceFiles = this.getApplianceFiles.bind(this);
+        this.generateMacAddr = this.generateMacAddr.bind(this);
+        this.getHexValue = this.getHexValue.bind(this);
         this.cleanData = this.cleanData.bind(this);
         this.libvirtRunning = this.libvirtRunning.bind(this);
         this.virtSupported = this.virtSupported.bind(this);
@@ -233,6 +235,19 @@ export class DefaultValueProvider {
         }
 
         return appliances;
+    }
+
+    generateMacAddr() {
+        const mac = ['00', '16', '3e'];
+        mac.push(this.getHexValue(127).toString(16).padStart(2, '0'));
+        mac.push(this.getHexValue(255).toString(16).padStart(2, '0'));
+        mac.push(this.getHexValue(255).toString(16).padStart(2, '0'));
+        return mac.join(':');
+    }
+
+    getHexValue(max) {
+        const min = 0;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     libvirtRunning() {

@@ -1144,9 +1144,10 @@ export class HeSetupModel {
     }
 
     setDefaultValues(dataProvider) {
-        this.model.vm.cloudinitVMTZ.value = dataProvider.getTimeZone();
-        this.model.network.host_name.value = dataProvider.getFQDN();
         this.model.engine.appHostName.value = dataProvider.getFQDN();
+        this.model.network.host_name.value = dataProvider.getFQDN();
+        this.model.vm.vmMACAddr.value = dataProvider.generateMacAddr();
+        this.model.vm.cloudinitVMTZ.value = dataProvider.getTimeZone();
         this.model.vm.cloudinitHostIP.value = dataProvider.getIpAddress();
         this.model.vm.maxVCpus.value = dataProvider.getMaxVCpus();
         if (dataProvider.getMaxMemAvailable() < constants.VM_MEM_MIN_RECOMMENDED_MB) {
