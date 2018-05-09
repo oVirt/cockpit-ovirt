@@ -279,6 +279,19 @@ class WizardBricksStep extends Component {
         let bricksList = this.state.bricksList
         const errorMsgs= this.state.errorMsgs
         let that = this
+        if (property == "is_vdo_supported" && value) {
+            bricksList.forEach(function (bricks) {
+                bricks.host_bricks.forEach(function(eachBrick) {
+                  eachBrick.is_vdo_supported = true
+                })
+            })
+        } else {
+          bricksList.forEach(function (bricks) {
+              bricks.host_bricks.forEach(function(eachBrick) {
+                eachBrick.is_vdo_supported = false
+              })
+          })
+        }
         if (property == "is_vdo_supported") {
             bricksList[that.state.selectedHost.hostIndex].host_bricks.forEach(function (brick, brickIndex) {
                 if (brick['device'] == bricksList[that.state.selectedHost.hostIndex].host_bricks[index]['device']) {
