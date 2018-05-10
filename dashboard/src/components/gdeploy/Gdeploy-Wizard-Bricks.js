@@ -23,6 +23,9 @@ class WizardBricksStep extends Component {
             hostArbiterVolumes: [],
             arbiterVolumes: [],
             lvCacheConfig: props.lvCacheConfig,
+            cacheMode: "writethrough",
+            cacheModeOption: [{ key: "writethrough", title: "writethrough" }, { key: "writeback", title: "writeback" }],
+            selectedCacheModeOption: {cacheMode: "writethrough", cacheModeIndex: 0},
             errorMsg: "",
             errorMsgs: {}
         }
@@ -35,6 +38,7 @@ class WizardBricksStep extends Component {
         this.updateBrickHosts = this.updateBrickHosts.bind(this)
         this.updateBrickDetails = this.updateBrickDetails.bind(this)
         this.updateArbiterHostBricks = this.updateArbiterHostBricks.bind(this)
+        this.handleCacheModeChange = this.handleCacheModeChange.bind(this)
     }
     componentDidMount(){
         let bricksList = this.state.bricksList
@@ -377,6 +381,10 @@ class WizardBricksStep extends Component {
         this.setState({ lvCacheConfig, errorMsgs })
     }
 
+    handleCacheModeChange(value) {
+      this.handleLvCacheConfig( "cacheMode", value)
+    }
+
     validateLvCacheConfig(lvCacheConfig, errorMsgs){
       let valid = true
       if(lvCacheConfig != null && lvCacheConfig.lvCache){
@@ -637,7 +645,7 @@ class WizardBricksStep extends Component {
                     <div className={ssd}
                       style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">SSD</label>
-                        <div className="col-md-2">
+                        <div className="col-md-3">
                         <input type="text" className="form-control"
                             value={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].ssd}
                             onChange={(e) => this.handleLvCacheConfig("ssd", e.target.value)}
@@ -648,7 +656,7 @@ class WizardBricksStep extends Component {
                     <div className={lvCacheSize}
                       style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">LV Size(GB)</label>
-                        <div className="col-md-2">
+                        <div className="col-md-3">
                             <input type="number" className="form-control"
                                 value={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCacheSize}
                                 onChange={(e) => this.handleLvCacheConfig("lvCacheSize", e.target.value)}
@@ -660,11 +668,11 @@ class WizardBricksStep extends Component {
                       style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">Cache Mode <span className="fa fa-lg fa-info-circle"
                             title="Caching mode is write-through by default. If cache is configured in other mode, please add input here."></span></label>
-                        <div className="col-md-2">
-                        <input type="text" className="form-control"
-                            value={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].cacheMode}
-                            onChange={(e) => this.handleLvCacheConfig("cacheMode", e.target.value)}
-                            />
+                        <div className="col-md-3">
+                        <Selectbox optionList={this.state.cacheModeOption}
+                          selectedOption={this.state.selectedCacheModeOption.cacheMode}
+                          callBack={(e) => this.handleCacheModeChange(e)}
+                          />
                             <span className="help-block">{cacheModeMsg}</span>
                         </div>
                     </div>
