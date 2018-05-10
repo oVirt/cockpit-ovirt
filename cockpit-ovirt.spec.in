@@ -36,7 +36,11 @@ BuildArch:      noarch
 
 
 Requires:       cockpit
+%if "0%{?dist}" == el7
+Requires:       udisks2
+%else
 Requires:       cockpit-storaged
+%endif
 Requires:       ovirt-hosted-engine-setup >= 2.2.14
 Requires:       otopi >= 1.5.2-1
 
