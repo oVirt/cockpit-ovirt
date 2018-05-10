@@ -91,7 +91,12 @@ var GdeployUtil = {
         this.handleDirAndFileCreation(filePath, configString, function(result){
           callback(true)
         })
-        this.saveGdeployInventory(glusterModel)
+        const that = this
+        this.findGdeployVersion(function(isSupported) {
+          if(isSupported) {
+            that.saveGdeployInventory(glusterModel)
+          }
+        })
     },
     createPreFlightCheck(hosts, pvConfig) {
         let preFlightCheck = []
@@ -668,16 +673,12 @@ var GdeployUtil = {
       cockpit.spawn(
         [ "vdo", "list" ], { "superuser":"require" }
       ).done(function(res){
-        cockpit.spawn(
-          [ "rpm", "-qa", "gdeploy" ], { "superuser":"require" }
-        ).done(function(gVersion){
-          if(that.isGdeploySupportVdo(gVersion)) {
+        that.findGdeployVersion(function(isSupported) {
+          if(isSupported) {
             callback(true)
           } else {
             callback(false)
           }
-        }).fail(function(code){
-          callback(false)
         })
       }).fail(function(code){
         callback(false)
@@ -722,6 +723,20 @@ var GdeployUtil = {
         .fail(function(error) {
           console.log("Failed to create " + dirPath + "directory: ", error);
         })
+    },
+    findGdeployVersion(callback) {
+      const that = this
+      cockpit.spawn(
+        [ "rpm", "-qa", "gdeploy" ], { "superuser":"require" }
+      ).done(function(gVersion){
+        if(that.isGdeploySupportVdo(gVersion)) {
+          callback(true)
+        } else {
+          callback(false)
+        }
+      }).fail(function(code){
+        callback(false)
+      })
     },
     isGdeploySupportVdo(gVersion) {
       let gVersions = gVersion.split("-")
