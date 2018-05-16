@@ -52,6 +52,7 @@ class HeWizardVmContainer extends Component {
         this.checkGatewayPingability = this.checkGatewayPingability.bind(this);
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
         this.getCidrErrorMsg = this.getCidrErrorMsg.bind(this);
+        this.validateVmCidr = this.validateVmCidr.bind(this);
         this.validateCpuModelSelection = this.validateCpuModelSelection.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
     }
@@ -265,15 +266,17 @@ class HeWizardVmContainer extends Component {
     getCidrErrorMsg() {
         const prefixErrorMsg = this.state.errorMsgs.cloudinitVMStaticCIDRPrefix;
         const ipErrorMsg = this.state.errorMsgs.cloudinitVMStaticCIDR;
-        let cidrErrorMsg = "";
+        let cidrErrorMsg = [];
 
         if (typeof ipErrorMsg !== "undefined") {
-            cidrErrorMsg = ipErrorMsg;
-        } else if (typeof prefixErrorMsg !== "undefined") {
-            cidrErrorMsg =  prefixErrorMsg;
+            cidrErrorMsg.push(ipErrorMsg);
         }
 
-        return cidrErrorMsg;
+        if (typeof prefixErrorMsg !== "undefined" && !cidrErrorMsg.includes(prefixErrorMsg)) {
+            cidrErrorMsg.push(prefixErrorMsg);
+        }
+
+        return cidrErrorMsg.join(" / ");
     }
 
     validateConfigUpdate(propName, config) {
@@ -296,20 +299,36 @@ class HeWizardVmContainer extends Component {
             this.checkGatewayPingability(prop.value);
         }
 
-        // Display of errors for IP and CIDR are linked - Register errors for both if either is edited
-        if (propName === "cloudinitVMStaticCIDR") {
-            const prefixErrorMsg = getErrorMsgForProperty(config["cloudinitVMStaticCIDRPrefix"]);
-            if (prefixErrorMsg !== "") {
-                errorMsgs["cloudinitVMStaticCIDRPrefix"] = prefixErrorMsg;
-            }
-        } else if (propName === "cloudinitVMStaticCIDRPrefix") {
-            const ipErrorMsg = getErrorMsgForProperty(config["cloudinitVMStaticCIDR"]);
-            if (ipErrorMsg !== "") {
-                errorMsgs["cloudinitVMStaticCIDR"] = ipErrorMsg;
-            }
+        if (propName === "cloudinitVMStaticCIDR" || propName === "cloudinitVMStaticCIDRPrefix") {
+            this.validateVmCidr(errorMsgs, propName, config);
         }
 
         this.setState({ errorMsg, errorMsgs });
+    }
+
+    validateVmCidr(errorMsgs, propName, config) {
+        const vmIpProp = config.cloudinitVMStaticCIDR;
+        const vmPrefixProp = config.cloudinitVMStaticCIDRPrefix;
+
+        const vmIpErrorMsg = getErrorMsgForProperty(vmIpProp);
+        const vmPrefixErrorMsg = getErrorMsgForProperty(vmPrefixProp);
+
+        // If both are empty, display the 'required' error
+        if (vmIpProp.value === "" && vmPrefixProp.value === "") {
+            errorMsgs.cloudinitVMStaticCIDR = vmIpErrorMsg;
+            errorMsgs.cloudinitVMStaticCIDRPrefix = vmPrefixErrorMsg;
+            return;
+        }
+
+        // If the prefix is non-empty and invalid while editing the IP, display the prefix error
+        if (propName === "cloudinitVMStaticCIDR" && vmPrefixProp.value !== "" && vmPrefixErrorMsg !== "") {
+            errorMsgs.cloudinitVMStaticCIDRPrefix = vmPrefixErrorMsg;
+        }
+
+        // If the IP is non-empty and invalid while editing the prefix, display the IP error
+        if (propName === "cloudinitVMStaticCIDRPrefix" && vmIpProp.value !== "" && vmIpErrorMsg !== "") {
+            errorMsgs.cloudinitVMStaticCIDR = vmIpErrorMsg;
+        }
     }
 
     validateCpuModelSelection(errorMsgs) {

@@ -1,3 +1,5 @@
+import { messages } from "./constants";
+
 const Validation = {
     ipAddress: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
     macAddress: /^[0-9a-fA-F]{1,2}([\.:-])(?:[0-9a-fA-F]{1,2}\1){4}[0-9a-fA-F]{1,2}$/
@@ -41,7 +43,10 @@ export function getErrorMsgForProperty(prop) {
     } else if (requiresRangeValidation(prop)) {
         const value = parseInt(prop.value);
         const outOfRange = value < prop.range.min || value > prop.range.max;
-        if (outOfRange) {
+
+        if (isNaN(value)) {
+            errorMsg = messages.NUMERIC_VALUES_ONLY;
+        } else if (outOfRange) {
             const minValue = prop.range.min.toLocaleString();
             const maxValue = prop.range.max.toLocaleString();
             const unit = prop.hasOwnProperty("unit") ? prop.unit : "";
@@ -69,12 +74,11 @@ function isRequiredAndEmpty(prop) {
 }
 
 function requiresRegexValidation(prop) {
-    return prop.value !== "" && prop.hasOwnProperty("regex")
+    return prop.value !== "" && prop.hasOwnProperty("regex");
 }
 
 function requiresRangeValidation(prop) {
-    let value = parseInt(prop.value, 10);
-    return !isNaN(value) && prop.hasOwnProperty("range");
+    return prop.hasOwnProperty("range");
 }
 
 export default Validation;
