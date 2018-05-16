@@ -652,7 +652,8 @@ export class HeSetupModel {
                     showInReview: false,
                     uiStage: "VM",
                     useInAnswerFile: false,
-                    required: false
+                    required: false,
+                    range: {min: 0, max: 32}
                 },
                 cloudinitVMDNS: {
                     name: "cloudinitVMDNS",
