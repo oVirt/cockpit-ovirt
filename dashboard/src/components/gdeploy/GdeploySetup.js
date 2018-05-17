@@ -15,12 +15,17 @@ class GdeploySetup extends Component {
         this.state = {
             //TODO: These default values should be cleared before merging
             glusterModel: GdeployUtil.getDefaultGedeployModel(),
-            isDeploymentStarted: false
+            isDeploymentStarted: false,
+            title: ''
         };
         this.handleFinish = this.handleFinish.bind(this)
         this.onStepChange = this.onStepChange.bind(this)
         this.handleReDeploy = this.handleReDeploy.bind(this)
         this.onSuccess = this.onSuccess.bind(this)
+        this.setTitle = this.setTitle.bind(this)
+    }
+    componentDidMount() {
+      this.setTitle(this.props.gdeployWizardType)
     }
     onSuccess() {
         console.log("gdeploy config file is being generated");
@@ -33,6 +38,17 @@ class GdeploySetup extends Component {
     }
     handleReDeploy(){
         this.setState({ isDeploymentStarted: false })
+    }
+    setTitle(gdeployWizardType) {
+      let tempTitle = ''
+      if(gdeployWizardType === "expand_cluster") {
+          tempTitle = "Expand Cluster"
+      } else if (gdeployWizardType === "create_volume") {
+        tempTitle = "Create Volume"
+      } else {
+        tempTitle="Gluster Deployment"
+      }
+      this.setState({ title: tempTitle})
     }
     render() {
         let wizardChildren = []
@@ -78,7 +94,7 @@ class GdeploySetup extends Component {
             expandClusterConfigFilePath={CONFIG_FILES.expandClusterConfigFile}
             />)
         return (
-            <Wizard title="Gluster Deployment" onClose={this.props.onClose}
+            <Wizard title={this.state.title} onClose={this.props.onClose}
                 onFinish={this.handleFinish} onStepChange={this.onStepChange}
                 isDeploymentStarted={this.state.isDeploymentStarted}>
                 {wizardChildren}

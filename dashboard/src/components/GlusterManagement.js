@@ -108,7 +108,7 @@ class GlusterManagement extends Component {
     this.setState({
       volumeSelectedRow: this.state.volumeSelectedRow == volume ? 'None':volume
     })
-  }
+    }
 
   startGlusterManagement(action) {
       let gdeployWizardType = action
@@ -193,10 +193,15 @@ class GlusterManagement extends Component {
         let that = this
         Object.keys(volumeTemp).forEach(function (key, index) {
           let values = volumeTemp[key]
+          if (values === false) {
+            values="false"
+          } else if (values === true) {
+            values="true"
+          }
           if(typeof(values) == 'string' || typeof(values) == 'boolean') {
             modalWindow.push(
               <ul key={index} className="list-unstyled">
-                <li><strong>{key}</strong> {volumeTemp[key]}</li>
+                <li><strong>{key}</strong> {values}</li>
               </ul>
             )
           } else if((typeof(values) != 'string' || typeof(values) != 'boolean')
