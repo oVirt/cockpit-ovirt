@@ -28,11 +28,12 @@ class WizardExecutionStep extends Component {
         this.setState({ gdeployStatus: -1 })
     }
     runGdeploy() {
+        const that = this
         if (this.props.gdeployWizardType === "expand_cluster") {
-            GdeployUtil.runExpandCluster(this.props.expandClusterConfigFilePath, function (result) {
+            GdeployUtil.runExpandCluster(that.props.expandClusterConfigFilePath, function (result) {
                 if (result) {
-                    GdeployUtil.runGdeploy(this.props.configFilePath, this.gdeployStdout, this.gdeployDone, this.gdeployFail)
-                    this.setState({ gdeployStatus: 1 })
+                    GdeployUtil.runGdeploy(that.props.configFilePath, that.gdeployStdout, that.gdeployDone, that.gdeployFail)
+                    that.setState({ gdeployStatus: 1 })
                 }
                 else {
                     console.log("Error while running expand cluster.");
