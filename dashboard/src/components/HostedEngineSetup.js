@@ -24,7 +24,8 @@ class HostedEngineSetup extends Component {
       gdeployWizardType: "setup",
       registered: false,
       registeredTo: "",
-      answerFiles: []
+      answerFiles: [],
+      showFqdn: false
     };
     this.registeredCallback = this.registeredCallback.bind(this);
     this.gdeployFileCallback = this.gdeployFileCallback.bind(this);
@@ -48,6 +49,9 @@ class HostedEngineSetup extends Component {
     const that = this;
     GdeployUtil.isGdeployAvailable(function (isAvailable) {
       that.setState({ gdeployAvailable: isAvailable })
+      GdeployUtil.findGdeployVersion(function(isSupported) {
+        that.setState({ showFqdn: isSupported })
+      })
     })
   }
 
@@ -163,7 +167,7 @@ class HostedEngineSetup extends Component {
                                        onClose={this.abortCallback} />
         }
         {this.state.state === heSetupState.GDEPLOY &&
-          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} gdeployWizardType={this.state.gdeployWizardType} />
+          <GdeploySetup onSuccess={this.startSetup} onClose={this.abortCallback} gdeployWizardType={this.state.gdeployWizardType} showFqdn={this.state.showFqdn} />
         }
       </div>
     )
