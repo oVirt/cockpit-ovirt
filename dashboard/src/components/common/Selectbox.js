@@ -25,7 +25,7 @@ const Selectbox = ({optionList, selectedOption, callBack, gdeployWizardType = "n
               <li value={option.key} key={option.key}
                   onClick={() => callBack(option.key)}>
                   <a>
-                    {option.key}
+                    {option.title}
                   </a>
               </li>
           );
