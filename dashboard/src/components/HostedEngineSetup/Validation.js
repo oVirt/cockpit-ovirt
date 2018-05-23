@@ -78,7 +78,7 @@ function requiresRegexValidation(prop) {
 }
 
 function requiresRangeValidation(prop) {
-    return prop.hasOwnProperty("range");
+    return prop.value !== "" && prop.hasOwnProperty("range");
 }
 
 export default Validation;
