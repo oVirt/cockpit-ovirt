@@ -746,7 +746,7 @@ span.nested-input .form-control:hover {
     margin-top: -10px;
 }
 
-i.lun-size-warning-icon {
+i.disabled-lun-warning-icon {
     margin-left: -20px;
     margin-right: 5px;
 }
