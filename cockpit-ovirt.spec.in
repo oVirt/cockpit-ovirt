@@ -89,6 +89,10 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed May 30 2018 Ryan Barry <rbarry@redhat.com> - 0.11.26-1
+- Continuing HE fixes
+- Prompt to exit the wizard if it's running
+
 * Wed May 23 2018 Ryan Barry <rbarry@redhat.com> - 0.11.25-1
 - More gdeploy fixes
 
