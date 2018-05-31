@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Thu May 31 2018 Ryan Barry <rbarry@redhat.com> - 0.11.27-1
+- Revert gdeploy cancel button
+
 * Wed May 30 2018 Ryan Barry <rbarry@redhat.com> - 0.11.26-1
 - Continuing HE fixes
 - Prompt to exit the wizard if it's running
