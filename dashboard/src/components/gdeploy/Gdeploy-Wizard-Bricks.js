@@ -624,7 +624,7 @@ class WizardBricksStep extends Component {
                     </a>
                 }
                 <form className="form-horizontal">
-                    <div className="panel-heading gdeploy-wizard-section-title">
+                    <div id="lv-cache-toggle">
                         <input type="checkbox"
                             checked={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache}
                             onChange={(e) => this.handleLvCacheConfig("lvCache", e.target.checked)}
