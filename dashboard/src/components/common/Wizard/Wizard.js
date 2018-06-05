@@ -339,7 +339,7 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
 
     return (
         <div className="modal-footer wizard-pf-footer">
-            <button type="button" className={cancelBtnClasses} onClick={cancel} data-dismiss="modal"
+            <button type="button" className={cancelBtnClasses} onClick={cancel} data-dismiss={dataDismissValue}
                     aria-hidden="true">
                 Cancel
             </button>
