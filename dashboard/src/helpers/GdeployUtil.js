@@ -66,7 +66,7 @@ var GdeployUtil = {
             }],
         }
     },
-    createGdeployConfig(glusterModel, templateModel, filePath, callback) {
+    createGdeployConfig(glusterModel, templateModel, filePath, gdeployWizardType = "none", callback) {
         const template = JSON.parse(JSON.stringify(templateModel));
         const volumeTemplate = template.volume
         const volumeConfigs = this.createVolumeConfigs(glusterModel.volumes, glusterModel.hosts, volumeTemplate)
@@ -86,7 +86,8 @@ var GdeployUtil = {
             lvCacheConfig,
             redhatSubscription,
             yumConfig,
-            vdoConfig
+            vdoConfig,
+            gdeployWizardType
         )
         const configString = this.convertToString(gdeployConfig)
         this.handleDirAndFileCreation(filePath, configString, function(result){
@@ -290,7 +291,7 @@ var GdeployUtil = {
         //Return size in GBs
         return Math.ceil(arbiterSizeKB / (1024 * 1024))
     },
-    mergeConfigWithTemplate(template, hosts, preFlightCheck, volumeConfigs, brickConfig, lvCacheConfig, redhatSubscription, yumConfig, vdoConfig) {
+    mergeConfigWithTemplate(template, hosts, preFlightCheck, volumeConfigs, brickConfig, lvCacheConfig, redhatSubscription, yumConfig, vdoConfig, gdeployWizardType = "none") {
         const gdeployConfig = {}
         for (var section in template) {
             if (template.hasOwnProperty(section)) {
@@ -370,7 +371,7 @@ var GdeployUtil = {
                     volumeConfigs.forEach(function(volumeConfig, index) {
                         gdeployConfig['volume' + (index + 1)] = volumeConfig
                     })
-                } else {
+                } else if (gdeployWizardType !== "create_volume") {
                     gdeployConfig[section] = template[section]
                 }
                 if (vdoConfig.length != 0) {
