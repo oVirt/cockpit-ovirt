@@ -34,6 +34,7 @@ class WizardPreviewStep extends Component {
                     GdeployUtil.createGdeployConfig(that.props.glusterModel,
                         configTemplate,
                         that.props.configFilePath,
+                        that.props.gdeployWizardType,
                     function(returnValue){
                       console.log(`Gdeploy configuration saved successfully to ${that.props.configFilePath}`)
                       that.readGdeployConfig()
