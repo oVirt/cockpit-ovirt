@@ -217,40 +217,42 @@ const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, de
   ];
 
   return (
-    <div className="curtains curtains-with-footer blank-slate-pf">
-      <div className="wizard-container-center">
-        <div className="blank-slate-pf-icon">
-          <img src={logoUrl} className="curtains-logo" />
-        </div>
-        <h1 className="curtains-header">
-          Hosted Engine Setup
-        </h1>
-        <div className="row">
-          <div className="col-sm-8 col-sm-offset-2">
-            <p className="curtains-message">
-                {message}
-            </p>
-          </div>
-        </div>
-        <div className="he-wizard-deployment-options-container">
-          <DeploymentOptionPanel iconType={"pficon-cluster"}
-                                 deploymentTypeOption={deploymentOption.REGULAR}
-                                 mainText={"Hosted Engine"}
-                                 subText={"Deploy oVirt hosted engine on storage that has already been provisioned"}
-                                 buttonText={"Start"}
-                                 buttonCallback={startButtonHandler} />
+      <div>
+        <div className="curtains curtains-with-footer blank-slate-pf">
+          <div className="wizard-container-center">
+            <div className="blank-slate-pf-icon">
+              <img src={logoUrl} className="curtains-logo" />
+            </div>
+            <h1 className="curtains-header">
+              Hosted Engine Setup
+            </h1>
+            <div className="row">
+              <div className="col-sm-8 col-sm-offset-2">
+                <p className="curtains-message">
+                    {message}
+                </p>
+              </div>
+            </div>
+            <div className="he-wizard-deployment-options-container">
+              <DeploymentOptionPanel iconType={"pficon-cluster"}
+                                     deploymentTypeOption={deploymentOption.REGULAR}
+                                     mainText={"Hosted Engine"}
+                                     subText={"Deploy oVirt hosted engine on storage that has already been provisioned"}
+                                     buttonText={"Start"}
+                                     buttonCallback={startButtonHandler} />
 
-          <DeploymentOptionPanel iconType={"fa-database"}
-                                 deploymentTypeOption={deploymentOption.HYPERCONVERGED}
-                                 isLastOption
-                                 mainText={"Hyperconverged"}
-                                 subText={"Configure gluster storage and oVirt hosted engine"}
-                                 buttonText={"Start"}
-                                 buttonCallback={startButtonHandler} />
+              <DeploymentOptionPanel iconType={"fa-database"}
+                                     deploymentTypeOption={deploymentOption.HYPERCONVERGED}
+                                     isLastOption
+                                     mainText={"Hyperconverged"}
+                                     subText={"Configure gluster storage and oVirt hosted engine"}
+                                     buttonText={"Start"}
+                                     buttonCallback={startButtonHandler} />
+            </div>
+          </div>
         </div>
         <HeWizardFooter />
       </div>
-    </div>
   )
 };
 
