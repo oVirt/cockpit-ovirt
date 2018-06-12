@@ -350,7 +350,7 @@ class WizardBricksStep extends Component {
     handleLvCacheConfig(property, value) {
       const that =this
       const lvCacheConfig = []
-        if(value) {
+        if(value || (property === "lvCacheSize" || property === "ssd")) {
           that.state.lvCacheConfig.forEach(function(eachConfig) {
             eachConfig.lvCache = true
             lvCacheConfig.push(eachConfig)
