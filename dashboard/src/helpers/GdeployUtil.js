@@ -734,10 +734,10 @@ var GdeployUtil = {
       cockpit.spawn(
         [ "rpm", "-qa", "gdeploy" ], { "superuser":"require" }
       ).done(function(gVersion){
-        if(that.isGdeploySupportVdo(gVersion)) {
-          callback(true)
+        if (typeof gVersion === "string" && gVersion !== "") {
+          callback(that.isGdeploySupportVdo(gVersion));
         } else {
-          callback(false)
+          callback(false);
         }
       }).fail(function(code){
         callback(false)
