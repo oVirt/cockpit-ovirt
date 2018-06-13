@@ -277,6 +277,7 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                         <label className="col-md-3 control-label">Mount Options</label>
                         <div className="col-md-6">
                             <input type="text" style={{width: "250px"}}
+                                   placeholder="option1=value1,option2=value2"
                                    title=""
                                    className="form-control"
                                    value={storageConfig.mntOptions.value}
