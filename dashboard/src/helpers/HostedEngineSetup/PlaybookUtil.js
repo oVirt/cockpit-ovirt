@@ -4,33 +4,32 @@ import { getAnsibleLogPath } from "../HostedEngineSetupUtil"
 
 class PlaybookUtil {
     constructor() {
+        this.runPlaybookWithVarFiles = this.runPlaybookWithVarFiles.bind(this);
+        this.runPlaybookWithVars = this.runPlaybookWithVars.bind(this);
         this.runPlaybook = this.runPlaybook.bind(this);
         this.readOutputFile = this.readOutputFile.bind(this);
         this.getResultsData = this.getResultsData.bind(this);
     }
 
-    runPlaybook(varFilePath, playbookPath, activityDescription, outputPath) {
+    runPlaybook(playbookPath, activityDescription, outputPath, options = "") {
         const self = this;
         return new Promise((resolve, reject) => {
             console.log(activityDescription + " started.");
+
+            const settings = [
+                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible",
+                "--inventory=localhost,"
+            ];
             let cmd = [];
             cmd.push("ansible-playbook");
-            if (varFilePath !== "") {
-                cmd.push("-e");
-                cmd.push("@" + varFilePath);
-            }
-            cmd = cmd.concat([
-                playbookPath,
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible",
-                "--inventory=localhost"
-            ]);
+            cmd.push(playbookPath);
+            cmd = (options.length !== 0) ? cmd.concat(options).concat(settings) : cmd.concat(settings);
 
             const env = [
-                `${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
                 `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
-                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPath),
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=" + outputPath
+                `HE_ANSIBLE_LOG_PATH=${getAnsibleLogPath(playbookPath)}`,
+                `OTOPI_CALLBACK_OF=${outputPath}`
             ];
 
             this.channel = cockpit.channel({
@@ -61,6 +60,40 @@ class PlaybookUtil {
                 }
             });
         });
+    }
+
+    runPlaybookWithVarFiles(playbookPath, activityDescription, outputPath, varFiles) {
+        const varFilesArr = [];
+
+        varFiles.forEach(function(varFile) {
+            varFilesArr.push(`@${varFile}`);
+        });
+
+        let options = [];
+        if (varFilesArr.length !== 0) {
+            options.push("-e");
+            options = options.concat(varFilesArr);
+        }
+
+        return this.runPlaybook(playbookPath, activityDescription, outputPath, options);
+    }
+
+    runPlaybookWithVars(playbookPath, activityDescription, outputPath, vars) {
+        const varsArr = [];
+
+        Object.getOwnPropertyNames(vars).forEach(
+            function(varName) {
+                let option = `${varName}=${vars[varName]}`;
+                varsArr.push(option);
+            }, this);
+
+        let options = [];
+        if (varsArr.length !== 0) {
+            options.push("-e");
+            options = options.concat(varsArr);
+        }
+
+        return this.runPlaybook(playbookPath, activityDescription, outputPath, options);
     }
 
     readOutputFile(path) {
