@@ -60,7 +60,7 @@ class WizardPreviewStep extends Component {
         })
     }
     componentWillReceiveProps(nextProps) {
-        if ((nextProps.activeStep == 4 || (nextProps.gdeployWizardType === "create_volume" && nextProps.activeStep == 3)) && !this.state.isChanged && !this.props.isDeploymentStarted) {
+        if ((nextProps.activeStep == 4 || (nextProps.gdeployWizardType === "create_volume" && nextProps.activeStep == 3)) && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
             this.createGdeployConfig()
         }
     }
