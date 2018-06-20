@@ -437,8 +437,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
 
                         <div className={getClassNames("host_name", errorMsgs)}>
                             <label className="col-md-3 control-label">Host FQDN</label>
-                            <div className="col-md-4">
-                                <input type="text"
+                            <div className="col-md-6">
+                                <input type="text" style={{width: "225px"}}
                                        placeholder="engine-host.example.com"
                                        title="Enter the host's FQDN."
                                        className="form-control"
