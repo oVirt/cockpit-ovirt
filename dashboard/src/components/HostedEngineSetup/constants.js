@@ -143,7 +143,8 @@ export const messages = {
     TARGET_RETRIEVAL_REQUIRED: "A LUN must be selected before proceeding to the next step. Please ensure a valid portal IP address and port have been entered and click the \"Retrieve Target List\" button above to see a list of available targets.",
     TARGET_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a target below to see a list of available LUNs.",
     LUN_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a LUN below.",
-    NUMERIC_VALUES_ONLY: "Only numeric values allowed"
+    NUMERIC_VALUES_ONLY: "Only numeric values allowed",
+    GLUSTER_REPLICA: "Please note that only replica 1 and replica 3 volumes are supported."
 };
 
 export const headers = {
