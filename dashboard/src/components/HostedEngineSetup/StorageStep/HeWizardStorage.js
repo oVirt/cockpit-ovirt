@@ -69,6 +69,15 @@ const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMs
                     </div>
                 </div>
 
+                {glusterSelected &&
+                    <div className="row">
+                        <div className="alert alert-info col-sm-8" style={{marginLeft: "20px"}}>
+                            <span className="pficon pficon-info" />
+                            <strong>{messages.GLUSTER_REPLICA}</strong>
+                        </div>
+                    </div>
+                }
+
                 <div className="form-group">
                     <label className="col-md-3 control-label">Storage Type</label>
                     <div className="col-md-6">
