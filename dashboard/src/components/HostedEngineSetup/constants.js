@@ -149,7 +149,8 @@ export const messages = {
     NUMERIC_VALUES_ONLY: "Only numeric values allowed",
     GLUSTER_REPLICA: "Please note that only replica 1 and replica 3 volumes are supported.",
     UNABLE_TO_VALIDATE_FQDN: "Unable to validate FQDN.",
-    LOCALHOST_INVALID_FQDN: `localhost/localhost.localdomain cannot be used as the FQDN`
+    LOCALHOST_INVALID_FQDN: `localhost/localhost.localdomain cannot be used as the FQDN`,
+    FQDN_VALIDATION_IN_PROGRESS: "FQDN validation is in progress. Please wait for validation to complete and try again."
 };
 
 export const headers = {
