@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import AnsiblePhasePreview from './AnsiblePhasePreview'
 import PreviewGenerator from '../../../helpers/HostedEngineSetup/PreviewGenerator'
@@ -116,11 +117,11 @@ class AnsiblePhasePreviewContainer extends Component {
 }
 
 AnsiblePhasePreviewContainer.propTypes = {
-    headerText: React.PropTypes.string,
-    stepName: React.PropTypes.string.isRequired,
-    heSetupModel: React.PropTypes.object.isRequired,
-    sections: React.PropTypes.array.isRequired,
-    phase: React.PropTypes.string.isRequired
+    headerText: PropTypes.string,
+    stepName: PropTypes.string.isRequired,
+    heSetupModel: PropTypes.object.isRequired,
+    sections: PropTypes.array.isRequired,
+    phase: PropTypes.string.isRequired
 };
 
 export default AnsiblePhasePreviewContainer;

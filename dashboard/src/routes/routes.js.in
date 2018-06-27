@@ -2,65 +2,59 @@ import React from 'react'
 import App from '../components/App'
 import Dashboard from '../components/Dashboard'
 import HostedEngine from '../components/HostedEngine'
-import HostedEngineSetup from '../components/HostedEngineSetup'
 import CreateGlusterVolume from '../components/gdeploy/CreateGlusterVolume'
 import ExpandCluster from '../components/gdeploy/ExpandCluster'
 import GlusterManagement from '../components/GlusterManagement'
 
-let root = {
-  path: '/',
-  component: App,
-  indexRoute: {
+const defaultRoute = [
+  { path: '/',
+    name: "Home",
+    exact: true,
+    component: Dashboard
+  }
+];
+
+export const sidebarRoutes = [
+  { path: "/dashboard",
+    name: "Dashboard",
+    icon: "fa-dashboard",
     component: Dashboard
   },
-  childRoutes: [],
-}
-
-export let paths = {
-  "Dashboard": {
-    path: "/dashboard",
-    icon: "fa-dashboard",
-    component: Dashboard,
-    indexRoute: true
-  },
-  "Hosted Engine": {
-    path: "/he",
+  { path: "/he",
+    name: "Hosted Engine",
     icon: "fa-cubes",
-    component: HostedEngine,
-    indexRoute: false
-  },
-}
-let nonSidebarPaths ={
-  "Create Gluster Volume": {
-    path: "/create_gluster_volume",
+    component: HostedEngine
+  }
+];
+
+const nonSidebarRoutes = [
+  { path: "/create_gluster_volume",
+    name: "Create Gluster Volume",
     icon: "fa-cubes",
-    component: CreateGlusterVolume,
-    indexRoute: false
+    component: CreateGlusterVolume
   },
-  "Expand Cluster": {
-    path: "/expand_cluster",
+  { path: "/expand_cluster",
+    name: "Expand Cluster",
     icon: "fa-cubes",
-    component: ExpandCluster,
-    indexRoute: false
+    component: ExpandCluster
   },
-  "Gluster Management": {
-    path:"/gluster-management",
-    icon:"fa-cubes",
-    component: GlusterManagement,
-    indexRoute:false
+  { path: "/gluster-management",
+    name: "Gluster Management",
+    icon: "fa-cubes",
+    component: GlusterManagement
   }
+];
+
+function getAllRoutes() {
+  return defaultRoute
+    .concat(sidebarRoutes)
+    .concat(nonSidebarRoutes);
 }
 
-function generateRoutes() {
-  for (var key in paths) {
-    root.childRoutes.push(paths[key])
+const routes = [
+  { component: App,
+    routes: getAllRoutes()
   }
-  for (var key in nonSidebarPaths) {
-    root.childRoutes.push(nonSidebarPaths[key])
-  }
-  return root
-}
+];
 
-const routes = generateRoutes()
-
-export default routes
+export default routes;

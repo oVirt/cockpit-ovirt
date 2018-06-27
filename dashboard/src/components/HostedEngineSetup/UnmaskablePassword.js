@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 
 const masked = "password-mask-icon fa fa-eye";
@@ -43,8 +44,8 @@ class UnmaskablePasswordContainer extends Component {
 }
 
 UnmaskablePasswordContainer.propTypes = {
-    value: React.PropTypes.string.isRequired,
-    onChangeHandler: React.PropTypes.func.isRequired
+    value: PropTypes.string.isRequired,
+    onChangeHandler: PropTypes.func.isRequired
 };
 
 export default UnmaskablePasswordContainer;

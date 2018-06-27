@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import ReviewItemListContainer from "./ReviewItemList";
 
@@ -28,9 +29,9 @@ class ReviewStepContainer extends Component {
 }
 
 ReviewStepContainer.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    isSubStep: React.PropTypes.bool.isRequired,
-    reviewItems: React.PropTypes.array.isRequired
+    stepName: PropTypes.string.isRequired,
+    isSubStep: PropTypes.bool.isRequired,
+    reviewItems: PropTypes.array.isRequired
 };
 
 const ReviewStep = ({collapsed, handleClick, isSubStep, stepName, reviewItems}) => {

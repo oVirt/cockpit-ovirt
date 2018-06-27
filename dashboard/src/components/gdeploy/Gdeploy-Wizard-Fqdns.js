@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
@@ -114,7 +115,7 @@ class WizardFqdnStep extends Component {
 }
 
 WizardFqdnStep.propTypes = {
-    stepName: React.PropTypes.string.isRequired
+    stepName: PropTypes.string.isRequired
 }
 
 const FqdnRow = ({fqdn, fqdnNo, gdeployWizardType, errorMsg, changeCallBack, deleteCallBack, validate}) => {

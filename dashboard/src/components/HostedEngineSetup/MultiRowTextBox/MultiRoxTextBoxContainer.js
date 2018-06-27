@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import MultiRowTextBox from './MultiRowTextBox'
 
@@ -47,11 +48,11 @@ class MultiRowTextBoxContainer extends Component {
 }
 
 MultiRowTextBoxContainer.propTypes = {
-    values: React.PropTypes.array.isRequired,
-    itemType: React.PropTypes.string.isRequired,
-    rowLimit: React.PropTypes.number,
-    handleValueUpdate: React.PropTypes.func.isRequired,
-    handleValueDelete: React.PropTypes.func.isRequired
+    values: PropTypes.array.isRequired,
+    itemType: PropTypes.string.isRequired,
+    rowLimit: PropTypes.number,
+    handleValueUpdate: PropTypes.func.isRequired,
+    handleValueDelete: PropTypes.func.isRequired
 };
 
 export default MultiRowTextBoxContainer;

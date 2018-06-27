@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 
 class ReviewItemContainer extends Component {
@@ -14,7 +15,7 @@ class ReviewItemContainer extends Component {
 }
 
 ReviewItemContainer.propTypes = {
-    reviewItem: React.PropTypes.object.isRequired
+    reviewItem: PropTypes.object.isRequired
 };
 
 const ReviewItem = ({itemLabel, itemValue}) => {

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
@@ -157,8 +158,8 @@ class WizardVolumesStep extends Component {
 }
 
 WizardVolumesStep.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    volumes: React.PropTypes.array.isRequired
+    stepName: PropTypes.string.isRequired,
+    volumes: PropTypes.array.isRequired
 }
 
 const VolumeRow = ({volume, isSingleNode, index, errorMsgs, changeCallBack, deleteCallBack}) => {

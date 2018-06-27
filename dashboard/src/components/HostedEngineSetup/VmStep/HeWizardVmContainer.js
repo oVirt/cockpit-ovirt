@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
 import {getErrorMsgForProperty, validateFqdn, validatePropsForUiStage} from '../Validation'
@@ -522,9 +523,9 @@ class HeWizardVmContainer extends Component {
 }
 
 HeWizardVmContainer.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    model: React.PropTypes.object.isRequired,
-    deploymentType: React.PropTypes.string.isRequired
+    stepName: PropTypes.string.isRequired,
+    model: PropTypes.object.isRequired,
+    deploymentType: PropTypes.string.isRequired
 };
 
 export default HeWizardVmContainer;

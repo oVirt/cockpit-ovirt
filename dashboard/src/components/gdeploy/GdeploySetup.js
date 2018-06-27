@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import WizardHostStep from './Gdeploy-Wizard-Hosts'
 import WizardFqdnStep from './Gdeploy-Wizard-Fqdns'
@@ -111,7 +112,7 @@ class GdeploySetup extends Component {
 }
 
 GdeploySetup.propTypes = {
-    onClose: React.PropTypes.func.isRequired,
-    onSuccess: React.PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func.isRequired,
 }
 export default GdeploySetup

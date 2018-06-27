@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import ReviewStepContainer from "./ReviewStep";
 
@@ -18,8 +19,8 @@ class ReviewStepPanelContainer extends Component {
 }
 
 ReviewStepPanelContainer.propTypes = {
-    headerText: React.PropTypes.string,
-    reviewSteps: React.PropTypes.object.isRequired
+    headerText: PropTypes.string,
+    reviewSteps: PropTypes.object.isRequired
 };
 
 const ReviewStepPanel = ({headerText, reviewSteps}) => {

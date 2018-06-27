@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { getErrorMsgForProperty, validatePropsForUiStage } from "../Validation";
 import {deploymentTypes, messages, status} from '../constants';
@@ -286,9 +287,9 @@ class HeWizardStorageContainer extends Component {
 }
 
 HeWizardStorageContainer.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    model: React.PropTypes.object.isRequired,
-    deploymentType: React.PropTypes.string.isRequired
+    stepName: PropTypes.string.isRequired,
+    model: PropTypes.object.isRequired,
+    deploymentType: PropTypes.string.isRequired
 };
 
 export default HeWizardStorageContainer

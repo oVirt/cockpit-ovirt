@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import classNames from 'classnames'
@@ -239,13 +240,13 @@ class Wizard extends Component {
 }
 
 Wizard.propTypes = {
-    title: React.PropTypes.string.isRequired,
-    onClose: React.PropTypes.func.isRequired,
-    onFinish: React.PropTypes.func.isRequired,
-    onStepChange: React.PropTypes.func.isRequired,
-    children: React.PropTypes.array.isRequired,
-    isDeploymentStarted: React.PropTypes.bool.isRequired,
-    suppressDataDismissAttribute: React.PropTypes.bool
+    title: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onFinish: PropTypes.func.isRequired,
+    onStepChange: PropTypes.func.isRequired,
+    children: PropTypes.array.isRequired,
+    isDeploymentStarted: PropTypes.bool.isRequired,
+    suppressDataDismissAttribute: PropTypes.bool
 };
 
 const WizardSteps = ({steps, activeStep, callBack}) => {

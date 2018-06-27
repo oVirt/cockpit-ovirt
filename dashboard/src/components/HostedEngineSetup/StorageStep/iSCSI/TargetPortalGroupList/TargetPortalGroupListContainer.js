@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import TargetPortalGroupList from "./TargetPortalGroupList";
 
@@ -15,7 +16,7 @@ class TargetPortalGroupListContainer extends Component {
 }
 
 TargetPortalGroupListContainer.propTypes = {
-    tpgtList: React.PropTypes.object.isRequired
+    tpgtList: PropTypes.object.isRequired
 };
 
 export default TargetPortalGroupListContainer

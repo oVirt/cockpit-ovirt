@@ -22,7 +22,7 @@ module.exports = {
         loader: "babel-loader",
         query:
         {
-          presets: ['es2015', 'react']
+          presets: ['env', 'react']
         }
       }, {
         test: /\.(png|jpg|jpeg|gif|svg)$/,

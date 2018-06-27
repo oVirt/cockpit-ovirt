@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Portal from './Portal'
 
@@ -15,7 +16,7 @@ class PortalContainer extends Component {
 }
 
 PortalContainer.propTypes = {
-    portal: React.PropTypes.object.isRequired
+    portal: PropTypes.object.isRequired
 };
 
 export default PortalContainer

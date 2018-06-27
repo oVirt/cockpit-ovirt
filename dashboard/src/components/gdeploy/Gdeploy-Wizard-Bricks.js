@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
@@ -701,12 +702,12 @@ class WizardBricksStep extends Component {
 }
 
 WizardBricksStep.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    glusterModel: React.PropTypes.object.isRequired,
-    raidConfig: React.PropTypes.object.isRequired,
-    bricks: React.PropTypes.array.isRequired,
-    hosts: React.PropTypes.array.isRequired,
-    lvCacheConfig: React.PropTypes.array.isRequired
+    stepName: PropTypes.string.isRequired,
+    glusterModel: PropTypes.object.isRequired,
+    raidConfig: PropTypes.object.isRequired,
+    bricks: PropTypes.array.isRequired,
+    hosts: PropTypes.array.isRequired,
+    lvCacheConfig: PropTypes.array.isRequired
 }
 
 const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack, gdeployWizardType}) => {

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import TargetPortalGroup from './TargetPortalGroup'
 
@@ -15,7 +16,7 @@ class TargetPortalGroupContainer extends Component {
 }
 
 TargetPortalGroupContainer.propTypes = {
-    targetPortalGroup: React.PropTypes.object.isRequired
+    targetPortalGroup: PropTypes.object.isRequired
 };
 
 export default TargetPortalGroupContainer
