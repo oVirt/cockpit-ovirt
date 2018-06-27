@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { deploymentStatus as status } from '../constants';
 import AnsiblePhaseExecutor from "../../../helpers/HostedEngineSetup/AnsiblePhaseExecutor";
@@ -59,9 +60,9 @@ class AnsiblePhaseExecutionContainer extends Component {
 }
 
 AnsiblePhaseExecutionContainer.propTypes = {
-    abortCallBack: React.PropTypes.func.isRequired,
-    heSetupModel: React.PropTypes.object.isRequired,
-    phase: React.PropTypes.string.isRequired
+    abortCallBack: PropTypes.func.isRequired,
+    heSetupModel: PropTypes.object.isRequired,
+    phase: PropTypes.string.isRequired
 };
 
 export default AnsiblePhaseExecutionContainer;

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import SubStepTabContainer from '../SubStepTab/SubStepTabContainer'
 import SubStepTabList from './SubStepTabList'
@@ -40,11 +41,11 @@ class SubStepTabListContainer extends Component {
 }
 
 SubStepTabListContainer.propTypes = {
-    stepIndex: React.PropTypes.number.isRequired,
-    steps: React.PropTypes.array.isRequired,
-    activeStep: React.PropTypes.number.isRequired,
-    activeSubStep: React.PropTypes.number.isRequired,
-    handleActiveSubStepChange: React.PropTypes.func.isRequired
+    stepIndex: PropTypes.number.isRequired,
+    steps: PropTypes.array.isRequired,
+    activeStep: PropTypes.number.isRequired,
+    activeSubStep: PropTypes.number.isRequired,
+    handleActiveSubStepChange: PropTypes.func.isRequired
 };
 
 export default SubStepTabListContainer

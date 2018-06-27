@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import GdeployUtil from '../../helpers/GdeployUtil'
 
@@ -88,8 +89,8 @@ class WizardPackageStep extends Component {
     }
 }
 WizardPackageStep.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    subscription: React.PropTypes.object.isRequired
+    stepName: PropTypes.string.isRequired,
+    subscription: PropTypes.object.isRequired
 }
 
 const Subscription = ({subscription, onUpdate}) => {

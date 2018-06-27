@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { AnswerFileGenerator } from '../../../helpers/HostedEngineSetupUtil'
 import { configValues, deploymentStatus } from '../constants';
@@ -57,8 +58,8 @@ class HeWizardExecutionContainer extends Component {
 }
 
 HeWizardExecutionContainer.propTypes = {
-    onSuccess: React.PropTypes.func.isRequired,
-    reDeployCallback: React.PropTypes.func.isRequired
+    onSuccess: PropTypes.func.isRequired,
+    reDeployCallback: PropTypes.func.isRequired
 };
 
 export default HeWizardExecutionContainer;

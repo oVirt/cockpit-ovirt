@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import HeWizardPreview from './HeWizardPreview'
 
@@ -86,9 +87,9 @@ class HeWizardPreviewContainer extends Component {
 }
 
 HeWizardPreviewContainer.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    heSetupModel: React.PropTypes.object.isRequired,
-    isDeploymentStarted: React.PropTypes.bool.isRequired,
+    stepName: PropTypes.string.isRequired,
+    heSetupModel: PropTypes.object.isRequired,
+    isDeploymentStarted: PropTypes.bool.isRequired,
 };
 
 const PreviewRow = ({property, value}) => {

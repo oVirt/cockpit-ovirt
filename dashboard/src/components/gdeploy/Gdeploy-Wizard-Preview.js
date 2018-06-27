@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import WizardExecutionStep from './Gdeploy-Wizard-Execution'
 import GdeployUtil from '../../helpers/GdeployUtil'
@@ -134,15 +135,15 @@ class WizardPreviewStep extends Component {
 }
 
 WizardPreviewStep.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    heAnsweFilePath: React.PropTypes.string.isRequired,
-    templatePath: React.PropTypes.string.isRequired,
-    glusterModel: React.PropTypes.object.isRequired,
-    configFilePath: React.PropTypes.string.isRequired,
-    heCommanAnswer: React.PropTypes.string.isRequired,
-    isDeploymentStarted: React.PropTypes.bool.isRequired,
-    onSuccess: React.PropTypes.func.isRequired,
-    reDeployCallback: React.PropTypes.func.isRequired
+    stepName: PropTypes.string.isRequired,
+    heAnsweFilePath: PropTypes.string.isRequired,
+    templatePath: PropTypes.string.isRequired,
+    glusterModel: PropTypes.object.isRequired,
+    configFilePath: PropTypes.string.isRequired,
+    heCommanAnswer: PropTypes.string.isRequired,
+    isDeploymentStarted: PropTypes.bool.isRequired,
+    onSuccess: PropTypes.func.isRequired,
+    reDeployCallback: PropTypes.func.isRequired
 }
 
 export default WizardPreviewStep

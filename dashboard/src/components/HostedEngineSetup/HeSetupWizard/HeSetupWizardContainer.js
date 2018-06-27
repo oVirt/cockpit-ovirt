@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import HeSetupWizard from './HeSetupWizard'
 import { HeSetupModel, isEmptyObject } from '../../../helpers/HostedEngineSetupUtil'
@@ -120,10 +121,10 @@ class HeSetupWizardContainer extends Component {
 }
 
 HeSetupWizardContainer.propTypes = {
-    deploymentType: React.PropTypes.string,
-    gDeployAnswerFilePaths: React.PropTypes.array,
-    onClose: React.PropTypes.func.isRequired,
-    onSuccess: React.PropTypes.func.isRequired
+    deploymentType: PropTypes.string,
+    gDeployAnswerFilePaths: PropTypes.array,
+    onClose: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func.isRequired
 };
 
 export default HeSetupWizardContainer;

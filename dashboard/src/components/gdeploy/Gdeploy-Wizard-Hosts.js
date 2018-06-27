@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
@@ -234,8 +235,8 @@ class WizardHostStep extends Component {
 }
 
 WizardHostStep.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    hosts: React.PropTypes.array.isRequired
+    stepName: PropTypes.string.isRequired,
+    hosts: PropTypes.array.isRequired
 }
 
 const HostRow = ({host, hostNo, gdeployWizardType, hostTypes, errorMsg, changeCallBack, deleteCallBack}) => {

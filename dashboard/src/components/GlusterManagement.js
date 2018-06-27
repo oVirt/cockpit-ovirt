@@ -1,4 +1,3 @@
-import Redirect from 'react-router'
 import React, { Component } from 'react'
 
 class GlusterManagement extends Component {

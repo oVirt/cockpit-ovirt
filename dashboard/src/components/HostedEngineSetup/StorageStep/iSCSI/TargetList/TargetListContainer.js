@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import TargetList from './TargetList'
 
@@ -22,7 +23,7 @@ class TargetListContainer extends Component {
 }
 
 TargetListContainer.propTypes = {
-    targetList: React.PropTypes.object.isRequired
+    targetList: PropTypes.object.isRequired
 };
 
 export default TargetListContainer

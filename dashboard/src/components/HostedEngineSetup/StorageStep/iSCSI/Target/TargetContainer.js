@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Target from './Target'
 
@@ -19,9 +20,9 @@ class TargetContainer extends Component {
 }
 
 TargetContainer.propTypes = {
-    target: React.PropTypes.object.isRequired,
-    handleTargetSelection: React.PropTypes.func.isRequired,
-    selectedTarget: React.PropTypes.string.isRequired
+    target: PropTypes.object.isRequired,
+    handleTargetSelection: PropTypes.func.isRequired,
+    selectedTarget: PropTypes.string.isRequired
 };
 
 export default TargetContainer

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { pingGateway } from '../../../helpers/HostedEngineSetupUtil'
 import { validatePropsForUiStage, getErrorMsgForProperty } from '../Validation'
@@ -136,9 +137,9 @@ class HeWizardNetworkContainer extends Component {
 }
 
 HeWizardNetworkContainer.propTypes = {
-    stepName: React.PropTypes.string.isRequired,
-    heSetupModel: React.PropTypes.object.isRequired,
-    deploymentType: React.PropTypes.string.isRequired
+    stepName: PropTypes.string.isRequired,
+    heSetupModel: PropTypes.object.isRequired,
+    deploymentType: PropTypes.string.isRequired
 };
 
 export default HeWizardNetworkContainer

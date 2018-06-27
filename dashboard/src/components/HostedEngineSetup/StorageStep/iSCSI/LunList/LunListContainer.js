@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import LunList from './LunList'
 
@@ -20,9 +21,9 @@ class LunListContainer extends Component {
 }
 
 LunListContainer.propTypes = {
-    lunList: React.PropTypes.array.isRequired,
-    handleLunSelection: React.PropTypes.func.isRequired,
-    selectedLun: React.PropTypes.string.isRequired
+    lunList: PropTypes.array.isRequired,
+    handleLunSelection: PropTypes.func.isRequired,
+    selectedLun: PropTypes.string.isRequired
 };
 
 export default LunListContainer

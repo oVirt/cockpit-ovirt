@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import GdeployUtil from '../../helpers/GdeployUtil'
 import ReactDOM from 'react-dom'
@@ -91,9 +92,9 @@ class WizardExecutionStep extends Component {
 }
 
 WizardExecutionStep.propTypes = {
-    configFilePath: React.PropTypes.string.isRequired,
-    onSuccess: React.PropTypes.func.isRequired,
-    reDeployCallback: React.PropTypes.func.isRequired
+    configFilePath: PropTypes.string.isRequired,
+    onSuccess: PropTypes.func.isRequired,
+    reDeployCallback: PropTypes.func.isRequired
 }
 
 const Status = ({ status, reDeployCallback }) => {

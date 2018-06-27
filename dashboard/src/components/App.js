@@ -1,74 +1,84 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router'
-import { paths } from '../routes/routes'
-var classNames = require('classnames')
+import { Link, withRouter } from 'react-router-dom'
+import { sidebarRoutes } from '../routes/routes'
+import classNames from 'classnames'
+import {renderRoutes} from "react-router-config";
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div>
+        <div className="ovirt-sidebar">
+          <Sidebar />
+        </div>
+        <div id="content">
+          {renderRoutes(this.props.route.routes)}
+        </div>
+      </div>
+        )
+    }
+}
 
 class Sidebar extends Component {
   constructor(props) {
-    super(props)
+    super(props);
   }
+
   static get defaultProps() {
     return {
-      links: paths
+      routes: sidebarRoutes
     }
   }
+
   render() {
-    var links = []
-    for (var link in this.props.links) {
-      links.push(<SidebarItem
-        key={link}
-        name={link}
-        item={this.props.links[link]}
-        />)
-    }
+    const links = [];
+    this.props.routes.forEach(function(link) {
+      links.push(
+        <SidebarItemWithRouter
+          key={link.name}
+          name={link.name}
+          item={link}
+        />
+      )
+    });
+
     return (
-      <ul>
-        {links}
-      </ul>
+      <ul> {links} </ul>
     )
   }
 }
 
 class SidebarItem extends Component {
-  constructor(props, context) {
-    super(props, context)
+  constructor(props) {
+    super(props);
   }
+
   render() {
-    var itemClass = classNames({
+    const itemClasses = classNames({
       'fa': true,
       'fa-fw': true,
       [`${this.props.item.icon}`]: true,
-    })
-    var active = classNames({
-      "active": this.context.router.isActive(this.props.item.path, true)
-    })
+    });
+
+    const isActive = this.props.location.pathname === this.props.item.path ||
+      (this.props.item.name === "Dashboard" && this.props.location.pathname === "/");
+
     return (
-      <li className={active}>
+      <li className={isActive ? "active" : ""}>
         <Link to={this.props.item.path}>
-          <span className={itemClass}></span> <br /> {this.props.name}
+          <span className={itemClasses} />
+          <br />
+          {this.props.name}
         </Link>
       </li>
     )
   }
 }
-SidebarItem.contextTypes = {
-  router: React.PropTypes.object.isRequired
-}
 
-export default class App extends Component {
-  constructor(props) {
-    super(props)
-  }
-  render() {
-    return (
-      <div>
-        <div className="ovirt-sidebar">
-          <Sidebar></Sidebar>
-        </div>
-        <div id="content">
-          {this.props.children}
-        </div>
-      </div>
-    )
-  }
-}
+const SidebarItemWithRouter = withRouter(SidebarItem);
+
+export default App;

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import ReviewItemContainer from './ReviewItem'
 
@@ -15,8 +16,8 @@ class ReviewItemListContainer extends Component {
 }
 
 ReviewItemListContainer.propTypes = {
-    collapsed: React.PropTypes.bool.isRequired,
-    reviewItems: React.PropTypes.array.isRequired
+    collapsed: PropTypes.bool.isRequired,
+    reviewItems: PropTypes.array.isRequired
 };
 
 const ReviewItemList = ({collapsed, reviewItemsList}) => {

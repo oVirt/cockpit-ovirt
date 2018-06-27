@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import MultiPartStep from './MultiPartStep'
 import classNames from 'classnames'
@@ -71,7 +72,7 @@ class MultiPartStepContainer extends Component {
 }
 
 MultiPartStepContainer.propTypes = {
-    stepName: React.PropTypes.string.isRequired
+    stepName: PropTypes.string.isRequired
 };
 
 export default MultiPartStepContainer
