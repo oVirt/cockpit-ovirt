@@ -1,5 +1,5 @@
 dnl
-dnl   Copyright 2016 Red Hat Inc.
+dnl   Copyright 2016-2018 Red Hat Inc.
 dnl
 dnl   Licensed under the Apache License, Version 2.0 (the "License");
 dnl   you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [11])
-define([VERSION_FIX], [28])
+define([VERSION_FIX], [29])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
 define([VERSION_RELEASE], [1])
 define([VERSION_SUFFIX],[])
