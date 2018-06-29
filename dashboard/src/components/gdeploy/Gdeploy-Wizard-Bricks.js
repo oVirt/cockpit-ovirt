@@ -24,8 +24,7 @@ class WizardBricksStep extends Component {
             arbiterVolumes: [],
             lvCacheConfig: props.lvCacheConfig,
             cacheMode: "writethrough",
-            cacheModeOption: [{ key: "writethrough", title: "writethrough" }, { key: "writeback", title: "writeback" }],
-            selectedCacheModeOption: {cacheMode: "writethrough", cacheModeIndex: 0},
+            cacheModeOptions: [{ key: "writethrough", title: "writethrough" }, { key: "writeback", title: "writeback" }],
             errorMsg: "",
             errorMsgs: {}
         }
@@ -658,8 +657,8 @@ class WizardBricksStep extends Component {
                         <label className="col-md-3 control-label">Cache Mode <span className="fa fa-lg fa-info-circle"
                             title="Caching mode is write-through by default. If cache is configured in other mode, please add input here."></span></label>
                         <div className="col-md-3">
-                        <Selectbox optionList={this.state.cacheModeOption}
-                          selectedOption={this.state.selectedCacheModeOption.cacheMode}
+                        <Selectbox optionList={this.state.cacheModeOptions}
+                          selectedOption={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].cacheMode}
                           callBack={(e) => this.handleCacheModeChange(e)}
                           />
                             <span className="help-block">{cacheModeMsg}</span>
