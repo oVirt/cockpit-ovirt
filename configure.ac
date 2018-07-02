@@ -35,9 +35,25 @@ AC_SUBST([COMMIT],
              grep $PACKAGE_TARNAME-$PACKAGE_RPM_VERSION-$PACKAGE_RPM_RELEASE |
              awk '{print $1}' )])
 
-AC_ARG_WITH([rhev], [AC_HELP_STRING([--with-rhev],
-            [Build cockpit-ovirt for RHEV])],
-            [RHEV=""], [RHEV="//"])
+AC_ARG_WITH([rhev],
+            [AC_HELP_STRING([--with-rhev],
+            [Build cockpit-ovirt for RHEV])])
+
+if test -z "$with_rhev"; then
+    RHEV=""
+    INSTALL_GUIDE_LINK="https://ovirt.org/documentation/self-hosted/Self-Hosted_Engine_Guide/"
+    MORE_INFO_LINK="http://www.ovirt.org/"
+    MORE_INFO_LINK_TEXT="oVirt Homepage"
+else
+    RHEV=""
+    INSTALL_GUIDE_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.2/html/self-hosted_engine_guide/"
+    MORE_INFO_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.2/"
+    MORE_INFO_LINK_TEXT="RHEV Documentation"
+fi
+
+AC_SUBST(INSTALL_GUIDE_LINK)
+AC_SUBST(MORE_INFO_LINK)
+AC_SUBST(MORE_INFO_LINK_TEXT)
 
 AC_ARG_WITH([npm-install], [AC_HELP_STRING([--with-npm-install],
             [enable the installation of needed dependencies using npm])],
@@ -76,6 +92,7 @@ AC_CONFIG_FILES([
 	Makefile
 	dashboard/Makefile
 	dashboard/src/routes/routes.js
+	dashboard/src/components/HeSetupFooter.js
 	cockpit-ovirt.spec
 ])
 
