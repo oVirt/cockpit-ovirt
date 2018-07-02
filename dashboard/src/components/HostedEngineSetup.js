@@ -8,6 +8,7 @@ import {heSetupState, deploymentOption, deploymentTypes, messages} from './Hoste
 import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
 import Selectbox from './common/Selectbox'
 import logoUrl from '../../static/branding/ovirt/ovirt-logo-highres.png'
+import HeSetupFooter from './HeSetupFooter'
 
 const classNames = require('classnames');
 
@@ -251,7 +252,7 @@ const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, de
             </div>
           </div>
         </div>
-        <HeWizardFooter />
+        <HeSetupFooter />
       </div>
   )
 };
@@ -277,48 +278,6 @@ const DeploymentOptionPanel = ({iconType, mainText, subText, buttonText, buttonC
        {buttonText}
      </button>
    </span>
-  )
-};
-
-const HeWizardFooter = () => {
-  return (
-      <div className="he-wizard-footer">
-        <div className="container">
-          <div className="row he-wizard-footer-content">
-            <div className="col-sm-6">
-              <div className="row">
-                <div className="col-sm-3 he-wizard-footer-header">
-                  Getting Started
-                </div>
-                <div className="col-sm-6">
-                  <ul className="he-wizard-footer-links">
-                    <li>
-                      <a href="https://ovirt.org/documentation/self-hosted/Self-Hosted_Engine_Guide/" target="_blank">
-                        Installation Guide
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-sm-6">
-              <div className="row">
-                <div className="col-sm-4 he-wizard-footer-header">
-                  More Information
-                </div>
-                <div className="col-sm-6">
-                  <ul className="he-wizard-footer-links">
-                    <li>
-                      <a href="http://www.ovirt.org" target="_blank">oVirt Homepage</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
   )
 };
 
@@ -458,8 +417,8 @@ class ExistingGlusterConfigDialog extends Component  {
 };
 
 const Registered = ({callback, engine}) => {
-  let message = `This system is already registered to ${engine}!`
-  let button_text = "Redeploy"
+  let message = `This system is already registered to ${engine}!`;
+  let button_text = "Redeploy";
   return (
       <div>
         <div className="curtains curtains-with-footer blank-slate-pf">
@@ -480,7 +439,7 @@ const Registered = ({callback, engine}) => {
             </div>
           </div>
         </div>
-        <HeWizardFooter />
+        <HeSetupFooter />
       </div>
   )
 };
