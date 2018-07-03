@@ -2,6 +2,10 @@ import React from 'react'
 import App from '../components/App'
 import Dashboard from '../components/Dashboard'
 import HostedEngine from '../components/HostedEngine'
+import HostedEngineSetup from '../components/HostedEngineSetup'
+import CreateGlusterVolume from '../components/gdeploy/CreateGlusterVolume'
+import ExpandCluster from '../components/gdeploy/ExpandCluster'
+import GlusterManagement from '../components/GlusterManagement'
 
 let root = {
   path: '/',
@@ -24,12 +28,35 @@ export let paths = {
     icon: "fa-cubes",
     component: HostedEngine,
     indexRoute: false
+  },
+}
+let nonSidebarPaths ={
+  "Create Gluster Volume": {
+    path: "/create_gluster_volume",
+    icon: "fa-cubes",
+    component: CreateGlusterVolume,
+    indexRoute: false
+  },
+  "Expand Cluster": {
+    path: "/expand_cluster",
+    icon: "fa-cubes",
+    component: ExpandCluster,
+    indexRoute: false
+  },
+  "Gluster Management": {
+    path:"/gluster-management",
+    icon:"fa-cubes",
+    component: GlusterManagement,
+    indexRoute:false
   }
 }
 
 function generateRoutes() {
   for (var key in paths) {
     root.childRoutes.push(paths[key])
+  }
+  for (var key in nonSidebarPaths) {
+    root.childRoutes.push(nonSidebarPaths[key])
   }
   return root
 }

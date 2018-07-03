@@ -764,3 +764,91 @@ i.password-mask-icon {
     font-size: 16px;
     color: gray;
 }
+
+/*Gluster Management Dashboard*/
+div.gluster-management .table > thead > tr > th,
+div.gluster-management .table > tbody > tr > th,
+div.gluster-management .table > tfoot > tr > th,
+div.gluster-management .table > thead > tr > td,
+div.gluster-management .table > tbody > tr > td,
+div.gluster-management .table > tfoot > tr > td
+{
+  padding:8px;
+}
+
+.gluster-management div.volume-bricks-table{
+  margin: 8px 0px;
+}
+
+
+div.gluster-management .table > thead{
+  background-image: none;
+  background-color: inherit;
+}
+
+
+.container-fluid.gluster-management{
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+.gluster-management .panel-heading{
+  font-size: 1.2em;
+}
+
+
+  .table-hover.gluster-management > tbody > tr.no-highlight:hover > td, .table-hover > tbody > tr.no-highlight:hover > td,
+  .table-hover.gluster-management > tbody > tr.no-highlight:hover > td, .table-hover > tbody > tr.no-highlight:hover > th
+  .table-hover.gluster-management > tbody > tr.no-highlight > td, .table-hover > tbody > tr.no-highlight > td,
+ .table-hover.gluster-management > tbody > tr.no-highlight > td, .table-hover > tbody > tr.no-highlight > th
+{
+  background-color: #f5f5f5;
+  cursor: default;
+}
+
+th.volume-expando, td.volume-expando{
+  box-sizing: content-box;
+  font-size: 20px;
+  width: 20px;
+}
+
+.gluster-management .fa {
+    display: inline;
+}
+
+button.refresh-btn{
+  margin-left: 10px;
+}
+
+.object-modal td, .object-modal th{
+  padding:8px;
+}
+
+.object-modal-btn{
+  background-color:transparent;
+  color: #00659c;
+  padding-left: 7px;
+  padding-right:7px;
+}
+
+.object-modal-btn:hover{
+  text-decoration: none;
+}
+
+.gluster-management span.status-icon{
+  font-size:20px;
+  padding-right: 8px;
+}
+
+.gluster-management span.fa-arrow-circle-o-up.status-icon{
+  color:green;
+}
+
+.gluster-management span.fa-arrow-circle-o-down.status-icon{
+  color:red;
+}
+
+.gluster-management .title{
+  margin-bottom: 27px;
+}
+/*end Gluster Management Dashboard */
