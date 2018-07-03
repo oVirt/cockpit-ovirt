@@ -278,25 +278,33 @@ class WizardBricksStep extends Component {
         }
         this.setState({selectedHost, enabledFields, hostArbiterVolumes})
     }
-    handleUpdate(index, property, value) {
+    handleUpdate(index, property, value, selectedBrick) {
+      let selectedHost = this.state.selectedHost
         let bricksList = this.state.bricksList
         const errorMsgs= this.state.errorMsgs
         let that = this
         if (property == "is_vdo_supported") {
           bricksList.forEach(function (eachBrick) {
             eachBrick.host_bricks.forEach(function (brick, brickIndex) {
-                if (brick['device'] == eachBrick.host_bricks[index]['device']) {
+              if(!value) {
+                bricksList[selectedHost.hostIndex].host_bricks.forEach(function (currentBrick) {
+                  if(selectedBrick['device'] === currentBrick['device']) {
+                    currentBrick[property] = value
+                  }
+                })
+              }
+              else if (brick['device'] == eachBrick.host_bricks[index]['device']) {
                     brick[property] = value
                 }
             })
           })
         }
         else if (property == "logicalSize") {
-            bricksList[this.state.selectedHost.hostIndex].host_bricks[index][property] = value
+            bricksList[selectedHost.hostIndex].host_bricks[index][property] = value
         }
         else {
-            for(var i = 2; i >= this.state.selectedHost.hostIndex; i--){
-                if(this.state.selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
+            for(var i = 2; i >= selectedHost.hostIndex; i--){
+                if(selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
                     const arbiterValue = GdeployUtil.getArbiterBrickSize(parseInt(value))
                     bricksList[i].host_bricks[index][property] = JSON.stringify(arbiterValue)
                 }
@@ -315,7 +323,7 @@ class WizardBricksStep extends Component {
                 }
             }
         }
-        this.validateBrick(bricksList[this.state.selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
+        this.validateBrick(bricksList[selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
         this.setState({ bricksList, errorMsgs })
     }
     validateRaidConfig(raidConfig, errorMsgs){
@@ -761,7 +769,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
             <td className="col-md-1" className="col-md-1" style={brick.isVdoSupported ? {} : { display: 'none' }}>
                 <input type="checkbox" className="gdeploy-wizard-thinp-checkbox" title="Configure dedupe & compression using VDO."
                     checked={brick.is_vdo_supported}
-                    onChange={(e) => changeCallBack(index, "is_vdo_supported", e.target.checked)}
+                    onChange={(e) => changeCallBack(index, "is_vdo_supported", e.target.checked, brick)}
                     />
             </td>
             <td className="col-md-1" style={brick.is_vdo_supported ? {} : { display: 'none' }}>
