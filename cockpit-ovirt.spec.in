@@ -89,6 +89,12 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Mon Jul 09 2018 Ryan Barry <rbarry@redhat.com> - 0.11.30-1
+- Add a Gluster management dashboard
+- Correct footer links for RHEV
+- Allow selection of dedupe and compression per host level
+- Make the writedown dropback reflect changed selections
+
 * Thu Jun 28 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.29-1
 - Removal of unwanted sections in Gdeploy Conf file for create_volume
 - Configure LV Cache section disables on empty fields
