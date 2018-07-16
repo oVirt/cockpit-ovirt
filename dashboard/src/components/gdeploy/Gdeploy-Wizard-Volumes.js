@@ -30,7 +30,13 @@ class WizardVolumesStep extends Component {
     }
     handleUpdate(index, property, value) {
         const volumes = this.state.volumes
-        volumes[index][property] = value
+        if(property === "name") {
+          let brick_dir = "/gluster_bricks/" + value + "/" + value
+          volumes[index]["brick_dir"] = brick_dir
+          volumes[index][property] = value
+        } else {
+          volumes[index][property] = value
+        }
         const errorMsgs= this.state.errorMsgs
         this.validateVolume(volumes[index], index, errorMsgs)
         this.setState({ volumes, errorMsgs })
@@ -52,7 +58,16 @@ class WizardVolumesStep extends Component {
         }
         if(volume.brick_dir.trim().length<4){
             errorMsgs[index].brick_dir = "Brick directory cannot be empty"
-                valid = false
+            valid = false
+        } else if(volume.brick_dir.trim()[0] !== "/") {
+            errorMsgs[index].brick_dir = "Brick directory should start with a \"/\""
+            valid = false
+        } else if(volume.brick_dir.trim().match(/[/]/g).length < 2) {
+            errorMsgs[index].brick_dir = "Brick directory needs to point to a specific path. Should be in the format similar to \"/gluster_bricks/example/example\""
+            valid = false
+        } else if(volume.brick_dir.trim().split("/")[1] !== "gluster_bricks") {
+            errorMsgs[index].brick_dir = "Brick directory should start with \"/gluster_bricks/\""
+            valid = false
         }
         return valid
     }

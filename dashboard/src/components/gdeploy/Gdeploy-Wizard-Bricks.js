@@ -115,12 +115,7 @@ class WizardBricksStep extends Component {
           let brick_dir_split = volume.brick_dir.split('/')
           let length = brick_dir_split.length
           let lastIndex = volume.brick_dir.lastIndexOf('/')
-          if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
-              brick_dir = volume.brick_dir.slice(0, lastIndex)
-          }
-          else {
-              brick_dir = volume.brick_dir
-          }
+          brick_dir = volume.brick_dir.slice(0, lastIndex)
           new_brick_dirs.push(brick_dir)
         })
         let old_volumes = []
@@ -171,12 +166,7 @@ class WizardBricksStep extends Component {
             let brick_dir_split = volume.brick_dir.split('/')
             let length = brick_dir_split.length
             let lastIndex = volume.brick_dir.lastIndexOf('/')
-            if (brick_dir_split[length - 1] === brick_dir_split[length - 2]) {
-                brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
-            }
-            else {
-                brickTemplate.brick_dir = volume.brick_dir
-            }
+            brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
             if (that.props.gdeployWizardType === "setup" && volume.name === "engine") {
                 brickTemplate.size = "100"
                 brickTemplate.thinp = false
