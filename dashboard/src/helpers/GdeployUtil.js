@@ -585,6 +585,20 @@ var GdeployUtil = {
             callBack(false)
         })
     },
+    isRhvhSystem(callBack){
+        let proc = cockpit.spawn(
+            ["grep",
+             'PRETTY_NAME="Red Hat Virtualization Host"',
+             '/etc/os-release'
+            ]
+        )
+        .done(function(code) {
+            callBack(true)
+        })
+        .fail(function(code) {
+            callBack(false)
+        })
+    },
     createDir(filePath, callback){
       // pick only directory path
       const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
