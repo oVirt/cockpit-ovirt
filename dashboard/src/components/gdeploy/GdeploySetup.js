@@ -16,7 +16,8 @@ class GdeploySetup extends Component {
             //TODO: These default values should be cleared before merging
             glusterModel: GdeployUtil.getDefaultGedeployModel(),
             isDeploymentStarted: false,
-            title: ''
+            title: '',
+            isRhvhSystem: false
         };
         this.handleFinish = this.handleFinish.bind(this)
         this.onStepChange = this.onStepChange.bind(this)
@@ -26,6 +27,10 @@ class GdeploySetup extends Component {
     }
     componentDidMount() {
       this.setTitle(this.props.gdeployWizardType)
+      let that = this
+      GdeployUtil.isRhvhSystem(function (isAvailable) {
+          that.setState({ isRhvhSystem: isAvailable })
+      })
     }
     onSuccess() {
         console.log("gdeploy config file is being generated");
@@ -63,7 +68,7 @@ class GdeploySetup extends Component {
                 fqdns={this.state.glusterModel.fqdns}
                 />)
         }
-        if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
+        if ((this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") && this.state.isRhvhSystem === false) {
             wizardChildren.push(<WizardPackageStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
                 stepName="Packages"
                 subscription={this.state.glusterModel.subscription}
