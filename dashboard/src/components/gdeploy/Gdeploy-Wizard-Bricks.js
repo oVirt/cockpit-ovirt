@@ -290,11 +290,17 @@ class WizardBricksStep extends Component {
                 bricksList[selectedHost.hostIndex].host_bricks.forEach(function (currentBrick) {
                   if(selectedBrick['device'] === currentBrick['device']) {
                     currentBrick[property] = value
+                    if(eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported){
+                      brick.thinp = true
+                    }
                   }
                 })
               }
               else if (brick['device'] == eachBrick.host_bricks[index]['device']) {
                     brick[property] = value
+                    if(eachBrick.host_bricks[0].name != brick.name){
+                      brick.thinp = false
+                    }
                 }
             })
           })
@@ -320,6 +326,11 @@ class WizardBricksStep extends Component {
                         return (brickIndex != index && brick["device"] == device &&  brick["is_vdo_supported"])
                     })
                     bricksList[i].host_bricks[index]["is_vdo_supported"] = isDeviceVdoEnabled
+                    if(isDeviceVdoEnabled) {
+                      bricksList[i].host_bricks[index]["thinp"] = false
+                    } else {
+                      bricksList[i].host_bricks[index]["thinp"] = true
+                    }
                 }
             }
         }
