@@ -77,9 +77,24 @@ class WizardPreviewStep extends Component {
     }
     handleSave() {
         this.setState({ isEditing: false })
+        let gdeployConfigArray = this.state.gdeployConfig.split("\n")
+        let hostsStart = gdeployConfigArray.indexOf("[hosts]") + 1
+        let hostsLast = gdeployConfigArray.indexOf("")
+        let changedHosts = gdeployConfigArray.slice(hostsStart, hostsLast)
+        let that = this
+        changedHosts.forEach(function (value, index) {
+          if(value !== that.props.glusterModel.hosts[index]) {
+            that.props.glusterModel.hosts[index] = value
+          }
+        })
         GdeployUtil.writeConfigFile(this.props.configFilePath, this.state.gdeployConfig, function (result) {
             console.log("Result after editing and saving config file: ", result)
         })
+        if(this.props.gdeployWizardType === "expand_cluster") {
+          GdeployUtil.createExpandClusterConfig(this.props.glusterModel, this.props.expandClusterConfigFilePath, function (result) {
+              console.log("Result after editing and saving ExpandClusterConfigFile: ", result);
+          })
+        }
     }
     render() {
         if (this.props.isDeploymentStarted) {
