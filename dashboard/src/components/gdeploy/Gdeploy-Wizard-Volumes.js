@@ -7,6 +7,7 @@ class WizardVolumesStep extends Component {
         super(props);
         this.state = {
             volumes: props.volumes,
+            isSingleNode: props.isSingleNode,
             errorMsg: "",
             errorMsgs: {}
         }
@@ -92,7 +93,7 @@ class WizardVolumesStep extends Component {
         const that = this
         this.state.volumes.forEach(function (volume, index) {
             volumeRows.push(
-                <VolumeRow volume={volume} key={index} index={index}
+                <VolumeRow volume={volume} isSingleNode={this.state.isSingleNode} key={index} index={index}
                     errorMsgs = {that.state.errorMsgs[index]}
                     changeCallBack={this.handleUpdate}
                     deleteCallBack={() => this.handleDelete(index)}
@@ -145,7 +146,7 @@ WizardVolumesStep.propTypes = {
     volumes: React.PropTypes.array.isRequired
 }
 
-const VolumeRow = ({volume, index, errorMsgs, changeCallBack, deleteCallBack}) => {
+const VolumeRow = ({volume, isSingleNode, index, errorMsgs, changeCallBack, deleteCallBack}) => {
     const volumeTypes = [
         { key: "replicate", title: "Replicate" }
     ]
@@ -178,6 +179,7 @@ const VolumeRow = ({volume, index, errorMsgs, changeCallBack, deleteCallBack}) =
                 <input type="checkbox" className="form-control" title="Third host in the host list will be used for creating arbiter bricks"
                     checked={volume.is_arbiter}
                     onChange={(e) => changeCallBack(index, "is_arbiter", e.target.checked)}
+                    disabled={(isSingleNode) ? true : false}
                     />
             </td>
             <td className="col-md-3">

@@ -106,7 +106,7 @@ class HostedEngineSetup extends Component {
   }
 
   startGdeploy() {
-    this.setState({ state: heSetupState.GDEPLOY })
+    this.setState({ state: heSetupState.GDEPLOY})
   }
 
   abortCallback() {
@@ -132,10 +132,12 @@ class HostedEngineSetup extends Component {
     });
   }
 
-  handleExistingGlusterConfigSelection(option) {
+  handleExistingGlusterConfigSelection(option, isSingleNode) {
+    let that = this
     if (option === deploymentOption.USE_EXISTING_GLUSTER_CONFIG) {
       this.startSetup([constants.heAnsfileFile, constants.heCommonAnsFile]);
     } else if (option === deploymentOption.HYPERCONVERGED) {
+      that.setState({isSingleNode : isSingleNode})
       this.startGdeploy();
     }
   }
@@ -189,7 +191,8 @@ class HostedEngineSetup extends Component {
           <GdeploySetup onSuccess={this.startSetup}
                         onClose={this.abortCallback}
                         gdeployWizardType={this.state.gdeployWizardType}
-                        showFqdn={this.state.showFqdn} />
+                        showFqdn={this.state.showFqdn}
+                        isSingleNode={this.state.isSingleNode}/>
         }
       </div>
     )
@@ -388,11 +391,11 @@ class ExistingGlusterConfigDialog extends Component  {
                     </div>
 
                     <div className="row popup-dialog-btn-row">
-                      <div className="col-sm-3 col-sm-offset-3">
+                      <div className="col-sm-3 col-sm-offset-1">
                         <button type="button"
                                 className="btn btn-default"
                                 aria-label="Use existing configuration"
-                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.USE_EXISTING_GLUSTER_CONFIG)}>
+                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.USE_EXISTING_GLUSTER_CONFIG, false)}>
                           Use Existing Configuration
                         </button>
                       </div>
@@ -401,9 +404,21 @@ class ExistingGlusterConfigDialog extends Component  {
                         <button type="button"
                                 className="btn btn-default"
                                 aria-label="Run gluster wizard"
-                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED)}>
+                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED, false)}>
                           Run Gluster Wizard
                         </button>
+                      </div>
+                      <div className="col-sm-3">
+                        <button type="button"
+                                className="btn btn-default"
+                                aria-label="Run gluster wizard for single node"
+                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED, true)}>
+                          Run Gluster Wizard For Single Node
+                        </button>
+                      </div>
+                      <div className="col-sm-1">
+                        <span className="fa fa-lg fa-info-circle"
+                            title="Single node setup doesn't provide high availability"></span>
                       </div>
                     </div>
                   </div>

@@ -25,6 +25,7 @@ class WizardBricksStep extends Component {
             lvCacheConfig: props.lvCacheConfig,
             cacheMode: "writethrough",
             cacheModeOptions: [{ key: "writethrough", title: "writethrough" }, { key: "writeback", title: "writeback" }],
+            glusterModel: props.glusterModel,
             errorMsg: "",
             errorMsgs: {}
         }
@@ -369,10 +370,15 @@ class WizardBricksStep extends Component {
       const that =this
       const lvCacheConfig = []
         if(value || (property === "lvCacheSize" || property === "ssd")) {
-          that.state.lvCacheConfig.forEach(function(eachConfig) {
-            eachConfig.lvCache = true
-            lvCacheConfig.push(eachConfig)
-          })
+          if(that.state.glusterModel.isSingleNode) {
+            that.state.lvCacheConfig[0].lvCache = true
+            lvCacheConfig.push(that.state.lvCacheConfig[0])
+          } else {
+            that.state.lvCacheConfig.forEach(function(eachConfig) {
+              eachConfig.lvCache = true
+              lvCacheConfig.push(eachConfig)
+            })
+          }
         } else {
           that.state.lvCacheConfig.forEach(function(eachConfig) {
             eachConfig.lvCache = false
@@ -480,6 +486,9 @@ class WizardBricksStep extends Component {
         }, this)
         if(!this.validateRaidConfig(this.state.raidConfig, errorMsgs)){
             valid = false
+        }
+        if(this.state.glusterModel.isSingleNode) {
+          this.state.lvCacheConfig = [this.state.lvCacheConfig[0]]
         }
         this.state.lvCacheConfig.forEach(function(hostLvCacheConfig, hostIndex) {
             if(!this.validateLvCacheConfig(hostLvCacheConfig, errorMsgs)){
