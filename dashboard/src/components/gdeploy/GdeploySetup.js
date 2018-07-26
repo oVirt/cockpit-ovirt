@@ -60,11 +60,12 @@ class GdeploySetup extends Component {
         let index = 1;
         wizardChildren.push(<WizardHostStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
             stepName="Hosts"
-            hosts={this.state.glusterModel.hosts}
+            glusterModel={this.state.glusterModel}
+            isSingleNode={this.props.isSingleNode}
             />)
-        if (this.props.gdeployWizardType === "setup" && this.props.showFqdn) {
+        if (this.props.gdeployWizardType === "setup" && this.props.showFqdn && !this.props.isSingleNode) {
             wizardChildren.push(<WizardFqdnStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
-                stepName="Fqdns"
+                stepName="FQDNs"
                 fqdns={this.state.glusterModel.fqdns}
                 />)
         }
@@ -77,6 +78,7 @@ class GdeploySetup extends Component {
         wizardChildren.push(<WizardVolumesStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
             stepName="Volumes"
             volumes={this.state.glusterModel.volumes}
+            isSingleNode={this.props.isSingleNode}
             />)
         wizardChildren.push(<WizardBricksStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
             stepName="Bricks"

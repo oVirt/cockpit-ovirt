@@ -8,15 +8,17 @@ class WizardHostStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            hosts: props.hosts,
+            hosts: props.glusterModel.hosts,
             hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
             errorMsgs: {},
-            isGdeployAvailableOnHost: false
+            isGdeployAvailableOnHost: false,
+            isSingleNode: props.isSingleNode
         }
         this.updateHost = this.updateHost.bind(this);
         this.getHostList = this.getHostList.bind(this);
         this.handleSelectedHostUpdate = this.handleSelectedHostUpdate.bind(this);
+        props.glusterModel.isSingleNode = props.isSingleNode
     }
     updateHost(index, hostaddress) {
         const hosts = this.state.hosts;
@@ -39,6 +41,10 @@ class WizardHostStep extends Component {
       }
     }
     validate(){
+        if(this.state.isSingleNode && this.state.hosts[0].length > 0) {
+          this.trimHostProperties()
+          return true
+        }
         if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
             this.trimHostProperties()
             let errorMsg = ""
@@ -167,30 +173,42 @@ class WizardHostStep extends Component {
     render() {
         const hostRows = [];
         const that = this
-        this.state.hosts.forEach(function (host, index) {
-            if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
-                hostRows.push(
-                  <HostRow host={host} key={index} hostNo={index + 1}
-                    gdeployWizardType={that.props.gdeployWizardType}
-                    hostTypes={that.state.hostTypes}
-                    errorMsg = {that.state.errorMsgs[index]}
-                    deleteCallBack={() => this.handleDelete(index)}
-                    changeCallBack={(e) => this.updateHost(index, e.target.value)}
-                  />
-                )
-            }
-            else {
-                hostRows.push(
-                  <HostRow host={host} key={index} hostNo={index + 1}
-                    gdeployWizardType={that.props.gdeployWizardType}
-                    hostTypes={that.state.hostTypes}
-                    errorMsg = {that.state.errorMsgs[index]}
-                    deleteCallBack={() => this.handleDelete(index)}
-                    changeCallBack={(e) => this.handleSelectedHostUpdate(index, e)}
-                  />
-                )
-            }
-        }, this)
+        if(that.state.isSingleNode) {
+          hostRows.push(
+            <HostRow host={this.state.hosts[0]} key={0} hostNo={1 }
+              gdeployWizardType={that.props.gdeployWizardType}
+              hostTypes={that.state.hostTypes}
+              errorMsg = {that.state.errorMsgs[0]}
+              deleteCallBack={() => this.handleDelete(0)}
+              changeCallBack={(e) => this.updateHost(0, e.target.value)}
+            />
+          )
+        } else {
+          this.state.hosts.forEach(function (host, index) {
+              if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
+                  hostRows.push(
+                    <HostRow host={host} key={index} hostNo={index + 1}
+                      gdeployWizardType={that.props.gdeployWizardType}
+                      hostTypes={that.state.hostTypes}
+                      errorMsg = {that.state.errorMsgs[index]}
+                      deleteCallBack={() => this.handleDelete(index)}
+                      changeCallBack={(e) => this.updateHost(index, e.target.value)}
+                    />
+                  )
+              }
+              else {
+                  hostRows.push(
+                    <HostRow host={host} key={index} hostNo={index + 1}
+                      gdeployWizardType={that.props.gdeployWizardType}
+                      hostTypes={that.state.hostTypes}
+                      errorMsg = {that.state.errorMsgs[index]}
+                      deleteCallBack={() => this.handleDelete(index)}
+                      changeCallBack={(e) => this.handleSelectedHostUpdate(index, e)}
+                    />
+                  )
+              }
+          }, this)
+        }
         return (
             <div>
                 {this.state.errorMsg && <div className="alert alert-danger">
@@ -200,6 +218,7 @@ class WizardHostStep extends Component {
                 }
                 <form className="form-horizontal">
                     {hostRows}
+                    {!that.state.isSingleNode &&
                     <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
                         <span className="pficon pficon-info"></span>
                         <strong>
@@ -207,6 +226,7 @@ class WizardHostStep extends Component {
                             Make sure, passwordless ssh is configured for all gluster hosts from the first host.
                         </strong>
                     </div>
+                  }
                 </form>
             </div>
         )
