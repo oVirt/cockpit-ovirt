@@ -2,7 +2,7 @@ export const configValues = {
     ANSWER_FILE_PATH_PREFIX: "/var/lib/ovirt-hosted-engine-setup/cockpit/",
     ANSWER_FILE_PATH: "/tmp/he-setup-answerfile.conf",
     ANSIBLE_CALLBACK_WHITELIST: "1_otopi_json,2_ovirt_logger",
-    ANSIBLE_PLAYBOOK_PATH: "/usr/share/cockpit/ovirt-dashboard/hostedEngineAnsibleFiles/heSetup.yml",
+    HE_ANSIBLE_PLAYBOOK_DIR: "/usr/share/cockpit/ovirt-dashboard/hostedEngineAnsibleFiles/",
     APPLIANCE_PATH_PREFIX: "/usr/share/ovirt-engine-appliance/",
     ANSIBLE_VAR_FILE_PATH_PREFIX: "/var/lib/ovirt-hosted-engine-setup/cockpit/",
     ANSIBLE_OUTPUT_DIR: "/var/tmp/ovirt-hosted-engine-setup/cockpit/",
@@ -17,7 +17,10 @@ export const ansiblePhases = {
     FINAL_CLEAN: "FINAL_CLEAN",
     ISCSI_DISCOVER: "ISCSI_DISCOVER",
     ISCSI_GET_DEVICES: "ISCSI_GET_DEVICES",
-    FC_GET_DEVICES: "FC_GET_DEVICES"
+    FC_GET_DEVICES: "FC_GET_DEVICES",
+    GET_NETWORK_INTERFACES: "GET_NETWORK_INTERFACES",
+    VALIDATE_HOSTNAMES: "VALIDATE_HOSTNAMES",
+    VALIDATE_HOST_FQDN: "VALIDATE_HOST_FQDN"
 };
 
 export const playbookPaths = {
@@ -29,7 +32,9 @@ export const playbookPaths = {
     ISCSI_DISCOVER: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_discover.yml",
     ISCSI_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_getdevices.yml",
     GET_NETWORK_INTERFACES: "/usr/share/ovirt-hosted-engine-setup/ansible/get_network_interfaces.yml",
-    FC_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/fc_getdevices.yml"
+    FC_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/fc_getdevices.yml",
+    VALIDATE_HOSTNAMES: "/usr/share/ovirt-hosted-engine-setup/ansible/validate_hostnames.yml",
+    HE_SETUP_WIZARD_INIT: "/usr/share/cockpit/ovirt-dashboard/hostedEngineAnsibleFiles/heSetup.yml"
 };
 
 export const playbookOutputPaths = {
@@ -41,7 +46,8 @@ export const playbookOutputPaths = {
     ISCSI_DISCOVER: "/tmp/iscsi_discover_out.json",
     ISCSI_GET_DEVICES: "/tmp/iscsi_getdevices_out.json",
     GET_NETWORK_INTERFACES: "/tmp/get_network_interfaces.json",
-    FC_GET_DEVICES: "/tmp/fc_getdevices_out.json"
+    FC_GET_DEVICES: "/tmp/fc_getdevices_out.json",
+    VALIDATE_HOSTNAMES: "/tmp/validate_hostnames.json"
 };
 
 export const configFileTypes = {
@@ -111,7 +117,8 @@ export const resourceConstants = {
 
 export const defaultValueProviderTasks = {
     GET_SYSTEM_DATA: "getSystemData",
-    RETRIEVE_NETWORK_INTERFACES: "retrieveNetworkInterfaces"
+    RETRIEVE_NETWORK_INTERFACES: "retrieveNetworkInterfaces",
+    VALIDATE_FQDN: "validateHostname"
 };
 
 export const messages = {
@@ -145,7 +152,9 @@ export const messages = {
     TARGET_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a target below to see a list of available LUNs.",
     LUN_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a LUN below.",
     NUMERIC_VALUES_ONLY: "Only numeric values allowed",
-    GLUSTER_REPLICA: "Please note that only replica 1 and replica 3 volumes are supported."
+    GLUSTER_REPLICA: "Please note that only replica 1 and replica 3 volumes are supported.",
+    UNABLE_TO_VALIDATE_FQDN: "Unable to validate FQDN.",
+    LOCALHOST_INVALID_FQDN: `localhost/localhost.localdomain cannot be used as the FQDN`
 };
 
 export const headers = {
@@ -217,4 +226,9 @@ export const ansibleOutputTypes = {
     WARNING: "OVEHOSTED_AC/warning",
     ERROR: "OVEHOSTED_AC/error",
     RESULT: "OVEHOSTED_AC/result"
+};
+
+export const fqdnValidationTypes = {
+    HOST: "host",
+    VM: "vm"
 };
