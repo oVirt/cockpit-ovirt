@@ -1,12 +1,4 @@
-import {
-    ansibleOutputTypes as outputTypes,
-    defaultValueProviderTasks as tasks,
-    fqdnValidationTypes,
-    messages,
-    playbookOutputPaths as outputPaths,
-    playbookPaths as playbookPaths
-} from "./constants";
-import PlaybookUtil from "../../helpers/HostedEngineSetup/PlaybookUtil";
+import { messages } from "./constants";
 
 const Validation = {
     ipAddress: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
@@ -87,74 +79,6 @@ function requiresRegexValidation(prop) {
 
 function requiresRangeValidation(prop) {
     return prop.value !== "" && prop.hasOwnProperty("range");
-}
-
-export function validateHostFqdn(fqdn) {
-    const playbookVars = {HOST_ADDRESS: fqdn};
-    return validateFqdn(fqdn, playbookVars);
-}
-
-export function validateVmFqdn(fqdn) {
-    const playbookVars = {FQDN: fqdn};
-    return validateFqdn(fqdn, playbookVars);
-}
-
-export function validateFqdn(fqdn, fqdnType) {
-    const playbookUtil = new PlaybookUtil();
-    const playbookPath = playbookPaths.VALIDATE_HOSTNAMES;
-    const outputPath = outputPaths.VALIDATE_HOSTNAMES.replace(".json", "") + "_" + fqdnType + ".json";
-    const isLocalhost = fqdn === "localhost" || fqdn === "localhost.localdomain";
-    const playbookVars = fqdnType === fqdnValidationTypes.HOST ? {HOST_ADDRESS: fqdn} : {FQDN: fqdn};
-
-    return new Promise((resolve, reject) => {
-        // Resolve quickly if localhost is being used to speed up loading time
-        if (isLocalhost) {
-            console.log(`Validation of FQDN ${fqdn} failed`);
-            resolve({task: tasks.VALIDATE_FQDN, error: messages.LOCALHOST_INVALID_FQDN, FQDN: fqdn});
-        } else {
-            playbookUtil.runPlaybookWithVars(playbookPath, "Validate FQDN", outputPath, playbookVars)
-                .then(() => {
-                    console.log(`Validation of FQDN ${fqdn} succeeded`);
-                    resolve({task: tasks.VALIDATE_FQDN, error: null, FQDN: fqdn});
-                })
-                .catch(error => {
-                    // The playbook will fail and reject if the hostname is invalid.
-                    // Failing to catch that error here would prevent the wizard from loading.
-                    console.log(error);
-                    console.log(`Validation of FQDN ${fqdn} failed`);
-                    playbookUtil.readOutputFile(outputPath)
-                        .then(output => {
-                            const errors = getFqdnValidationErrors(output);
-                            resolve({task: tasks.VALIDATE_FQDN, error: errors.join(" "), FQDN: fqdn});
-                        })
-                        .catch(error => {
-                            console.log(`Unable to read file: ${path}. Error: ${error}`);
-                            resolve({task: tasks.VALIDATE_FQDN, error: messages.UNABLE_TO_VALIDATE_FQDN, FQDN: fqdn});
-                        });
-                });
-        }
-    });
-}
-
-function getFqdnValidationErrors(fileContents) {
-    let lines = fileContents.split('\n');
-    // Filter blank lines
-    lines = lines.filter(n => n);
-    const errors = [];
-
-    lines.forEach(function(line) {
-        try {
-            const json = JSON.parse(line);
-            if (json["OVEHOSTED_AC/type"] === outputTypes.ERROR) {
-                const errorBody = json["OVEHOSTED_AC/body"];
-                const msg = errorBody.slice(errorBody.indexOf("\"msg\":") + 8, -2);
-                errors.push(msg.replace("\\n", ""));
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    });
-    return errors;
 }
 
 export default Validation;

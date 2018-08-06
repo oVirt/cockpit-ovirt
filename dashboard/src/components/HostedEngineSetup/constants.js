@@ -28,8 +28,7 @@ export const playbookPaths = {
     ISCSI_DISCOVER: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_discover.yml",
     ISCSI_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_getdevices.yml",
     GET_NETWORK_INTERFACES: "/usr/share/ovirt-hosted-engine-setup/ansible/get_network_interfaces.yml",
-    FC_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/fc_getdevices.yml",
-    VALIDATE_HOSTNAMES: "/usr/share/ovirt-hosted-engine-setup/ansible/validate_hostnames.yml"
+    FC_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/fc_getdevices.yml"
 };
 
 export const playbookOutputPaths = {
@@ -41,8 +40,7 @@ export const playbookOutputPaths = {
     ISCSI_DISCOVER: "/tmp/iscsi_discover_out.json",
     ISCSI_GET_DEVICES: "/tmp/iscsi_getdevices_out.json",
     GET_NETWORK_INTERFACES: "/tmp/get_network_interfaces.json",
-    FC_GET_DEVICES: "/tmp/fc_getdevices_out.json",
-    VALIDATE_HOSTNAMES: "/tmp/validate_hostnames.json"
+    FC_GET_DEVICES: "/tmp/fc_getdevices_out.json"
 };
 
 export const configFileTypes = {
@@ -112,8 +110,7 @@ export const resourceConstants = {
 
 export const defaultValueProviderTasks = {
     GET_SYSTEM_DATA: "getSystemData",
-    RETRIEVE_NETWORK_INTERFACES: "retrieveNetworkInterfaces",
-    VALIDATE_FQDN: "validateHostname"
+    RETRIEVE_NETWORK_INTERFACES: "retrieveNetworkInterfaces"
 };
 
 export const messages = {
@@ -147,9 +144,7 @@ export const messages = {
     TARGET_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a target below to see a list of available LUNs.",
     LUN_SELECTION_REQUIRED: "A LUN must be selected before proceeding to the next step. Please select a LUN below.",
     NUMERIC_VALUES_ONLY: "Only numeric values allowed",
-    GLUSTER_REPLICA: "Please note that only replica 1 and replica 3 volumes are supported.",
-    UNABLE_TO_VALIDATE_FQDN: "Unable to validate FQDN.",
-    LOCALHOST_INVALID_FQDN: `localhost/localhost.localdomain cannot be used as the FQDN`
+    GLUSTER_REPLICA: "Please note that only replica 1 and replica 3 volumes are supported."
 };
 
 export const headers = {
@@ -221,9 +216,4 @@ export const ansibleOutputTypes = {
     WARNING: "OVEHOSTED_AC/warning",
     ERROR: "OVEHOSTED_AC/error",
     RESULT: "OVEHOSTED_AC/result"
-};
-
-export const fqdnValidationTypes = {
-    HOST: "host",
-    VM: "vm"
 };
