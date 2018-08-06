@@ -101,6 +101,8 @@ class HeWizardVmContainer extends Component {
     setDefaultValues() {
         const heSetupModel = this.state.heSetupModel;
         const defaultsProvider = this.props.defaultsProvider;
+        const errorMsgs = this.state.errorMsgs;
+        const collapsibleSections = this.state.collapsibleSections;
 
         const networkInterfaces = defaultsProvider.getNetworkInterfaces();
         this.setState({ interfaces: networkInterfaces });
@@ -112,7 +114,14 @@ class HeWizardVmContainer extends Component {
         this.setCpuModel(cpuArch, heSetupModel);
         this.setApplianceFiles();
 
-        this.setState({ heSetupModel, cpuArch: cpuArch })
+        if (!defaultsProvider.hostFqdnIsValid()) {
+            const hostnameError = defaultsProvider.getHostFqdnValidationError();
+            heSetupModel.network.host_name.errorMsg = hostnameError;
+            errorMsgs.host_name = hostnameError;
+            collapsibleSections.advanced = false;
+        }
+
+        this.setState({ heSetupModel, cpuArch: cpuArch, errorMsgs, collapsibleSections });
     }
 
     setCpuModel(cpuArch, heSetupModel) {
