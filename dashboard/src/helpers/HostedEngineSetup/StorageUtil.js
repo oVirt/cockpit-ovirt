@@ -36,7 +36,7 @@ class StorageUtil {
         const outputPath = outputPaths.FC_GET_DEVICES;
         return this.varFileGen.writeVarFileForPhase(phases.FC_GET_DEVICES)
             .then(varFilePath => {
-                return playbookUtil.runPlaybookWithVarFiles(playbookPath, "Get fiber channel LUNs", outputPath, [varFilePath]);
+                return playbookUtil.runPlaybookWithVarFiles(playbookPath, outputPath, [varFilePath]);
             })
             .then(() => playbookUtil.readOutputFile(outputPath))
             .then(output => playbookUtil.getResultsData(output))

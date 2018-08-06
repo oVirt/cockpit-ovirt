@@ -107,7 +107,7 @@ export class DefaultValueProvider {
         const self = this;
 
         return new Promise((resolve, reject) => {
-            playbookUtil.runPlaybook(playbookPath, "Get network interfaces", outputPath)
+            playbookUtil.runPlaybook(playbookPath, outputPath)
                 .then(() => playbookUtil.readOutputFile(outputPath))
                 .then(output => self.setNetworkInterfaces(output))
                 .then(() => {
