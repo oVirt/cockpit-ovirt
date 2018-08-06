@@ -101,7 +101,7 @@ export function validateVmFqdn(fqdn) {
 export function validateFqdn(fqdn, fqdnType) {
     const playbookUtil = new PlaybookUtil();
     const playbookPath = playbookPaths.VALIDATE_HOSTNAMES;
-    const outputPath = outputPaths.VALIDATE_HOSTNAMES.replace(".json", "") + "_" + fqdnType + ".json";
+    const outputPath = playbookUtil.getAnsibleOutputPath(ansiblePhases.VALIDATE_HOSTNAMES);
     const isLocalhost = fqdn === "localhost" || fqdn === "localhost.localdomain";
     const playbookVars = fqdnType === fqdnValidationTypes.HOST ? {HOST_ADDRESS: fqdn} : {FQDN: fqdn};
 

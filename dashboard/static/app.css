@@ -765,6 +765,7 @@ i.password-mask-icon {
     color: gray;
 }
 
+
 /*Gluster Management Dashboard*/
 div.gluster-management .table > thead > tr > th,
 div.gluster-management .table > tbody > tr > th,
@@ -852,3 +853,36 @@ button.refresh-btn{
   margin-bottom: 27px;
 }
 /*end Gluster Management Dashboard */
+
+input.fqdn-textbox {
+    width: 225px;
+    display: inline-block;
+}
+
+span.field-validation-spinner-container {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+span > div.field-validation-spinner {
+    height: 17px !important;
+    width: 17px !important;
+}
+
+div.fqdn-status-container {
+    width: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+span.fqdn-status-icon {
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+button.fqdn-validation-btn {
+    width: 65px;
+}
