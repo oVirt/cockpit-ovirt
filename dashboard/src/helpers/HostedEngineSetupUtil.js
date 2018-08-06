@@ -498,7 +498,8 @@ export class HeSetupModel {
                     reviewOrder: 140,
                     uiStage: "VM",
                     useInAnswerFile: false,
-                    required: false
+                    required: true,
+                    errorMsg: ""
                 }
             },
             vm: {
