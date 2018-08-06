@@ -498,8 +498,7 @@ export class HeSetupModel {
                     reviewOrder: 140,
                     uiStage: "VM",
                     useInAnswerFile: false,
-                    required: false,
-                    errorMsg: ""
+                    required: false
                 }
             },
             vm: {
@@ -1146,8 +1145,8 @@ export class HeSetupModel {
     }
 
     setDefaultValues(dataProvider) {
-        this.model.engine.appHostName.value = dataProvider.getHostFqdn();
-        this.model.network.host_name.value = dataProvider.getHostFqdn();
+        this.model.engine.appHostName.value = dataProvider.getFQDN();
+        this.model.network.host_name.value = dataProvider.getFQDN();
         this.model.vm.vmMACAddr.value = dataProvider.generateMacAddr();
         this.model.vm.cloudinitVMTZ.value = dataProvider.getTimeZone();
         this.model.vm.cloudinitHostIP.value = dataProvider.getIpAddress();
