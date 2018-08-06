@@ -852,22 +852,3 @@ button.refresh-btn{
   margin-bottom: 27px;
 }
 /*end Gluster Management Dashboard */
-
-input.fqdn-textbox {
-    width: 225px;
-    display: inline-block;
-}
-
-span.field-validation-spinner {
-    display: inline-block;
-    margin-left: 5px;
-    margin-right: 5px;
-    vertical-align: middle;
-}
-
-span.field-validation-spinner-container {
-    display: inline-block;
-    height: 26px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-}

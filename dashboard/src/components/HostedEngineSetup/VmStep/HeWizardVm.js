@@ -2,7 +2,7 @@ import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
-import {amdCpuTypes, deploymentTypes, fqdnValidationTypes as fqdnTypes, intelCpuTypes, messages, status} from "../constants"
+import {amdCpuTypes, deploymentTypes, intelCpuTypes, messages, status as gwState} from "../constants"
 import UnmaskablePasswordContainer from "../UnmaskablePassword";
 
 const consoleTypes = [
@@ -27,10 +27,9 @@ const rootSshAccessOptions = [
 ];
 
 const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
-                        fqdnValidationData, getCidrErrorMsg, gatewayState, interfaces, handleDnsAddressUpdate,
-                        handleDnsAddressDelete, handleRootPwdUpdate, handleImportApplianceUpdate, handleVmConfigUpdate,
-                        handleCollapsibleSectionChange, heSetupModel, importAppliance, showApplPath, verifyDns,
-                        verifyReverseDns, warningMsgs, validateFqdn}) => {
+                        getCidrErrorMsg, gatewayState, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete, handleRootPwdUpdate,
+                        handleImportApplianceUpdate, handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel,
+                        importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
     const vmConfig = heSetupModel.vm;
     const vdsmConfig = heSetupModel.vdsm;
     const networkConfig = heSetupModel.network;
@@ -41,7 +40,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
     const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
-    const gatewayPingPending = gatewayState === status.POLLING;
+    const gatewayPingPending = gatewayState === gwState.POLLING;
 
     let advancedSectionIconClasses = "pficon fa he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
@@ -68,16 +67,6 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                         <strong>{memWarningMessage}</strong>
                     </div>
                 </div>
-                }
-
-                {warningMsgs.fqdnValidationInProgress &&
-                <div className="row">
-                    <div className="alert alert-warning col-sm-11">
-                        <span className="pficon pficon-warning-triangle-o" />
-                        <strong>{warningMsgs.fqdnValidationInProgress}</strong>
-                    </div>
-                </div>
-
                 }
 
                 {isOtopiDeployment &&
@@ -110,24 +99,17 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
 
                 <div className={getClassNames("fqdn", errorMsgs)}>
                     <label className="col-md-3 control-label">Engine VM FQDN</label>
-                    <div className="col-md-7">
+                    <div className="col-md-4">
                         <input type="text"
                                placeholder="ovirt-engine.example.com"
                                title="Enter the engine FQDN."
-                               className="form-control fqdn-textbox"
+                               className="form-control"
                                value={networkConfig.fqdn.value}
                                onChange={(e) => handleVmConfigUpdate("fqdn", e.target.value, "network")}
-                               onBlur={(e) => validateFqdn(fqdnTypes.VM)}
+                               onBlur={(e) => verifyDns(e.target.value)}
                         />
-                        <span className={fqdnValidationData.vm.state === status.POLLING ? "field-validation-spinner-container" : "hidden"}>
-                            <span className="field-validation-spinner">
-                                <div className="spinner spinner-sm blank-slate-pf-icon" />
-                            </span>
-                            Validating
-                        </span>
                         {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
                     </div>
-
                 </div>
 
                 <div className={getClassNames("vmMACAddr", errorMsgs)}>
@@ -456,20 +438,13 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                         <div className={getClassNames("host_name", errorMsgs)}>
                             <label className="col-md-3 control-label">Host FQDN</label>
                             <div className="col-md-6">
-                                <input type="text"
+                                <input type="text" style={{width: "225px"}}
                                        placeholder="engine-host.example.com"
                                        title="Enter the host's FQDN."
-                                       className="form-control fqdn-textbox"
+                                       className="form-control"
                                        value={networkConfig.host_name.value}
                                        onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
-                                       onBlur={(e) => validateFqdn(fqdnTypes.HOST)}
                                 />
-                                <span className={fqdnValidationData.host.state === status.POLLING ? "field-validation-spinner-container" : "hidden"}>
-                                    <span className="field-validation-spinner">
-                                        <div className="spinner spinner-sm blank-slate-pf-icon" />
-                                    </span>
-                                    Validating
-                                </span>
                                 {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
                             </div>
                         </div>
