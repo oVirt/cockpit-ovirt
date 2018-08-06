@@ -1,28 +1,14 @@
 import {
-    allIntelCpus,
-    allowedIntelCpus,
-    configValues,
-    defaultValueProviderTasks as tasks,
-    defaultInterfaces,
-    filteredNetworkInterfaces,
-    playbookOutputPaths as outputPaths,
-    playbookPaths,
-    resourceConstants,
-    status,
-    fqdnValidationTypes as fqdnTypes
+    allIntelCpus, allowedIntelCpus, configValues, defaultValueProviderTasks as tasks, defaultInterfaces,
+    filteredNetworkInterfaces, playbookOutputPaths as outputPaths, playbookPaths, resourceConstants, status
 } from "../../components/HostedEngineSetup/constants"
 import PlaybookUtil from './PlaybookUtil'
 import { isEmptyObject } from "../HostedEngineSetupUtil";
-import { validateFqdn } from "../../components/HostedEngineSetup/Validation";
 
 export class DefaultValueProvider {
     constructor(registeredCallback) {
         this.systemData = null;
         this.networkInterfaces = null;
-        this.hostFqdnValidationResults = {
-            valid: false,
-            error: ""
-        };
         this.registeredCallback = registeredCallback;
         this.ready = status.POLLING;
 
@@ -47,9 +33,7 @@ export class DefaultValueProvider {
         this.setNetworkInterfaces = this.setNetworkInterfaces.bind(this);
         this.getIpAddress = this.getIpAddress.bind(this);
         this.getIpData = this.getIpData.bind(this);
-        this.getHostFqdn = this.getHostFqdn.bind(this);
-        this.hostFqdnIsValid = this.hostFqdnIsValid.bind(this);
-        this.getHostFqdnValidationError = this.getHostFqdnValidationError.bind(this);
+        this.getFQDN = this.getFQDN.bind(this);
 
         this.init();
     }
@@ -97,14 +81,7 @@ export class DefaultValueProvider {
                     console.log("General system data retrieved successfully.");
                     let data = self.cleanData(json);
                     self.systemData = JSON.parse(data);
-                    validateFqdn(self.getHostFqdn(), fqdnTypes.HOST)
-                        .then(result => {
-                            self.hostFqdnValidationResults.valid = result.error === null;
-                            self.hostFqdnValidationResults.error = result.error;
-                            resolve({task: tasks.GET_SYSTEM_DATA, error: result.error});
-                        }).catch(result => {
-                            reject({task: tasks.GET_SYSTEM_DATA, error: result.error});
-                        });
+                    resolve({task: tasks.GET_SYSTEM_DATA, error: null});
                 })
                 .fail(function(error) {
                     console.log("General system data retrieval failed.");
@@ -338,21 +315,13 @@ export class DefaultValueProvider {
         return ipData;
     }
 
-    getHostFqdn() {
+    getFQDN() {
         const fqdnData = this.getTaskData("Get FQDN");
         let fqdn = "";
         if (typeof fqdnData !== "undefined") {
             fqdn = fqdnData["stdout"];
         }
         return fqdn;
-    }
-
-    hostFqdnIsValid() {
-        return this.hostFqdnValidationResults.valid;
-    }
-
-    getHostFqdnValidationError() {
-        return this.hostFqdnValidationResults.error;
     }
 }
 
