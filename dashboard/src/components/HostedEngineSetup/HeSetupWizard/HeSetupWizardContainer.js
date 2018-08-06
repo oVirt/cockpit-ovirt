@@ -40,17 +40,19 @@ class HeSetupWizardContainer extends Component {
         let systemData = null;
         let sysDataRetrieved = false;
         let networkIfacesRetrieved = false;
+        let hostFqdnValidated = false;
 
         if (!isEmptyObject(initResults)) {
             sysDataRetrieved = initResults[tasks.GET_SYSTEM_DATA] === true;
             networkIfacesRetrieved = initResults[tasks.RETRIEVE_NETWORK_INTERFACES] === true;
+            hostFqdnValidated = initResults[tasks.VALIDATE_FQDN] === true;
         }
 
         if (sysDataRetrieved) {
             this.libvirtRunning = this.defaultsProvider.libvirtRunning();
             this.virtSupported = this.defaultsProvider.virtSupported();
             this.sufficientMemAvail = this.defaultsProvider.sufficientMemAvail();
-            this.allSystemDataRetrieved = sysDataRetrieved && networkIfacesRetrieved;
+            this.allSystemDataRetrieved = sysDataRetrieved && networkIfacesRetrieved && hostFqdnValidated;
 
             const loadingSuccessful = this.allSystemDataRetrieved && this.libvirtRunning &&
                 this.virtSupported && this.sufficientMemAvail;

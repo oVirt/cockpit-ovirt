@@ -1,14 +1,27 @@
 import {
-    allIntelCpus, allowedIntelCpus, configValues, defaultValueProviderTasks as tasks, defaultInterfaces,
-    filteredNetworkInterfaces, playbookOutputPaths as outputPaths, playbookPaths, resourceConstants, status
+    allIntelCpus,
+    allowedIntelCpus,
+    configValues,
+    defaultValueProviderTasks as tasks,
+    defaultInterfaces,
+    filteredNetworkInterfaces,
+    playbookOutputPaths as outputPaths,
+    playbookPaths,
+    resourceConstants,
+    status
 } from "../../components/HostedEngineSetup/constants"
 import PlaybookUtil from './PlaybookUtil'
 import { isEmptyObject } from "../HostedEngineSetupUtil";
+import { validateDiscoveredHostFqdn } from "../../components/HostedEngineSetup/Validation";
 
 export class DefaultValueProvider {
     constructor(registeredCallback) {
         this.systemData = null;
         this.networkInterfaces = null;
+        this.hostFqdnValidationResults = {
+            valid: false,
+            error: ""
+        };
         this.registeredCallback = registeredCallback;
         this.ready = status.POLLING;
 
@@ -33,7 +46,10 @@ export class DefaultValueProvider {
         this.setNetworkInterfaces = this.setNetworkInterfaces.bind(this);
         this.getIpAddress = this.getIpAddress.bind(this);
         this.getIpData = this.getIpData.bind(this);
-        this.getFQDN = this.getFQDN.bind(this);
+        this.getHostFqdn = this.getHostFqdn.bind(this);
+        this.hostFqdnIsValid = this.hostFqdnIsValid.bind(this);
+        this.getHostFqdnValidationError = this.getHostFqdnValidationError.bind(this);
+        this.setHostFqdnValidationState = this.setHostFqdnValidationState.bind(this);
 
         this.init();
     }
@@ -41,7 +57,8 @@ export class DefaultValueProvider {
     init() {
         const sysDataProm = this.getSystemData();
         const netIfaceProm = this.retrieveNetworkInterfaces();
-        const proms = [sysDataProm, netIfaceProm];
+        const hostFqdnValidationProm = validateDiscoveredHostFqdn(this.setHostFqdnValidationState);
+        const proms = [sysDataProm, netIfaceProm, hostFqdnValidationProm];
 
         const successHandler = result => ({ payload: result, resolved: true, task: result.task });
         const catchHandler = error => ({ payload: error.error, resolved: false, task: error.task });
@@ -70,7 +87,7 @@ export class DefaultValueProvider {
     }
 
     getSystemData() {
-        const cmd = "ansible-playbook " + configValues.ANSIBLE_PLAYBOOK_PATH;
+        const cmd = "ansible-playbook " + playbookPaths.HE_SETUP_WIZARD_INIT;
         const options = { "environ": ["ANSIBLE_STDOUT_CALLBACK=json"] };
         const self = this;
 
@@ -315,13 +332,26 @@ export class DefaultValueProvider {
         return ipData;
     }
 
-    getFQDN() {
+    getHostFqdn() {
         const fqdnData = this.getTaskData("Get FQDN");
         let fqdn = "";
         if (typeof fqdnData !== "undefined") {
             fqdn = fqdnData["stdout"];
         }
         return fqdn;
+    }
+
+    hostFqdnIsValid() {
+        return this.hostFqdnValidationResults.valid;
+    }
+
+    getHostFqdnValidationError() {
+        return this.hostFqdnValidationResults.error;
+    }
+
+    setHostFqdnValidationState(result) {
+        this.hostFqdnValidationResults.valid = result.error === null;
+        this.hostFqdnValidationResults.error = result.error;
     }
 }
 
