@@ -89,6 +89,13 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Mon Aug 06 2018 Ryan Barry <rbarry@redhat.com> - 0.11.32-1
+- Correct gluster brick mount points
+- Support single node gluster deployment from cockpit
+- Remove the packages tab from the Gdeploy wizard
+- Refactor playbookutil
+- Update dependencies (new react, new react-router)
+
 * Fri Jul 20 2018 Ryan Barry <rbarry@redhat.com> - 0.11.31-1
 - Disabling Thinpool when compression and deduplication is enabled on a device
 
