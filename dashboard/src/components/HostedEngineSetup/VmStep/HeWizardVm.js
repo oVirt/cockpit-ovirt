@@ -2,7 +2,15 @@ import React from 'react'
 import Selectbox from '../../common/Selectbox'
 import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContainer'
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
-import {amdCpuTypes, deploymentTypes, intelCpuTypes, messages, status as gwState} from "../constants"
+import {
+    amdCpuTypes,
+    deploymentOption,
+    deploymentTypes,
+    fqdnValidationTypes as fqdnTypes,
+    intelCpuTypes,
+    messages,
+    status
+} from "../constants"
 import UnmaskablePasswordContainer from "../UnmaskablePassword";
 
 const consoleTypes = [
@@ -27,9 +35,10 @@ const rootSshAccessOptions = [
 ];
 
 const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
-                        getCidrErrorMsg, gatewayState, interfaces, handleDnsAddressUpdate, handleDnsAddressDelete, handleRootPwdUpdate,
-                        handleImportApplianceUpdate, handleVmConfigUpdate, handleCollapsibleSectionChange, heSetupModel,
-                        importAppliance, showApplPath, verifyDns, verifyReverseDns, warningMsgs}) => {
+                        fqdnValidationData, getCidrErrorMsg, gatewayState, interfaces, handleDnsAddressUpdate,
+                        handleDnsAddressDelete, handleRootPwdUpdate, handleImportApplianceUpdate, handleVmConfigUpdate,
+                        handleCollapsibleSectionChange, heSetupModel, importAppliance, showApplPath, verifyDns,
+                        verifyReverseDns, warningMsgs, validateFqdn}) => {
     const vmConfig = heSetupModel.vm;
     const vdsmConfig = heSetupModel.vdsm;
     const networkConfig = heSetupModel.network;
@@ -40,13 +49,24 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
     const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
-    const gatewayPingPending = gatewayState === gwState.POLLING;
+    const gatewayPingPending = gatewayState === status.POLLING;
 
     let advancedSectionIconClasses = "pficon fa he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
     const advancedSectionClasses = collapsibleSections["advanced"] ? "collapse" : "";
 
     const cidrPrefixClasses = errorMsgs["cloudinitVMStaticCIDRPrefix"] ? "form-group has-error" : "form-group nested-input";
+
+    const vmFqdnClassNames = (fqdnValidationData.vm.state !== status.EMPTY) ||
+        (heSetupModel.network.fqdn.value === "") ?
+        "fqdn-validation-btn btn btn-default disabled" :
+        "fqdn-validation-btn btn btn-default";
+    const hostFqdnClassNames = (fqdnValidationData.host.state !== status.EMPTY) ||
+        (heSetupModel.network.host_name.value === "") ?
+        "fqdn-validation-btn btn btn-default disabled" :
+        "fqdn-validation-btn btn btn-default";
+
+
 
     return (
         <div>
@@ -65,6 +85,33 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                     <div className="alert alert-warning col-sm-11">
                         <span className="pficon pficon-warning-triangle-o" />
                         <strong>{memWarningMessage}</strong>
+                    </div>
+                </div>
+                }
+
+                {warningMsgs.fqdnValidationInProgress &&
+                <div className="row">
+                    <div className="alert alert-warning col-sm-11">
+                        <span className="pficon pficon-warning-triangle-o" />
+                        <strong>{warningMsgs.fqdnValidationInProgress}</strong>
+                    </div>
+                </div>
+                }
+
+                {warningMsgs.host_name &&
+                <div className="row">
+                    <div className="alert alert-warning col-sm-11">
+                        <span className="pficon pficon-warning-triangle-o" />
+                        <strong>{warningMsgs.host_name}</strong>
+                    </div>
+                </div>
+                }
+
+                {warningMsgs.fqdn &&
+                <div className="row">
+                    <div className="alert alert-warning col-sm-11">
+                        <span className="pficon pficon-warning-triangle-o" />
+                        <strong>{warningMsgs.fqdn}</strong>
                     </div>
                 </div>
                 }
@@ -99,15 +146,33 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
 
                 <div className={getClassNames("fqdn", errorMsgs)}>
                     <label className="col-md-3 control-label">Engine VM FQDN</label>
-                    <div className="col-md-4">
+                    <div className="col-md-7">
                         <input type="text"
                                placeholder="ovirt-engine.example.com"
                                title="Enter the engine FQDN."
-                               className="form-control"
+                               className="form-control fqdn-textbox"
                                value={networkConfig.fqdn.value}
                                onChange={(e) => handleVmConfigUpdate("fqdn", e.target.value, "network")}
-                               onBlur={(e) => verifyDns(e.target.value)}
                         />
+                        <div className="fqdn-status-container">
+                            {fqdnValidationData.vm.state === status.SUCCESS && <span className="fqdn-status-icon pficon pficon-ok"/>}
+                            {fqdnValidationData.vm.state === status.FAILURE && <span className="fqdn-status-icon pficon pficon-error-circle-o"/>}
+                        </div>
+                        <button type="button"
+                                className={vmFqdnClassNames}
+                                aria-label="Check VM FQDN"
+                                onClick={() => validateFqdn(fqdnTypes.VM)}
+                                style={{verticalAlign: "top"}} >
+                            <span className={fqdnValidationData.vm.state === status.POLLING ? "hidden" : ""}>
+                                Validate
+                            </span>
+                            <span className={fqdnValidationData.vm.state === status.POLLING ? "" : "hidden"}>
+                                <span className="field-validation-spinner-container">
+                                    <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
+                                </span>
+                            </span>
+                        </button>
+
                         {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
                     </div>
                 </div>
@@ -437,14 +502,32 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
 
                         <div className={getClassNames("host_name", errorMsgs)}>
                             <label className="col-md-3 control-label">Host FQDN</label>
-                            <div className="col-md-6">
-                                <input type="text" style={{width: "225px"}}
+                            <div className="col-md-7">
+                                <input type="text"
                                        placeholder="engine-host.example.com"
                                        title="Enter the host's FQDN."
-                                       className="form-control"
+                                       className="form-control fqdn-textbox"
                                        value={networkConfig.host_name.value}
                                        onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
                                 />
+                                <div className="fqdn-status-container">
+                                    {fqdnValidationData.host.state === status.SUCCESS && <span className="fqdn-status-icon pficon pficon-ok"/>}
+                                    {fqdnValidationData.host.state === status.FAILURE && <span className="fqdn-status-icon pficon pficon-error-circle-o"/>}
+                                </div>
+                                <button type="button"
+                                        className={hostFqdnClassNames}
+                                        aria-label="Check host FQDN"
+                                        onClick={() => validateFqdn(fqdnTypes.HOST)}
+                                        style={{verticalAlign: "top"}} >
+                                    <span className={fqdnValidationData.host.state === status.POLLING ? "hidden" : ""}>
+                                        Validate
+                                    </span>
+                                    <span className={fqdnValidationData.host.state === status.POLLING ? "" : "hidden"}>
+                                        <span className="field-validation-spinner-container">
+                                            <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
+                                        </span>
+                                    </span>
+                                </button>
                                 {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
                             </div>
                         </div>

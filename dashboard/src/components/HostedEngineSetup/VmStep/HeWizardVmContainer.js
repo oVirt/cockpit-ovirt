@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { checkDns, checkReverseDns } from '../../../helpers/HostedEngineSetupUtil'
-import { getErrorMsgForProperty, validatePropsForUiStage } from '../Validation'
-import { allIntelCpus, amdCpuTypes, configValues, defaultInterfaces, intelCpuTypes, messages,
-    resourceConstants, status as gwState } from '../constants'
+import {getErrorMsgForProperty, validateFqdn, validatePropsForUiStage} from '../Validation'
+import {
+    allIntelCpus, amdCpuTypes, configValues, defaultInterfaces, fqdnValidationTypes as fqdnTypes, intelCpuTypes,
+    messages, resourceConstants, status
+} from '../constants'
 import HeWizardVm from './HeWizardVm'
 import { pingGateway } from '../../../helpers/HostedEngineSetupUtil'
 
@@ -24,13 +26,17 @@ class HeWizardVmContainer extends Component {
             applPathSelection: "",
             appliances: defaultAppliances,
             cpuArch: {},
-            gatewayState: gwState.EMPTY,
+            gatewayState: status.EMPTY,
             interfaces: defaultInterfaces,
             errorMsg: "",
             errorMsgs: {},
             warningMsgs: {},
             collapsibleSections: {
                 advanced: true
+            },
+            fqdnValidationData: {
+                host: {prevValue: "", state: status.EMPTY, errorMsg: ""},
+                vm: {prevValue: "", state: status.EMPTY, errorMsg: ""}
             }
         };
 
@@ -54,8 +60,10 @@ class HeWizardVmContainer extends Component {
         this.validateConfigUpdate = this.validateConfigUpdate.bind(this);
         this.getCidrErrorMsg = this.getCidrErrorMsg.bind(this);
         this.validateVmCidr = this.validateVmCidr.bind(this);
+        this.validateFqdn = this.validateFqdn.bind(this);
         this.validateCpuModelSelection = this.validateCpuModelSelection.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
+        this.fqdnValidationInProgress = this.fqdnValidationInProgress.bind(this);
     }
 
     handleDnsAddressDelete(index) {
@@ -102,7 +110,9 @@ class HeWizardVmContainer extends Component {
         const heSetupModel = this.state.heSetupModel;
         const defaultsProvider = this.props.defaultsProvider;
         const errorMsgs = this.state.errorMsgs;
+        const warningMsgs = this.state.warningMsgs;
         const collapsibleSections = this.state.collapsibleSections;
+        const fqdnValidationData = this.state.fqdnValidationData;
 
         const networkInterfaces = defaultsProvider.getNetworkInterfaces();
         this.setState({ interfaces: networkInterfaces });
@@ -114,14 +124,20 @@ class HeWizardVmContainer extends Component {
         this.setCpuModel(cpuArch, heSetupModel);
         this.setApplianceFiles();
 
+        fqdnValidationData.host.prevValue = defaultsProvider.getHostFqdn();
         if (!defaultsProvider.hostFqdnIsValid()) {
             const hostnameError = defaultsProvider.getHostFqdnValidationError();
             heSetupModel.network.host_name.errorMsg = hostnameError;
             errorMsgs.host_name = hostnameError;
+            warningMsgs.host_name = messages.HOST_FQDN_VALIDATION_FAILED;
             collapsibleSections.advanced = false;
+            fqdnValidationData.host.state = status.FAILURE;
+            fqdnValidationData.host.errorMsg = hostnameError;
+        } else {
+            fqdnValidationData.host.state = status.SUCCESS;
         }
 
-        this.setState({ heSetupModel, cpuArch: cpuArch, errorMsgs, collapsibleSections });
+        this.setState({ heSetupModel, cpuArch: cpuArch, errorMsgs, collapsibleSections, fqdnValidationData, warningMsgs });
     }
 
     setCpuModel(cpuArch, heSetupModel) {
@@ -164,6 +180,8 @@ class HeWizardVmContainer extends Component {
 
     handleVmConfigUpdate(propName, value, configType) {
         const heSetupModel = this.state.heSetupModel;
+        const fqdnValidationData = this.state.fqdnValidationData;
+        const warningMsgs = this.state.warningMsgs;
 
         if (propName === "ovfArchiveSelect") {
             this.handleApplianceFileUpdate(value);
@@ -182,16 +200,22 @@ class HeWizardVmContainer extends Component {
             case "fqdn":
                 heSetupModel.vm.cloudinitInstanceHostName.value = value.substring(0, value.indexOf("."));
                 heSetupModel.vm.cloudinitInstanceDomainName.value = value.substring(value.indexOf(".") + 1);
+                fqdnValidationData.vm.state = status.EMPTY;
+                fqdnValidationData.vm.errorMsg = "";
+                delete warningMsgs.fqdn;
                 break;
             case "host_name":
                 heSetupModel.engine.appHostName.value = value;
+                fqdnValidationData.host.state = status.EMPTY;
+                fqdnValidationData.host.errorMsg = "";
+                delete warningMsgs.host_name;
                 break;
             default:
                 break;
         }
 
         this.validateConfigUpdate(propName, heSetupModel[configType]);
-        this.setState({ heSetupModel });
+        this.setState({ heSetupModel, fqdnValidationData, warningMsgs });
     }
 
     handleCollapsibleSectionChange(sectionName) {
@@ -249,7 +273,7 @@ class HeWizardVmContainer extends Component {
         errorMsgs.gateway = "";
 
         let gatewayState = this.state.gatewayState;
-        gatewayState = gwState.POLLING;
+        gatewayState = status.POLLING;
 
         this.setState({ gatewayState, errorMsg, errorMsgs });
 
@@ -259,7 +283,7 @@ class HeWizardVmContainer extends Component {
         pingGateway(address)
             .done(function() {
                 if (address === self.lastGatewayAddress) {
-                    gatewayState = gwState.SUCCESS;
+                    gatewayState = status.SUCCESS;
                     self.setState({errorMsg, gatewayState});
                 }
             })
@@ -267,7 +291,7 @@ class HeWizardVmContainer extends Component {
                 if (address === self.lastGatewayAddress) {
                     errorMsg = messages.GENERAL_ERROR_MSG;
                     errorMsgs.gateway = messages.IP_NOT_PINGABLE;
-                    gatewayState = gwState.FAILURE;
+                    gatewayState = status.FAILURE;
                     self.setState({errorMsg, errorMsgs, gatewayState});
                 }
             });
@@ -341,6 +365,59 @@ class HeWizardVmContainer extends Component {
         }
     }
 
+    validateFqdn(fqdnType, callback = false) {
+        const errorMsgs = this.state.errorMsgs;
+        const warningMsgs = this.state.warningMsgs;
+        const heSetupModel = this.state.heSetupModel;
+        const config = heSetupModel.network;
+        const fqdn = fqdnType === fqdnTypes.HOST ? config.host_name.value : config.fqdn.value;
+        const propName = fqdnType === fqdnTypes.HOST ? "host_name" : "fqdn";
+
+        const fqdnValidationData = this.state.fqdnValidationData;
+        const validationData = fqdnValidationData[fqdnType];
+        const fqdnChanged = fqdn !== validationData.prevValue;
+
+        // Don't run validation again if FQDN has already been validated successfully or is blank
+        if (fqdn === "" || (!fqdnChanged && validationData.state === status.SUCCESS)) {
+            return;
+        }
+
+        fqdnValidationData[fqdnType].state = status.POLLING;
+        delete warningMsgs.host_name;
+        this.setState({ fqdnValidationData, warningMsgs });
+
+        const self = this;
+        return validateFqdn(fqdn, fqdnType)
+            .then(result => {
+                validationData.prevValue = fqdn;
+                if (result.error !== null) {
+                    errorMsgs[propName] = result.error;
+                    validationData.errorMsg = result.error;
+                    validationData.state = status.FAILURE;
+                    delete warningMsgs.fqdnValidationInProgress;
+                    if (fqdnType === fqdnTypes.VM) {
+                        warningMsgs.fqdn = messages.VM_FQDN_VALIDATION_FAILED;
+                    }
+                    self.setState({ fqdnValidationData, warningMsgs });
+                } else {
+                    validationData.state = status.SUCCESS;
+                    validationData.errorMsg = "";
+                    delete warningMsgs.fqdnValidationInProgress;
+                    self.setState({ fqdnValidationData, warningMsgs });
+                    if (callback) {
+                        callback();
+                    }
+                }
+            })
+            .catch(result => {
+                validationData.state = status.FAILURE;
+                errorMsgs[propName] = result.error;
+                validationData.errorMsg = result.error;
+                delete warningMsgs.fqdnValidationInProgress;
+                self.setState({ errorMsgs, fqdnValidationData, warningMsgs })
+            });
+    }
+
     validateCpuModelSelection(errorMsgs) {
         const cpuArch = this.state.cpuArch;
 
@@ -376,22 +453,58 @@ class HeWizardVmContainer extends Component {
     }
 
     validateAllInputs() {
-        let errorMsg = "";
-        let errorMsgs = {};
-        const propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs) ||
-            this.state.gatewayState === gwState.FAILURE;
+        // Don't allow validation/move to next step if FQDN validation is already in progress
+        if (this.fqdnValidationInProgress()) {
+            const warningMsgs = this.state.warningMsgs;
+            warningMsgs.fqdnValidationInProgress = messages.FQDN_VALIDATION_IN_PROGRESS;
+            this.setState({ warningMsgs });
+            return false;
+        }
 
+        const collapsibleSections = this.state.collapsibleSections;
+        const fqdnData = this.state.fqdnValidationData;
+
+        const hostFqdnNotSet = this.state.heSetupModel.network.host_name.value === "";
+        const hostFqdnNotValidated = fqdnData.host.state === status.EMPTY && !hostFqdnNotSet;
+        const hostFqdnInvalid = fqdnData.host.state === status.FAILURE || hostFqdnNotSet;
+        const vmFqdnInvalid = fqdnData.vm.state === status.FAILURE;
+
+        // Validate the host FQDN before moving to next step if it hasn't been validated
+        if (hostFqdnNotValidated) {
+            this.validateFqdn(fqdnTypes.HOST, this.props.moveNext);
+            return false;
+        }
+
+        let errorMsgs = {};
+        if (hostFqdnInvalid) {
+            errorMsgs.host_name = fqdnData.host.errorMsg;
+            collapsibleSections.advanced = false;
+        }
+
+        if (vmFqdnInvalid) {
+            errorMsgs.fqdn = fqdnData.vm.errorMsg;
+        }
+
+        const propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs) &&
+            this.state.gatewayState !== status.FAILURE && !hostFqdnInvalid;
+
+        let errorMsg = "";
         if (!propsAreValid) {
             errorMsg = messages.GENERAL_ERROR_MSG;
         }
 
-        this.setState({ errorMsg, errorMsgs });
+        this.setState({ collapsibleSections, errorMsg, errorMsgs });
         return propsAreValid;
     }
 
+    fqdnValidationInProgress() {
+        const fqdnData = this.state.fqdnValidationData;
+        return fqdnData.host.state === status.POLLING || fqdnData.vm.state === status.POLLING;
+    }
+
     shouldComponentUpdate(nextProps, nextState){
-        if(!this.props.validating && nextProps.validating){
-            this.props.validationCallBack(this.validateAllInputs())
+        if (!this.props.validating && nextProps.validating) {
+            this.props.validationCallBack(this.validateAllInputs());
         }
         return true;
     }
@@ -411,6 +524,7 @@ class HeWizardVmContainer extends Component {
                 deploymentType={this.props.deploymentType}
                 errorMsg={this.state.errorMsg}
                 errorMsgs={this.state.errorMsgs}
+                fqdnValidationData={this.state.fqdnValidationData}
                 gatewayState={this.state.gatewayState}
                 getCidrErrorMsg={this.getCidrErrorMsg}
                 interfaces={this.state.interfaces}
@@ -423,6 +537,7 @@ class HeWizardVmContainer extends Component {
                 heSetupModel={this.state.heSetupModel}
                 importAppliance={this.state.importAppliance}
                 showApplPath={this.state.showApplPath}
+                validateFqdn={this.validateFqdn}
                 verifyDns={this.verifyDns}
                 verifyReverseDns={this.verifyReverseDns}
                 warningMsgs={this.state.warningMsgs}/>

@@ -151,7 +151,8 @@ class Wizard extends Component {
                     validationCallBack: self.validationCallBack,
                     subStepValidationCallBack: self.subStepValidationCallBack,
                     validating: self.state.validating && isActiveStep,
-                    registerCustomActionBtnStateCallback: self.registerCustomActionBtnStateCallback
+                    registerCustomActionBtnStateCallback: self.registerCustomActionBtnStateCallback,
+                    moveNext: self.moveNext
                 });
 
                 const comp = classNames(
