@@ -1,20 +1,33 @@
 import { ansibleOutputTypes as outputTypes, configValues }
     from "../../components/HostedEngineSetup/constants"
-import { getAnsibleLogPath } from "../HostedEngineSetupUtil"
+import {generateRandomString, getAnsibleLogPath} from "../HostedEngineSetupUtil"
 
 class PlaybookUtil {
     constructor() {
         this.runPlaybookWithVarFiles = this.runPlaybookWithVarFiles.bind(this);
         this.runPlaybookWithVars = this.runPlaybookWithVars.bind(this);
         this.runPlaybook = this.runPlaybook.bind(this);
+        this._runPlaybook = this._runPlaybook.bind(this);
+        this.runPlaybookWithVarFiles = this.runPlaybookWithVarFiles.bind(this);
+        this.runPlaybookWithVars = this.runPlaybookWithVars.bind(this);
         this.readOutputFile = this.readOutputFile.bind(this);
         this.getResultsData = this.getResultsData.bind(this);
+        this.getTimeStamp = this.getTimeStamp.bind(this);
+        this.createOutputFileDir = this.createOutputFileDir.bind(this);
     }
 
-    runPlaybook(playbookPath, activityDescription, outputPath, options = "") {
+    runPlaybook(playbookPath, outputPath, options = "") {
+        const self = this;
+        return this.createOutputFileDir()
+            .then(() => {
+                return self._runPlaybook(playbookPath, outputPath, options);
+            });
+    }
+
+    _runPlaybook(playbookPath, outputPath, options = "") {
         const self = this;
         return new Promise((resolve, reject) => {
-            console.log(activityDescription + " started.");
+            console.log(`Execution of ${playbookPath} started`);
 
             const settings = [
                 "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible",
@@ -47,11 +60,11 @@ class PlaybookUtil {
             $(this.channel).on("close", function(ev, options) {
                 if (!self._manual_close) {
                     if (options["exit-status"] === 0) {
-                        console.log(activityDescription + " completed successfully.");
+                        console.log(`Execution of ${playbookPath} completed successfully`);
                         resolve();
                     } else {
                         console.log(options);
-                        reject(activityDescription + " failed to complete.");
+                        reject(`Execution of ${playbookPath} failed`);
                     }
                 } else {
                     console.log("Channel closed.");
@@ -62,7 +75,7 @@ class PlaybookUtil {
         });
     }
 
-    runPlaybookWithVarFiles(playbookPath, activityDescription, outputPath, varFiles) {
+    runPlaybookWithVarFiles(playbookPath, outputPath, varFiles) {
         const varFilesArr = [];
 
         varFiles.forEach(function(varFile) {
@@ -75,10 +88,10 @@ class PlaybookUtil {
             options = options.concat(varFilesArr);
         }
 
-        return this.runPlaybook(playbookPath, activityDescription, outputPath, options);
+        return this.runPlaybook(playbookPath, outputPath, options);
     }
 
-    runPlaybookWithVars(playbookPath, activityDescription, outputPath, vars) {
+    runPlaybookWithVars(playbookPath, outputPath, vars) {
         const varsArr = [];
 
         Object.getOwnPropertyNames(vars).forEach(
@@ -93,15 +106,23 @@ class PlaybookUtil {
             options = options.concat(varsArr);
         }
 
-        return this.runPlaybook(playbookPath, activityDescription, outputPath, options);
+        return this.runPlaybook(playbookPath, outputPath, options);
     }
 
     readOutputFile(path) {
         return new Promise((resolve, reject) => {
             cockpit.file(path).read()
-                .done(output => resolve(output))
+                .done(output => {
+                    // cockpit.file().read() returns null instead of failing if file can't be read
+                    if (output) {
+                        resolve(output);
+                    } else {
+                        console.error(`Error: Unable to read file ${path}`);
+                        reject("Unable to read file");
+                    }
+                })
                 .fail(function(error) {
-                    console.log("Error: " + error);
+                    console.error("Error: " + error);
                     reject(error);
                 });
         });
@@ -124,6 +145,38 @@ class PlaybookUtil {
             }
         });
         return results;
+    }
+
+    createOutputFileDir() {
+        return new Promise((resolve, reject) => {
+            cockpit.spawn(["mkdir", "-p", configValues.ANSIBLE_OUTPUT_DIR], { "superuser": "require" })
+                .done(function() {
+                    console.log("Ansible output file directory created successfully.");
+                    resolve();
+                })
+                .fail(function(error) {
+                    console.log("There was an error while creating the ansible output file directory. Error: " + error);
+                    reject(error);
+                })
+        });
+    }
+
+    getAnsibleOutputPath(playbookType) {
+        const playbookName = playbookType.toLowerCase();
+        const timeStamp = this.getTimeStamp();
+        return `${configValues.ANSIBLE_OUTPUT_DIR}${playbookName}-${timeStamp}-${generateRandomString()}.json`;
+    }
+
+    getTimeStamp() {
+        const d = new Date();
+        return [
+            d.getFullYear(),
+            d.getMonth(),
+            d.getDate(),
+            d.getHours(),
+            d.getMinutes(),
+            d.getSeconds()
+        ].join("");
     }
 }
 
