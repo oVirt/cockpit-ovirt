@@ -89,6 +89,11 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Fri Aug 10 2018 Ryan Barry <rbarry@redhat.com> - 0.11.33-1
+- Validate FQDNs on startup and on-demand
+- Refactor PlaybookUtil
+- Resolve an error with gluster deployments once finished
+
 * Mon Aug 06 2018 Ryan Barry <rbarry@redhat.com> - 0.11.32-1
 - Correct gluster brick mount points
 - Support single node gluster deployment from cockpit
