@@ -739,7 +739,7 @@ var GdeployUtil = {
             sdModel.name = volume.name
             sdModel.host = firstHostFqdn
             sdModel.address = firstHostFqdn
-            sdModel.path = volume.name
+            sdModel.path = "/" + volume.name
             sdModel.mount_options = mntOptions
             sdModelList.push(sdModel)
           }
