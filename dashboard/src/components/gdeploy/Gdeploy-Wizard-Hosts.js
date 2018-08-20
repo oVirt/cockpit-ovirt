@@ -65,8 +65,19 @@ class WizardHostStep extends Component {
             })
             this.setState({ errorMsg, errorMsgs })
             return valid
-        }
-        else {
+        } else if(this.props.gdeployWizardType === "create_volume" && this.state.hostTypes.length === 1) {
+            let errorMsg = ""
+            const errorMsgs= {}
+            let valid = true
+            if(this.state.hostTypes[0].title.length == 0) {
+              errorMsgs[0] = "Host address cannot be empty"
+              if(valid){
+                valid = false;
+              }
+            }
+            this.setState({ errorMsg, errorMsgs })
+            return valid
+        } else {
             let errorMsg = ""
             const errorMsgs= {}
             let valid = true
@@ -184,6 +195,16 @@ class WizardHostStep extends Component {
               changeCallBack={(e) => this.updateHost(0, e.target.value)}
             />
           )
+        } else if(this.props.gdeployWizardType === "create_volume" && this.state.hostTypes.length === 1) {
+          hostRows.push(
+            <HostRow host={this.state.hosts[0]} key={0} hostNo={1 }
+              gdeployWizardType={that.props.gdeployWizardType}
+              hostTypes={that.state.hostTypes}
+              errorMsg = {that.state.errorMsgs[0]}
+              deleteCallBack={() => this.handleDelete(0)}
+              changeCallBack={(e) => this.updateHost(0, e.target.value)}
+            />
+          )
         } else {
           this.state.hosts.forEach(function (host, index) {
               if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
@@ -219,7 +240,7 @@ class WizardHostStep extends Component {
                 }
                 <form className="form-horizontal">
                     {hostRows}
-                    {!that.state.isSingleNode &&
+                    {!(this.state.hostTypes.length === 1) &&
                     <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
                         <span className="pficon pficon-info"></span>
                         <strong>

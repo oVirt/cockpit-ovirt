@@ -171,10 +171,21 @@ class HostsTable extends Component{
 
   generateTable(){
     this.hostTableRows = [];
-    this.hostTableHeadings =[];
+    this.hostTableHeadings = [];
+    this.expandClusterButton = [];
     for (let heading of ["Name","Peer status","UUID"]){
       this.hostTableHeadings.push(
         <th key={heading}>{heading}</th>
+      )
+    }
+    if(this.props.hostList.length !== 1) {
+      this.expandClusterButton.push(
+        <span className="pull-right">
+          <button className="btn btn-default action-btn"
+            onClick={()=>{cockpit.jump('/ovirt-dashboard#/expand_cluster')}}>
+            Expand Cluster
+          </button>
+        </span>
       )
     }
     for(let host of this.props.hostList){
@@ -197,12 +208,7 @@ class HostsTable extends Component{
             onClick={this.props.handleRefresh}>
             <span className="fa fa-refresh"/>
           </button>
-          <span className="pull-right">
-            <button className="btn btn-default action-btn"
-              onClick={()=>{cockpit.jump('/ovirt-dashboard#/expand_cluster')}}>
-              Expand Cluster
-            </button>
-          </span>
+          {this.expandClusterButton}
         </div>
         <table className="table">
           <thead>
