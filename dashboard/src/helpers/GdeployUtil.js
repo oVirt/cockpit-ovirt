@@ -537,10 +537,10 @@ var GdeployUtil = {
     writeConfigFile(filePath, configString, callback) {
         const file = cockpit.file(filePath)
         file.replace(configString)
-            .always(function(tag) {
-                file.close()
-                callback(true)
-            })
+        .always(function(tag) {
+            file.close()
+            callback(true)
+        })
     },
     createHEAnswerFileForGlusterStorage(volumeName, glusterServers, filePath, callback) {
         let configString = "[environment:default]"
