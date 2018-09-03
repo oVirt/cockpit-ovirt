@@ -693,7 +693,8 @@ span.he-wizard-collapsible-section-icon {
 }
 
 div.popup-dialog-btn-row {
-    margin-top: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 div.popup-dialog-text {
@@ -765,6 +766,9 @@ i.password-mask-icon {
     color: gray;
 }
 
+.gluster_options_class_size {
+    width: 670px;
+}
 
 /*Gluster Management Dashboard*/
 div.gluster-management .table > thead > tr > th,

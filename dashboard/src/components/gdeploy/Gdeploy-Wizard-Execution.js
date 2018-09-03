@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import GdeployUtil from '../../helpers/GdeployUtil'
 import ReactDOM from 'react-dom'
+import { CONFIG_FILES } from './constants'
 
 class WizardExecutionStep extends Component {
     constructor(props) {
@@ -21,12 +22,20 @@ class WizardExecutionStep extends Component {
     }
     gdeployDone() {
         this.setState({ gdeployStatus: 0 })
+        let filePath = CONFIG_FILES.gdeployStatus
+        GdeployUtil.handleDirAndFileCreation(filePath, String(this.state.gdeployStatus), function (result) {
+            console.log("Status File: ", result)
+        })
     }
     gdeployStdout(data) {
         this.setState({ gdeployLog: this.state.gdeployLog + data })
     }
     gdeployFail(exception) {
         this.setState({ gdeployStatus: -1 })
+        let filePath = CONFIG_FILES.gdeployStatus
+        GdeployUtil.handleDirAndFileCreation(filePath, String(this.state.gdeployStatus), function (result) {
+            console.log("Status File: ", result)
+        })
     }
     runGdeploy() {
         const that = this

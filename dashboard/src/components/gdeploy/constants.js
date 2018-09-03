@@ -5,5 +5,6 @@ export const CONFIG_FILES = {
     gdeployConfigFile: '/var/lib/ovirt-hosted-engine-setup/gdeploy/gdeployConfig.conf',
     heAnsfileFile: '/var/lib/ovirt-hosted-engine-setup/answers/he-answer.conf',
     expandClusterConfigFile: '/var/lib/ovirt-hosted-engine-setup/gdeploy/expandClusterConfig.conf',
-    gdeployInventoryFile: '/usr/share/ovirt-hosted-engine-setup/gdeploy-inventory.yml'
+    gdeployInventoryFile: '/usr/share/ovirt-hosted-engine-setup/gdeploy-inventory.yml',
+    gdeployStatus: '/var/lib/ovirt-hosted-engine-setup/gdeploy/gdeployStatus.conf'
 }

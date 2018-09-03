@@ -75,9 +75,7 @@ class HostedEngineSetup extends Component {
 
     if (option === deploymentOption.REGULAR) {
       this.startSetup();
-    } else if (option === deploymentOption.HYPERCONVERGED && !this.state.gdeployFilesFound) {
-      this.startGdeploy();
-    } else if (option === deploymentOption.HYPERCONVERGED && this.state.gdeployFilesFound) {
+    } else if (option === deploymentOption.HYPERCONVERGED) {
       this.setState({ state: heSetupState.GLUSTER_CONFIG_CHOICE_REQD });
     }
   }
@@ -348,21 +346,78 @@ class CloseWizardConfirmationDialog extends Component  {
 class ExistingGlusterConfigDialog extends Component  {
   constructor(props) {
     super(props);
+    this.state = {
+      showUseExistingConfOption: false
+    }
   }
 
   componentDidMount() {
       $(ReactDOM.findDOMNode(this)).modal('show')
+      let file = cockpit.file(constants.gdeployStatus)
+      return file.read().done((content,tag)=>{
+        if(content == '0' || content == 0){
+          this.setState({ showUseExistingConfOption: true });
+        }
+      }).fail((error)=>{
+        console.warn(`gdeployStatus file not written`,error)
+      }).always((tag) => {
+        file.close()
+      });
   }
 
   componentWillUnmount() {
       $(ReactDOM.findDOMNode(this)).modal('hide')
   }
 
+  checkFlagForButton() {
+    this.useExistingConfiguration = [];
+    this.useExistingConfigurationMessage = [];
+    this.divClasses = "row popup-dialog-btn-row"
+    this.modalSize = "modal-content"
+    this.thirdOptionClass = ""
+    if(this.state.showUseExistingConfOption) {
+      this.divClasses+=" col-sm-12"
+      this.thirdOptionClass+=" col-sm-4"
+      this.useExistingConfiguration.push(
+        <div className="col-sm-3 col-sm-offset-1">
+          <button type="button"
+                  className="btn btn-default"
+                  aria-label="Use existing configuration"
+                  onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.USE_EXISTING_GLUSTER_CONFIG, false)}>
+            Use Existing Configuration
+          </button>
+        </div>
+      )
+      this.useExistingConfigurationMessage.push(
+        <div>
+          <div className="row">
+            <div className="col-sm-10 col-sm-offset-1">
+              <div className="popup-dialog-text">
+                  {messages.GLUSTER_CONFIGURATION_FOUND}
+              </div>
+            </div>
+          </div>
+          <div className="row popup-dialog-note-row">
+            <div className="col-sm-10 col-sm-offset-1">
+              <div className="popup-dialog-note">
+                Note: To view existing gluster configuration details, see the Storage section in the main Cockpit tab.
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    } else {
+      this.modalSize+=" gluster_options_class_size"
+      this.thirdOptionClass+="col-sm-6"
+    }
+  }
+
   render() {
+      this.checkFlagForButton()
       return (
           <div className="modal" data-backdrop="static" role="dialog">
             <div className="modal-dialog modal-lg">
-              <div className="modal-content">
+              <div className={this.modalSize}>
                 <div className="modal-header">
                   <button type="button"
                           className="close wizard-pf-dismiss"
@@ -370,37 +425,14 @@ class ExistingGlusterConfigDialog extends Component  {
                           data-dismiss="modal" aria-hidden="true" >
                     <span className="pficon pficon-close" />
                   </button>
-                  <dt className="modal-title">Gluster Configuration Found</dt>
+                  <dt className="modal-title">Gluster Configuration</dt>
                 </div>
                 <div className="modal-body clearfix">
                   <div>
-                    <div className="row">
-                      <div className="col-sm-10 col-sm-offset-1">
-                        <div className="popup-dialog-text">
-                            {messages.GLUSTER_CONFIGURATION_FOUND}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="row popup-dialog-note-row">
-                      <div className="col-sm-10 col-sm-offset-1">
-                        <div className="popup-dialog-note">
-                          Note: To view existing gluster configuration details, see the Storage section in the main Cockpit tab.
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="row popup-dialog-btn-row">
-                      <div className="col-sm-3 col-sm-offset-1">
-                        <button type="button"
-                                className="btn btn-default"
-                                aria-label="Use existing configuration"
-                                onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.USE_EXISTING_GLUSTER_CONFIG, false)}>
-                          Use Existing Configuration
-                        </button>
-                      </div>
-
-                      <div className="col-sm-3">
+                    {this.useExistingConfigurationMessage}
+                    <div className={this.divClasses}>
+                      {this.useExistingConfiguration}
+                      <div className="col-sm-3 col-sm-offset-1" style={{float: 'left'}}>
                         <button type="button"
                                 className="btn btn-default"
                                 aria-label="Run gluster wizard"
@@ -408,21 +440,18 @@ class ExistingGlusterConfigDialog extends Component  {
                           Run Gluster Wizard
                         </button>
                       </div>
-                      <div className="col-sm-3">
+                      <div className={this.thirdOptionClass} style={{float: 'right'}}>
                         <button type="button"
                                 className="btn btn-default"
                                 aria-label="Run gluster wizard for single node"
                                 onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED, true)}>
                           Run Gluster Wizard For Single Node
                         </button>
-                      </div>
-                      <div className="col-sm-1">
                         <span className="fa fa-lg fa-info-circle"
                             title="Single node setup doesn't provide high availability"></span>
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
