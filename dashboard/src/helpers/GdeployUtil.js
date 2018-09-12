@@ -607,7 +607,7 @@ var GdeployUtil = {
     isRhvhSystem(callBack){
         let proc = cockpit.spawn(
             ["grep",
-             'PRETTY_NAME="Red Hat Virtualization Host"',
+             'VARIANT="Red Hat Virtualization Host"',
              '/etc/os-release'
             ]
         )
