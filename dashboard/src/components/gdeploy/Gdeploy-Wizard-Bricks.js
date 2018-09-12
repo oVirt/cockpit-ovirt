@@ -67,9 +67,10 @@ class WizardBricksStep extends Component {
         let enabledFields = this.state.enabledFields
         if (this.props.gdeployWizardType === "setup") {
             enabledFields = ['device', 'size']
+        } else {
+            enabledFields = ['name', 'device', 'brick_dir', 'size']
         }
         this.setState({bricksList, arbiterVolumes, enabledFields})
-
         // Checking for VDO support
         let isVdoSupported = false
         let that = this
@@ -264,9 +265,8 @@ class WizardBricksStep extends Component {
             if(hostIndex % 3 == 0) {
               enabledFields = ['device', 'size']
             }
-            else {
-              enabledFields = ['device']
-            }
+        } else {
+          enabledFields = ['name', 'device', 'brick_dir', 'size']
         }
         this.setState({selectedHost, enabledFields, hostArbiterVolumes})
     }

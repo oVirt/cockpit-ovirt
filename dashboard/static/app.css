@@ -770,6 +770,18 @@ i.password-mask-icon {
     width: 670px;
 }
 
+.selectbox-option {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.selectbox-text {
+  max-width: 200px;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /*Gluster Management Dashboard*/
 div.gluster-management .table > thead > tr > th,
 div.gluster-management .table > tbody > tr > th,
