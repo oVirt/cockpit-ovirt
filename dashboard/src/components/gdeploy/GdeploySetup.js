@@ -67,6 +67,7 @@ class GdeploySetup extends Component {
         if (this.props.gdeployWizardType === "setup" && this.props.showFqdn && !this.props.isSingleNode) {
             wizardChildren.push(<WizardFqdnStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
                 stepName="FQDNs"
+                hosts={this.state.glusterModel.hosts}
                 fqdns={this.state.glusterModel.fqdns}
                 />)
         }
