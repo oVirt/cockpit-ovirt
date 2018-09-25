@@ -8,6 +8,7 @@ class WizardFqdnStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            hosts: props.hosts,
             fqdns: props.fqdns,
             errorMsg: "",
             errorMsgs: {},
@@ -15,6 +16,7 @@ class WizardFqdnStep extends Component {
         }
         this.updateFqdn = this.updateFqdn.bind(this);
         this.validate = this.validate.bind(this);
+        this.handleSameFqdnAsHost = this.handleSameFqdnAsHost.bind(this);
     }
     updateFqdn(index, fqdnaddress) {
         const fqdns = this.state.fqdns;
@@ -22,7 +24,26 @@ class WizardFqdnStep extends Component {
         const errorMsgs= this.state.errorMsgs
         this.setState({ fqdns, errorMsgs })
     }
-
+    handleSameFqdnAsHost() {
+      var checkbox = document.getElementById('handleSameFqdnAsHost')
+      var fqdnsInput = document.querySelectorAll("[id='fqdn']")
+      var hosts = this.state.hosts
+      var fqdns = this.state.fqdns
+      if(checkbox.checked) {
+          fqdnsInput.forEach(function (key, index) {
+              key.setAttribute("disabled", "true")
+              key.value=hosts[index+1]
+              fqdns[index]=hosts[index+1]
+          })
+      } else {
+          fqdnsInput.forEach(function (key, index) {
+              key.removeAttribute("disabled")
+              key.value=""
+              fqdns[index]=""
+          })
+      }
+      this.setState(fqdns)
+    }
     // Trim "Fqdn2" and "Fqdn3" values
     trimFqdnProperties(){
       const inFqdns = this.state.fqdns
@@ -100,12 +121,19 @@ class WizardFqdnStep extends Component {
                     <strong>{this.state.errorMsg}</strong>
                 </div>
                 }
+                <div className="col-md-offset-2 fqdnCheckboxDiv">
+                    <input type="checkbox" id="handleSameFqdnAsHost" onChange={(e) => this.handleSameFqdnAsHost()}/>
+                    <strong className="fqdnCheckboxTextInfo">
+                          Use same hostnames as in previous step
+                    </strong>
+                </div>
                 <form className="form-horizontal">
                     {fqdnRows}
                     <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
                         <span className="pficon pficon-info"></span>
                         <strong>
-                            If you want to add the additional hosts automatically to Hosted Engine, then please provide FQDN or IP address to use.
+                            Provide the address used to add the additional hosts to be
+                            managed by Hosted Engine preferrably FQDN or IP address.
                         </strong>
                     </div>
                 </form>
