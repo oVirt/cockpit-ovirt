@@ -295,13 +295,11 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
             "btn", "btn-primary", "wizard-pf-close", "wizard-pf-dismiss",
             { "hidden": (!isLastStep || !isDeploymentStarted) }
         ),
-        cancelBtnClasses = classNames(
-            "btn", "btn-default", "btn-cancel", "wizard-pf-cancel", "wizard-pf-dismiss",
-            { "disabled": (isLastStep && isDeploymentStarted) }
-        ),
         nextBtnClasses = classNames(
             "btn", "btn-primary", "wizard-pf-next",
             { "hidden": (!hasSubSteps && isLastStep) || (hasSubSteps && isLastStep && isLastSubStep) }
+        ), cancelBtnClasses = classNames(
+            "btn", "btn-default", "btn-cancel", "wizard-pf-cancel", "wizard-pf-dismiss"
         );
 
     let customActionBtnClasses = "hidden";
@@ -343,9 +341,9 @@ const WizardFooter = ({activeStep, activeSubStep, stepCount, subStepCounts, isDe
 
     return (
         <div className="modal-footer wizard-pf-footer">
-            <button type="button"
-                className={cancelBtnClasses}
-                onClick={cancel} data-dismiss={dataDismissValue} aria-hidden="true">Cancel
+            <button type="button" className={cancelBtnClasses} onClick={cancel} data-dismiss="modal"
+                    aria-hidden="true">
+                Cancel
             </button>
             <button type="button" className={backBtnClasses} onClick={moveBack}>
                 <span className="i fa fa-angle-left"/>Back
