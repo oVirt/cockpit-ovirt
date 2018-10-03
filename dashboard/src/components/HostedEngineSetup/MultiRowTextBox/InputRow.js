@@ -15,6 +15,11 @@ const InputRow = ({disableAddButton, disableDeleteButton, errorMsgs, handleAdd, 
         {"hidden": hideAddButton, "disabled": disableAddButton}
     );
 
+    const addIcon = classNames(
+        "i", "fa", "fa-plus",
+        {"hidden": hideAddButton, "disabled": disableAddButton}
+    );
+
     return (
         <div className="he-input-row">
             <div className={input}>
@@ -37,7 +42,7 @@ const InputRow = ({disableAddButton, disableDeleteButton, errorMsgs, handleAdd, 
 
                 <button type="button" className={addButton}
                         onClick={handleAdd}>
-                    <span className="i fa fa-plus" />
+                    <span className={addIcon} />
                 </button>
             </div>
 
