@@ -637,12 +637,13 @@ class WizardBricksStep extends Component {
                                 <tr className="gdeploy-wizard-bricks-row">
                                     <th>LV Name</th>
                                     <th>Device Name</th>
-                                    <th>Size(GB) <span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
-                                        title="LVM will be created with given LV size and not according to VDO logical size"></span></th>
+                                    <th>LV Size(GB) <span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
+                                        title="NOTE: This is the size of the actual gluster brick"></span></th>
                                     <th>Thinp</th>
                                     <th>Mount Point</th>
                                     <th style={this.state.isVdoSupported ? {} : { display: 'none' }}>Enable Dedupe & Compression</th>
-                                    <th style={isVdoSupported ? {} : { display: 'none' }}>Logical Size(GB)</th>
+                                    <th style={isVdoSupported ? {} : { display: 'none' }}>Expanded Disk Size(GB)<span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
+                                        title="NOTE: This is the effective size of the disk after enabling dedupe and compression"></span></th>
                                 </tr>
                                 {bricksRow}
                             </tbody>
