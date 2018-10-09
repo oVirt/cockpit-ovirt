@@ -359,30 +359,44 @@ class WizardBricksStep extends Component {
 
     handleLvCacheConfig(property, value) {
       const that =this
-      const lvCacheConfig = []//contents are state objects
-        if(value || (property === "lvCacheSize" || property === "ssd")) {
-          if(that.state.glusterModel.isSingleNode) {
-            that.state.lvCacheConfig[0].lvCache = true
-            lvCacheConfig.push(that.state.lvCacheConfig[0])
-          } else {
+      const lvCacheConfig = []
+      const lvCacheConfigIndex = that.state.lvCacheConfig.findIndex(function(hostLvCacheConfig) {
+          return hostLvCacheConfig.host == this.state.selectedHost.hostName
+      }, this)
+      if(value || (property === "lvCacheSize" || property === "ssd")) {
+        if(that.state.glusterModel.isSingleNode) {
+          that.state.lvCacheConfig[0].lvCache = true
+          lvCacheConfig.push(that.state.lvCacheConfig[0])
+        } else if(property === "ssd") {
+          if(lvCacheConfigIndex == 0) {
             that.state.lvCacheConfig.forEach(function(eachConfig) {
-              eachConfig.lvCache = true //TODO: fix set-state mutation
+              eachConfig[property] = value
+              eachConfig.lvCache = true
+              lvCacheConfig.push(eachConfig)
+            })
+          } else {
+            that.state.lvCacheConfig[lvCacheConfigIndex][property] = value
+            that.state.lvCacheConfig[lvCacheConfigIndex].lvCache = true
+            that.state.lvCacheConfig.forEach(function(eachConfig) {
               lvCacheConfig.push(eachConfig)
             })
           }
         } else {
           that.state.lvCacheConfig.forEach(function(eachConfig) {
-            eachConfig.lvCache = false
+            eachConfig.lvCache = true
             lvCacheConfig.push(eachConfig)
           })
         }
-        const lvCacheConfigIndex = lvCacheConfig.findIndex(function(hostLvCacheConfig){
-            return hostLvCacheConfig.host == this.state.selectedHost.hostName
-        }, this)
-        lvCacheConfig[lvCacheConfigIndex][property] = value
-        const errorMsgs= this.state.errorMsgs
-        this.validateLvCacheConfig(lvCacheConfig[lvCacheConfigIndex], errorMsgs) //modifies errorMsgs
-        this.setState({ lvCacheConfig, errorMsgs })
+      } else {
+        that.state.lvCacheConfig.forEach(function(eachConfig) {
+          eachConfig.lvCache = false
+          lvCacheConfig.push(eachConfig)
+        })
+      }
+      lvCacheConfig[lvCacheConfigIndex][property] = value
+      const errorMsgs= this.state.errorMsgs
+      this.validateLvCacheConfig(lvCacheConfig[lvCacheConfigIndex], errorMsgs)
+      this.setState({ lvCacheConfig, errorMsgs })
     }
 
     handleCacheModeChange(value) {
@@ -624,7 +638,8 @@ class WizardBricksStep extends Component {
                                 <tr className="gdeploy-wizard-bricks-row">
                                     <th>LV Name</th>
                                     <th>Device Name</th>
-                                    <th>Size(GB)</th>
+                                    <th>Size(GB) <span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
+                                        title="LVM will be created with given LV size and not according to VDO logical size"></span></th>
                                     <th>Thinp</th>
                                     <th>Mount Point</th>
                                     <th style={this.state.isVdoSupported ? {} : { display: 'none' }}>Enable Dedupe & Compression</th>
