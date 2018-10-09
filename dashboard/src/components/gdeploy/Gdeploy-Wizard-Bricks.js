@@ -262,9 +262,7 @@ class WizardBricksStep extends Component {
         })
         let enabledFields = Object.keys(this.state.bricksList[0].host_bricks[0])
         if (this.props.gdeployWizardType === "setup") {
-            if(hostIndex % 3 == 0) {
-              enabledFields = ['device', 'size']
-            }
+          enabledFields = ['device', 'size']
         } else {
           enabledFields = ['name', 'device', 'brick_dir', 'size']
         }
@@ -320,7 +318,7 @@ class WizardBricksStep extends Component {
                     bricksList[i].host_bricks[index]["is_vdo_supported"] = isDeviceVdoEnabled
                     if(isDeviceVdoEnabled) {
                       bricksList[i].host_bricks[index]["thinp"] = false
-                    } else {
+                    } else if(index != 0) {
                       bricksList[i].host_bricks[index]["thinp"] = true
                     }
                 }
