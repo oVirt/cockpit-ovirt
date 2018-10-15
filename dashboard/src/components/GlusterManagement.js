@@ -51,12 +51,16 @@ class GlusterManagement extends Component {
     .done(
       function (hostListJson){
         let hostList = JSON.parse(hostListJson).hosts;
-        hostList.hosts.forEach(function (host, index) {
-          if(host.hostname.indexOf("/") != -1) {
-            host.hostname = host.hostname.split("/")[0]
-          }
-        })
-        callback(hostList);
+        if(hostList.length > 0) {
+          hostList.forEach(function (host, index) {
+            if(host.hostname.indexOf("/") != -1) {
+              host.hostname = host.hostname.split("/")[0]
+            }
+          })
+          callback(hostList);
+        } else {
+          callback(null);
+        }
       }
     )
     .fail(
