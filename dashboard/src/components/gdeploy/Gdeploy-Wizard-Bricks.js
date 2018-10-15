@@ -42,7 +42,6 @@ class WizardBricksStep extends Component {
         this.handleCacheModeChange = this.handleCacheModeChange.bind(this)
     }
     componentDidMount(){
-        let bricksList = this.state.bricksList
 
         // Set bricks size to 500 if gdeployType is create_volume or expand_cluster
         if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
@@ -50,12 +49,15 @@ class WizardBricksStep extends Component {
             bricksList[0].host_bricks[0].size = "500"
         }
 
-        bricksList.push(JSON.parse(JSON.stringify(bricksList[0])))
-        bricksList.push(JSON.parse(JSON.stringify(bricksList[0])))
+        let bricksList = this.state.bricksList
+        while (bricksList.length < this.props.glusterModel.volumes.length){
+          bricksList.push(JSON.parse(JSON.stringify(bricksList[0])));
+        }
 
-        let lvCacheConfig = this.state.lvCacheConfig
-        lvCacheConfig.push(JSON.parse(JSON.stringify(this.props.lvCacheConfig[0])))
-        lvCacheConfig.push(JSON.parse(JSON.stringify(this.props.lvCacheConfig[0])))
+        let lvCacheConfig = this.state.lvCacheConfig;
+        while (lvCacheConfig.length < this.props.glusterModel.hosts.length){
+          lvCacheConfig.push(JSON.parse(JSON.stringify(this.props.lvCacheConfig[0])));
+        }
 
         // Checking for arbiter volumes
         let arbiterVolumes = []
@@ -357,14 +359,14 @@ class WizardBricksStep extends Component {
 
     handleLvCacheConfig(property, value) {
       const that =this
-      const lvCacheConfig = []
+      const lvCacheConfig = []//contents are state objects
         if(value || (property === "lvCacheSize" || property === "ssd")) {
           if(that.state.glusterModel.isSingleNode) {
             that.state.lvCacheConfig[0].lvCache = true
             lvCacheConfig.push(that.state.lvCacheConfig[0])
           } else {
             that.state.lvCacheConfig.forEach(function(eachConfig) {
-              eachConfig.lvCache = true
+              eachConfig.lvCache = true //TODO: fix set-state mutation
               lvCacheConfig.push(eachConfig)
             })
           }
@@ -379,7 +381,7 @@ class WizardBricksStep extends Component {
         }, this)
         lvCacheConfig[lvCacheConfigIndex][property] = value
         const errorMsgs= this.state.errorMsgs
-        this.validateLvCacheConfig(lvCacheConfig[lvCacheConfigIndex], errorMsgs)
+        this.validateLvCacheConfig(lvCacheConfig[lvCacheConfigIndex], errorMsgs) //modifies errorMsgs
         this.setState({ lvCacheConfig, errorMsgs })
     }
 
@@ -423,6 +425,7 @@ class WizardBricksStep extends Component {
             }
         }, this)
     }
+
     validateBrick(brick, index, errorMsgs){
         let valid  = true
         errorMsgs[index] = {}
@@ -455,12 +458,13 @@ class WizardBricksStep extends Component {
         }
         return valid
     }
-    validate(){
-        this.trimBrickProperties()
+    validate(){ //TODO: investigate set-state mutation
+        this.trimBrickProperties() //TODO: fix set-state mutation
         let valid = true
         const errorMsgs= {}
         let errorMsg = ""
-        this.state.bricksList.forEach(function(bricksHost, hostIndex){
+        this.state.bricksList.forEach(function(bricksHost, hostIndex){ //TODO: investigate set-state mutation
+
             if(this.props.glusterModel.volumes.length != bricksHost.host_bricks.length){
               valid = false;
               errorMsg = "Brick definition does not match with Volume definition"
@@ -473,14 +477,14 @@ class WizardBricksStep extends Component {
               }
             })
         }, this)
-        if(!this.validateRaidConfig(this.state.raidConfig, errorMsgs)){
+        if(!this.validateRaidConfig(this.state.raidConfig, errorMsgs)){  //TODO: fix set-state mutation
             valid = false
         }
         if(this.state.glusterModel.isSingleNode) {
           this.state.lvCacheConfig = [this.state.lvCacheConfig[0]]
         }
         this.state.lvCacheConfig.forEach(function(hostLvCacheConfig, hostIndex) {
-            if(!this.validateLvCacheConfig(hostLvCacheConfig, errorMsgs)){
+            if(!this.validateLvCacheConfig(hostLvCacheConfig, errorMsgs)){  //TODO: fix set-state mutation
               valid = false
             }
         }, this)
