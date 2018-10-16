@@ -545,7 +545,7 @@ var GdeployUtil = {
     createHEAnswerFileForGlusterStorage(volumeName, glusterServers, filePath, callback) {
         let configString = "[environment:default]"
         configString = this.appendLine(configString, `OVEHOSTED_STORAGE/storageDomainConnection=str:${glusterServers[0]}:/${volumeName}`)
-        if (glusterServers.length > 1) {
+        if (glusterServers.indexOf("") === -1) {
             configString = this.appendLine(configString, `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}`)
         }
         this.handleDirAndFileCreation(filePath, configString, function(result){
