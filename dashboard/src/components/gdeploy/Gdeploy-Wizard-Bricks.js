@@ -43,15 +43,15 @@ class WizardBricksStep extends Component {
     }
     componentDidMount(){
 
+        let bricksList = this.state.bricksList
+        while (bricksList.length < this.props.glusterModel.hosts.length){
+          bricksList.push(JSON.parse(JSON.stringify(bricksList[0])));
+        }
+
         // Set bricks size to 500 if gdeployType is create_volume or expand_cluster
         if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
             bricksList[0].host_bricks[0].thinp = true
             bricksList[0].host_bricks[0].size = "500"
-        }
-
-        let bricksList = this.state.bricksList
-        while (bricksList.length < this.props.glusterModel.volumes.length){
-          bricksList.push(JSON.parse(JSON.stringify(bricksList[0])));
         }
 
         let lvCacheConfig = this.state.lvCacheConfig;
