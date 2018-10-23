@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Tue Oct 23 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.37-1
+- Fix variable initialization order
+
 * Tue Oct 16 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.36-1
 - day[2]: Removed extra hosts field from hostlist response
 - fixed input validation allowing to progress beyond the lvcache input
