@@ -7,8 +7,7 @@ import GdeployUtil from '../../helpers/GdeployUtil'
 const raidTypes = [
     { key: "jbod", title: "JBOD" },
     { key: "raid5", title: "RAID 5" },
-    { key: "raid6", title: "RAID 6" },
-    { key: "raid10", title: "RAID 10" }
+    { key: "raid6", title: "RAID 6" }
 ]
 class WizardBricksStep extends Component {
 
