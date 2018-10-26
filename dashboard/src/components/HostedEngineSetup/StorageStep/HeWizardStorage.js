@@ -8,7 +8,7 @@ import LunListContainer from "./iSCSI/LunList/LunListContainer";
 const storageTypes = [
     { key: "nfs", title: "NFS" },
     { key: "iscsi", title: "iSCSI" },
-    { key: "fc", title: "Fiber Channel"},
+    { key: "fc", title: "Fibre Channel"},
     { key: "glusterfs", title: "Gluster" }
 ];
 
