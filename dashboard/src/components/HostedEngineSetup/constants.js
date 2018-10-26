@@ -144,7 +144,7 @@ export const messages = {
     ANSIBLE_LAST_PHASE_SUCCESSFUL: "Hosted engine deployment complete!",
     TARGET_RETRIEVAL_FAILED: "Retrieval of iSCSI targets failed.",
     LUN_RETRIEVAL_FAILED: "Retrieval of iSCSI LUNs failed.",
-    FC_LUN_DISCOVERY_FAILED: "Retrieval of fiber channel LUNs failed.",
+    FC_LUN_DISCOVERY_FAILED: "Retrieval of fibre channel LUNs failed.",
     NO_LUNS_FOUND: "No LUNS found",
     LUN_IS_TOO_SMALL: "This LUN cannot be selected because it does not have sufficient storage capacity to support the hosted engine VM.",
     LUN_IS_DIRTY: "This LUN cannot be selected because it appears to be already in use. Please clean it and try again.",

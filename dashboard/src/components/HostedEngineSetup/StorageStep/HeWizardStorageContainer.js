@@ -276,7 +276,7 @@ class HeWizardStorageContainer extends Component {
                 handleLunSelection={this.handleLunSelection}
                 selectedLun={this.state.selectedLun}
                 iscsiLunData={this.state.iscsiLunData}
-                // Fiber Channel LUNs
+                // Fibre Channel LUNs
                 fcLunDiscoveryStatus={this.state.fcLunDiscoveryStatus}
                 handleFcLunDiscoveryRequest={this.getFcLunList}
                 handleFcLunSelection={this.handleFcLunSelection}
