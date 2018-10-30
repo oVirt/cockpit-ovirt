@@ -802,7 +802,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
             </td>
             <td className="col-md-1" style={brick.is_vdo_supported ? {} : { display: 'none' }}>
                 <div className={logicalSize}>
-                    <input type="number" className="form-control" title="Default logical size will be four times of brick size."
+                    <input type="number" className="form-control" title="Default logical size will be ten times of brick size."
                         value={brick.logicalSize}
                         onChange={(e) => changeCallBack(index, "logicalSize", e.target.value)}
                         />
