@@ -13,6 +13,8 @@
 Makefile.in
 .npm
 dashboard/ovirt-dashboard
+dashboard/src/components/HeSetupFooter.js
+dashboard/src/routes/routes.js
 
 config.*
 *.spec

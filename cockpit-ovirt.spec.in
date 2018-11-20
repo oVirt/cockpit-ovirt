@@ -41,8 +41,8 @@ Requires:       udisks2
 %else
 Requires:       cockpit-storaged
 %endif
-Requires:       ovirt-hosted-engine-setup >= 2.2.14
-Requires:       otopi >= 1.5.2-1
+Requires:       ovirt-hosted-engine-setup >= 2.3.0
+Requires:       otopi >= 1.8.0
 
 Requires:       ansible
 
@@ -93,6 +93,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Tue Nov 20 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.12.0-0.0.beta1
+- Rebase on 0.12.0_beta1
+
 * Fri Sep  1 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.0-1
 - Rebase on upstream 0.11.0
 
