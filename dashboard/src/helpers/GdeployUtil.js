@@ -308,17 +308,21 @@ var GdeployUtil = {
                             gdeployConfig['script1:' + hostPreFlightCheckObject.host] = hostPreFlightCheckObject.hostPreFlightCheck
                         })
                     }
-                    if (brickConfig.hasOwnProperty("raidParam")) {
-                        //Not truly ini format. But we need RAID params in the following format.
-                        // [disktype]
-                        // raid6
-                        // [diskcount]
-                        // 4
-                        // [stripesize]
-                        // 256
-                        gdeployConfig.disktype = [brickConfig.raidParam.disktype]
-                        gdeployConfig.diskcount = [brickConfig.raidParam.diskcount]
-                        gdeployConfig.stripesize = [brickConfig.raidParam.stripesize]
+                    if(brickConfig.hasOwnProperty("raidParam")) {
+                        if ((brickConfig.raidParam.disktype == "jbod")) {
+                            gdeployConfig.disktype = [brickConfig.raidParam.disktype]
+                        } else {
+                            //Not truly ini format. But we need RAID params in the following format.
+                            // [disktype]
+                            // raid6
+                            // [diskcount]
+                            // 4
+                            // [stripesize]
+                            // 256
+                            gdeployConfig.disktype = [brickConfig.raidParam.disktype]
+                            gdeployConfig.diskcount = [brickConfig.raidParam.diskcount]
+                            gdeployConfig.stripesize = [brickConfig.raidParam.stripesize]
+                        }
                     }
                     if (redhatSubscription != null) {
                         gdeployConfig['RH-subscription'] = redhatSubscription

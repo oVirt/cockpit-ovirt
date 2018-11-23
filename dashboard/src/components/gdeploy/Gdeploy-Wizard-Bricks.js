@@ -332,20 +332,20 @@ class WizardBricksStep extends Component {
     validateRaidConfig(raidConfig, errorMsgs){
         let valid = true
         errorMsgs.raidConfig = {}
-        if(raidConfig.stripeSize.trim().length < 1){
+        if(!(raidConfig.raidType == "jbod") && raidConfig.stripeSize.trim().length < 1){
             errorMsgs.raidConfig.stripeSize = "Enter stripe size"
             valid = false
-        }else{
+        }else if (!(raidConfig.raidType == "jbod")){
             const stripeSize = Number(raidConfig.stripeSize)
             if(stripeSize < 1){
                 errorMsgs.raidConfig.stripeSize = "Invalid stripe size"
                 valid = false
             }
         }
-        if(raidConfig.diskCount.trim().length < 1){
+        if(!(raidConfig.raidType == "jbod") && raidConfig.diskCount.trim().length < 1){
             errorMsgs.raidConfig.diskCount = "Enter data disk count"
             valid = false
-        }else{
+        }else if (!(raidConfig.raidType == "jbod")){
             const diskCount = Number(raidConfig.diskCount)
             //Atleast one disk will be present in the RAID/JBOD
             //We are not expecting more than 60 disks an a RAID volume
@@ -595,7 +595,7 @@ class WizardBricksStep extends Component {
                                 />
                         </div>
                     </div>
-                    <div className={stripeSize}>
+                    {!(this.state.raidConfig.raidType == "jbod") && <div className={stripeSize}>
                         <label className="col-md-3 control-label">Stripe Size(KB)</label>
                         <div className="col-md-2">
                             <input type="number" className="form-control"
@@ -604,8 +604,8 @@ class WizardBricksStep extends Component {
                                 />
                             <span className="help-block">{stripeSizeMsg}</span>
                         </div>
-                    </div>
-                    <div className={diskCount}>
+                    </div>}
+                    {!(this.state.raidConfig.raidType == "jbod") && <div className={diskCount}>
                         <label className="col-md-3 control-label">Data Disk Count</label>
                         <div className="col-md-2">
                             <input type="number" className="form-control" min="1" max="60"
@@ -614,7 +614,7 @@ class WizardBricksStep extends Component {
                                 />
                             <span className="help-block">{diskCountMsg}</span>
                         </div>
-                    </div>
+                    </div>}
                 {bricksRow.length > 0 &&
                     <div>
                         <div className="panel-heading gdeploy-wizard-section-title">
