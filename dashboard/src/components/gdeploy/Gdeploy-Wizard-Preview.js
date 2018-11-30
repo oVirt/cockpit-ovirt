@@ -10,7 +10,8 @@ class WizardPreviewStep extends Component {
         this.state = {
             gdeployConfig: "",
             isEditing: false,
-            isChanged: false
+            isChanged: false,
+            gdeployFileGenerated: false
         }
         this.handleConfigChange = this.handleConfigChange.bind(this)
         this.handleEdit = this.handleEdit.bind(this)
@@ -62,8 +63,29 @@ class WizardPreviewStep extends Component {
         })
     }
     componentWillReceiveProps(nextProps) {
-        if ((nextProps.activeStep == 4 || (nextProps.gdeployWizardType === "create_volume" && nextProps.activeStep == 3)) && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
-            this.createGdeployConfig()
+        if(!this.state.gdeployFileGenerated && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
+            if((nextProps.gdeployWizardType === "create_volume" || nextProps.gdeployWizardType === "expand_cluster") && nextProps.activeStep == 3) {
+                this.createGdeployConfig()
+                this.setState({ gdeployFileGenerated: true })
+            } else {
+                if(this.props.isRhvhSystem && this.props.isSingleNode) {
+                    if (nextProps.activeStep == 3) {
+                        this.createGdeployConfig()
+                        this.setState({ gdeployFileGenerated: true })
+                    }
+                } else if(!this.props.isRhvhSystem && !this.props.isSingleNode) {
+                    if (nextProps.activeStep == 5) {
+                        this.createGdeployConfig()
+                        this.setState({ gdeployFileGenerated: true })
+                    } else if (nextProps.activeStep == 4) {
+                        this.createGdeployConfig()
+                        this.setState({ gdeployFileGenerated: true })
+                    }
+                } else if(nextProps.activeStep == 4) {
+                    this.createGdeployConfig()
+                    this.setState({ gdeployFileGenerated: true })
+                }
+            }
         }
     }
     handleConfigChange(e) {
