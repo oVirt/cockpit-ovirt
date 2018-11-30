@@ -101,6 +101,8 @@ class GdeploySetup extends Component {
             reDeployCallback={this.handleReDeploy}
             isDeploymentStarted={this.state.isDeploymentStarted}
             expandClusterConfigFilePath={CONFIG_FILES.expandClusterConfigFile}
+            isRhvhSystem={this.state.isRhvhSystem}
+            isSingleNode={this.props.isSingleNode}
             />)
         return (
             <Wizard title={this.state.title} onClose={this.props.onClose}
