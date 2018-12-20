@@ -261,9 +261,9 @@ class StorageUtil {
 
             let ansibleVarName = prop.ansibleVarName ? prop.ansibleVarName : "";
             if (propName === "storageAddress") {
-                ansibleVarName = "ISCSI_PORTAL_ADDR";
+                ansibleVarName = "he_iscsi_portal_addr";
             } else if (propName === "iSCSIDiscoveryPortalPort") {
-                ansibleVarName = "ISCSI_PORTAL_PORT";
+                ansibleVarName = "he_iscsi_portal_port";
             }
 
             const val = self.formatValue(propName, prop.value);

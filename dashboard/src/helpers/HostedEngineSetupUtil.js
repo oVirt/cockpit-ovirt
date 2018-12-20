@@ -75,7 +75,7 @@ export class HeSetupModel {
                 },
                 localVmDirPath: {
                     name: "LOCAL_VM_DIR_PATH",
-                    ansibleVarName: "LOCAL_VM_DIR_PATH",
+                    ansibleVarName: "he_local_vm_dir_path",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "LOCAL_VM_DIR_PATH",
                     value: "/var/tmp",
@@ -87,7 +87,7 @@ export class HeSetupModel {
                 },
                 localVmDirPrefix: {
                     name: "LOCAL_VM_DIR_PREFIX",
-                    ansibleVarName: "LOCAL_VM_DIR_PREFIX",
+                    ansibleVarName: "he_local_vm_dir_prefix",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "LOCAL_VM_DIR_PREFIX",
                     value: "localvm",
@@ -99,7 +99,7 @@ export class HeSetupModel {
                 },
                 localVmDir: {
                     name: "LOCAL_VM_DIR",
-                    ansibleVarName: "LOCAL_VM_DIR",
+                    ansibleVarName: "he_local_vm_dir",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM, phases.FINAL_CLEAN],
                     description: "LOCAL_VM_DIR",
                     value: "localvm",
@@ -111,7 +111,7 @@ export class HeSetupModel {
                 },
                 discard: {
                     name: "discard",
-                    ansibleVarName: "DISCARD",
+                    ansibleVarName: "he_discard",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE],
                     description: "Discard",
                     value: false,
@@ -175,7 +175,7 @@ export class HeSetupModel {
             storage: {
                 domainType: {
                     name: "domainType",
-                    ansibleVarName: "DOMAIN_TYPE",
+                    ansibleVarName: "he_domain_type",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Storage Type",
                     value: "nfs",
@@ -188,7 +188,7 @@ export class HeSetupModel {
                 },
                 nfsVersion: {
                     name: "nfsVersion",
-                    ansibleVarName: "NFS_VERSION",
+                    ansibleVarName: "he_nfs_version",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "NFS Version",
                     value: "auto",
@@ -201,7 +201,7 @@ export class HeSetupModel {
                 },
                 imgSizeGB: {
                     name: "imgSizeGB",
-                    ansibleVarName: "DISK_SIZE",
+                    ansibleVarName: "he_disk_size_GB",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "Disk Size (GiB)",
                     value: resourceConstants.VM_DISK_MIN_GB,
@@ -215,7 +215,7 @@ export class HeSetupModel {
                 },
                 storagePath: {
                     name: "storagePath",
-                    ansibleVarName: "STORAGE_DOMAIN_PATH",
+                    ansibleVarName: "he_storage_domain_path",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Storage Path",
                     value: "",
@@ -227,7 +227,7 @@ export class HeSetupModel {
                 },
                 storageDomain: {
                     name: "storageDomain",
-                    ansibleVarName: "STORAGE_DOMAIN_NAME",
+                    ansibleVarName: "he_storage_domain_name",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Storage Domain Name",
                     value: "hosted_storage",
@@ -240,7 +240,7 @@ export class HeSetupModel {
                 },
                 storageAddress: {
                     name: "storageAddress",
-                    ansibleVarName: "STORAGE_DOMAIN_ADDR",
+                    ansibleVarName: "he_storage_domain_addr",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Storage Address",
                     value: "",
@@ -263,7 +263,7 @@ export class HeSetupModel {
                 },
                 mntOptions: {
                     name: "mntOptions",
-                    ansibleVarName: "MOUNT_OPTIONS",
+                    ansibleVarName: "he_mount_options",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Mount Options",
                     value: "",
@@ -276,7 +276,7 @@ export class HeSetupModel {
                 },
                 iSCSIPortalUser: {
                     name: "iSCSIPortalUser",
-                    ansibleVarName: "ISCSI_USERNAME",
+                    ansibleVarName: "he_iscsi_username",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM, phases.ISCSI_GET_DEVICES],
                     description: "Portal User",
                     value: "",
@@ -288,7 +288,7 @@ export class HeSetupModel {
                 },
                 iSCSIPortalPassword: {
                     name: "iSCSIPortalPassword",
-                    ansibleVarName: "ISCSI_PASSWORD",
+                    ansibleVarName: "he_iscsi_password",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM, phases.ISCSI_GET_DEVICES],
                     description: "Portal Password",
                     value: "",
@@ -300,7 +300,7 @@ export class HeSetupModel {
                 },
                 iSCSIDiscoverUser: {
                     name: "iSCSIDiscoverUser",
-                    ansibleVarName: "ISCSI_DISCOVER_USERNAME",
+                    ansibleVarName: "he_iscsi_discover_username",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM, phases.ISCSI_DISCOVER],
                     description: "Discovery User",
                     value: "",
@@ -312,7 +312,7 @@ export class HeSetupModel {
                 },
                 iSCSIDiscoverPassword: {
                     name: "iSCSIDiscoverPassword",
-                    ansibleVarName: "ISCSI_DISCOVER_PASSWORD",
+                    ansibleVarName: "he_iscsi_discover_password",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM, phases.ISCSI_DISCOVER],
                     description: "Discovery Password",
                     value: "",
@@ -324,7 +324,7 @@ export class HeSetupModel {
                 },
                 iSCSIPortalIPAddress: {
                     name: "iSCSIPortalIPAddress",
-                    ansibleVarName: "ISCSI_PORTAL_ADDR",
+                    ansibleVarName: "he_iscsi_portal_addr",
                     ansiblePhasesUsed: [phases.TARGET_VM, phases.ISCSI_DISCOVER, phases.ISCSI_GET_DEVICES],
                     description: "Portal IP Address",
                     value: "",
@@ -338,7 +338,7 @@ export class HeSetupModel {
                 },
                 iSCSITPGT: {
                     name: "iSCSITPGT",
-                    ansibleVarName: "ISCSI_TPGT",
+                    ansibleVarName: "he_iscsi_tpgt",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "iSCSI Target Portal Group Tag",
                     value: "",
@@ -362,7 +362,7 @@ export class HeSetupModel {
                 },
                 iSCSIPortalPort: {
                     name: "iSCSIPortalPort",
-                    ansibleVarName: "ISCSI_PORTAL_PORT",
+                    ansibleVarName: "he_iscsi_portal_port",
                     ansiblePhasesUsed: [
                         phases.CREATE_STORAGE,
                         phases.TARGET_VM,
@@ -379,7 +379,7 @@ export class HeSetupModel {
                 },
                 iSCSITargetName: {
                     name: "iSCSITargetName",
-                    ansibleVarName: "ISCSI_TARGET",
+                    ansibleVarName: "he_iscsi_target",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM, phases.ISCSI_GET_DEVICES],
                     description: "Target Name",
                     value: "",
@@ -391,7 +391,7 @@ export class HeSetupModel {
                 },
                 LunID: {
                     name: "LunID",
-                    ansibleVarName: "LUN_ID",
+                    ansibleVarName: "he_lun_id",
                     ansiblePhasesUsed: [phases.CREATE_STORAGE, phases.TARGET_VM],
                     description: "Destination LUN",
                     value: "",
@@ -403,7 +403,7 @@ export class HeSetupModel {
                 },
                 enableHcGlusterService: {
                     name: "enableHcGlusterService",
-                    ansibleVarName: "ENABLE_HC_GLUSTER_SERVICE",
+                    ansibleVarName: "he_enable_hc_gluster_service",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "Enable Hyperconverged Gluster Service",
                     value: false,
@@ -417,7 +417,7 @@ export class HeSetupModel {
             network: {
                 bridgeIf: {
                     name: "bridgeIf",
-                    ansibleVarName: "BRIDGE_IF",
+                    ansibleVarName: "he_bridge_if",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "Bridge Interface",
                     value: "",
@@ -430,7 +430,7 @@ export class HeSetupModel {
                 },
                 bridgeName: {
                     name: "bridgeName",
-                    ansibleVarName: "BRIDGE",
+                    ansibleVarName: "he_bridge",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Bridge Name",
                     value: "ovirtmgmt",
@@ -453,7 +453,7 @@ export class HeSetupModel {
                 },
                 gateway: {
                     name: "gateway",
-                    ansibleVarName: "GATEWAY",
+                    ansibleVarName: "he_gateway",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "Gateway Address",
                     value: "",
@@ -468,7 +468,7 @@ export class HeSetupModel {
                 },
                 fqdn: {
                     name: "fqdn",
-                    ansibleVarName: "FQDN",
+                    ansibleVarName: "he_fqdn",
                     ansiblePhasesUsed: [
                         phases.INITIAL_CLEAN,
                         phases.BOOTSTRAP_VM,
@@ -489,7 +489,7 @@ export class HeSetupModel {
                 },
                 host_name: {
                     name: "host_name",
-                    ansibleVarName: "HOST_ADDRESS",
+                    ansibleVarName: "he_host_address",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Host FQDN",
                     value: "",
@@ -515,7 +515,7 @@ export class HeSetupModel {
                 },
                 vmVCpus: {
                     name: "vmVCpus",
-                    ansibleVarName: "VCPUS",
+                    ansibleVarName: "he_vcpus",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Number of Virtual CPUs",
                     value: "1",
@@ -529,7 +529,7 @@ export class HeSetupModel {
                 },
                 maxVCpus: {
                     name: "maxVCpus",
-                    ansibleVarName: "MAXVCPUS",
+                    ansibleVarName: "he_maxvcpus",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Maximum Number of Virtual CPUs",
                     value: "",
@@ -541,7 +541,7 @@ export class HeSetupModel {
                 },
                 cpuSockets: {
                     name: "cpuSockets",
-                    ansibleVarName: "CPU_SOCKETS",
+                    ansibleVarName: "he_cpu_sockets",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Number of CPU Sockets",
                     value: "1",
@@ -553,7 +553,7 @@ export class HeSetupModel {
                 },
                 emulatedMachine: {
                     name: "emulatedMachine",
-                    ansibleVarName: "EMULATED_MACHINE",
+                    ansibleVarName: "he_emulated_machine",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Emulated Machine",
                     value: "",
@@ -565,7 +565,7 @@ export class HeSetupModel {
                 },
                 localVmUUID: {
                     name: "localVmUUID",
-                    ansibleVarName: "VM_UUID",
+                    ansibleVarName: "he_vm_uuid",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "Local VM UUID",
                     value: "",
@@ -577,7 +577,7 @@ export class HeSetupModel {
                 },
                 vmMACAddr: {
                     name: "vmMACAddr",
-                    ansibleVarName: "VM_MAC_ADDR",
+                    ansibleVarName: "he_vm_mac_addr",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "MAC Address",
                     value: "00:16:3E:6A:7A:F9",
@@ -592,7 +592,7 @@ export class HeSetupModel {
                 },
                 vmIpPrefix: {
                     name: "vmIpPrefix",
-                    ansibleVarName: "VM_IP_PREFIX",
+                    ansibleVarName: "he_vm_ip_prefix",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "VM IP Prefix",
                     value: "",
@@ -604,7 +604,7 @@ export class HeSetupModel {
                 },
                 vmMemSizeMB: {
                     name: "vmMemSizeMB",
-                    ansibleVarName: "MEM_SIZE",
+                    ansibleVarName: "he_mem_size_MB",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Memory Size (MiB)",
                     value: resourceConstants.VM_MEM_MIN_RECOMMENDED_MB,
@@ -630,7 +630,7 @@ export class HeSetupModel {
                 },
                 cloudinitVMStaticCIDR: {
                     name: "cloudinitVMStaticCIDR",
-                    ansibleVarName: "VM_IP_ADDR",
+                    ansibleVarName: "he_vm_ip_addr",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "VM IP Address",
                     value: "",
@@ -645,7 +645,7 @@ export class HeSetupModel {
                 },
                 cloudinitVMStaticCIDRPrefix: {
                     name: "cloudinitVMStaticCIDRPrefix",
-                    ansibleVarName: "VM_IP_PREFIX",
+                    ansibleVarName: "he_vm_ip_prefix",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "IP Address Prefix",
                     value: "",
@@ -658,7 +658,7 @@ export class HeSetupModel {
                 },
                 cloudinitVMDNS: {
                     name: "cloudinitVMDNS",
-                    ansibleVarName: "DNS_ADDR",
+                    ansibleVarName: "he_dns_addr",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "DNS Servers",
                     value: [""],
@@ -681,7 +681,7 @@ export class HeSetupModel {
                 },
                 cloudinitVMTZ: {
                     name: "cloudinitVMTZ",
-                    ansibleVarName: "TIME_ZONE",
+                    ansibleVarName: "he_time_zone",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Host Time Zone",
                     value: "America/New_York",
@@ -703,7 +703,7 @@ export class HeSetupModel {
                 },
                 ovfArchive: {
                     name: "ovfArchive",
-                    ansibleVarName: "APPLIANCE_OVA",
+                    ansibleVarName: "he_appliance_ova",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Appliance File Path",
                     value: "",
@@ -715,7 +715,7 @@ export class HeSetupModel {
                 },
                 cloudinitInstanceHostName: {
                     name: "cloudinitInstanceHostName",
-                    ansibleVarName: "CLOUD_INIT_HOST_NAME",
+                    ansibleVarName: "he_cloud_init_host_name",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Engine VM Host Name",
                     value: "ovirt-engine",
@@ -727,7 +727,7 @@ export class HeSetupModel {
                 },
                 cloudinitInstanceDomainName: {
                     name: "cloudinitInstanceDomainName",
-                    ansibleVarName: "CLOUD_INIT_DOMAIN_NAME",
+                    ansibleVarName: "he_cloud_init_domain_name",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Engine VM Domain",
                     value: "localdomain",
@@ -759,7 +759,7 @@ export class HeSetupModel {
                 },
                 cloudinitRootPwd: {
                     name: "cloudinitRootPwd",
-                    ansibleVarName: "APPLIANCE_PASSWORD",
+                    ansibleVarName: "he_appliance_password",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Root password",
                     value: "",
@@ -772,7 +772,7 @@ export class HeSetupModel {
                 },
                 rootSshPubkey: {
                     name: "rootSshPubkey",
-                    ansibleVarName: "ROOT_SSH_PUBKEY",
+                    ansibleVarName: "he_root_ssh_pubkey",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Root User SSH Public Key",
                     value: "",
@@ -785,7 +785,7 @@ export class HeSetupModel {
                 },
                 rootSshAccess: {
                     name: "rootSshAccess",
-                    ansibleVarName: "ROOT_SSH_ACCESS",
+                    ansibleVarName: "he_root_ssh_access",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "Root User SSH Access",
                     value: "yes",
@@ -798,7 +798,7 @@ export class HeSetupModel {
                 },
                 cloudinitVMETCHOSTS: {
                     name: "cloudinitVMETCHOSTS",
-                    ansibleVarName: "VM_ETC_HOSTS",
+                    ansibleVarName: "he_vm_etc_hosts",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Add Lines to /etc/hosts",
                     value: true,
@@ -811,7 +811,7 @@ export class HeSetupModel {
                 },
                 cloudinitHostIP: {
                     name: "cloudinitHostIP",
-                    ansibleVarName: "HOST_IP",
+                    ansibleVarName: "he_host_ip",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Host IP Address",
                     value: "",
@@ -823,7 +823,7 @@ export class HeSetupModel {
                 },
                 cdromUUID: {
                     name: "cdromUUID",
-                    ansibleVarName: "CDROM_UUID",
+                    ansibleVarName: "he_cdrom_uuid",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "CDROM UUID",
                     value: "",
@@ -835,7 +835,7 @@ export class HeSetupModel {
                 },
                 cdrom: {
                     name: "cdrom",
-                    ansibleVarName: "CDROM",
+                    ansibleVarName: "he_cdrom",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "CDROM",
                     value: "",
@@ -847,7 +847,7 @@ export class HeSetupModel {
                 },
                 nicUUID: {
                     name: "nicUUID",
-                    ansibleVarName: "NIC_UUID",
+                    ansibleVarName: "he_nic_uuid",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "NIC UUID",
                     value: "",
@@ -859,7 +859,7 @@ export class HeSetupModel {
                 },
                 consoleUUID: {
                     name: "consoleUUID",
-                    ansibleVarName: "CONSOLE_UUID",
+                    ansibleVarName: "he_console_uuid",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "Console UUID",
                     value: "",
@@ -871,7 +871,7 @@ export class HeSetupModel {
                 },
                 videoDevice: {
                     name: "videoDevice",
-                    ansibleVarName: "VIDEO_DEVICE",
+                    ansibleVarName: "he_video_device",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Video Device",
                     value: "vga",
@@ -883,7 +883,7 @@ export class HeSetupModel {
                 },
                 graphicsDevice: {
                     name: "graphicsDevice",
-                    ansibleVarName: "GRAPHICS_DEVICE",
+                    ansibleVarName: "he_graphics_device",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Graphics Device",
                     value: "vnc",
@@ -895,7 +895,7 @@ export class HeSetupModel {
                 },
                 vmName: {
                     name: "vmName",
-                    ansibleVarName: "VM_NAME",
+                    ansibleVarName: "he_vm_name",
                     ansiblePhasesUsed: [phases.INITIAL_CLEAN, phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "VM Name",
                     value: "HostedEngine",
@@ -929,7 +929,7 @@ export class HeSetupModel {
                 },
                 adminPassword: {
                     name: "adminPassword",
-                    ansibleVarName: "ADMIN_PASSWORD",
+                    ansibleVarName: "he_admin_password",
                     ansiblePhasesUsed: [
                         phases.BOOTSTRAP_VM,
                         phases.CREATE_STORAGE,
@@ -949,7 +949,7 @@ export class HeSetupModel {
                 },
                 enableLibgfapi: {
                     name: "enableLibgfapi",
-                    ansibleVarName: "ENABLE_LIBGFAPI",
+                    ansibleVarName: "he_enable_libgfapi",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
                     description: "Enable libgfapi",
                     value: "",
@@ -961,7 +961,7 @@ export class HeSetupModel {
                 },
                 appHostName: {
                     name: "appHostName",
-                    ansibleVarName: "HOST_NAME",
+                    ansibleVarName: "he_host_name",
                     ansiblePhasesUsed: [
                         phases.BOOTSTRAP_VM,
                         phases.CREATE_STORAGE,
@@ -982,7 +982,7 @@ export class HeSetupModel {
             vdsm: {
                 consoleType: {
                     name: "consoleType",
-                    ansibleVarName: "CONSOLE_TYPE",
+                    ansibleVarName: "he_console_type",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Console Type",
                     value: "vnc",
@@ -994,7 +994,7 @@ export class HeSetupModel {
                 },
                 cpu: {
                     name: "cpu",
-                    ansibleVarName: "CPU_TYPE",
+                    ansibleVarName: "he_cpu_type",
                     ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "CPU Type",
                     value: "Conroe",
@@ -1038,7 +1038,7 @@ export class HeSetupModel {
             notifications: {
                 smtpServer: {
                     name: "smtpServer",
-                    ansibleVarName: "SMTP_SERVER",
+                    ansibleVarName: "he_smtp_server",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "SMTP Server Name",
                     value: "localhost",
@@ -1051,7 +1051,7 @@ export class HeSetupModel {
                 },
                 smtpPort: {
                     name: "smtpPort",
-                    ansibleVarName: "SMTP_PORT",
+                    ansibleVarName: "he_smtp_port",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "SMTP Server Port Number",
                     value: "25",
@@ -1066,7 +1066,7 @@ export class HeSetupModel {
                 },
                 sourceEmail: {
                     name: "sourceEmail",
-                    ansibleVarName: "SOURCE_EMAIL",
+                    ansibleVarName: "he_source_email",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "Sender E-Mail Address",
                     value: "root@localhost",
@@ -1079,7 +1079,7 @@ export class HeSetupModel {
                 },
                 destEmail: {
                     name: "destEmail",
-                    ansibleVarName: "DEST_EMAIL",
+                    ansibleVarName: "he_dest_email",
                     ansiblePhasesUsed: [phases.TARGET_VM],
                     description: "Recipient E-Mail Addresses",
                     value: ["root@localhost"],
