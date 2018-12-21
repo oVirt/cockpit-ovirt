@@ -29,11 +29,13 @@ class WizardFqdnStep extends Component {
       var fqdnsInput = document.querySelectorAll("[id='fqdn']")
       var hosts = this.state.hosts
       var fqdns = this.state.fqdns
+      const that = this
       if(checkbox.checked) {
           fqdnsInput.forEach(function (key, index) {
               key.setAttribute("disabled", "true")
               key.value=hosts[index+1]
               fqdns[index]=hosts[index+1]
+              that.validate(fqdns)
           })
       } else {
           fqdnsInput.forEach(function (key, index) {
@@ -53,22 +55,33 @@ class WizardFqdnStep extends Component {
         }
       }
     }
-    validate(fqdn, index) {
+    validate(fqdns) {
       let errorMsg = ""
       const errorMsgs= {}
-      if(fqdn.length > 0) {
-        this.trimFqdnProperties()
-        let that = this
-        GdeployUtil.isPingable(fqdn, function (pingStatus) {
-          if(!pingStatus) {
-            errorMsgs[index] = "Host is not reachable"
-            that.state.fqdnPingStatus = false
-          } else {
-            that.state.fqdnPingStatus = true
-          }
-        })
-        this.setState({ errorMsg, errorMsgs })
-      }
+      let that = this
+      fqdns.forEach(function (fqdn, index) {
+        if(fqdn.length > 0) {
+          that.trimFqdnProperties()
+          GdeployUtil.isPingable(fqdn, function (pingStatus) {
+            if(!pingStatus) {
+              errorMsgs[index] = "Host is not reachable"
+              that.state.fqdnPingStatus = false
+              that.setState({ errorMsg, errorMsgs })
+            } else {
+              GdeployUtil.isHostAddedInKnownHosts(fqdn, function(isAdded) {
+                if(!isAdded) {
+                  errorMsgs[index] = "FQDN is not added in known_hosts"
+                  that.state.fqdnPingStatus = false
+                  that.setState({ errorMsg, errorMsgs })
+                } else if(!that.state.fqdnPingStatus) {
+                  that.state.fqdnPingStatus = true
+                }
+              })
+            }
+            that.setState({ errorMsg, errorMsgs })
+          })
+        }
+      })
     }
     shouldComponentUpdate(nextProps, nextState){
         const that = this
@@ -109,7 +122,7 @@ class WizardFqdnStep extends Component {
                     errorMsg = {that.state.errorMsgs[index]}
                     deleteCallBack={() => this.handleDelete(index)}
                     changeCallBack={(e) => this.updateFqdn(index, e.target.value)}
-                    validate={() => this.validate(fqdn, index)}
+                    validate={() => this.validate(this.state.fqdns)}
                   />
                 )
             }
@@ -134,6 +147,7 @@ class WizardFqdnStep extends Component {
                         <strong>
                             Provide the address used to add the additional hosts to be
                             managed by Hosted Engine preferrably FQDN or IP address.
+                            And both FQDN needs to be added in known_hosts file.
                         </strong>
                     </div>
                 </form>
@@ -162,7 +176,7 @@ const FqdnRow = ({fqdn, fqdnNo, gdeployWizardType, errorMsg, changeCallBack, del
                         className="form-control"
                         value={fqdn}
                         onChange={changeCallBack}
-                        onBlur={() => validate(document.getElementById("fqdn").value, fqdnNo)}
+                        onBlur={() => validate(document.getElementById("fqdn").value)}
                         />
                     }
                     {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
