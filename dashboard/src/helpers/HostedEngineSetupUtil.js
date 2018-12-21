@@ -1126,7 +1126,7 @@ export class HeSetupModel {
                 self.addValuesToModel(gDeployAnswerFile, model);
                 model.storage.domainType.value = "glusterfs";
                 model.storage.enableHcGlusterService.value = true;
-                console.log("Gluster values successfully added.");
+                console.log("Gluster values successfully added: ",gdeployHeAnsFilePath);
             })
             .fail(function(error) {
                 console.log("Failed to read the gluster answer file. " + error);

@@ -2,8 +2,8 @@ import React from 'react'
 import App from '../components/App'
 import Dashboard from '../components/Dashboard'
 import HostedEngine from '../components/HostedEngine'
-import CreateGlusterVolume from '../components/gdeploy/CreateGlusterVolume'
-import ExpandCluster from '../components/gdeploy/ExpandCluster'
+import CreateGlusterVolume from '../components/ansible/CreateGlusterVolume'
+import ExpandCluster from '../components/ansible/ExpandCluster'
 import GlusterManagement from '../components/GlusterManagement'
 
 const defaultRoute = [

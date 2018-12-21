@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
-import isGdeployAvailable from './../../helpers/GdeployUtil'
 import {footerButtons} from "../common/Wizard/Wizard";
 
 class WizardHostStep extends Component {
@@ -13,7 +12,6 @@ class WizardHostStep extends Component {
             hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
             errorMsgs: {},
-            isGdeployAvailableOnHost: false,
             isSingleNode: props.isSingleNode
         }
         this.updateHost = this.updateHost.bind(this);
@@ -46,7 +44,7 @@ class WizardHostStep extends Component {
           this.trimHostProperties()
           return true
         }
-        if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
+        if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") {
             this.trimHostProperties()
             let errorMsg = ""
             const errorMsgs= {}
@@ -65,7 +63,7 @@ class WizardHostStep extends Component {
             })
             this.setState({ errorMsg, errorMsgs })
             return valid
-        } else if(this.props.gdeployWizardType === "create_volume" && this.state.hostTypes.length === 1) {
+        } else if(this.props.ansibleWizardType === "create_volume" && this.state.hostTypes.length === 1) {
             let errorMsg = ""
             const errorMsgs= {}
             let valid = true
@@ -106,7 +104,7 @@ class WizardHostStep extends Component {
     }
     componentDidMount(){
         $('[data-toggle=popover]').popovers()
-        if (this.props.gdeployWizardType === "create_volume") {
+        if (this.props.ansibleWizardType === "create_volume") {
             let that = this
             let hostTypes = []
             this.getHostList(function (hostList) {
@@ -121,17 +119,6 @@ class WizardHostStep extends Component {
                   that.setState({ hostTypes, hosts })
             })
         }
-        let that = this
-        isGdeployAvailable.isGdeployAvailable(function (boolVal) {
-            that.setState({
-              isGdeployAvailableOnHost: boolVal
-            })
-            if(that.state.isGdeployAvailableOnHost === false) {
-              that.props.registerCustomActionBtnStateCallback({disableBtnsList: [footerButtons.NEXT], hidden: true}, that.props.stepIndex)
-              let errorMsg = "Gdeploy isn't installed on Host. To continue deployment, please install Gdeploy on Host and try again."
-              that.setState({ errorMsg })
-            }
-        })
     }
     getHostList(callback){
       cockpit.spawn(
@@ -188,17 +175,17 @@ class WizardHostStep extends Component {
         if(that.state.isSingleNode) {
           hostRows.push(
             <HostRow host={this.state.hosts[0]} key={0} hostNo={1 }
-              gdeployWizardType={that.props.gdeployWizardType}
+              ansibleWizardType={that.props.ansibleWizardType}
               hostTypes={that.state.hostTypes}
               errorMsg = {that.state.errorMsgs[0]}
               deleteCallBack={() => this.handleDelete(0)}
               changeCallBack={(e) => this.updateHost(0, e.target.value)}
             />
           )
-        } else if(this.props.gdeployWizardType === "create_volume" && this.state.hostTypes.length === 1) {
+        } else if(this.props.ansibleWizardType === "create_volume" && this.state.hostTypes.length === 1) {
           hostRows.push(
             <HostRow host={this.state.hosts[0]} key={0} hostNo={1 }
-              gdeployWizardType={that.props.gdeployWizardType}
+              ansibleWizardType={that.props.ansibleWizardType}
               hostTypes={that.state.hostTypes}
               errorMsg = {that.state.errorMsgs[0]}
               deleteCallBack={() => this.handleDelete(0)}
@@ -207,10 +194,10 @@ class WizardHostStep extends Component {
           )
         } else {
           this.state.hosts.forEach(function (host, index) {
-              if (this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") {
+              if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") {
                   hostRows.push(
                     <HostRow host={host} key={index} hostNo={index + 1}
-                      gdeployWizardType={that.props.gdeployWizardType}
+                      ansibleWizardType={that.props.ansibleWizardType}
                       hostTypes={that.state.hostTypes}
                       errorMsg = {that.state.errorMsgs[index]}
                       deleteCallBack={() => this.handleDelete(index)}
@@ -221,7 +208,7 @@ class WizardHostStep extends Component {
               else {
                   hostRows.push(
                     <HostRow host={host} key={index} hostNo={index + 1}
-                      gdeployWizardType={that.props.gdeployWizardType}
+                      ansibleWizardType={that.props.ansibleWizardType}
                       hostTypes={that.state.hostTypes}
                       errorMsg = {that.state.errorMsgs[index]}
                       deleteCallBack={() => this.handleDelete(index)}
@@ -241,10 +228,10 @@ class WizardHostStep extends Component {
                 <form className="form-horizontal">
                     {hostRows}
                     {!(this.state.hostTypes.length === 1) &&
-                    <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
+                    <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                         <span className="pficon pficon-info"></span>
                         <strong>
-                            gdeploy will login to gluster hosts as root user using passwordless ssh connections.
+                            Ansible will login to gluster hosts as root user using passwordless ssh connections.
                             Make sure, passwordless ssh is configured for all gluster hosts from the first host.
                         </strong>
                     </div>
@@ -256,11 +243,10 @@ class WizardHostStep extends Component {
 }
 
 WizardHostStep.propTypes = {
-    stepName: PropTypes.string.isRequired,
-    hosts: PropTypes.array.isRequired
+    stepName: PropTypes.string.isRequired
 }
 
-const HostRow = ({host, hostNo, gdeployWizardType, hostTypes, errorMsg, changeCallBack, deleteCallBack}) => {
+const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, errorMsg, changeCallBack, deleteCallBack}) => {
     const hostClass = classNames(
         "form-group",
         { "has-error": errorMsg && errorMsg.length > 0 }
@@ -276,17 +262,17 @@ const HostRow = ({host, hostNo, gdeployWizardType, hostTypes, errorMsg, changeCa
                 }
                 </label>
                 <div className="col-md-6">
-                    {(gdeployWizardType === "setup" || gdeployWizardType === "expand_cluster") && <input type="text" placeholder="Gluster network address"
+                    {(ansibleWizardType === "setup" || ansibleWizardType === "expand_cluster") && <input type="text" placeholder="Gluster network address"
                         title="Enter the address of gluster network which will be used for gluster data traffic."
                         className="form-control"
                         value={host}
                         onChange={changeCallBack}
                         />
                     }
-                    {gdeployWizardType === "create_volume" && hostTypes.length > 0 && <Selectbox optionList={hostTypes}
+                    {ansibleWizardType === "create_volume" && hostTypes.length > 0 && <Selectbox optionList={hostTypes}
                         selectedOption={host}
                         callBack={(e) => changeCallBack(e)}
-                        gdeployWizardType={gdeployWizardType}
+                        ansibleWizardType={ansibleWizardType}
                         />
                     }
                     {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}

@@ -97,7 +97,7 @@ class WizardVolumesStep extends Component {
         return true;
     }
     componentDidMount(){
-        if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
+        if (this.props.ansibleWizardType === "create_volume" || this.props.ansibleWizardType === "expand_cluster") {
             let volumes = this.state.volumes
             volumes.splice(0)
             volumes.push(this.getEmptyRow())
@@ -126,7 +126,7 @@ class WizardVolumesStep extends Component {
                 }
                 {volumeRows.length > 0 &&
                     <form className="form-horizontal">
-                        <table className="gdeploy-wizard-table">
+                        <table className="ansible-wizard-table">
                             <tbody>
                                 <tr>
                                     <th>Name</th>
@@ -144,8 +144,8 @@ class WizardVolumesStep extends Component {
                         <strong> Add Volume</strong>
                     </span>
                 </a>
-                {(this.props.gdeployWizardType === "setup") &&
-                    <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
+                {(this.props.ansibleWizardType === "setup") &&
+                    <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                         <span className="pficon pficon-info"></span>
                         <strong>
                             First volume in the list will be used for hosted-engine deployment
@@ -209,7 +209,7 @@ const VolumeRow = ({volume, isSingleNode, index, errorMsgs, changeCallBack, dele
             </td>
             <td className="col-sm-1">
                 <a onClick={deleteCallBack}>
-                    <span className="pficon pficon-delete gdeploy-wizard-delete-icon">
+                    <span className="pficon pficon-delete ansible-wizard-delete-icon">
                     </span>
                 </a>
             </td>

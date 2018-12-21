@@ -1,21 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import WizardHostStep from './Gdeploy-Wizard-Hosts'
-import WizardFqdnStep from './Gdeploy-Wizard-Fqdns'
-import WizardPackageStep from './Gdeploy-Wizard-Packages'
-import WizardVolumesStep from './Gdeploy-Wizard-Volumes'
-import WizardBricksStep from './Gdeploy-Wizard-Bricks'
-import WizardPreviewStep from './Gdeploy-Wizard-Preview'
+import WizardHostStep from './Ansible-Wizard-Hosts'
+import WizardFqdnStep from './Ansible-Wizard-Fqdns'
+import WizardPackageStep from './Ansible-Wizard-Packages'
+import WizardVolumesStep from './Ansible-Wizard-Volumes'
+import WizardBricksStep from './Ansible-Wizard-Bricks'
+import WizardPreviewStep from './Ansible-Wizard-Preview'
 import Wizard from '../common/Wizard/Wizard'
-import GdeployUtil from '../../helpers/GdeployUtil'
+import AnsibleUtil from '../../helpers/AnsibleUtil'
 import { CONFIG_FILES } from './constants'
 
-class GdeploySetup extends Component {
+class AnsibleSetup extends Component {
     constructor(props) {
         super(props);
         this.state = {
             //TODO: These default values should be cleared before merging
-            glusterModel: GdeployUtil.getDefaultGedeployModel(),
+            glusterModel: AnsibleUtil.getDefaultAnsibleModel(),
             isDeploymentStarted: false,
             title: '',
             isRhvhSystem: false
@@ -27,14 +27,14 @@ class GdeploySetup extends Component {
         this.setTitle = this.setTitle.bind(this)
     }
     componentDidMount() {
-      this.setTitle(this.props.gdeployWizardType)
+      this.setTitle(this.props.ansibleWizardType)
       let that = this
-      GdeployUtil.isRhvhSystem(function (isAvailable) {
+      AnsibleUtil.isRhvhSystem(function (isAvailable) {
           that.setState({ isRhvhSystem: isAvailable })
       })
     }
     onSuccess() {
-        console.log("gdeploy config file is being generated");
+        console.log("Ansible inventory file is being generated");
     }
     onStepChange(activeStep) {
 
@@ -45,11 +45,11 @@ class GdeploySetup extends Component {
     handleReDeploy(){
         this.setState({ isDeploymentStarted: false })
     }
-    setTitle(gdeployWizardType) {
+    setTitle(ansibleWizardType) {
       let tempTitle = ''
-      if(gdeployWizardType === "expand_cluster") {
+      if(ansibleWizardType === "expand_cluster") {
           tempTitle = "Expand Cluster"
-      } else if (gdeployWizardType === "create_volume") {
+      } else if (ansibleWizardType === "create_volume") {
         tempTitle = "Create Volume"
       } else {
         tempTitle="Gluster Deployment"
@@ -59,30 +59,30 @@ class GdeploySetup extends Component {
     render() {
         let wizardChildren = []
         let index = 1;
-        wizardChildren.push(<WizardHostStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+        wizardChildren.push(<WizardHostStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
             stepName="Hosts"
             glusterModel={this.state.glusterModel}
             isSingleNode={this.props.isSingleNode}
             />)
-        if (this.props.gdeployWizardType === "setup" && this.props.showFqdn && !this.props.isSingleNode) {
-            wizardChildren.push(<WizardFqdnStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+        if (this.props.ansibleWizardType === "setup" && this.props.showFqdn && !this.props.isSingleNode) {
+            wizardChildren.push(<WizardFqdnStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
                 stepName="FQDNs"
                 hosts={this.state.glusterModel.hosts}
                 fqdns={this.state.glusterModel.fqdns}
                 />)
         }
-        if ((this.props.gdeployWizardType === "setup" || this.props.gdeployWizardType === "expand_cluster") && this.state.isRhvhSystem === false) {
-            wizardChildren.push(<WizardPackageStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+        if ((this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") && this.state.isRhvhSystem === false) {
+            wizardChildren.push(<WizardPackageStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
                 stepName="Packages"
                 subscription={this.state.glusterModel.subscription}
                 />)
         }
-        wizardChildren.push(<WizardVolumesStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+        wizardChildren.push(<WizardVolumesStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
             stepName="Volumes"
             volumes={this.state.glusterModel.volumes}
             isSingleNode={this.props.isSingleNode}
             />)
-        wizardChildren.push(<WizardBricksStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+        wizardChildren.push(<WizardBricksStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
             stepName="Bricks"
             glusterModel={this.state.glusterModel}
             bricks={this.state.glusterModel.bricks}
@@ -90,17 +90,14 @@ class GdeploySetup extends Component {
             hosts={this.state.glusterModel.hosts}
             lvCacheConfig={this.state.glusterModel.lvCacheConfig}
             />)
-        wizardChildren.push(<WizardPreviewStep key={index++} gdeployWizardType={this.props.gdeployWizardType}
+        wizardChildren.push(<WizardPreviewStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
             stepName="Review"
             glusterModel={this.state.glusterModel}
-            configFilePath={CONFIG_FILES.gdeployConfigFile}
             heAnsweFilePath={CONFIG_FILES.heAnsfileFile}
             heCommanAnswer={CONFIG_FILES.heCommonAnsFile}
-            templatePath={CONFIG_FILES.gdeployTemplate}
             onSuccess={this.props.onSuccess}
             reDeployCallback={this.handleReDeploy}
             isDeploymentStarted={this.state.isDeploymentStarted}
-            expandClusterConfigFilePath={CONFIG_FILES.expandClusterConfigFile}
             isRhvhSystem={this.state.isRhvhSystem}
             isSingleNode={this.props.isSingleNode}
             />)
@@ -114,8 +111,8 @@ class GdeploySetup extends Component {
     }
 }
 
-GdeploySetup.propTypes = {
+AnsibleSetup.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSuccess: PropTypes.func.isRequired,
 }
-export default GdeploySetup
+export default AnsibleSetup

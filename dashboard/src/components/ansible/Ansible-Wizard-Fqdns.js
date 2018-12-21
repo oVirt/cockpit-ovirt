@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
-import GdeployUtil from './../../helpers/GdeployUtil'
+import AnsibleUtil from './../../helpers/AnsibleUtil'
 
 class WizardFqdnStep extends Component {
     constructor(props) {
@@ -62,13 +62,13 @@ class WizardFqdnStep extends Component {
       fqdns.forEach(function (fqdn, index) {
         if(fqdn.length > 0) {
           that.trimFqdnProperties()
-          GdeployUtil.isPingable(fqdn, function (pingStatus) {
+          AnsibleUtil.isPingable(fqdn, function (pingStatus) {
             if(!pingStatus) {
               errorMsgs[index] = "Host is not reachable"
               that.state.fqdnPingStatus = false
               that.setState({ errorMsg, errorMsgs })
             } else {
-              GdeployUtil.isHostAddedInKnownHosts(fqdn, function(isAdded) {
+              AnsibleUtil.isHostAddedInKnownHosts(fqdn, function(isAdded) {
                 if(!isAdded) {
                   errorMsgs[index] = "FQDN is not added in known_hosts"
                   that.state.fqdnPingStatus = false
@@ -115,10 +115,10 @@ class WizardFqdnStep extends Component {
         const fqdnRows = [];
         const that = this
         this.state.fqdns.forEach(function (fqdn, index) {
-            if (this.props.gdeployWizardType === "setup") {
+            if (this.props.ansibleWizardType === "setup") {
                 fqdnRows.push(
                   <FqdnRow fqdn={fqdn} key={index} fqdnNo={index + 1}
-                    gdeployWizardType={that.props.gdeployWizardType}
+                    ansibleWizardType={that.props.ansibleWizardType}
                     errorMsg = {that.state.errorMsgs[index]}
                     deleteCallBack={() => this.handleDelete(index)}
                     changeCallBack={(e) => this.updateFqdn(index, e.target.value)}
@@ -142,7 +142,7 @@ class WizardFqdnStep extends Component {
                 </div>
                 <form className="form-horizontal">
                     {fqdnRows}
-                    <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
+                    <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                         <span className="pficon pficon-info"></span>
                         <strong>
                             Provide the address used to add the additional hosts to be
@@ -160,7 +160,7 @@ WizardFqdnStep.propTypes = {
     stepName: PropTypes.string.isRequired
 }
 
-const FqdnRow = ({fqdn, fqdnNo, gdeployWizardType, errorMsg, changeCallBack, deleteCallBack, validate}) => {
+const FqdnRow = ({fqdn, fqdnNo, ansibleWizardType, errorMsg, changeCallBack, deleteCallBack, validate}) => {
     const fqdnClass = classNames(
         "form-group",
         { "has-error": errorMsg && errorMsg.length > 0 }
@@ -171,7 +171,7 @@ const FqdnRow = ({fqdn, fqdnNo, gdeployWizardType, errorMsg, changeCallBack, del
                 <label className="col-md-2 control-label">Host{fqdnNo + 1}
                 </label>
                 <div className="col-md-6">
-                    {(gdeployWizardType === "setup") && <input type="text" id="fqdn" placeholder="FQDN or IP address"
+                    {(ansibleWizardType === "setup") && <input type="text" id="fqdn" placeholder="FQDN or IP address"
                         title="Enter the FQDN or IP address to use for hosts."
                         className="form-control"
                         value={fqdn}

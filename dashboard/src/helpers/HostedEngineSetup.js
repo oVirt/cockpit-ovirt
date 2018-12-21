@@ -1,4 +1,4 @@
-import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
+import { CONFIG_FILES as constants } from '../components/ansible/constants'
 
 class RunSetup {
   constructor(abortCallback, answerFiles) {

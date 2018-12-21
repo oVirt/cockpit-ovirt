@@ -46,8 +46,8 @@ module.exports = {
       {from: 'static/manifest.json'},
       {from: 'static/index.html'},
       {from: 'static/app.css'},
-      {from: 'static/gdeploy-templates', to: 'gdeploy-templates'},
-      {from: 'static/hostedEngineAnsibleFiles', to: 'hostedEngineAnsibleFiles'}
+      {from: 'static/hostedEngineAnsibleFiles', to: 'hostedEngineAnsibleFiles'},
+      {from: 'static/ansible', to: 'ansible'}
     ])
   ]
 };
