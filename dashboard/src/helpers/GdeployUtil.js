@@ -807,6 +807,19 @@ var GdeployUtil = {
       .fail(function(code) {
           callBack(false)
       })
+    },
+    isHostAddedInKnownHosts(address, callBack) {
+      let proc = cockpit.spawn(
+          ["ssh-keygen","-F",
+            address
+          ]
+      )
+      .done(function(code) {
+          callBack(true)
+      })
+      .fail(function(code) {
+          callBack(false)
+      })
     }
 }
 
