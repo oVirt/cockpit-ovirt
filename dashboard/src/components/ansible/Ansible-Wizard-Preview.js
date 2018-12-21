@@ -1,49 +1,42 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import WizardExecutionStep from './Gdeploy-Wizard-Execution'
-import GdeployUtil from '../../helpers/GdeployUtil'
+import WizardExecutionStep from './Ansible-Wizard-Execution'
+import AnsibleUtil from '../../helpers/AnsibleUtil'
 import ini from 'ini'
+import { CONFIG_FILES } from './constants'
 
 class WizardPreviewStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            gdeployConfig: "",
+            ansibleConfig: "",
+            ansibleConfig: "",
             isEditing: false,
             isChanged: false,
-            gdeployFileGenerated: false
+            ansibleFileGenerated: false
         }
         this.handleConfigChange = this.handleConfigChange.bind(this)
         this.handleEdit = this.handleEdit.bind(this)
         this.handleSave = this.handleSave.bind(this)
-        this.readGdeployConfig = this.readGdeployConfig.bind(this)
-        this.createGdeployConfig = this.createGdeployConfig.bind(this)
+        this.readAnsibleConfig = this.readAnsibleConfig.bind(this)
+        this.createAnsibleConfig = this.createAnsibleConfig.bind(this)
     }
-    createGdeployConfig() {
+    createAnsibleConfig() {
         if (this.props.glusterModel.volumes.length > 0 && this.props.glusterModel.hosts.length > 0) {
             this.setState({
-                gdeployConfig: "Creating Gdeploy configuration...",
+                ansibleConfig: "Creating Ansible configuration...",
                 isChanged: false
             })
             const that = this
-            cockpit.file(this.props.templatePath).read()
-            .done(function(template) {
-                if (template != null) {
-                    const configTemplate = ini.parse(template)
-                    if (that.props.gdeployWizardType === "expand_cluster") {
-                        GdeployUtil.createExpandClusterConfig(that.props.glusterModel, that.props.expandClusterConfigFilePath)
-                    }
-                    GdeployUtil.createGdeployConfig(that.props.glusterModel,
-                        configTemplate,
-                        that.props.configFilePath,
-                        that.props.gdeployWizardType,
-                    function(returnValue){
-                      console.log(`Gdeploy configuration saved successfully to ${that.props.configFilePath}`)
-                      that.readGdeployConfig()
-                    })
-                }
+            AnsibleUtil.createAnsibleConfig(that.props.glusterModel,
+                CONFIG_FILES.ansibleInventoryFile,
+                that.props.ansibleWizardType,
+                that.props.isSingleNode,
+            function(returnValue){
+              console.log(`Ansible configuration saved successfully to ${CONFIG_FILES.ansibleInventoryFile}`)
+              that.readAnsibleConfig()
             })
-            GdeployUtil.createHEAnswerFileForGlusterStorage(this.props.glusterModel.volumes[0].name,
+            AnsibleUtil.createHEAnswerFileForGlusterStorage(this.props.glusterModel.volumes[0].name,
                 this.props.glusterModel.hosts,
                 this.props.heAnsweFilePath,
             function(returnValue){
@@ -51,86 +44,86 @@ class WizardPreviewStep extends Component {
             })
         }
     }
-    readGdeployConfig() {
+    readAnsibleConfig() {
         const that = this
-        this.setState({ gdeployConfig: "Loading Gdeploy configuration..." })
-        cockpit.file(that.props.configFilePath).read()
-        .done(function(gdeployConfig) {
-            that.setState({ gdeployConfig })
+        this.setState({ ansibleConfig: "Loading Ansible configuration..." })
+        cockpit.file(CONFIG_FILES.ansibleInventoryFile).read()
+        .done(function(ansibleConfig) {
+            that.setState({ ansibleConfig })
         })
         .fail(function(error) {
-            that.setState({ gdeployConfig: `Failed to load the config file ${that.props.configFilePath} \n ${error}` })
+            that.setState({ ansibleConfig: `Failed to load the config file ${CONFIG_FILES.ansibleInventoryFile} \n ${error}` })
         })
     }
     componentWillReceiveProps(nextProps) {
-      if(this.state.gdeployFileGenerated) {
-        if(nextProps.gdeployWizardType === "create_volume" && nextProps.activeStep !== 3) {
-          this.setState({ gdeployFileGenerated: false})
-        } else if(nextProps.gdeployWizardType === "expand_cluster") {
+      if(this.state.ansibleFileGenerated) {
+        if(nextProps.ansibleWizardType === "create_volume" && nextProps.activeStep !== 3) {
+          this.setState({ ansibleFileGenerated: false})
+        } else if(nextProps.ansibleWizardType === "expand_cluster") {
           if (this.props.isRhvhSystem && nextProps.activeStep !== 3) {
-            this.setState({ gdeployFileGenerated: false})
+            this.setState({ ansibleFileGenerated: false})
           } else if(!this.props.isRhvhSystem && nextProps.activeStep !== 4) {
-            this.setState({ gdeployFileGenerated: false})
+            this.setState({ ansibleFileGenerated: false})
           }
-        } else if(nextProps.gdeployWizardType === "setup") {
+        } else if(nextProps.ansibleWizardType === "setup") {
             if(this.props.isSingleNode) {
               if(this.props.isRhvhSystem) {
                 if(nextProps.activeStep !== 3) {
-                  this.setState({ gdeployFileGenerated: false})
+                  this.setState({ ansibleFileGenerated: false})
                 }
               } else if(!this.props.isRhvhSystem) {
                 if(nextProps.activeStep !== 4) {
-                  this.setState({ gdeployFileGenerated: false})
+                  this.setState({ ansibleFileGenerated: false})
                 }
               }
             } else if(!this.props.isSingleNode) {
               if(this.props.isRhvhSystem) {
                 if(nextProps.activeStep !== 4) {
-                  this.setState({ gdeployFileGenerated: false})
+                  this.setState({ ansibleFileGenerated: false})
                 }
               } else if(!this.props.isRhvhSystem) {
                 if(nextProps.activeStep !== 5) {
-                  this.setState({ gdeployFileGenerated: false})
+                  this.setState({ ansibleFileGenerated: false})
                 }
               }
             }
         }
       }
-      if(!this.state.gdeployFileGenerated && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
-        if(nextProps.gdeployWizardType === "create_volume" && nextProps.activeStep == 3) {
-          this.createGdeployConfig()
-          this.setState({ gdeployFileGenerated: true})
-        } else if(nextProps.gdeployWizardType === "expand_cluster") {
+      if(!this.state.ansibleFileGenerated && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
+        if(nextProps.ansibleWizardType === "create_volume" && nextProps.activeStep == 3) {
+          this.createAnsibleConfig()
+          this.setState({ ansibleFileGenerated: true})
+        } else if(nextProps.ansibleWizardType === "expand_cluster") {
           if (this.props.isRhvhSystem && nextProps.activeStep == 3) {
-            this.createGdeployConfig()
-            this.setState({ gdeployFileGenerated: true})
+            this.createAnsibleConfig()
+            this.setState({ ansibleFileGenerated: true})
           } else if(!this.props.isRhvhSystem && nextProps.activeStep == 4) {
-            this.createGdeployConfig()
-            this.setState({ gdeployFileGenerated: true})
+            this.createAnsibleConfig()
+            this.setState({ ansibleFileGenerated: true})
           }
-        } else if(nextProps.gdeployWizardType === "setup") {
+        } else if(nextProps.ansibleWizardType === "setup") {
             if(this.props.isSingleNode) {
               if(this.props.isRhvhSystem) {
                 if(nextProps.activeStep == 3) {
-                  this.createGdeployConfig()
-                  this.setState({ gdeployFileGenerated: true})
+                  this.createAnsibleConfig()
+                  this.setState({ ansibleFileGenerated: true})
                 }
               } else if(!this.props.isRhvhSystem) {
                 if(nextProps.activeStep == 4) {
-                  this.createGdeployConfig()
-                  this.setState({ gdeployFileGenerated: true})
+                  this.createAnsibleConfig()
+                  this.setState({ ansibleFileGenerated: true})
                 }
               }
             } else if(!this.props.isSingleNode) {
               if(this.props.isRhvhSystem) {
                 if(nextProps.activeStep == 4) {
-                  this.createGdeployConfig()
-                  this.setState({ gdeployFileGenerated: true})
+                  this.createAnsibleConfig()
+                  this.setState({ ansibleFileGenerated: true})
                 }
               } else if(!this.props.isRhvhSystem) {
                 if(nextProps.activeStep == 5) {
-                  this.createGdeployConfig()
-                  this.setState({ gdeployFileGenerated: true})
+                  this.createAnsibleConfig()
+                  this.setState({ ansibleFileGenerated: true})
                 }
               }
             }
@@ -139,43 +132,30 @@ class WizardPreviewStep extends Component {
     }
     handleConfigChange(e) {
         this.setState({
-            gdeployConfig: e.target.value,
+            ansibleConfig: e.target.value,
             isChanged: true
         })
     }
     handleEdit() {
-        this.setState({ isEditing: true })
+        this.setState({
+          isEditing: true
+        })
     }
     handleSave() {
         this.setState({ isEditing: false })
-        let gdeployConfigArray = this.state.gdeployConfig.split("\n")
-        let hostsStart = gdeployConfigArray.indexOf("[hosts]") + 1
-        let hostsLast = gdeployConfigArray.indexOf("")
-        let changedHosts = gdeployConfigArray.slice(hostsStart, hostsLast)
-        let that = this
-        changedHosts.forEach(function (value, index) {
-          if(value !== that.props.glusterModel.hosts[index]) {
-            that.props.glusterModel.hosts[index] = value
-          }
+        AnsibleUtil.writeConfigFile(CONFIG_FILES.ansibleInventoryFile, this.state.ansibleConfig, function (result) {
+            console.log("Result after editing and saving config file: ", result)
         })
-        GdeployUtil.handleDirAndFileCreation(this.props.configFilePath, this.state.gdeployConfig, function(result){
-          console.log("Result after editing and saving config file: ", result)
-        })
-        if(this.props.gdeployWizardType === "expand_cluster") {
-          GdeployUtil.createExpandClusterConfig(this.props.glusterModel, this.props.expandClusterConfigFilePath, function (result) {
-              console.log("Result after editing and saving ExpandClusterConfigFile: ", result);
-          })
-        }
     }
     render() {
         if (this.props.isDeploymentStarted) {
             return (
-                <WizardExecutionStep configFilePath={this.props.configFilePath}
+                <WizardExecutionStep
                     heAnsweFilePath={this.props.heAnsweFilePath}
                     heCommanAnswer={this.props.heCommanAnswer}
                     onSuccess={this.props.onSuccess}
                     reDeployCallback={this.props.reDeployCallback}
-                    gdeployWizardType={this.props.gdeployWizardType}
+                    ansibleWizardType={this.props.ansibleWizardType}
                     expandClusterConfigFilePath={this.props.expandClusterConfigFilePath}
                     />
             )
@@ -186,7 +166,7 @@ class WizardPreviewStep extends Component {
                         <div className="panel-heading">
                             <span className="pficon-settings"></span>
                             <span>
-                                Generated Gdeploy configuration : {this.props.configFilePath}
+                                Generated Ansible inventory : {CONFIG_FILES.ansibleInventoryFile}
                             </span>
                             <div className="pull-right">
                                 {this.state.isEditing &&
@@ -204,14 +184,14 @@ class WizardPreviewStep extends Component {
                                     </button>
                                 }
                                 <button className="btn btn-default"
-                                    onClick={this.readGdeployConfig}>
+                                    onClick={this.readAnsibleConfig}>
                                     <span className="fa fa-refresh">&nbsp;</span>
                                     Reload
                                     </button>
                             </div>
                         </div>
-                        <textarea className="gdeploy-wizard-config-preview"
-                            value={this.state.gdeployConfig} onChange={this.handleConfigChange} readOnly={!this.state.isEditing}>
+                        <textarea className="ansible-wizard-config-preview"
+                            value={this.state.ansibleConfig} onChange={this.handleConfigChange} readOnly={!this.state.isEditing}>
                         </textarea>
                     </div>
                 </div>
@@ -223,9 +203,7 @@ class WizardPreviewStep extends Component {
 WizardPreviewStep.propTypes = {
     stepName: PropTypes.string.isRequired,
     heAnsweFilePath: PropTypes.string.isRequired,
-    templatePath: PropTypes.string.isRequired,
     glusterModel: PropTypes.object.isRequired,
-    configFilePath: PropTypes.string.isRequired,
     heCommanAnswer: PropTypes.string.isRequired,
     isDeploymentStarted: PropTypes.bool.isRequired,
     onSuccess: PropTypes.func.isRequired,

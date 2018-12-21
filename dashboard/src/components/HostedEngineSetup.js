@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import {CheckIfRegistered, checkForGdeployAnsFiles} from '../helpers/HostedEngineSetup'
 import HeSetupWizardContainer from './HostedEngineSetup/HeSetupWizard/HeSetupWizardContainer'
-import GdeploySetup from './gdeploy/GdeploySetup'
-import GdeployUtil from '../helpers/GdeployUtil'
+import AnsibleSetup from './ansible/AnsibleSetup'
+import AnsibleUtil from '../helpers/AnsibleUtil'
 import {heSetupState, deploymentOption, deploymentTypes, messages} from './HostedEngineSetup/constants'
-import { CONFIG_FILES as constants } from '../components/gdeploy/constants'
+import { CONFIG_FILES as constants } from '../components/ansible/constants'
 import Selectbox from './common/Selectbox'
 import logoUrl from '../../static/branding/ovirt/ovirt-logo-highres.png'
 import HeSetupFooter from './HeSetupFooter'
@@ -23,11 +23,11 @@ class HostedEngineSetup extends Component {
       closeRequestRecvd: false,
       gdeployAvailable: false,
       gdeployFilesFound: false,
-      gdeployWizardType: "setup",
+      ansibleWizardType: "setup",
       registered: false,
       registeredTo: "",
       answerFiles: [],
-      showFqdn: false
+      showFqdn: true
     };
     this.registeredCallback = this.registeredCallback.bind(this);
     this.gdeployFileCallback = this.gdeployFileCallback.bind(this);
@@ -49,17 +49,11 @@ class HostedEngineSetup extends Component {
   }
 
   componentDidMount() {
-    const that = this;
-    GdeployUtil.isGdeployAvailable(function (isAvailable) {
-      that.setState({ gdeployAvailable: isAvailable })
-      GdeployUtil.findGdeployVersion(function(isSupported) {
-        that.setState({ showFqdn: isSupported })
-      })
-    })
+
   }
 
   onClick() {
-    this.setState({ cancelled: false, gdeployWizardType: "setup" });
+    this.setState({ cancelled: false, ansibleWizardType: "setup" });
 
     if (this.state.deploymentOption === deploymentOption.REGULAR) {
       this.startSetup();
@@ -186,9 +180,9 @@ class HostedEngineSetup extends Component {
                                        onClose={this.abortCallback} />
         }
         {this.state.state === heSetupState.GDEPLOY &&
-          <GdeploySetup onSuccess={this.startSetup}
+          <AnsibleSetup onSuccess={this.startSetup}
                         onClose={this.abortCallback}
-                        gdeployWizardType={this.state.gdeployWizardType}
+                        ansibleWizardType={this.state.ansibleWizardType}
                         showFqdn={this.state.showFqdn}
                         isSingleNode={this.state.isSingleNode}/>
         }
@@ -353,13 +347,13 @@ class ExistingGlusterConfigDialog extends Component  {
 
   componentDidMount() {
       $(ReactDOM.findDOMNode(this)).modal('show')
-      let file = cockpit.file(constants.gdeployStatus)
+      let file = cockpit.file(constants.ansibleStatus)
       return file.read().done((content,tag)=>{
         if(content == '0' || content == 0){
           this.setState({ showUseExistingConfOption: true });
         }
       }).fail((error)=>{
-        console.warn(`gdeployStatus file not written`,error)
+        console.warn(`ansibleStatus file not written`,error)
       }).always((tag) => {
         file.close()
       });

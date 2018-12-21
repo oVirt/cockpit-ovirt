@@ -9,8 +9,8 @@ class GlusterManagement extends Component {
       volumeBricks: null,
       volumeInfo: null,
       volumeStatus: null,
-      gdeployState: "",
-      gdeployWizardType: ""
+      ansibleState: "",
+      ansibleWizardType: ""
     };
     //Binding "this" of the function to "this" of the component.
     //However, when nesting calls, it seems best to use "let that = this;"

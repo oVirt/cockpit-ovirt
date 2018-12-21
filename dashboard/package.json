@@ -1,6 +1,6 @@
 {
   "name": "cockpit-ovirt-dashboard",
-  "version": "0.11.999",
+  "version": "",
   "description": "oVirt Cockpit Dashboard",
   "main": "src/app.js",
   "scripts": {
@@ -28,7 +28,8 @@
     "react-router": "^4.2.0",
     "react-router-config": "^1.0.0-beta.4",
     "react-router-dom": "^4.2.2",
-    "uuid": "^3.1.0"
+    "uuid": "^3.1.0",
+    "js-yaml": "^3.12.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

@@ -280,54 +280,54 @@ div.no-sidebar {
     margin-left: 5%;
 }
 
-.gdeploy-wizard-delete-icon {
+.ansible-wizard-delete-icon {
     vertical-align: middle;
     padding-left: 5px;
 }
 
-.gdeploy-wizard-table {
+.ansible-wizard-table {
     margin: auto;
 }
 
-.gdeploy-wizard-bricks-table,
+.ansible-wizard-bricks-table,
 #lv-cache-toggle
 {
     margin-left: 60px;
 }
 
-.gdeploy-wizard-table th{
+.ansible-wizard-table th{
     text-align: center;
 }
 
-.gdeploy-wizard-config-preview{
+.ansible-wizard-config-preview{
     width: 100%;
     height: 270px;
 }
 
-.gdeploy-wizard-host-ssh-info{
+.ansible-wizard-host-ssh-info{
     margin-top:  30px;
 }
 
-.gdeploy-wizard-section-title{
+.ansible-wizard-section-title{
     background: transparent;
 }
 
-.gdeploy-wizard-table tr,
-.gdeploy-wizard-bricks-table tr
+.ansible-wizard-table tr,
+.ansible-wizard-bricks-table tr
 {
     vertical-align: top;
 }
 
-.gdeploy-wizard-thinp-checkbox{
+.ansible-wizard-thinp-checkbox{
     height: 26px;
     width: 18px;
 }
 
-.gdeploy-wizard-bricks-delete{
+.ansible-wizard-bricks-delete{
     text-align: left !important;
 }
-.gdeploy-wizard-bricks-row td,
-.gdeploy-wizard-bricks-row th{
+.ansible-wizard-bricks-row td,
+.ansible-wizard-bricks-row th{
     padding-left: 0px;
     padding-right: 0px;
     text-align: center;

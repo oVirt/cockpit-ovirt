@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import GdeployUtil from '../../helpers/GdeployUtil'
+import AnsibleUtil from './../../helpers/AnsibleUtil'
 
 class WizardPackageStep extends Component {
     constructor(props) {
@@ -13,7 +13,7 @@ class WizardPackageStep extends Component {
     }
     componentDidMount() {
         const that = this
-        GdeployUtil.isRhelSystem(function (isAvailable) {
+        AnsibleUtil.isRhelSystem(function (isAvailable) {
             that.setState({ isRhelSystem: isAvailable })
         })
     }

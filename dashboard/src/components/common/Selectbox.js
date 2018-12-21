@@ -1,13 +1,13 @@
 import React from 'react'
 
-const Selectbox = ({optionList, selectedOption = null, callBack, gdeployWizardType = "none"}) => {
+const Selectbox = ({optionList, selectedOption = null, callBack, ansibleWizardType = "none"}) => {
     const options = [];
     let selected = selectedOption;
     if (selected === null) {
         selected = optionList[0];
     }
     optionList.forEach(function (option, index) {
-        if(gdeployWizardType === "create_volume") {
+        if(ansibleWizardType === "create_volume") {
           options.push(
               <li value={option.key} key={option.key}
                   onClick={() => callBack(option.key)}>

@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
-import GdeployUtil from '../../helpers/GdeployUtil'
+import AnsibleUtil from '../../helpers/AnsibleUtil'
 
 const raidTypes = [
-    { key: "jbod", title: "JBOD" },
-    { key: "raid5", title: "RAID 5" },
-    { key: "raid6", title: "RAID 6" }
+    { key: "JBOD", title: "JBOD" },
+    { key: "RAID5", title: "RAID 5" },
+    { key: "RAID6", title: "RAID 6" }
 ]
 class WizardBricksStep extends Component {
 
@@ -47,8 +47,8 @@ class WizardBricksStep extends Component {
           bricksList.push(JSON.parse(JSON.stringify(bricksList[0])));
         }
 
-        // Set bricks size to 500 if gdeployType is create_volume or expand_cluster
-        if (this.props.gdeployWizardType === "create_volume" || this.props.gdeployWizardType === "expand_cluster") {
+        // Set bricks size to 500 if ansibleType is create_volume or expand_cluster
+        if (this.props.ansibleWizardType === "create_volume" || this.props.ansibleWizardType === "expand_cluster") {
             bricksList[0].host_bricks[0].thinp = true
             bricksList[0].host_bricks[0].size = "500"
         }
@@ -66,7 +66,7 @@ class WizardBricksStep extends Component {
             }
         })
         let enabledFields = this.state.enabledFields
-        if (this.props.gdeployWizardType === "setup") {
+        if (this.props.ansibleWizardType === "setup") {
             enabledFields = ['device', 'size']
         } else {
             enabledFields = ['name', 'device', 'brick_dir', 'size']
@@ -75,13 +75,13 @@ class WizardBricksStep extends Component {
         // Checking for VDO support
         let isVdoSupported = false
         let that = this
-        GdeployUtil.isVdoSupported(function(res){
+        AnsibleUtil.isVdoSupported(function(res){
             isVdoSupported = res
             bricksList.forEach(function(bricksHost, hostIndex){
                 bricksHost.host_bricks.forEach(function(brick, index){
                     brick['isVdoSupported'] = res
                 })
-                if (that.props.gdeployWizardType !== "setup") {
+                if (that.props.ansibleWizardType !== "setup") {
                   bricksHost.host_bricks[0].logicalSize = "5000"
                 }
             })
@@ -165,12 +165,12 @@ class WizardBricksStep extends Component {
         let brickTemplate = this.getEmptyRow()
         newVolumes.forEach(function (volume, index) {
             brickTemplate.name = volume.name
-            brickTemplate.device = "sdb"
+            brickTemplate.device = "/dev/sdb"
             let brick_dir_split = volume.brick_dir.split('/')
             let length = brick_dir_split.length
             let lastIndex = volume.brick_dir.lastIndexOf('/')
             brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
-            if (that.props.gdeployWizardType === "setup" && volume.name === "engine") {
+            if (that.props.ansibleWizardType === "setup" && volume.name === "engine") {
                 brickTemplate.size = "100"
                 brickTemplate.thinp = false
                 brickTemplate.logicalSize = "1000"
@@ -195,12 +195,12 @@ class WizardBricksStep extends Component {
         volumes.forEach(function(volume, index) {
             if((this.state.arbiterVolumes.indexOf(volume.name) < 0 ^ arbiterVolumes.indexOf(volume.name) < 0) == 1){
                 if(volume.is_arbiter){
-                    let arbiterBrickSize = GdeployUtil.getArbiterBrickSize(parseInt(bricksList[2].host_bricks[index].size))
+                    let arbiterBrickSize = AnsibleUtil.getArbiterBrickSize(parseInt(bricksList[2].host_bricks[index].size))
                     bricksList[2].host_bricks[index].size = JSON.stringify(arbiterBrickSize)
                     bricksList[2].host_bricks[index].logicalSize = JSON.stringify(arbiterBrickSize * 10)
                 }
                 else{
-                    if (this.props.gdeployWizardType === "setup" && bricksList[2].host_bricks[index].name === "engine") {
+                    if (this.props.ansibleWizardType === "setup" && bricksList[2].host_bricks[index].name === "engine") {
                         bricksList[2].host_bricks[index].size = "100"
                         bricksList[2].host_bricks[index].logicalSize = "1000"
                     } else {
@@ -241,6 +241,11 @@ class WizardBricksStep extends Component {
         const raidConfig = this.state.raidConfig
         raidConfig[property] = value
         const errorMsgs= this.state.errorMsgs
+        if(value == "JBOD") {
+          raidConfig["stripeSize"] = ""
+          raidConfig["diskCount"] = ""
+        }
+        console.log("raidConfig: ", raidConfig);
         this.validateRaidConfig(raidConfig, errorMsgs)
         this.setState({ raidConfig, errorMsgs })
     }
@@ -262,7 +267,7 @@ class WizardBricksStep extends Component {
             }
         })
         let enabledFields = Object.keys(this.state.bricksList[0].host_bricks[0])
-        if (this.props.gdeployWizardType === "setup") {
+        if (this.props.ansibleWizardType === "setup") {
           enabledFields = ['device', 'size']
         } else {
           enabledFields = ['name', 'device', 'brick_dir', 'size']
@@ -281,9 +286,9 @@ class WizardBricksStep extends Component {
                 bricksList[selectedHost.hostIndex].host_bricks.forEach(function (currentBrick) {
                   if(selectedBrick['device'] === currentBrick['device']) {
                     currentBrick[property] = value
-                    if(that.props.gdeployWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported) {
+                    if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported) {
                       brick.thinp = true
-                    } else if(that.props.gdeployWizardType != "setup" && !brick.is_vdo_supported) {
+                    } else if(that.props.ansibleWizardType != "setup" && !brick.is_vdo_supported) {
                       brick.thinp = true
                     }
                   }
@@ -291,9 +296,9 @@ class WizardBricksStep extends Component {
               }
               else if (brick['device'] == eachBrick.host_bricks[index]['device']) {
                     brick[property] = value
-                    if(that.props.gdeployWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && brick.is_vdo_supported) {
+                    if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && brick.is_vdo_supported) {
                       brick.thinp = false
-                    } else if(that.props.gdeployWizardType != "setup" && brick.is_vdo_supported) {
+                    } else if(that.props.ansibleWizardType != "setup" && brick.is_vdo_supported) {
                       brick.thinp = false
                     }
                 }
@@ -306,7 +311,7 @@ class WizardBricksStep extends Component {
         else {
             for(var i = 2; i >= selectedHost.hostIndex; i--){
                 if(selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
-                    const arbiterValue = GdeployUtil.getArbiterBrickSize(parseInt(value))
+                    const arbiterValue = AnsibleUtil.getArbiterBrickSize(parseInt(value))
                     bricksList[i].host_bricks[index][property] = JSON.stringify(arbiterValue)
                 }
                 else {
@@ -335,20 +340,20 @@ class WizardBricksStep extends Component {
     validateRaidConfig(raidConfig, errorMsgs){
         let valid = true
         errorMsgs.raidConfig = {}
-        if(!(raidConfig.raidType == "jbod") && raidConfig.stripeSize.trim().length < 1){
+        if(!(raidConfig.raidType == "JBOD") && raidConfig.stripeSize.trim().length < 1){
             errorMsgs.raidConfig.stripeSize = "Enter stripe size"
             valid = false
-        }else if (!(raidConfig.raidType == "jbod")){
+        }else if (!(raidConfig.raidType == "JBOD")){
             const stripeSize = Number(raidConfig.stripeSize)
             if(stripeSize < 1){
                 errorMsgs.raidConfig.stripeSize = "Invalid stripe size"
                 valid = false
             }
         }
-        if(!(raidConfig.raidType == "jbod") && raidConfig.diskCount.trim().length < 1){
+        if(!(raidConfig.raidType == "JBOD") && raidConfig.diskCount.trim().length < 1){
             errorMsgs.raidConfig.diskCount = "Enter data disk count"
             valid = false
-        }else if (!(raidConfig.raidType == "jbod")){
+        }else if (!(raidConfig.raidType == "JBOD")){
             const diskCount = Number(raidConfig.diskCount)
             //Atleast one disk will be present in the RAID/JBOD
             //We are not expecting more than 60 disks an a RAID volume
@@ -547,7 +552,7 @@ class WizardBricksStep extends Component {
                     errorMsgs = {that.state.errorMsgs[index]}
                     changeCallBack={this.handleUpdate}
                     deleteCallBack={() => this.handleDelete(index)}
-                    gdeployWizardType={this.props.gdeployWizardType}
+                    ansibleWizardType={this.props.ansibleWizardType}
                     />
             )
         }, this)
@@ -584,7 +589,7 @@ class WizardBricksStep extends Component {
                 </div>
                 }
                 <form className="form-horizontal">
-                    <div className="panel-heading gdeploy-wizard-section-title">
+                    <div className="panel-heading ansible-wizard-section-title">
                         <h3 className="panel-title">Raid Information <span className="fa fa-lg fa-info-circle"
                             title="Enter your hardware RAID configuration details. This information will be used to align brick's LVM configuration with underlying RAID configuration for better I/O performance"></span>
                         </h3>
@@ -598,7 +603,7 @@ class WizardBricksStep extends Component {
                                 />
                         </div>
                     </div>
-                    {!(this.state.raidConfig.raidType == "jbod") && <div className={stripeSize}>
+                    {!(this.state.raidConfig.raidType == "JBOD") && <div className={stripeSize}>
                         <label className="col-md-3 control-label">Stripe Size(KB)</label>
                         <div className="col-md-2">
                             <input type="number" className="form-control"
@@ -608,7 +613,7 @@ class WizardBricksStep extends Component {
                             <span className="help-block">{stripeSizeMsg}</span>
                         </div>
                     </div>}
-                    {!(this.state.raidConfig.raidType == "jbod") && <div className={diskCount}>
+                    {!(this.state.raidConfig.raidType == "JBOD") && <div className={diskCount}>
                         <label className="col-md-3 control-label">Data Disk Count</label>
                         <div className="col-md-2">
                             <input type="number" className="form-control" min="1" max="60"
@@ -620,7 +625,7 @@ class WizardBricksStep extends Component {
                     </div>}
                 {bricksRow.length > 0 &&
                     <div>
-                        <div className="panel-heading gdeploy-wizard-section-title">
+                        <div className="panel-heading ansible-wizard-section-title">
                             <h3 className="panel-title">Brick Configuration</h3>
                         </div>
                         <div className="form-group">
@@ -636,9 +641,9 @@ class WizardBricksStep extends Component {
                           </div>
                         </div>
                         <hr />
-                        <table className="gdeploy-wizard-bricks-table">
+                        <table className="ansible-wizard-bricks-table">
                             <tbody>
-                                <tr className="gdeploy-wizard-bricks-row">
+                                <tr className="ansible-wizard-bricks-row">
                                     <th>LV Name</th>
                                     <th>Device Name</th>
                                     <th>LV Size(GB) <span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
@@ -655,7 +660,7 @@ class WizardBricksStep extends Component {
                     </div>
                 }
                 </form>
-                {this.props.gdeployWizardType !== "setup" &&
+                {this.props.ansibleWizardType !== "setup" &&
                     <a onClick={this.handleAdd} className="col-md-offset-4">
                         <span className="pficon pficon-add-circle-o">
                             <strong> Add Bricks</strong>
@@ -711,7 +716,7 @@ class WizardBricksStep extends Component {
                         Dedupe/compression is enabled at the storage device, and will be applicable for all bricks that use the device.
                     </strong>
                 </div>
-                <div className="col-md-offset-2 col-md-8 alert alert-info gdeploy-wizard-host-ssh-info">
+                <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                     <span className="pficon pficon-info"></span>
                     <strong>
                         Arbiter bricks will be created on the third host in the host list.
@@ -731,7 +736,7 @@ WizardBricksStep.propTypes = {
     lvCacheConfig: PropTypes.array.isRequired
 }
 
-const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack, gdeployWizardType}) => {
+const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack, ansibleWizardType}) => {
     const name = classNames(
         { "has-error": errorMsgs && errorMsgs.name }
     )
@@ -748,7 +753,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
         { "has-error": errorMsgs && errorMsgs.logicalSize }
     )
     return (
-        <tr className="gdeploy-wizard-bricks-row">
+        <tr className="ansible-wizard-bricks-row">
             <td className="col-md-1">
                 <div className={name}>
                     <input type="text" className="form-control"
@@ -782,7 +787,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                 </div>
             </td>
             <td className="col-md-1">
-                <input type="checkbox" className="gdeploy-wizard-thinp-checkbox"
+                <input type="checkbox" className="ansible-wizard-thinp-checkbox"
                     checked={brick.thinp}
                     onChange={(e) => changeCallBack(index, "thinp", e.target.checked)}
                     disabled={(enabledFields.indexOf('thinp') >= 0) ? false : true}
@@ -799,7 +804,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                 </div>
             </td>
             <td className="col-md-1" className="col-md-1" style={brick.isVdoSupported ? {} : { display: 'none' }}>
-                <input type="checkbox" className="gdeploy-wizard-thinp-checkbox" title="Configure dedupe & compression using VDO."
+                <input type="checkbox" className="ansible-wizard-thinp-checkbox" title="Configure dedupe & compression using VDO."
                     checked={brick.is_vdo_supported}
                     onChange={(e) => changeCallBack(index, "is_vdo_supported", e.target.checked, brick)}
                     />
@@ -813,10 +818,10 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                     {errorMsgs && errorMsgs.logicalSize && <span className="help-block">{errorMsgs.logicalSize}</span>}
                 </div>
             </td>
-            <td className="col-sm-1 gdeploy-wizard-bricks-delete">
-                {gdeployWizardType !== "setup" &&
+            <td className="col-sm-1 ansible-wizard-bricks-delete">
+                {ansibleWizardType !== "setup" &&
                     <a onClick={deleteCallBack}>
-                        <span className="pficon pficon-delete gdeploy-wizard-delete-icon">
+                        <span className="pficon pficon-delete ansible-wizard-delete-icon">
                         </span>
                     </a>
                 }

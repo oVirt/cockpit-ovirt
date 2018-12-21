@@ -1,0 +1,160 @@
+hc_nodes:
+  hosts:
+    host1.example.com:
+      gluster_infra_volume_groups:
+        - vgname: vg_sdb
+          pvname: /dev/sdb
+        - vgname: vg_sdc
+          pvname: /dev/sdc
+        - vgname: vg_sdd
+          pvname: /dev/sdd
+      gluster_infra_mount_devices:
+        - path: /gluster_bricks/engine
+          lvname: gluster_lv_engine
+          vgname: vg_sdb
+        - path: /gluster_bricks/data
+          lvname: gluster_lv_data
+          vgname: vg_sdc
+        - path: /gluster_bricks/vmstore
+          lvname: gluster_lv_vmstore
+          vgname: vg_sdd
+      gluster_infra_cache_vars:
+        - vgname: vg_sdb
+          cachedisk: /dev/sde
+          cachelvname: cachelv_thinpool_vg_sdb
+          cachethinpoolname: thinpool_vg_sdb
+          cachelvsize: 18G
+          cachemetalvsize: 2G
+          cachemetalvname: cache_thinpool_vg_sdb
+          cachemode: writethrough
+      gluster_infra_thick_lvs:
+        - vgname: vg_sdb
+          lvname: gluster_lv_engine
+          size: 100G
+      gluster_infra_thinpools:
+        - vgname: vg_sdc
+          thinpoolname: thinpool_vg_sdc
+        - vgname: vg_sdd
+          thinpoolname: thinpool_vg_sdd
+      gluster_infra_lv_logicalvols:
+        - vgname: vg_sdc
+          thinpool: thinpool_vg_sdc
+          lvname: gluster_lv_data
+          lvsize: 100G
+        - vgname: vg_sdd
+          thinpool: thinpool_vg_sdd
+          lvname: gluster_lv_vmstore
+          lvsize: 100G
+    host2.example.com:
+      gluster_infra_volume_groups:
+        - vgname: vg_sdb
+          pvname: /dev/sdb
+        - vgname: vg_sdc
+          pvname: /dev/sdc
+        - vgname: vg_sdd
+          pvname: /dev/sdd
+      gluster_infra_mount_devices:
+        - path: /gluster_bricks/engine
+          lvname: gluster_lv_engine
+          vgname: vg_sdb
+        - path: /gluster_bricks/data
+          lvname: gluster_lv_data
+          vgname: vg_sdc
+        - path: /gluster_bricks/vmstore
+          lvname: gluster_lv_vmstore
+          vgname: vg_sdd
+      gluster_infra_cache_vars:
+        - vgname: vg_sdb
+          cachedisk: /dev/sde
+          cachelvname: cachelv_thinpool_vg_sdb
+          cachethinpoolname: thinpool_vg_sdb
+          cachelvsize: 18G
+          cachemetalvsize: 2G
+          cachemetalvname: cache_thinpool_vg_sdb
+          cachemode: writethrough
+      gluster_infra_thick_lvs:
+        - vgname: vg_sdb
+          lvname: gluster_lv_engine
+          size: 100G
+      gluster_infra_thinpools:
+        - vgname: vg_sdc
+          thinpoolname: thinpool_vg_sdc
+        - vgname: vg_sdd
+          thinpoolname: thinpool_vg_sdd
+      gluster_infra_lv_logicalvols:
+        - vgname: vg_sdc
+          thinpool: thinpool_vg_sdc
+          lvname: gluster_lv_data
+          lvsize: 100G
+        - vgname: vg_sdd
+          thinpool: thinpool_vg_sdd
+          lvname: gluster_lv_vmstore
+          lvsize: 100G
+    host3.example.com:
+      gluster_infra_volume_groups:
+        - vgname: vg_sdb
+          pvname: /dev/sdb
+        - vgname: vg_sdc
+          pvname: /dev/sdc
+        - vgname: vg_sdd
+          pvname: /dev/sdd
+      gluster_infra_mount_devices:
+        - path: /gluster_bricks/engine
+          lvname: gluster_lv_engine
+          vgname: vg_sdb
+        - path: /gluster_bricks/data
+          lvname: gluster_lv_data
+          vgname: vg_sdc
+        - path: /gluster_bricks/vmstore
+          lvname: gluster_lv_vmstore
+          vgname: vg_sdd
+      gluster_infra_cache_vars:
+        - vgname: vg_sdb
+          cachedisk: /dev/sde
+          cachelvname: cachelv_thinpool_vg_sdb
+          cachethinpoolname: thinpool_vg_sdb
+          cachelvsize: 18G
+          cachemetalvsize: 2G
+          cachemetalvname: cache_thinpool_vg_sdb
+          cachemode: writethrough
+      gluster_infra_thick_lvs:
+        - vgname: vg_sdb
+          lvname: gluster_lv_engine
+          size: 100G
+      gluster_infra_thinpools:
+        - vgname: vg_sdc
+          thinpoolname: thinpool_vg_sdc
+        - vgname: vg_sdd
+          thinpoolname: thinpool_vg_sdd
+      gluster_infra_lv_logicalvols:
+        - vgname: vg_sdc
+          thinpool: thinpool_vg_sdc
+          lvname: gluster_lv_data
+          lvsize: 100G
+        - vgname: vg_sdd
+          thinpool: thinpool_vg_sdd
+          lvname: gluster_lv_vmstore
+          lvsize: 100G
+  vars:
+    gluster_infra_stripe_unit_size: 256
+    gluster_infra_disktype: JBOD
+    gluster_infra_diskcount: 12
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+local:
+  hosts:
+    localhost: null
+  vars:
+    gluster_features_hci_volumes:
+      - volname: engine
+        brick: /gluster_bricks/engine/engine
+        arbiter: false
+        master: localhost
+      - volname: data
+        brick: /gluster_bricks/data/data
+        arbiter: false
+        master: localhost
+      - volname: vmstore
+        brick: /gluster_bricks/vmstore/vmstore
+        arbiter: false
+        master: localhost
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'

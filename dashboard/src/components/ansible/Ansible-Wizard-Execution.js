@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import GdeployUtil from '../../helpers/GdeployUtil'
+import AnsibleUtil from '../../helpers/AnsibleUtil'
 import ReactDOM from 'react-dom'
 import { CONFIG_FILES } from './constants'
 
@@ -8,55 +8,48 @@ class WizardExecutionStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            gdeployLog: "",
-            gdeployStatus: 1
+            ansibleLog: "",
+            ansibleStatus: 1
         }
-        this.gdeployDone = this.gdeployDone.bind(this)
-        this.gdeployStdout = this.gdeployStdout.bind(this)
-        this.gdeployFail = this.gdeployFail.bind(this)
-        this.runGdeploy = this.runGdeploy.bind(this)
+        this.ansibleDone = this.ansibleDone.bind(this)
+        this.ansibleStdout = this.ansibleStdout.bind(this)
+        this.ansibleFail = this.ansibleFail.bind(this)
+        this.runAnsiblePlaybook = this.runAnsiblePlaybook.bind(this)
         this.callBack = this.callBack.bind(this)
     }
     componentDidMount() {
-        this.runGdeploy()
+        this.runAnsiblePlaybook()
     }
-    gdeployDone() {
-        this.setState({ gdeployStatus: 0 })
-        let filePath = CONFIG_FILES.gdeployStatus
-        GdeployUtil.handleDirAndFileCreation(filePath, String(this.state.gdeployStatus), function (result) {
+    ansibleDone() {
+        this.setState({ ansibleStatus: 0 })
+        let filePath = CONFIG_FILES.ansibleStatus
+        AnsibleUtil.handleDirAndFileCreation(filePath, String(this.state.ansibleStatus), function (result) {
             console.log("Status File: ", result)
         })
     }
-    gdeployStdout(data) {
-        this.setState({ gdeployLog: this.state.gdeployLog + data })
+    ansibleStdout(data) {
+        this.setState({ ansibleLog: this.state.ansibleLog + data })
     }
-    gdeployFail(exception) {
-        this.setState({ gdeployStatus: -1 })
-        let filePath = CONFIG_FILES.gdeployStatus
-        GdeployUtil.handleDirAndFileCreation(filePath, String(this.state.gdeployStatus), function (result) {
+    ansibleFail(exception) {
+        this.setState({ ansibleStatus: -1 })
+        let filePath = CONFIG_FILES.ansibleStatus
+        AnsibleUtil.handleDirAndFileCreation(filePath, String(this.state.ansibleStatus), function (result) {
             console.log("Status File: ", result)
         })
     }
-    runGdeploy() {
+    runAnsiblePlaybook() {
         const that = this
-        if (this.props.gdeployWizardType === "expand_cluster") {
-            GdeployUtil.runExpandCluster(that.props.expandClusterConfigFilePath, function (result) {
-                if (result) {
-                    GdeployUtil.runGdeploy(that.props.configFilePath, that.gdeployStdout, that.gdeployDone, that.gdeployFail)
-                    that.setState({ gdeployStatus: 1 })
-                }
-                else {
-                    console.log("Error while running expand cluster.");
-                }
-            })
+      AnsibleUtil.runAnsiblePlaybook(CONFIG_FILES.ansibleInventoryFile, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(isSuccess) {
+        that.setState({ ansibleStatus: 1 })
+        if(isSuccess){
+          that.ansibleDone()
+        } else {
+          that.ansibleFail(isSuccess)
         }
-        else {
-            GdeployUtil.runGdeploy(this.props.configFilePath, this.gdeployStdout, this.gdeployDone, this.gdeployFail)
-            this.setState({ gdeployStatus: 1 })
-        }
+      })
     }
     callBack() {
-        if (this.props.gdeployWizardType === "setup") {
+        if (this.props.ansibleWizardType === "setup") {
             this.props.onSuccess(
               [this.props.heAnsweFilePath,
                 this.props.heCommanAnswer
@@ -71,28 +64,28 @@ class WizardExecutionStep extends Component {
         this.scrollToBottom()
     }
     scrollToBottom(){
-      if(this.gdeployLogText != null) {
-        const scrollHeight = this.gdeployLogText.scrollHeight;
-        const height = this.gdeployLogText.clientHeight;
+      if(this.ansibleLogText != null) {
+        const scrollHeight = this.ansibleLogText.scrollHeight;
+        const height = this.ansibleLogText.clientHeight;
         const maxScrollTop = scrollHeight - height;
-        ReactDOM.findDOMNode(this.gdeployLogText).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+        ReactDOM.findDOMNode(this.ansibleLogText).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
       }
     }
     render() {
-        if (this.state.gdeployStatus === 0) {
-            return <SuccessPanel callBack={this.callBack} gdeployWizardType={this.props.gdeployWizardType} />
+        if (this.state.ansibleStatus === 0) {
+            return <SuccessPanel callBack={this.callBack} ansibleWizardType={this.props.ansibleWizardType} />
         }
         return (
             <div className="col-sm-12">
                 <div className="panel panel-default">
                     <div className="panel-heading">
-                        <Status status={this.state.gdeployStatus} reDeployCallback={this.props.reDeployCallback}/>
+                        <Status status={this.state.ansibleStatus} reDeployCallback={this.props.reDeployCallback}/>
                     </div>
                     <div className="list-group">
                         <div className="list-group-item">
-                            <textarea className="gdeploy-wizard-config-preview"
-                                ref={(input) => { this.gdeployLogText = input }}
-                                value={this.state.gdeployLog}>
+                            <textarea className="ansible-wizard-config-preview"
+                                ref={(input) => { this.ansibleLogText = input }}
+                                value={this.state.ansibleLog}>
                             </textarea>
                         </div>
                     </div>
@@ -103,7 +96,6 @@ class WizardExecutionStep extends Component {
 }
 
 WizardExecutionStep.propTypes = {
-    configFilePath: PropTypes.string.isRequired,
     onSuccess: PropTypes.func.isRequired,
     reDeployCallback: PropTypes.func.isRequired
 }
@@ -131,19 +123,19 @@ const Status = ({ status, reDeployCallback }) => {
     )
 }
 
-const SuccessPanel = ({ callBack, gdeployWizardType }) => {
+const SuccessPanel = ({ callBack, ansibleWizardType }) => {
     // Message to display in SuccessPanel
     let message = ""
-    if (gdeployWizardType === "setup") {
+    if (ansibleWizardType === "setup") {
         message = "Successfully deployed Gluster"
-    } else if (gdeployWizardType === "expand_cluster") {
+    } else if (ansibleWizardType === "expand_cluster") {
         message = "Successfully expanded cluster"
     } else {
         message = "Successfully created volume"
     }
     // Button Label
     let buttonLabel = ""
-    if (gdeployWizardType === "setup") {
+    if (ansibleWizardType === "setup") {
         buttonLabel = "Continue to Hosted Engine Deployment"
     } else {
         buttonLabel = "Close"
