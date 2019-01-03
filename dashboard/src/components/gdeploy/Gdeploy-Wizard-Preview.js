@@ -109,8 +109,8 @@ class WizardPreviewStep extends Component {
             that.props.glusterModel.hosts[index] = value
           }
         })
-        GdeployUtil.writeConfigFile(this.props.configFilePath, this.state.gdeployConfig, function (result) {
-            console.log("Result after editing and saving config file: ", result)
+        GdeployUtil.handleDirAndFileCreation(this.props.configFilePath, this.state.gdeployConfig, function(result){
+          console.log("Result after editing and saving config file: ", result)
         })
         if(this.props.gdeployWizardType === "expand_cluster") {
           GdeployUtil.createExpandClusterConfig(this.props.glusterModel, this.props.expandClusterConfigFilePath, function (result) {
@@ -155,7 +155,7 @@ class WizardPreviewStep extends Component {
                                     </button>
                                 }
                                 <button className="btn btn-default"
-                                    onClick={this.createGdeployConfig}>
+                                    onClick={this.readGdeployConfig}>
                                     <span className="fa fa-refresh">&nbsp;</span>
                                     Reload
                                     </button>
