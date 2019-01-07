@@ -37,8 +37,8 @@ BuildArch:      noarch
 
 Requires:       cockpit
 Requires:       cockpit-storaged
-Requires:       ovirt-hosted-engine-setup >= 2.2.14
-Requires:       otopi >= 1.5.2-1
+Requires:       ovirt-hosted-engine-setup >= 2.2.32
+Requires:       otopi >= 1.7.8
 
 Requires:       ansible
 
@@ -89,6 +89,19 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Mon Jan 07 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.38-1
+- Save edited gdeploy conf file and take backup of previous one
+- Validating whether FQDN added in known_hosts
+- Removing RAID 10 from cockpit-ovirt
+- Deployment Failing without error
+- Disabling the Add Icon along with the Button for DNS Servers option
+- Checkbox on FQDN Tab in case hostname is same as FQDN
+- Stripe size and data disk count is hidden, if JBOD disk type is chosen
+- Corrected logical size tool tips
+- Autopopulating the second and third host with the same device name for LVM Cache configuration
+- Removed mount options from single node deployment
+- Fix Fibre Channel typo
+
 * Tue Oct 23 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.37-1
 - Fix variable initialization order
 
