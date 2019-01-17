@@ -86,6 +86,14 @@ class WizardPreviewStep extends Component {
                     this.setState({ gdeployFileGenerated: true })
                 }
             }
+        } else if(this.state.gdeployFileGenerated && !this.props.isSingleNode) {
+          if (!this.props.isRhvhSystem && nextProps.activeStep == 5) {
+              this.createGdeployConfig()
+              this.setState({ gdeployFileGenerated: true })
+          } else if (this.props.isRhvhSystem && nextProps.activeStep == 4) {
+              this.createGdeployConfig()
+              this.setState({ gdeployFileGenerated: true })
+          }
         }
     }
     handleConfigChange(e) {
