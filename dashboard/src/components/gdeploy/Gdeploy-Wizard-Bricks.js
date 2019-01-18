@@ -281,7 +281,9 @@ class WizardBricksStep extends Component {
                 bricksList[selectedHost.hostIndex].host_bricks.forEach(function (currentBrick) {
                   if(selectedBrick['device'] === currentBrick['device']) {
                     currentBrick[property] = value
-                    if(eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported){
+                    if(that.props.gdeployWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported) {
+                      brick.thinp = true
+                    } else if(that.props.gdeployWizardType != "setup" && !brick.is_vdo_supported) {
                       brick.thinp = true
                     }
                   }
@@ -289,7 +291,9 @@ class WizardBricksStep extends Component {
               }
               else if (brick['device'] == eachBrick.host_bricks[index]['device']) {
                     brick[property] = value
-                    if(eachBrick.host_bricks[0].name != brick.name){
+                    if(that.props.gdeployWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && brick.is_vdo_supported) {
+                      brick.thinp = false
+                    } else if(that.props.gdeployWizardType != "setup" && brick.is_vdo_supported) {
                       brick.thinp = false
                     }
                 }
