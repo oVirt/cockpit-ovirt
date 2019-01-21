@@ -96,13 +96,12 @@ class PlaybookUtil {
 
         Object.getOwnPropertyNames(vars).forEach(
             function(varName) {
-                let option = `${varName}=${vars[varName]}`;
+                let option = `-e ${varName}=${vars[varName]}`;
                 varsArr.push(option);
             }, this);
 
         let options = [];
         if (varsArr.length !== 0) {
-            options.push("-e");
             options = options.concat(varsArr);
         }
 

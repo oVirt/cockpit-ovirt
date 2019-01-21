@@ -371,6 +371,7 @@ class HeWizardVmContainer extends Component {
         const heSetupModel = this.state.heSetupModel;
         const config = heSetupModel.network;
         const fqdn = fqdnType === fqdnTypes.HOST ? config.host_name.value : config.fqdn.value;
+        const bridgeIf = config.bridgeIf.value;
         const propName = fqdnType === fqdnTypes.HOST ? "host_name" : "fqdn";
 
         const fqdnValidationData = this.state.fqdnValidationData;
@@ -387,7 +388,7 @@ class HeWizardVmContainer extends Component {
         this.setState({ fqdnValidationData, warningMsgs });
 
         const self = this;
-        return validateFqdn(fqdn, fqdnType)
+        return validateFqdn(fqdn, bridgeIf, fqdnType)
             .then(result => {
                 validationData.prevValue = fqdn;
                 if (result.error !== null) {

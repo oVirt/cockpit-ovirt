@@ -88,22 +88,15 @@ function requiresRangeValidation(prop) {
     return prop.value !== "" && prop.hasOwnProperty("range");
 }
 
-export function validateHostFqdn(fqdn) {
-    const playbookVars = {HOST_ADDRESS: fqdn};
-    return validateFqdn(fqdn, playbookVars);
-}
-
-export function validateVmFqdn(fqdn) {
-    const playbookVars = {FQDN: fqdn};
-    return validateFqdn(fqdn, playbookVars);
-}
-
-export function validateFqdn(fqdn, fqdnType) {
+export function validateFqdn(fqdn, bridgeIf, fqdnType) {
     const playbookUtil = new PlaybookUtil();
     const playbookPath = playbookPaths.VALIDATE_HOSTNAMES;
     const outputPath = playbookUtil.getAnsibleOutputPath(ansiblePhases.VALIDATE_HOSTNAMES);
     const isLocalhost = fqdn === "localhost" || fqdn === "localhost.localdomain";
-    const playbookVars = fqdnType === fqdnValidationTypes.HOST ? {HOST_ADDRESS: fqdn} : {FQDN: fqdn};
+    const playbookVars = fqdnType === fqdnValidationTypes.HOST ? {
+        he_host_address: fqdn,
+        he_bridge_if: bridgeIf
+    } : {he_fqdn: fqdn};
 
     return new Promise((resolve, reject) => {
         // Resolve quickly if localhost is being used to speed up loading time
@@ -165,7 +158,7 @@ function _validateDiscoveredHostFqdn(fqdn, setValidationStateCallback) {
 
     fqdn = fqdn.trim();
     const isLocalhost = fqdn === "localhost" || fqdn === "localhost.localdomain";
-    const playbookVars = {HOST_ADDRESS: fqdn};
+    const playbookVars = {he_host_address: fqdn};
 
     return new Promise((resolve) => {
         // Resolve quickly if localhost is being used to speed up loading time
