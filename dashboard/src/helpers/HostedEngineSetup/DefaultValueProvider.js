@@ -44,8 +44,7 @@ export class DefaultValueProvider {
         this.getTimeZone = this.getTimeZone.bind(this);
         this.getNetworkInterfaces = this.getNetworkInterfaces.bind(this);
         this.setNetworkInterfaces = this.setNetworkInterfaces.bind(this);
-        this.getIpAddress = this.getIpAddress.bind(this);
-        this.getIpData = this.getIpData.bind(this);
+        this.getIpDataDefaultRoute = this.getIpDataDefaultRoute.bind(this);
         this.getHostFqdn = this.getHostFqdn.bind(this);
         this.hostFqdnIsValid = this.hostFqdnIsValid.bind(this);
         this.getHostFqdnValidationError = this.getHostFqdnValidationError.bind(this);
@@ -294,7 +293,7 @@ export class DefaultValueProvider {
         }
 
         let defaultInterface = "";
-        const ipData = this.getIpData();
+        const ipData = this.getIpDataDefaultRoute();
 
         if (ipData !== null) {
             defaultInterface = ipData["alias"];
@@ -308,16 +307,11 @@ export class DefaultValueProvider {
     }
 
     getDefaultGateway() {
-        const ipData = this.getIpData();
+        const ipData = this.getIpDataDefaultRoute();
         return ipData !== null ? ipData["gateway"] : "";
     }
 
-    getIpAddress() {
-        const ipData = this.getIpData();
-        return ipData !== null ? ipData["address"] : "";
-    }
-
-    getIpData() {
+    getIpDataDefaultRoute() {
         let ipData = null;
         const ansibleFacts = this.getTaskData("Gathering Facts")["ansible_facts"];
         const ipv4Data = ansibleFacts["ansible_default_ipv4"];

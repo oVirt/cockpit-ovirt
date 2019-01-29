@@ -809,18 +809,6 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: false
                 },
-                cloudinitHostIP: {
-                    name: "cloudinitHostIP",
-                    ansibleVarName: "he_host_ip",
-                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
-                    description: "Host IP Address",
-                    value: "",
-                    type: types.STRING,
-                    showInReview: false,
-                    uiStage: "VM",
-                    useInAnswerFile: false,
-                    required: false
-                },
                 cdromUUID: {
                     name: "cdromUUID",
                     ansibleVarName: "he_cdrom_uuid",
@@ -1150,7 +1138,6 @@ export class HeSetupModel {
         this.model.network.host_name.value = dataProvider.getHostFqdn();
         this.model.vm.vmMACAddr.value = dataProvider.generateMacAddr();
         this.model.vm.cloudinitVMTZ.value = dataProvider.getTimeZone();
-        this.model.vm.cloudinitHostIP.value = dataProvider.getIpAddress();
         this.model.vm.maxVCpus.value = dataProvider.getMaxVCpus();
         if (dataProvider.getMaxMemAvailable() < constants.VM_MEM_MIN_RECOMMENDED_MB) {
             this.model.vm.vmMemSizeMB.value = dataProvider;
