@@ -16,15 +16,15 @@ class PlaybookUtil {
         this.createOutputFileDir = this.createOutputFileDir.bind(this);
     }
 
-    runPlaybook(playbookPath, outputPath, options = "") {
+    runPlaybook(playbookPath, outputPath, options = "", tags = "", skipTags = "") {
         const self = this;
         return this.createOutputFileDir()
             .then(() => {
-                return self._runPlaybook(playbookPath, outputPath, options);
+                return self._runPlaybook(playbookPath, outputPath, options, tags, skipTags);
             });
     }
 
-    _runPlaybook(playbookPath, outputPath, options = "") {
+    _runPlaybook(playbookPath, outputPath, options = "", tags = "", skipTags = "") {
         const self = this;
         return new Promise((resolve, reject) => {
             console.log(`Execution of ${playbookPath} started`);
@@ -36,6 +36,8 @@ class PlaybookUtil {
             let cmd = [];
             cmd.push("ansible-playbook");
             cmd.push(playbookPath);
+            cmd = (tags.length !== 0) ? cmd.concat(`--tags=${tags}`) : cmd
+            cmd = (skipTags.length !== 0) ? cmd.concat(`--skip-tags=${skipTags}`) : cmd
             cmd = (options.length !== 0) ? cmd.concat(options).concat(settings) : cmd.concat(settings);
 
             const env = [
@@ -75,7 +77,7 @@ class PlaybookUtil {
         });
     }
 
-    runPlaybookWithVarFiles(playbookPath, outputPath, varFiles) {
+    runPlaybookWithVarFiles(playbookPath, outputPath, varFiles, tags = "", skipTags = "") {
         const varFilesArr = [];
 
         varFiles.forEach(function(varFile) {
@@ -88,10 +90,10 @@ class PlaybookUtil {
             options = options.concat(varFilesArr);
         }
 
-        return this.runPlaybook(playbookPath, outputPath, options);
+        return this.runPlaybook(playbookPath, outputPath, options, tags, skipTags);
     }
 
-    runPlaybookWithVars(playbookPath, outputPath, vars) {
+    runPlaybookWithVars(playbookPath, outputPath, vars, tags = "", skipTags = "") {
         const varsArr = [];
 
         Object.getOwnPropertyNames(vars).forEach(
@@ -105,7 +107,7 @@ class PlaybookUtil {
             options = options.concat(varsArr);
         }
 
-        return this.runPlaybook(playbookPath, outputPath, options);
+        return this.runPlaybook(playbookPath, outputPath, options, tags, skipTags);
     }
 
     readOutputFile(path) {
