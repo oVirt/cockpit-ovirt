@@ -1356,8 +1356,12 @@ export function generateRandomString() {
     return str;
 }
 
-export function getAnsibleLogPath(playbookPath) {
-    const playbookName = playbookPath.substring(playbookPath.lastIndexOf("/") + 1, playbookPath.lastIndexOf("."));
+export function getAnsibleLogPath(playbookTagPath) {
+    const playbookTagName = playbookTagPath.indexOf('/') > -1 ?
+        playbookTagPath.substring(
+            playbookTagPath.lastIndexOf("/") + 1, playbookTagPath.lastIndexOf(".")
+        ) :
+        playbookTagPath;
     const d = new Date();
     const dateFormat = [
         d.getFullYear(),
@@ -1367,7 +1371,7 @@ export function getAnsibleLogPath(playbookPath) {
         d.getMinutes(),
         d.getSeconds()
     ].join("");
-    return `${configValues.ANSIBLE_LOG_DIR}ovirt-hosted-engine-setup-ansible-${playbookName}-${dateFormat}-${generateRandomString()}.log`;
+    return `${configValues.ANSIBLE_LOG_DIR}ovirt-hosted-engine-setup-ansible-${playbookTagName}-${dateFormat}-${generateRandomString()}.log`;
 }
 
 export function isEmptyObject(obj) {

@@ -9,7 +9,6 @@ class PlaybookUtil {
         this.runPlaybook = this.runPlaybook.bind(this);
         this._runPlaybook = this._runPlaybook.bind(this);
         this.runPlaybookWithVarFiles = this.runPlaybookWithVarFiles.bind(this);
-        this.runPlaybookWithVars = this.runPlaybookWithVars.bind(this);
         this.readOutputFile = this.readOutputFile.bind(this);
         this.getResultsData = this.getResultsData.bind(this);
         this.getTimeStamp = this.getTimeStamp.bind(this);
@@ -26,8 +25,9 @@ class PlaybookUtil {
 
     _runPlaybook(playbookPath, outputPath, options = "", tags = "", skipTags = "") {
         const self = this;
+        const tag_msg = tags ? " with tags " + tags : "";
         return new Promise((resolve, reject) => {
-            console.log(`Execution of ${playbookPath} started`);
+            console.log(`Execution of ${playbookPath}${tag_msg} started`);
 
             const settings = [
                 "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible",
@@ -40,10 +40,12 @@ class PlaybookUtil {
             cmd = (skipTags.length !== 0) ? cmd.concat(`--skip-tags=${skipTags}`) : cmd
             cmd = (options.length !== 0) ? cmd.concat(options).concat(settings) : cmd.concat(settings);
 
+            const log_name = tags ? tags.split(',')[0] : playbookPath;
+
             const env = [
                 `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                `HE_ANSIBLE_LOG_PATH=${getAnsibleLogPath(playbookPath)}`,
+                `HE_ANSIBLE_LOG_PATH=${getAnsibleLogPath(log_name)}`,
                 `OTOPI_CALLBACK_OF=${outputPath}`
             ];
 
@@ -62,11 +64,11 @@ class PlaybookUtil {
             $(this.channel).on("close", function(ev, options) {
                 if (!self._manual_close) {
                     if (options["exit-status"] === 0) {
-                        console.log(`Execution of ${playbookPath} completed successfully`);
+                        console.log(`Execution of ${playbookPath}${tag_msg} completed successfully`);
                         resolve();
                     } else {
                         console.log(options);
-                        reject(`Execution of ${playbookPath} failed`);
+                        reject(`Execution of ${playbookPath}${tag_msg} failed`);
                     }
                 } else {
                     console.log("Channel closed.");

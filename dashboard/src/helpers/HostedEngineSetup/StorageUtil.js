@@ -1,5 +1,6 @@
 import { ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues,
-    playbookOutputPaths as outputPaths, playbookPaths } from "../../components/HostedEngineSetup/constants";
+    playbookOutputPaths as outputPaths, playbookPaths, ansibleRoleTags } from
+    "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator";
 import { getAnsibleLogPath } from "../HostedEngineSetupUtil";
 import PlaybookUtil from "./PlaybookUtil";
@@ -32,11 +33,13 @@ class StorageUtil {
     getFcLunsList() {
         const self = this;
         const playbookUtil = new PlaybookUtil();
-        const playbookPath = playbookPaths.FC_GET_DEVICES;
+        const playbookPath = playbookPaths.HE_ROLE;
+        const roleTag = ansibleRoleTags.FC_GET_DEVICES;
+        const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
         const outputPath = outputPaths.FC_GET_DEVICES;
         return this.varFileGen.writeVarFileForPhase(phases.FC_GET_DEVICES)
             .then(varFilePath => {
-                return playbookUtil.runPlaybookWithVarFiles(playbookPath, outputPath, [varFilePath]);
+                return playbookUtil.runPlaybookWithVarFiles(playbookPath, outputPath, [varFilePath], roleTag, skipTag);
             })
             .then(() => playbookUtil.readOutputFile(outputPath))
             .then(output => playbookUtil.getResultsData(output))
@@ -57,13 +60,14 @@ class StorageUtil {
         const self = this;
         return new Promise((resolve, reject) => {
             console.log("iSCSI target discovery started.");
-            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.ISCSI_DISCOVER + " " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
+            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.HE_ROLE + " " +
+                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost," +
+                "--tags=" + ansibleRoleTags.ISCSI_DISCOVER + " --skip-tags=" + ansibleRoleTags.SKIP_FULL_EXECUTION;
 
             const env = [
                 `${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
                 `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
-                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPaths.ISCSI_DISCOVER),
+                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(ansibleRoleTags.ISCSI_DISCOVER),
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_DISCOVER
             ];
@@ -140,12 +144,13 @@ class StorageUtil {
         const self = this;
         return new Promise((resolve, reject) => {
             console.log("iSCSI LUN retrieval started.");
-            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.ISCSI_GET_DEVICES + " " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost";
+            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.HE_ROLE + " " +
+                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost," +
+                "--tags=" + ansibleRoleTags.ISCSI_GET_DEVICES + " --skip-tags=" + ansibleRoleTags.SKIP_FULL_EXECUTION;
 
             const env = [
                 `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
-                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPaths.ISCSI_GET_DEVICES),
+                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(ansibleRoleTags.ISCSI_GET_DEVICES),
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
                 "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_GET_DEVICES
             ];

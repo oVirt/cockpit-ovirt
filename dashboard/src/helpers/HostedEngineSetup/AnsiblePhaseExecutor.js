@@ -1,6 +1,6 @@
 import {
     ansibleOutputTypes as outputTypes, ansiblePhases as phases, configValues,
-    deploymentStatus as status, playbookOutputPaths as outputPaths, playbookPaths
+    deploymentStatus as status, playbookOutputPaths as outputPaths, playbookPaths, ansibleRoleTags
 } from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator"
 import { getAnsibleLogPath } from "../HostedEngineSetupUtil"
@@ -148,11 +148,16 @@ class AnsiblePhaseExecutor {
 
     getPlaybookCommand(phase, varFilePath) {
         const varFileParam = "@" + varFilePath;
-        const playbookParam = playbookPaths[phase];
+        const tagParam = ansibleRoleTags[phase];
+        const skipTagParam = ansibleRoleTags.SKIP_FULL_EXECUTION;
+        const playbookParam = playbookPaths.HE_ROLE;
 
         let cmd = ['ansible-playbook', '-e', varFileParam, playbookParam,
             '--module-path=/usr/share/ovirt-hosted-engine-setup/ansible',
-            '--inventory=localhost,'];
+            '--inventory=localhost,',
+            '--tags=' + tagParam,
+            '--skip-tags=' + skipTagParam,
+            ];
 
         return cmd;
     }
@@ -167,7 +172,7 @@ class AnsiblePhaseExecutor {
             const env = [
                 `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(playbookPaths[phase]),
+                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(ansibleRoleTags[phase]),
                 "OTOPI_CALLBACK_OF=" + outputPaths[phase]
             ];
 
@@ -190,7 +195,7 @@ class AnsiblePhaseExecutor {
                     if (accessDenied) {
                         reject(options, accessDenied);
                     } else if (options["exit-status"] === 0) {
-                        console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
+                        console.log("Execution of " + playbookPaths.HE_ROLE + " with tag " + ansibleRoleTags[phase] + " completed successfully.");
                         self.readOutputFile(outputPaths[phase])
                             .then(() => {
                                 self.processResult();
@@ -199,11 +204,11 @@ class AnsiblePhaseExecutor {
                                 resolve(options);
                             });
                     } else {
-                        console.log("Execution of " + playbookPaths[phase] + " failed to complete.");
+                        console.log("Execution of " + playbookPaths.HE_ROLE + " with tag " + ansibleRoleTags[phase] + " failed to complete.");
                         reject(options, accessDenied);
                     }
                 } else if (options["exit-status"] === 0) {
-                    console.log("Execution of " + playbookPaths[phase] + " completed successfully.");
+                    console.log("Execution of " + playbookPaths.HE_ROLE + " with tag " + ansibleRoleTags[phase] + " completed successfully.");
                     self.readOutputFile(outputPaths[phase])
                         .then(() => {
                             self.processResult();

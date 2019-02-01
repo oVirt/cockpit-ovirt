@@ -23,17 +23,22 @@ export const ansiblePhases = {
     VALIDATE_HOST_FQDN: "VALIDATE_HOST_FQDN"
 };
 
+export const ansibleRoleTags = {
+    INITIAL_CLEAN: "initial_clean",
+    BOOTSTRAP_VM: "bootstrap_local_vm",
+    CREATE_STORAGE: "create_storage_domain",
+    TARGET_VM: "create_target_vm",
+    FINAL_CLEAN: "final_clean",
+    ISCSI_DISCOVER: "iscsi_discover",
+    ISCSI_GET_DEVICES: "iscsi_getdevices",
+    GET_NETWORK_INTERFACES: "get_network_interfaces",
+    FC_GET_DEVICES: "fc_getdevices",
+    VALIDATE_HOSTNAMES: "validate_hostnames",
+    SKIP_FULL_EXECUTION: "always",
+};
+
 export const playbookPaths = {
-    INITIAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/initial_clean.yml",
-    BOOTSTRAP_VM: "/usr/share/ovirt-hosted-engine-setup/ansible/bootstrap_local_vm.yml",
-    CREATE_STORAGE: "/usr/share/ovirt-hosted-engine-setup/ansible/create_storage_domain.yml",
-    TARGET_VM: "/usr/share/ovirt-hosted-engine-setup/ansible/create_target_vm.yml",
-    FINAL_CLEAN: "/usr/share/ovirt-hosted-engine-setup/ansible/final_clean.yml",
-    ISCSI_DISCOVER: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_discover.yml",
-    ISCSI_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/iscsi_getdevices.yml",
-    GET_NETWORK_INTERFACES: "/usr/share/ovirt-hosted-engine-setup/ansible/get_network_interfaces.yml",
-    FC_GET_DEVICES: "/usr/share/ovirt-hosted-engine-setup/ansible/fc_getdevices.yml",
-    VALIDATE_HOSTNAMES: "/usr/share/ovirt-hosted-engine-setup/ansible/validate_hostnames.yml",
+    HE_ROLE: "/usr/share/ovirt-hosted-engine-setup/ansible/trigger_role.yml",
     HE_SETUP_WIZARD_INIT: "/usr/share/cockpit/ovirt-dashboard/hostedEngineAnsibleFiles/heSetup.yml"
 };
 

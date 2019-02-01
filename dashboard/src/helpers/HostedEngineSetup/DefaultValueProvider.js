@@ -7,6 +7,7 @@ import {
     filteredNetworkInterfaces,
     playbookOutputPaths as outputPaths,
     playbookPaths,
+    ansibleRoleTags,
     resourceConstants,
     status
 } from "../../components/HostedEngineSetup/constants"
@@ -118,12 +119,14 @@ export class DefaultValueProvider {
 
     retrieveNetworkInterfaces() {
         const playbookUtil = new PlaybookUtil();
-        const playbookPath = playbookPaths.GET_NETWORK_INTERFACES;
+        const playbookPath = playbookPaths.HE_ROLE;
+        const roleTag = ansibleRoleTags.GET_NETWORK_INTERFACES;
+        const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
         const outputPath = outputPaths.GET_NETWORK_INTERFACES;
         const self = this;
 
         return new Promise((resolve, reject) => {
-            playbookUtil.runPlaybook(playbookPath, outputPath)
+            playbookUtil.runPlaybook(playbookPath, outputPath, "", roleTag, skipTag)
                 .then(() => playbookUtil.readOutputFile(outputPath))
                 .then(output => self.setNetworkInterfaces(output))
                 .then(() => {

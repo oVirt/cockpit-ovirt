@@ -3,7 +3,8 @@ import {
     defaultValueProviderTasks as tasks, fqdnValidationTypes as fqdnType,
     fqdnValidationTypes,
     messages,
-    playbookPaths as playbookPaths
+    playbookPaths as playbookPaths,
+    ansibleRoleTags as ansibleRoleTags
 } from "./constants";
 import PlaybookUtil from "../../helpers/HostedEngineSetup/PlaybookUtil";
 
@@ -90,7 +91,9 @@ function requiresRangeValidation(prop) {
 
 export function validateFqdn(fqdn, bridgeIf, fqdnType) {
     const playbookUtil = new PlaybookUtil();
-    const playbookPath = playbookPaths.VALIDATE_HOSTNAMES;
+    const playbookPath = playbookPaths.HE_ROLE;
+    const roleTag = ansibleRoleTags.VALIDATE_HOSTNAMES;
+    const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
     const outputPath = playbookUtil.getAnsibleOutputPath(ansiblePhases.VALIDATE_HOSTNAMES);
     const isLocalhost = fqdn === "localhost" || fqdn === "localhost.localdomain";
     const playbookVars = fqdnType === fqdnValidationTypes.HOST ? {
@@ -104,7 +107,7 @@ export function validateFqdn(fqdn, bridgeIf, fqdnType) {
             console.log(`Validation of FQDN ${fqdn} failed`);
             resolve({task: tasks.VALIDATE_FQDN, error: messages.LOCALHOST_INVALID_FQDN, FQDN: fqdn});
         } else {
-            playbookUtil.runPlaybookWithVars(playbookPath, outputPath, playbookVars)
+            playbookUtil.runPlaybookWithVars(playbookPath, outputPath, playbookVars, roleTag, skipTag)
                 .then(() => {
                     console.log(`Validation of FQDN ${fqdn} succeeded`);
                     resolve({task: tasks.VALIDATE_FQDN, error: null, FQDN: fqdn});
@@ -153,7 +156,9 @@ export function validateDiscoveredHostFqdn(setValidationStateCallback) {
 
 function _validateDiscoveredHostFqdn(fqdn, setValidationStateCallback) {
     const playbookUtil = new PlaybookUtil();
-    const playbookPath = playbookPaths.VALIDATE_HOSTNAMES;
+    const playbookPath = playbookPaths.HE_ROLE;
+    const roleTag = ansibleRoleTags.VALIDATE_HOSTNAMES;
+    const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
     const outputPath = playbookUtil.getAnsibleOutputPath(ansiblePhases.VALIDATE_HOSTNAMES);
 
     fqdn = fqdn.trim();
@@ -166,7 +171,7 @@ function _validateDiscoveredHostFqdn(fqdn, setValidationStateCallback) {
             console.log(`Validation of host FQDN, ${fqdn}, failed`);
             resolve({task: tasks.VALIDATE_FQDN, error: messages.LOCALHOST_INVALID_FQDN, FQDN: fqdn});
         } else {
-            playbookUtil.runPlaybookWithVars(playbookPath, outputPath, playbookVars)
+            playbookUtil.runPlaybookWithVars(playbookPath, outputPath, playbookVars, roleTag, skipTag)
                 .then(() => {
                     console.log(`Validation of host FQDN, ${fqdn}, succeeded`);
                     const returnVal = {task: tasks.VALIDATE_FQDN, error: null};
