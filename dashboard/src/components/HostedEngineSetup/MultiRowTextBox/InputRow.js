@@ -12,12 +12,12 @@ const InputRow = ({disableAddButton, disableDeleteButton, errorMsgs, handleAdd, 
 
     const addButton = classNames(
         "btn", "btn-primary", "wizard-pf-next", "multi-row-text-box-add-button",
-        {"hidden": hideAddButton, "disabled": disableAddButton}
+        {"hidden": hideAddButton}
     );
 
     const addIcon = classNames(
         "i", "fa", "fa-plus",
-        {"hidden": hideAddButton, "disabled": disableAddButton}
+        {"hidden": hideAddButton}
     );
 
     return (
@@ -40,9 +40,9 @@ const InputRow = ({disableAddButton, disableDeleteButton, errorMsgs, handleAdd, 
                     <span className="i fa fa-minus" />
                 </button>
 
-                <button type="button" className={addButton}
+                <button type="button" className={addButton} disabled={disableAddButton}
                         onClick={handleAdd}>
-                    <span className={addIcon} />
+                    <span className={addIcon} disabled={disableAddButton}/>
                 </button>
             </div>
 
