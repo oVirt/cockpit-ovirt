@@ -123,10 +123,11 @@ export class DefaultValueProvider {
         const roleTag = ansibleRoleTags.GET_NETWORK_INTERFACES;
         const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
         const outputPath = outputPaths.GET_NETWORK_INTERFACES;
+        const playbookVars = { he_just_collect_network_interfaces: "True" }
         const self = this;
 
         return new Promise((resolve, reject) => {
-            playbookUtil.runPlaybook(playbookPath, outputPath, "", roleTag, skipTag)
+            playbookUtil.runPlaybookWithVars(playbookPath, outputPath, playbookVars, roleTag, skipTag)
                 .then(() => playbookUtil.readOutputFile(outputPath))
                 .then(output => self.setNetworkInterfaces(output))
                 .then(() => {
