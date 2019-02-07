@@ -41,7 +41,7 @@ Requires:       udisks2
 %else
 Requires:       cockpit-storaged
 %endif
-Requires:       ovirt-hosted-engine-setup >= 2.3.5
+Requires:       ovirt-hosted-engine-setup >= 2.4.0
 Requires:       otopi >= 1.8.0
 
 Requires:       ansible
