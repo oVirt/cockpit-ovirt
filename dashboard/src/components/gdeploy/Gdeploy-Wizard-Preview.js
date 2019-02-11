@@ -63,38 +63,79 @@ class WizardPreviewStep extends Component {
         })
     }
     componentWillReceiveProps(nextProps) {
-        if(!this.state.gdeployFileGenerated && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
-            if((nextProps.gdeployWizardType === "create_volume" || nextProps.gdeployWizardType === "expand_cluster") && nextProps.activeStep == 3) {
-                this.createGdeployConfig()
-                this.setState({ gdeployFileGenerated: true })
-            } else {
-                if(this.props.isRhvhSystem && this.props.isSingleNode) {
-                    if (nextProps.activeStep == 3) {
-                        this.createGdeployConfig()
-                        this.setState({ gdeployFileGenerated: true })
-                    }
-                } else if(!this.props.isRhvhSystem && !this.props.isSingleNode) {
-                    if (nextProps.activeStep == 5) {
-                        this.createGdeployConfig()
-                        this.setState({ gdeployFileGenerated: true })
-                    } else if (nextProps.activeStep == 4) {
-                        this.createGdeployConfig()
-                        this.setState({ gdeployFileGenerated: true })
-                    }
-                } else if(nextProps.activeStep == 4) {
-                    this.createGdeployConfig()
-                    this.setState({ gdeployFileGenerated: true })
-                }
-            }
-        } else if(this.state.gdeployFileGenerated && !this.props.isSingleNode) {
-          if (!this.props.isRhvhSystem && nextProps.activeStep == 5) {
-              this.createGdeployConfig()
-              this.setState({ gdeployFileGenerated: true })
-          } else if (this.props.isRhvhSystem && nextProps.activeStep == 4) {
-              this.createGdeployConfig()
-              this.setState({ gdeployFileGenerated: true })
+      if(this.state.gdeployFileGenerated) {
+        if(nextProps.gdeployWizardType === "create_volume" && nextProps.activeStep !== 3) {
+          this.setState({ gdeployFileGenerated: false})
+        } else if(nextProps.gdeployWizardType === "expand_cluster") {
+          if (this.props.isRhvhSystem && nextProps.activeStep !== 3) {
+            this.setState({ gdeployFileGenerated: false})
+          } else if(!this.props.isRhvhSystem && nextProps.activeStep !== 4) {
+            this.setState({ gdeployFileGenerated: false})
           }
+        } else if(nextProps.gdeployWizardType === "setup") {
+            if(this.props.isSingleNode) {
+              if(this.props.isRhvhSystem) {
+                if(nextProps.activeStep !== 3) {
+                  this.setState({ gdeployFileGenerated: false})
+                }
+              } else if(!this.props.isRhvhSystem) {
+                if(nextProps.activeStep !== 4) {
+                  this.setState({ gdeployFileGenerated: false})
+                }
+              }
+            } else if(!this.props.isSingleNode) {
+              if(this.props.isRhvhSystem) {
+                if(nextProps.activeStep !== 4) {
+                  this.setState({ gdeployFileGenerated: false})
+                }
+              } else if(!this.props.isRhvhSystem) {
+                if(nextProps.activeStep !== 5) {
+                  this.setState({ gdeployFileGenerated: false})
+                }
+              }
+            }
         }
+      }
+      if(!this.state.gdeployFileGenerated && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
+        if(nextProps.gdeployWizardType === "create_volume" && nextProps.activeStep == 3) {
+          this.createGdeployConfig()
+          this.setState({ gdeployFileGenerated: true})
+        } else if(nextProps.gdeployWizardType === "expand_cluster") {
+          if (this.props.isRhvhSystem && nextProps.activeStep == 3) {
+            this.createGdeployConfig()
+            this.setState({ gdeployFileGenerated: true})
+          } else if(!this.props.isRhvhSystem && nextProps.activeStep == 4) {
+            this.createGdeployConfig()
+            this.setState({ gdeployFileGenerated: true})
+          }
+        } else if(nextProps.gdeployWizardType === "setup") {
+            if(this.props.isSingleNode) {
+              if(this.props.isRhvhSystem) {
+                if(nextProps.activeStep == 3) {
+                  this.createGdeployConfig()
+                  this.setState({ gdeployFileGenerated: true})
+                }
+              } else if(!this.props.isRhvhSystem) {
+                if(nextProps.activeStep == 4) {
+                  this.createGdeployConfig()
+                  this.setState({ gdeployFileGenerated: true})
+                }
+              }
+            } else if(!this.props.isSingleNode) {
+              if(this.props.isRhvhSystem) {
+                if(nextProps.activeStep == 4) {
+                  this.createGdeployConfig()
+                  this.setState({ gdeployFileGenerated: true})
+                }
+              } else if(!this.props.isRhvhSystem) {
+                if(nextProps.activeStep == 5) {
+                  this.createGdeployConfig()
+                  this.setState({ gdeployFileGenerated: true})
+                }
+              }
+            }
+        }
+      }
     }
     handleConfigChange(e) {
         this.setState({
