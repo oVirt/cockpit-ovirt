@@ -201,7 +201,7 @@ const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, de
                       gdeployAvailable, gdeployFilesFound, selectionChangeCallback, startButtonHandler}) => {
   let message = cancelled ?
     "Hosted engine setup was aborted" :
-    "Configure and install a highly-available virtual machine which will \
+    "Configure and install a highly-available virtual machine that will \
     run oVirt Engine to manage multiple compute nodes, or add this system \
     to an existing hosted engine cluster."
   let button_text = cancelled ?
@@ -247,7 +247,7 @@ const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, de
                                      deploymentTypeOption={deploymentOption.HYPERCONVERGED}
                                      isLastOption
                                      mainText={"Hyperconverged"}
-                                     subText={"Configure gluster storage and oVirt hosted engine"}
+                                     subText={"Configure Gluster storage and oVirt hosted engine"}
                                      buttonText={"Start"}
                                      buttonCallback={startButtonHandler} />
             </div>
