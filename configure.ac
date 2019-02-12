@@ -48,7 +48,7 @@ else
     RHEV=""
     INSTALL_GUIDE_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.2/html/self-hosted_engine_guide/"
     MORE_INFO_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.2/"
-    MORE_INFO_LINK_TEXT="RHEV Documentation"
+    MORE_INFO_LINK_TEXT="RHV Documentation"
 fi
 
 AC_SUBST(INSTALL_GUIDE_LINK)
