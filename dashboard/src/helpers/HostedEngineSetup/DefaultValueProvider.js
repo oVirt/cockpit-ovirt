@@ -323,7 +323,7 @@ export class DefaultValueProvider {
 
         if (!isEmptyObject(ipv4Data)) {
             ipData = ipv4Data;
-        } else if (!this.isEmptyObject(ipv6Data)) {
+        } else if (!isEmptyObject(ipv6Data)) {
             ipData = ipv6Data;
         }
 

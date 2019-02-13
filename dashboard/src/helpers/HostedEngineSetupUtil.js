@@ -418,7 +418,7 @@ export class HeSetupModel {
                 bridgeIf: {
                     name: "bridgeIf",
                     ansibleVarName: "he_bridge_if",
-                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
+                    ansiblePhasesUsed: [phases.INITIAL_CLEAN, phases.BOOTSTRAP_VM],
                     description: "Bridge Interface",
                     value: "",
                     type: types.STRING,
@@ -654,7 +654,7 @@ export class HeSetupModel {
                     uiStage: "VM",
                     useInAnswerFile: false,
                     required: false,
-                    range: {min: 0, max: 32}
+                    range: {min: 0, max: 128}
                 },
                 cloudinitVMDNS: {
                     name: "cloudinitVMDNS",
@@ -1302,7 +1302,8 @@ export class TimeZone {
 }
 
 export function pingGateway(gatewayAddress) {
-    return cockpit.spawn(["ping", "-c", "1", gatewayAddress])
+    const ipv = gatewayAddress.indexOf(':') > -1 ? "-6" : "";
+    return cockpit.spawn(["ping", ipv, "-c", "1", gatewayAddress])
         .fail(function(result) {
             console.log("Error: " + result);
         });
