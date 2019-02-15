@@ -37,7 +37,7 @@ BuildArch:      noarch
 
 Requires:       cockpit
 Requires:       cockpit-storaged
-Requires:       ovirt-hosted-engine-setup >= 2.2.32
+Requires:       ovirt-hosted-engine-setup >= 2.2.34
 Requires:       otopi >= 1.7.8
 
 Requires:       ansible
@@ -89,6 +89,11 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Fri Feb 15 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.39-1
+- Gdeploy Config file creation conditions Changes under bricks tab were not
+  reflected into the config file because of missing conditions.
+- Re-editing the tabs after failure reflecting in gdeploy conf file
+
 * Mon Jan 07 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.38-1
 - Save edited gdeploy conf file and take backup of previous one
 - Validating whether FQDN added in known_hosts
