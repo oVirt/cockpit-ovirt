@@ -93,6 +93,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Fri Feb 15 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.12.2-1
+- Rebase on 0.12.2
+
 * Tue Jan 22 2019 Simone Tiraboschi <stirabos@redhat.com> - 0.12.1-1
 - he fixes
 
