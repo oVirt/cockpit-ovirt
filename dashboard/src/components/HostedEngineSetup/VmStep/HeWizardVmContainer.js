@@ -379,7 +379,9 @@ class HeWizardVmContainer extends Component {
         const fqdnChanged = fqdn !== validationData.prevValue;
 
         // Don't run validation again if FQDN has already been validated successfully or is blank
-        if (fqdn === "" || (!fqdnChanged && validationData.state === status.SUCCESS)) {
+        if (fqdn === "" ||
+           (!fqdnChanged && validationData.state === status.FAILURE) ||
+           (!fqdnChanged && validationData.state === status.SUCCESS)) {
             return;
         }
 

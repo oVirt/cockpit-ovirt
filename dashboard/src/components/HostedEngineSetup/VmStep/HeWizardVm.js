@@ -66,7 +66,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
         "fqdn-validation-btn btn btn-default disabled" :
         "fqdn-validation-btn btn btn-default";
 
-
+    const validatingFQDN = "Validating FQDN..."
 
     return (
         <div>
@@ -148,34 +148,28 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                     <label className="col-md-3 control-label">Engine VM FQDN</label>
                     <div className="col-md-7">
                         <input type="text"
+                               disabled={fqdnValidationData.vm.state === status.POLLING ? true : false}
                                placeholder="ovirt-engine.example.com"
                                title="Enter the engine FQDN."
                                className="form-control fqdn-textbox"
                                value={networkConfig.fqdn.value}
                                onChange={(e) => handleVmConfigUpdate("fqdn", e.target.value, "network")}
+                               onBlur={() => validateFqdn(fqdnTypes.VM)}
                         />
                         <div className="fqdn-status-container">
                             {fqdnValidationData.vm.state === status.SUCCESS && <span className="fqdn-status-icon pficon pficon-ok"/>}
                             {fqdnValidationData.vm.state === status.FAILURE && <span className="fqdn-status-icon pficon pficon-error-circle-o"/>}
                         </div>
-                        <button type="button"
-                                className={vmFqdnClassNames}
-                                aria-label="Check VM FQDN"
-                                onClick={() => validateFqdn(fqdnTypes.VM)}
-                                style={{verticalAlign: "top"}} >
-                            <span className={fqdnValidationData.vm.state === status.POLLING ? "hidden" : ""}>
-                                Validate
+                        <span className={fqdnValidationData.vm.state === status.POLLING ? "" : "hidden"}>
+                            <span className="field-validation-spinner-container">
+                                <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
                             </span>
-                            <span className={fqdnValidationData.vm.state === status.POLLING ? "" : "hidden"}>
-                                <span className="field-validation-spinner-container">
-                                    <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
-                                </span>
-                            </span>
-                        </button>
-
+                            <span className="help-block"> {validatingFQDN} </span>
+                        </span>
                         {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
                     </div>
                 </div>
+
 
                 <div className={getClassNames("vmMACAddr", errorMsgs)}>
                     <label className="col-md-3 control-label">MAC Address</label>
@@ -504,30 +498,24 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                             <label className="col-md-3 control-label">Host FQDN</label>
                             <div className="col-md-7">
                                 <input type="text"
+                                       disabled={fqdnValidationData.host.state === status.POLLING ? true : false}
                                        placeholder="engine-host.example.com"
                                        title="Enter the host's FQDN."
                                        className="form-control fqdn-textbox"
                                        value={networkConfig.host_name.value}
                                        onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
+                                       onBlur={() => validateFqdn(fqdnTypes.HOST)}
                                 />
                                 <div className="fqdn-status-container">
                                     {fqdnValidationData.host.state === status.SUCCESS && <span className="fqdn-status-icon pficon pficon-ok"/>}
                                     {fqdnValidationData.host.state === status.FAILURE && <span className="fqdn-status-icon pficon pficon-error-circle-o"/>}
                                 </div>
-                                <button type="button"
-                                        className={hostFqdnClassNames}
-                                        aria-label="Check host FQDN"
-                                        onClick={() => validateFqdn(fqdnTypes.HOST)}
-                                        style={{verticalAlign: "top"}} >
-                                    <span className={fqdnValidationData.host.state === status.POLLING ? "hidden" : ""}>
-                                        Validate
+                                <span className={fqdnValidationData.host.state === status.POLLING ? "" : "hidden"}>
+                                    <span className="field-validation-spinner-container">
+                                        <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
                                     </span>
-                                    <span className={fqdnValidationData.host.state === status.POLLING ? "" : "hidden"}>
-                                        <span className="field-validation-spinner-container">
-                                            <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
-                                        </span>
-                                    </span>
-                                </button>
+                                    <span className="help-block"> {validatingFQDN} </span>
+                                </span>
                                 {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
                             </div>
                         </div>
