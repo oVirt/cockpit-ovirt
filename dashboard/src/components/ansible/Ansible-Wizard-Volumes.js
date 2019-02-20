@@ -163,9 +163,18 @@ WizardVolumesStep.propTypes = {
 }
 
 const VolumeRow = ({volume, isSingleNode, index, errorMsgs, changeCallBack, deleteCallBack}) => {
-    const volumeTypes = [
-        { key: "replicate", title: "Replicate" }
-    ]
+    const volumeTypes = [{key: "", title: ""}]
+    if(isSingleNode) {
+
+      volumeTypes[0].key = "distribute"
+      volumeTypes[0].title = "Distribute"
+      volume.type = "distribute"
+    } else {
+
+      volumeTypes[0].key = "replicate"
+      volumeTypes[0].title = "Replicate"
+      volume.type = "replicate"
+    }
     const volumeName = classNames(
         "form-group",
         { "has-error": errorMsgs && errorMsgs.name }
