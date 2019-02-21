@@ -114,7 +114,10 @@ var AnsibleUtil = {
         let hostBricks = bricks[hostIndex]["host_bricks"];
         let hostCacheConfig = lvCacheConfig[hostIndex];
         hostVars.gluster_infra_vdo = [];
+        let brickNo = hostBricks.length;
+        let count = 0;
         for (let brick of hostBricks){
+          count++;
           let devName = brick.device.split("/").pop();
           let pvName = brick.device;
           let vgName = VG_NAME+`${devName}`;
@@ -214,10 +217,20 @@ var AnsibleUtil = {
             if(hostVars.gluster_infra_thick_lvs == undefined){
               hostVars.gluster_infra_thick_lvs = [];
             }
+            let lvSize = ""
+            if(brick.is_vdo_supported) {
+              if(brickNo === count){
+                lvSize = "100%FREE"
+              } else {
+                lvSize = `${brick.logicalSize}G`
+              }
+            } else {
+              lvSize = `${brick.size}G`
+            }
             hostVars.gluster_infra_thick_lvs.push({
               vgname: vgName,
               lvname: lvName,
-              size: `${brick.size}G`
+              size: lvSize
             });
           }
           hostVars.gluster_infra_mount_devices.push({
