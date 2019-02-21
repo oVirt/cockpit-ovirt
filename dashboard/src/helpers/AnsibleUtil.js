@@ -80,9 +80,7 @@ var AnsibleUtil = {
       })
       groups.hc_nodes = {};
       groups.hc_nodes.hosts = {};
-      groups.local = { hosts: {localhost: null}};
       let groupVars = {}
-      let localVars = {}
       if(raidConfig.raidType === "JBOD") {
         groupVars.gluster_infra_disktype = raidConfig.raidType;
       } else {
@@ -253,13 +251,7 @@ var AnsibleUtil = {
           arbiter: volume.is_arbiter
         });
       }
-      const SSH_OPTS = '-o BatchMode=yes'
-
-      localVars.ansible_ssh_common_args = SSH_OPTS;
-      groupVars.ansible_ssh_common_args = SSH_OPTS;
-
       groups.hc_nodes.vars = groupVars;
-      groups.local.vars = localVars;
 
       const configString = yaml.dump(groups)
       this.handleDirAndFileCreation(filePath, configString, function(result){
