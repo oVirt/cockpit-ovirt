@@ -647,7 +647,7 @@ class WizardBricksStep extends Component {
                                     <th>LV Name</th>
                                     <th>Device Name</th>
                                     <th>LV Size(GB) <span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
-                                        title="NOTE: This is the size of the actual gluster brick"></span></th>
+                                        title="NOTE: LV for brick will be created to match the logical size of vdo volume."></span></th>
                                     <th>Thinp</th>
                                     <th>Mount Point</th>
                                     <th style={this.state.isVdoSupported ? {} : { display: 'none' }}>Enable Dedupe & Compression</th>
