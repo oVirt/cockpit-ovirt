@@ -540,6 +540,19 @@ var AnsibleUtil = {
       .fail(function(code) {
           callBack(false)
       })
+    },
+    isGlusterAnsibleAvailable(callback) {
+      cockpit.spawn(
+        [ "rpm", "-qa", "gluster-ansible-roles" ], { "superuser":"require" }
+      ).done(function(gVersion){
+        if (typeof gVersion === "string" && gVersion !== "") {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      }).fail(function(code){
+        callback(false)
+      })
     }
 }
 

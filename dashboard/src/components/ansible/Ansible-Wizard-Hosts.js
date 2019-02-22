@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import Selectbox from '../common/Selectbox'
 import classNames from 'classnames'
 import {footerButtons} from "../common/Wizard/Wizard";
+import ansibleUtil from './../../helpers/AnsibleUtil'
 
 class WizardHostStep extends Component {
     constructor(props) {
@@ -12,7 +13,8 @@ class WizardHostStep extends Component {
             hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
             errorMsgs: {},
-            isSingleNode: props.isSingleNode
+            isSingleNode: props.isSingleNode,
+            isGlusterAnsibleAvailableOnHost: false,
         }
         this.updateHost = this.updateHost.bind(this);
         this.getHostList = this.getHostList.bind(this);
@@ -119,6 +121,17 @@ class WizardHostStep extends Component {
                   that.setState({ hostTypes, hosts })
             })
         }
+        let that = this
+        ansibleUtil.isGlusterAnsibleAvailable(function (boolVal) {
+            that.setState({
+              isGlusterAnsibleAvailableOnHost: boolVal
+            })
+            if(that.state.isGlusterAnsibleAvailableOnHost === false) {
+              that.props.registerCustomActionBtnStateCallback({disableBtnsList: [footerButtons.NEXT], hidden: true}, that.props.stepIndex)
+              let errorMsg = "gluster-ansible-roles is not installed on Host. To continue deployment, please install gluster-ansible-roles on Host and try again."
+              that.setState({ errorMsg })
+            }
+        })
     }
     getHostList(callback){
       cockpit.spawn(
