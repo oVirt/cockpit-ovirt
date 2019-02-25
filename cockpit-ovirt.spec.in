@@ -93,6 +93,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Mon Feb 25 2019 Ido Rosenzwig <irosenzw@redhat.com> - 0.12.3-1
+- Fix gateway validation on HE wizard
+
 * Fri Feb 15 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.12.2-1
 - Rebase on 0.12.2
 
