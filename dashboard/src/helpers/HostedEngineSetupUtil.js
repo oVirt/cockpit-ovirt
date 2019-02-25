@@ -1302,7 +1302,7 @@ export class TimeZone {
 }
 
 export function pingGateway(gatewayAddress) {
-    const ipv = gatewayAddress.indexOf(':') > -1 ? "-6" : "";
+    const ipv = gatewayAddress.indexOf(':') > -1 ? "-6" : "-4";
     return cockpit.spawn(["ping", ipv, "-c", "1", gatewayAddress])
         .fail(function(result) {
             console.log("Error: " + result);
