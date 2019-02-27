@@ -61,7 +61,7 @@ class StorageUtil {
         return new Promise((resolve, reject) => {
             console.log("iSCSI target discovery started.");
             const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.HE_ROLE + " " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost," +
+                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost, " +
                 "--tags=" + ansibleRoleTags.ISCSI_DISCOVER + " --skip-tags=" + ansibleRoleTags.SKIP_FULL_EXECUTION;
 
             const env = [
@@ -145,7 +145,7 @@ class StorageUtil {
         return new Promise((resolve, reject) => {
             console.log("iSCSI LUN retrieval started.");
             const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.HE_ROLE + " " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost," +
+                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost, " +
                 "--tags=" + ansibleRoleTags.ISCSI_GET_DEVICES + " --skip-tags=" + ansibleRoleTags.SKIP_FULL_EXECUTION;
 
             const env = [
