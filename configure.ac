@@ -47,8 +47,8 @@ if test -z "$with_rhev"; then
     MORE_INFO_LINK_TEXT="oVirt Homepage"
 else
     RHEV=""
-    INSTALL_GUIDE_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.2/html/self-hosted_engine_guide/"
-    MORE_INFO_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.2/"
+    INSTALL_GUIDE_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.3-beta/html/self-hosted_engine_guide/"
+    MORE_INFO_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.3-beta/"
     MORE_INFO_LINK_TEXT="RHV Documentation"
 fi
 
