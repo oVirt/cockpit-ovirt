@@ -88,6 +88,7 @@ var AnsibleUtil = {
         groupVars.gluster_infra_stripe_unit_size = parseInt(raidConfig.stripeSize);
         groupVars.gluster_infra_diskcount = parseInt(raidConfig.diskCount);
       }
+      groupVars.gluster_set_selinux_labels = true
       groupVars.gluster_infra_fw_ports = [
        "2049/tcp",
        "54321/tcp",
