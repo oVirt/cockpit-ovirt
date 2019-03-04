@@ -294,19 +294,20 @@ var AnsibleUtil = {
         })
     },
     runAnsiblePlaybook(configFile, stdoutCallback, successCallback, failCallback, callBack) {
+          const options = { "environ": ["ANSIBLE_INVENTORY_UNPARSED_FAILED=true"] };
           let cmd = ["/root/../usr/bin/ansible-playbook",
              "/root/../usr/share/cockpit/ovirt-dashboard/ansible/hc_wizard.yml",
              "-i",
              configFile
            ];
-           cockpit.spawn(cmd)
+           cockpit.spawn(cmd, options)
            .done(function(successCallback){
              console.log("Playbook executed successfully. ",successCallback);
              callBack(true);
            })
            .fail(function(failCallback){
              console.log("Playbook execution failed. ",failCallback);
-             callBack(false)
+             callBack(failCallback)
            })
            .stream(stdoutCallback);
     },

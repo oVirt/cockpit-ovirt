@@ -30,21 +30,24 @@ class WizardExecutionStep extends Component {
     ansibleStdout(data) {
         this.setState({ ansibleLog: this.state.ansibleLog + data })
     }
-    ansibleFail(exception) {
-        this.setState({ ansibleStatus: -1 })
-        let filePath = CONFIG_FILES.ansibleStatus
-        AnsibleUtil.handleDirAndFileCreation(filePath, String(this.state.ansibleStatus), function (result) {
-            console.log("Status File: ", result)
-        })
+    ansibleFail(response) {
+      this.setState({ ansibleStatus: -1 })
+      if(response.exit_status === 1) {
+        this.ansibleStdout("ERROR! No inventory was parsed, please check your configuration and options. Could be problem in inventory file.")
+      }
+      let filePath = CONFIG_FILES.ansibleStatus
+      AnsibleUtil.handleDirAndFileCreation(filePath, String(this.state.ansibleStatus), function (result) {
+          console.log("Status File: ", result)
+      })
     }
     runAnsiblePlaybook() {
         const that = this
-      AnsibleUtil.runAnsiblePlaybook(CONFIG_FILES.ansibleInventoryFile, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(isSuccess) {
+      AnsibleUtil.runAnsiblePlaybook(CONFIG_FILES.ansibleInventoryFile, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
         that.setState({ ansibleStatus: 1 })
-        if(isSuccess){
+        if(response === true){
           that.ansibleDone()
         } else {
-          that.ansibleFail(isSuccess)
+          that.ansibleFail(response)
         }
       })
     }
