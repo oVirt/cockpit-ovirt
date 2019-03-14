@@ -12,7 +12,8 @@ class WizardFqdnStep extends Component {
             fqdns: props.fqdns,
             errorMsg: "",
             errorMsgs: {},
-            fqdnPingStatus: true
+            fqdnPingStatus: true,
+            glusterModel: props.glusterModel
         }
         this.updateFqdn = this.updateFqdn.bind(this);
         this.validate = this.validate.bind(this);
@@ -62,7 +63,7 @@ class WizardFqdnStep extends Component {
       fqdns.forEach(function (fqdn, index) {
         if(fqdn.length > 0) {
           that.trimFqdnProperties()
-          AnsibleUtil.isPingable(fqdn, function (pingStatus) {
+          AnsibleUtil.isPingable(fqdn, that.state.glusterModel.ipv6Deployment, function (pingStatus) {
             if(!pingStatus) {
               errorMsgs[index] = "Host is not reachable"
               that.state.fqdnPingStatus = false

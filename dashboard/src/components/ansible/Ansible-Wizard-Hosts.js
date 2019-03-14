@@ -16,12 +16,14 @@ class WizardHostStep extends Component {
             errorMsgs: {},
             isSingleNode: props.isSingleNode,
             isGlusterAnsibleAvailableOnHost: false,
+            glusterModel: props.glusterModel
         }
         this.updateHost = this.updateHost.bind(this);
         this.getHostList = this.getHostList.bind(this);
         this.handleSelectedHostUpdate = this.handleSelectedHostUpdate.bind(this);
         this.handleExpandVolumeUpdate = this.handleExpandVolumeUpdate.bind(this);
         props.glusterModel.isSingleNode = props.isSingleNode
+        this.handleIPV6 = this.handleIPV6.bind(this);
     }
     updateHost(index, hostaddress) {
         const hosts = this.state.hosts;
@@ -40,6 +42,22 @@ class WizardHostStep extends Component {
         }
         this.setState({ hosts, errorMsgs })
     }
+
+    handleIPV6() {
+      var checkbox = document.getElementById('handleIPV6')
+      if(checkbox.checked) {
+        this.setState((prevState)=>{
+          prevState.glusterModel.ipv6Deployment = true
+          return { glusterModel: prevState.glusterModel }
+        })
+      } else {
+        this.setState((prevState)=>{
+          prevState.glusterModel.ipv6Deployment = false
+          return { glusterModel: prevState.glusterModel }
+        })
+      }
+    }
+
     // Trim "Host1","Host2" and "Host3" values
     trimHostProperties(){
       const inHosts = this.state.hosts
@@ -304,6 +322,12 @@ class WizardHostStep extends Component {
         }
         return (
             <div>
+                <div className="col-md-offset-2">
+                <input type="checkbox" id="handleIPV6" onChange={(e) => this.handleIPV6()}/>
+                <strong className="fqdnCheckboxTextInfo">
+                      Select if hosts are using IPv6 (Default will be IPv4)
+                </strong>
+            </div>
                 {this.state.errorMsg && <div className="alert alert-danger">
                     <span className="pficon pficon-error-circle-o"></span>
                     <strong>{this.state.errorMsg}</strong>

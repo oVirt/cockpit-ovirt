@@ -71,6 +71,7 @@ class AnsibleSetup extends Component {
                 stepName="Additional Hosts"
                 hosts={this.state.glusterModel.hosts}
                 fqdns={this.state.glusterModel.fqdns}
+                glusterModel={this.state.glusterModel}
                 />)
         }
         if ((this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") && this.state.isRhvhSystem === false) {

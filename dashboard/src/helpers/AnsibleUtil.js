@@ -66,7 +66,8 @@ var AnsibleUtil = {
             lvCacheConfig: [{
                 host: "", lvCache: false, ssd: "", lvCacheSize: "1", cacheMode: "writethrough", thinpoolName: "--select--"
             }],
-            isSingleNode: false
+            isSingleNode: false,
+            ipv6Deployment: false
         }
     },
     createAnsibleConfig(glusterModel, filePath, ansibleWizardType = "none", isSingleNode, callback) {
@@ -840,11 +841,15 @@ var AnsibleUtil = {
           })
         }
     },
-    isPingable(address, callBack) {
+    isPingable(address, ipv6Deployment, callBack) {
+      let cmd = []
+      if(ipv6Deployment) {
+        cmd = ["ping", "-6", "-w", "1", address ]
+      } else {
+        cmd = ["ping", "-w", "1", address ]
+      }
       let proc = cockpit.spawn(
-          ["ping", "-w", "1",
-            address
-          ]
+        cmd
       )
       .done(function(code) {
           callBack(true)
