@@ -37,6 +37,10 @@ class AnsibleVarFilesGenerator {
             cleanedValue = "\"" + value + "\"";
         }
 
+        if ((typeof value === 'string' || value instanceof String) && value.indexOf(":") > -1 ) {
+            cleanedValue = "\"" + value + "\"";
+        }
+
         if (propName === "heFilteredTokensVars" || propName === "heFilteredTokensRE") {
             let arr = "'" + value.join("','") + "'";
             cleanedValue = "\[" + arr + "\]";
@@ -83,7 +87,7 @@ class AnsibleVarFilesGenerator {
         return new Promise((resolve, reject) => {
             file.replace(varString)
                 .done(function () {
-                    console.log("Phase " + phase + " variable file successfully created.");
+                    console.log("Phase " + phase + " variable file successfully created: " + filePath);
                     resolve(filePath);
                 })
                 .fail(function (error) {
