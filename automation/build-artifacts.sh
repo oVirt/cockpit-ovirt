@@ -10,7 +10,7 @@ if git describe --tags --match "cockpit-ovirt*"|cut -f4- -d\-| grep -q '-'; then
     # and make it easy to locate the commit from the build
     # with the git commit hash.
     export PACKAGE_RPM_RELEASE=0
-    export RELEASE_SUFFIX=".$(date --utc +%Y%m%d).git$(git rev-parse --short HEAD)"
+    export RELEASE_SUFFIX=".$(date --utc +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
 fi
 
 dependencies="$(sed -e '/^[ \t]*$/d' -e '/^#/d' automation/packages.force)"
