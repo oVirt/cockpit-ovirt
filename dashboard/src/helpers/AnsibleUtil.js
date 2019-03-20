@@ -1,6 +1,7 @@
 import ini from 'ini'
 import { CONFIG_FILES as constants } from '../components/ansible/constants'
 import yaml from 'js-yaml';
+import _ from 'lodash';
 
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
@@ -114,10 +115,9 @@ var AnsibleUtil = {
         let hostBricks = bricks[hostIndex]["host_bricks"];
         let hostCacheConfig = lvCacheConfig[hostIndex];
         hostVars.gluster_infra_vdo = [];
-        let brickNo = hostBricks.length;
-        let count = 0;
+        let groupedBricks = _.groupBy(hostBricks, "device");
+
         for (let brick of hostBricks){
-          count++;
           let devName = brick.device.split("/").pop();
           let pvName = brick.device;
           let vgName = VG_NAME+`${devName}`;
@@ -165,7 +165,6 @@ var AnsibleUtil = {
                     let logicalsizes = parseInt(hostVars.gluster_infra_vdo[index].logicalsize.replace(/G/g,"G")) + parseInt(brick.logicalSize)
                     hostVars.gluster_infra_vdo[index].logicalsize = logicalsizes + "G"
                     hostVars.gluster_infra_vdo[index].slabsize = (logicalsizes <= 1000) ? "2G": "32G";
-                    hostVars.gluster_infra_vdo.splice(index+1, 1)
                 }
               })
             } else {
@@ -219,19 +218,40 @@ var AnsibleUtil = {
             }
             let lvSize = ""
             if(brick.is_vdo_supported) {
-              if(brickNo === count){
-                lvSize = "100%FREE"
-              } else {
-                lvSize = `${brick.logicalSize}G`
+              let count = 0
+              let brickNo = groupedBricks[brick.device].length
+              for(let aBrick of groupedBricks[brick.device]) {
+                count++
+                if(brickNo === count){
+                  lvSize = "100%FREE"
+                } else {
+                  lvSize = `${aBrick.logicalSize}G`
+                }
+                let hasDuplicate = false
+                hostVars.gluster_infra_thick_lvs.map(v => v.lvname).sort().sort((a, b) => {
+                  if (a === b) hasDuplicate = true
+                })
+
+                if(!hasDuplicate) {
+                  hostVars.gluster_infra_thick_lvs.push({
+                    vgname: vgName,
+                    lvname: LV_NAME+`${aBrick.name}`,
+                    size: lvSize
+                  });
+                }
               }
             } else {
               lvSize = `${brick.size}G`
+              hostVars.gluster_infra_thick_lvs.push({
+                vgname: vgName,
+                lvname: lvName,
+                size: lvSize
+              });
             }
-            hostVars.gluster_infra_thick_lvs.push({
-              vgname: vgName,
-              lvname: lvName,
-              size: lvSize
-            });
+            hostVars.gluster_infra_thick_lvs = hostVars.gluster_infra_thick_lvs.filter((obj, pos, arr) => {
+              return arr.map(mapObj =>
+                mapObj['lvname']).indexOf(obj['lvname']) === pos;
+              });
           }
           hostVars.gluster_infra_mount_devices.push({
             path: brick.brick_dir,
@@ -243,6 +263,10 @@ var AnsibleUtil = {
         if(hostVars.gluster_infra_vdo.length === 0) {
           delete hostVars["gluster_infra_vdo"]
         } else {
+          hostVars.gluster_infra_vdo = hostVars.gluster_infra_vdo.filter((obj, pos, arr) => {
+            return arr.map(mapObj =>
+              mapObj['device']).indexOf(obj['device']) === pos;
+          });
           hostVars.gluster_infra_vdo = Array.from(new Set(hostVars.gluster_infra_vdo.map(JSON.stringify))).map(JSON.parse);
         }
         groups.hc_nodes.hosts[hosts[hostIndex]] = hostVars;
