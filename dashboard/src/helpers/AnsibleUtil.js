@@ -294,7 +294,7 @@ var AnsibleUtil = {
         return Math.ceil(arbiterSizeKB / (1024 * 1024))
     },
     getPoolMetadataSize(poolSize){
-        return Math.min(DEFAULT_POOL_METADATA_SIZE_GB, Math.ceil(poolSize * POOL_METADATA_SIZE_PERCENT))
+        return Math.min(DEFAULT_POOL_METADATA_SIZE_GB, Math.ceil(poolSize * POOL_METADATA_SIZE_PERCENT)) + 'G'
     },
     createHEAnswerFileForGlusterStorage(volumeName, glusterServers, filePath, callback) {
         let configString = "[environment:default]"
