@@ -126,7 +126,7 @@ var AnsibleUtil = {
           let isDevProcessed = Object.keys(processedDevs).indexOf(devName) > -1;
           let isThinpoolCreated = false;
           if(isDevProcessed){
-            isThinpoolCreated = processedDevs[devName]['thinp'];
+            isThinpoolCreated = processedDevs[devName]['thinpool'];
           }
           let isVDO = brick.is_vdo_supported == true && brick.logicalSize;
           //TODO: cache more than one device.
@@ -189,15 +189,36 @@ var AnsibleUtil = {
               pvname: pvName
             });
           }
-          if(brick.thinp && !isThinpoolCreated){
+          if(brick.thinp){
             if(hostVars.gluster_infra_thinpools == undefined){
               hostVars.gluster_infra_thinpools = [];
             }
-            hostVars.gluster_infra_thinpools.push({
-              vgname: vgName,
-              thinpoolname: thinpoolName,
-              poolmetadatasize: this.getPoolMetadataSize(brick.size)
-            });
+            let poolMetadataSize = this.getPoolMetadataSize(brick.size)
+            if(hostVars.gluster_infra_thinpools.length > 0){
+              let count = 0
+              hostVars.gluster_infra_thinpools.forEach(function(inThinp, index){
+                if(thinpoolName === inThinp.thinpoolname) {
+                  count++
+                }
+                if(thinpoolName === inThinp.thinpoolname && parseInt(poolMetadataSize.slice(0, -1)) > parseInt(inThinp.poolmetadatasize.slice(0, -1))) {
+                  hostVars.gluster_infra_thinpools[index]['poolmetadatasize'] = poolMetadataSize
+                }
+              });
+              if(count == 0){
+                hostVars.gluster_infra_thinpools.push({
+                  vgname: vgName,
+                  thinpoolname: thinpoolName,
+                  poolmetadatasize: poolMetadataSize
+                });
+              }
+            } else {
+              hostVars.gluster_infra_thinpools.push({
+                vgname: vgName,
+                thinpoolname: thinpoolName,
+                poolmetadatasize: poolMetadataSize
+              });
+            }
+
             isThinpoolCreated = true;
           }
 
