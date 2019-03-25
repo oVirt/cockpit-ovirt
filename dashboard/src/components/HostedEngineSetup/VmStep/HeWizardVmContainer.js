@@ -83,6 +83,7 @@ class HeWizardVmContainer extends Component {
     handleRootPwdUpdate(pwd) {
         const config = this.state.heSetupModel.vm;
         config.cloudinitRootPwd.value = pwd;
+        this.validateConfigUpdate("cloudinitRootPwd", config);
         this.setState({ config });
     }
 
@@ -270,7 +271,7 @@ class HeWizardVmContainer extends Component {
         errorMsg = "";
 
         let errorMsgs = this.state.errorMsgs;
-        errorMsgs.gateway = "";
+        delete errorMsgs.gateway;
 
         let gatewayState = this.state.gatewayState;
         gatewayState = status.POLLING;
@@ -315,14 +316,14 @@ class HeWizardVmContainer extends Component {
 
     validateConfigUpdate(propName, config) {
         let errorMsg = this.state.errorMsg;
-        const errorMsgs = {};
+        const errorMsgs = this.state.errorMsgs;
         const prop = config[propName];
         const propErrorMsg = getErrorMsgForProperty(prop);
 
         if (propErrorMsg !== "") {
             errorMsgs[propName] = propErrorMsg;
         } else {
-            errorMsg = "";
+            delete errorMsgs[propName];
         }
 
         if (propName === "cpu") {
@@ -335,6 +336,10 @@ class HeWizardVmContainer extends Component {
 
         if (propName === "cloudinitVMStaticCIDR" || propName === "cloudinitVMStaticCIDRPrefix") {
             this.validateVmCidr(errorMsgs, propName, config);
+        }
+
+        if (Object.keys(errorMsgs).length === 0 ){
+            errorMsg = "";
         }
 
         this.setState({ errorMsg, errorMsgs });
@@ -478,7 +483,7 @@ class HeWizardVmContainer extends Component {
             return false;
         }
 
-        let errorMsgs = {};
+        let errorMsgs = this.state.errorMsgs;
         if (hostFqdnInvalid) {
             errorMsgs.host_name = fqdnData.host.errorMsg;
             collapsibleSections.advanced = false;
@@ -489,7 +494,8 @@ class HeWizardVmContainer extends Component {
         }
 
         const propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs) &&
-            this.state.gatewayState !== status.FAILURE && !hostFqdnInvalid;
+            this.state.gatewayState !== status.FAILURE && !hostFqdnInvalid &&
+            Object.keys(errorMsgs).length === 0;
 
         let errorMsg = "";
         if (!propsAreValid) {

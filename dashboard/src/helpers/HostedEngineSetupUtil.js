@@ -586,7 +586,7 @@ export class HeSetupModel {
                     reviewOrder: 10,
                     uiStage: "VM",
                     useInAnswerFile: true,
-                    required: false,
+                    required: true,
                     regex: Validation.macAddress,
                     errorMsg: "Invalid format for MAC address"
                 },
@@ -768,7 +768,7 @@ export class HeSetupModel {
                     reviewOrder: 70,
                     uiStage: "VM",
                     useInAnswerFile: false,
-                    required: false
+                    required: true
                 },
                 rootSshPubkey: {
                     name: "rootSshPubkey",
@@ -933,7 +933,7 @@ export class HeSetupModel {
                     reviewOrder: 0,
                     uiStage: "Engine",
                     useInAnswerFile: false,
-                    required: false
+                    required: true
                 },
                 enableLibgfapi: {
                     name: "enableLibgfapi",

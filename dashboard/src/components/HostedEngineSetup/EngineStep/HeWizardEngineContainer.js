@@ -37,6 +37,7 @@ class HeWizardEngineContainer extends Component {
     handleAdminPortalPwdUpdate(pwd) {
         const config = this.state.heSetupModel.engine;
         config.adminPassword.value = pwd;
+        this.validateConfigUpdate("adminPassword", config);
         this.setState({ config });
     }
 
@@ -55,13 +56,17 @@ class HeWizardEngineContainer extends Component {
 
     validateConfigUpdate(propName, config) {
         let errorMsg = this.state.errorMsg;
-        const errorMsgs = {};
+        const errorMsgs = this.state.errorMsgs;
         const prop = config[propName];
         const propErrorMsg = getErrorMsgForProperty(prop);
 
         if (propErrorMsg !== "") {
             errorMsgs[propName] = propErrorMsg;
         } else {
+            delete errorMsgs[propName];
+        }
+
+        if (Object.keys(errorMsgs).length === 0 ){
             errorMsg = "";
         }
 
@@ -69,10 +74,11 @@ class HeWizardEngineContainer extends Component {
     }
 
     validateAllInputs() {
-        let errorMsg = "";
-        let errorMsgs = {};
-        let propsAreValid = validatePropsForUiStage("Engine", this.props.heSetupModel, errorMsgs);
+        let errorMsgs = this.state.errorMsgs;
+        let propsAreValid = validatePropsForUiStage("Engine", this.props.heSetupModel, errorMsgs) &&
+        Object.keys(errorMsgs).length === 0;
 
+        let errorMsg = "";
         if (!propsAreValid) {
             errorMsg = messages.GENERAL_ERROR_MSG;
         }
