@@ -538,13 +538,14 @@ var AnsibleUtil = {
       groupVars.gluster_features_hci_volumes = [];
       for(let volumeIndex = 0; volumeIndex < volumes.length;volumeIndex++){
         let volume = volumes[volumeIndex];
+        let arbiter = 0
         if(volume.is_arbiter) {
-          volume.is_arbiter = 1
+          arbiter = 1
         }
         groupVars.gluster_features_hci_volumes.push({
           volname: volume.name,
           brick: volume.brick_dir,
-          arbiter: volume.is_arbiter
+          arbiter: arbiter
         });
       }
       groups.hc_nodes.vars = groupVars;
@@ -881,6 +882,32 @@ var AnsibleUtil = {
       }).fail(function(code){
         callback(false)
       })
+    },
+    createExpandClusterConfig(glusterModel, expandClusterConfigFilePath){
+      const that = this
+      let filePath = expandClusterConfigFilePath
+        var configString = "[hosts]" + "\n"
+        for (var i = 0; i < glusterModel.hosts.length; i++) {
+          configString += glusterModel.hosts[i] + "\n"
+        }
+        that.handleDirAndFileCreation(filePath, configString, function(result){
+          console.log("Result after creating expand cluster config file: ", result);
+        })
+    },
+    runExpandCluster(callBack){
+      const options = { "environ": ["ANSIBLE_INVENTORY_UNPARSED_FAILED=true"] };
+      let cmd = ["/root/../usr/bin/ansible-playbook",
+         constants.expandClusterPlayBook,
+         "-i",
+         constants.expandClusterConfigFilePath
+       ];
+       cockpit.spawn(cmd, options)
+       .done(function(code) {
+         callBack(true)
+       })
+       .fail(function(code) {
+         callBack(false)
+       })
     }
 }
 

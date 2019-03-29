@@ -106,6 +106,7 @@ class AnsibleSetup extends Component {
             isDeploymentStarted={this.state.isDeploymentStarted}
             isRhvhSystem={this.state.isRhvhSystem}
             isSingleNode={this.props.isSingleNode}
+            expandClusterConfigFilePath={CONFIG_FILES.expandClusterConfigFile}
             />)
         return (
             <Wizard title={this.state.title} onClose={this.props.onClose}
