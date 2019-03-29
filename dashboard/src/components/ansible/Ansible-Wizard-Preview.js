@@ -30,6 +30,9 @@ class WizardPreviewStep extends Component {
                 isChanged: false
             })
             const that = this
+            if (that.props.ansibleWizardType === "expand_cluster") {
+              AnsibleUtil.createExpandClusterConfig(that.props.glusterModel, CONFIG_FILES.expandClusterConfigFilePath)
+            }
             AnsibleUtil.createAnsibleConfig(that.props.glusterModel,
                 CONFIG_FILES.ansibleInventoryFile,
                 that.props.ansibleWizardType,
@@ -165,6 +168,11 @@ class WizardPreviewStep extends Component {
         AnsibleUtil.writeConfigFile(filePath, this.state.ansibleConfig, function (result) {
             console.log("Result after editing and saving config file: ", result)
         })
+        if(this.props.ansibleWizardType === "expand_cluster") {
+          AnsibleUtil.createExpandClusterConfig(this.props.glusterModel, this.props.expandClusterConfigFilePath, function (result) {
+              console.log("Result after editing and saving ExpandClusterConfigFile: ", result);
+          })
+        }
     }
     handleVerbosity(value) {
       if(value) {

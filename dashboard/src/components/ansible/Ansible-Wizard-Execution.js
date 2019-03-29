@@ -46,17 +46,28 @@ class WizardExecutionStep extends Component {
       let filePath = CONFIG_FILES.ansibleInventoryFile
       if(this.props.ansibleWizardType == "expand_volume") {
         filePath = CONFIG_FILES.ansibleExpandVolumeInventoryFile
-      } else {
-        filePath = CONFIG_FILES.ansibleInventoryFile
       }
-      AnsibleUtil.runAnsiblePlaybook(that.props.isVerbosityEnabled, filePath, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
-        that.setState({ ansibleStatus: 1 })
-        if(response === true){
-          that.ansibleDone()
-        } else {
-          that.ansibleFail(response)
-        }
-      })
+      if(that.props.ansibleWizardType === "expand_cluster"){
+        AnsibleUtil.runExpandCluster(function(response) {
+          AnsibleUtil.runAnsiblePlaybook(that.props.isVerbosityEnabled, CONFIG_FILES.ansibleInventoryFile, that.ansibleStdout, that.ansibleDone, that.ansibleFail, function(response) {
+            that.setState({ ansibleStatus: 1 })
+            if(response === true){
+              that.ansibleDone()
+            } else {
+              that.ansibleFail(response)
+            }
+          })
+        })
+      } else {
+        AnsibleUtil.runAnsiblePlaybook(that.props.isVerbosityEnabled, filePath, that.ansibleStdout, that.ansibleDone, that.ansibleFail, function(response) {
+          that.setState({ ansibleStatus: 1 })
+          if(response === true){
+            that.ansibleDone()
+          } else {
+            that.ansibleFail(response)
+          }
+        })
+      }
     }
     runCleanUpPlaybook(){
       const that = this;

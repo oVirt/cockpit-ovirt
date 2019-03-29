@@ -1,0 +1,9 @@
+---
+- name: Add nodes to trusted storage pool
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create a trusted storage pool
+      command: gluster peer probe {{ item }} --mode=script
+      with_items: "{{ groups['hosts'] }}"
+      run_once: true

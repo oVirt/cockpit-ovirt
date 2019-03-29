@@ -14,4 +14,6 @@ export const CONFIG_FILES = {
     glusterDeploymentLog: "/var/log/cockpit/ovirt-dashboard/gluster-deployment.log",
     glusterCleanupPlayBook: '/etc/ansible/roles/gluster.ansible/playbooks/hc-ansible-deployment/tasks/gluster_cleanup.yml',
     glusterDeploymentCleanUpLog: "/var/log/cockpit/ovirt-dashboard/gluster-deployment_cleanup.log",
+    expandClusterPlayBook: '/usr/share/cockpit/ovirt-dashboard/ansible/expandCluster.yml',
+    expandClusterConfigFilePath: '/etc/ansible/expand_cluster_hosts'
 }
