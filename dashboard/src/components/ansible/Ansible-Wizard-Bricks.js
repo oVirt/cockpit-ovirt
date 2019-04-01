@@ -247,8 +247,10 @@ class WizardBricksStep extends Component {
         if(value == "JBOD") {
           raidConfig["stripeSize"] = ""
           raidConfig["diskCount"] = ""
+        } else if (value == "RAID5" || value == "RAID6"){
+          raidConfig["stripeSize"] = "256"
+          raidConfig["diskCount"] = "12"
         }
-        console.log("raidConfig: ", raidConfig);
         this.validateRaidConfig(raidConfig, errorMsgs)
         this.setState({ raidConfig, errorMsgs })
     }
