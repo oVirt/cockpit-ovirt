@@ -1,3 +1,5 @@
+import React from 'react'
+
 export const configValues = {
     ANSWER_FILE_PATH_PREFIX: "/var/lib/ovirt-hosted-engine-setup/cockpit/",
     ANSWER_FILE_PATH: "/tmp/he-setup-answerfile.conf",
@@ -240,3 +242,23 @@ export const fqdnValidationTypes = {
     HOST: "host",
     VM: "vm"
 };
+
+export const InvalidNetworkInterfacesMsg = () => {
+    return (
+        <div>
+            <strong> No valid network interface has been found </strong>
+            <br />
+            <strong> If you are using Bonds or VLANs Use the following naming conventions: </strong>
+            <br />
+            - VLAN interfaces: physical_device.VLAN_ID (for example, eth0.23, eth1.128, enp3s0.50)
+            <br />
+            - Bond interfaces: bond*number* (for example, bond0, bond1)
+            <br />
+            - VLANs on bond interfaces: bond*number*.VLAN_ID (for example, bond0.50, bond1.128)
+            <br />
+            * Supported bond modes: active-backup, balance-xor, broadcast, 802.3ad
+            <br />
+            * Networking teaming is not supported and will cause errors
+        </div>
+    )
+}

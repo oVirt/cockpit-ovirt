@@ -1,5 +1,5 @@
 import React from 'react'
-import {deploymentTypes, status, messages, ansiblePhases, wizardSections as sectNames, headers} from '../constants'
+import {deploymentTypes, status, messages, ansiblePhases, wizardSections as sectNames, headers, InvalidNetworkInterfacesMsg} from '../constants'
 import HeWizardNetworkContainer from '../NetworkStep/HeWizardNetworkContainer'
 import HeWizardEngineContainer from '../EngineStep/HeWizardEngineContainer'
 import HeWizardStorageContainer from '../StorageStep/HeWizardStorageContainer'
@@ -11,7 +11,7 @@ import AnsiblePhasePreviewContainer from "../AnsiblePhasePreview/AnsiblePhasePre
 
 const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleFinish, handleRedeploy, heSetupModel, isDeploymentStarted,
                            loadingState, onSuccess, onStepChange, setup, sufficientMemAvail, systemData, libvirtRunning, virtSupported,
-                           systemDataRetrieved, gDeployAnswerFilePaths, showWizard}) => {
+                           systemDataRetrieved, gDeployAnswerFilePaths, showWizard, networkIfacesRetrieved}) => {
     return (
         <div id="wizard-outer-div" style={showWizard ? {} : {display: 'none'}}>
             {loadingState === status.POLLING &&
@@ -114,6 +114,12 @@ const HeSetupWizard = ({abortCallback, defaultsProvider, deploymentType, handleF
                                 <span className="pficon pficon-error-circle-o" />
                                 <strong>{ messages.SYS_DATA_UNRETRIEVABLE }</strong>
                             </div>
+                            {!networkIfacesRetrieved &&
+                                <div className="alert alert-warning he-warning-msg">
+                                    <span className="pficon pficon-warning-triangle-o" />
+                                    <InvalidNetworkInterfacesMsg />
+                                </div>
+                            }
                         </div>
                     }
 

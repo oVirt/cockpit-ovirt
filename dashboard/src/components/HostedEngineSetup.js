@@ -169,10 +169,13 @@ class HostedEngineSetup extends Component {
                 gDeployAnswerFilePaths={this.state.answerFiles}
                 onSuccess={this.startSetup}
                 showWizard={!this.state.closeRequestRecvd}
-                onClose={this.abortCallback} />
-            <span style={this.state.closeRequestRecvd ? {} : {display: 'none'}}>
-              <CloseWizardConfirmationDialog closeSelectionHandler={this.handleCloseSelection} />
-            </span>
+                onClose={this.abortCallback}
+                />
+            {this.state.closeRequestRecvd &&
+              <span>
+                <CloseWizardConfirmationDialog closeSelectionHandler={this.handleCloseSelection} />
+              </span>
+            }
           </span>
         }
         {this.state.state === heSetupState.GLUSTER_CONFIG_CHOICE_REQD &&
