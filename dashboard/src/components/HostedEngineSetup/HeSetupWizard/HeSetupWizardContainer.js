@@ -13,7 +13,8 @@ class HeSetupWizardContainer extends Component {
             isDeploymentStarted: false,
             heSetupModel: null,
             gDeployAnswerFilePaths: this.props.gDeployAnswerFilePaths,
-            systemData: null
+            systemData: null,
+            networkIfacesRetrieved: null
         };
 
         this.state.heSetupModel = new HeSetupModel();
@@ -63,7 +64,11 @@ class HeSetupWizardContainer extends Component {
             loadingStatus = status.FAILURE;
         }
 
-        this.setState({ loadingState: loadingStatus, systemData: systemData });
+        this.setState({
+            loadingState: loadingStatus,
+            systemData: systemData,
+            networkIfacesRetrieved, networkIfacesRetrieved
+        });
     }
 
     handleFinish() {
@@ -117,7 +122,8 @@ class HeSetupWizardContainer extends Component {
                 sufficientMemAvail={this.sufficientMemAvail}
                 gDeployAnswerFilePaths={this.state.gDeployAnswerFilePaths}
                 deploymentType={this.props.deploymentType}
-                showWizard={this.props.showWizard} />
+                showWizard={this.props.showWizard}
+                networkIfacesRetrieved={this.state.networkIfacesRetrieved} />
         )
     }
 }
