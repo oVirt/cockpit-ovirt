@@ -272,7 +272,7 @@ const DeploymentOptionPanel = ({iconType, mainText, subText, buttonText, buttonC
      <div className="deployment-option-panel-sub-text">
        <h5>{subText}</h5>
      </div>
-     <button className="btn btn-primary" onClick={() => buttonCallback(deploymentTypeOption)}>
+     <button id="he-wizard-btn" className="btn btn-primary" onClick={() => buttonCallback(deploymentTypeOption)}>
        {buttonText}
      </button>
    </span>

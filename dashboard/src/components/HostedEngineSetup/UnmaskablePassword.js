@@ -32,7 +32,8 @@ class UnmaskablePasswordContainer extends Component {
                 <input type={this.state.inputType}
                        value={this.props.value}
                        onChange={e => this.changeHandler(e)}
-                       className="form-control" />
+                       className="form-control"
+                       id={this.props.id} />
 
                 <a onClick={() => this.toggleMask()}>
                     <i className={this.state.maskIconClasses} aria-hidden="true" />
