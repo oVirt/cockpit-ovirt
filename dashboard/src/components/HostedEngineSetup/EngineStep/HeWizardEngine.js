@@ -16,7 +16,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                 {errorMsg &&
                 <div className="row" style={{marginLeft: "40px"}}>
                     <div className="alert alert-danger col-sm-8">
-                        <span className="pficon pficon-error-circle-o" />
+                        <span className="pficon pficon-error-circle-o" id="he-errors-on-page-err"/>
                         <strong>{errorMsg}</strong>
                     </div>
                 </div>
@@ -47,8 +47,9 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                     <label className="col-md-3 control-label">Admin Portal Password</label>
                     <div className="col-md-3">
                         <UnmaskablePasswordContainer value={engineConfig.adminPassword.value}
-                                                     onChangeHandler={handleAdminPortalPwdUpdate}/>
-                        {errorMsgs.adminPassword && <span className="help-block">{errorMsgs.adminPassword}</span>}
+                                                     onChangeHandler={handleAdminPortalPwdUpdate}
+                                                     id="he-admin-password-input"/>
+                        {errorMsgs.adminPassword && <span className="help-block" id="he-admin-password-err">{errorMsgs.adminPassword}</span>}
                     </div>
                 </div>
 
@@ -67,6 +68,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                                className="form-control"
                                value={notificationsConfig.smtpServer.value}
                                onChange={(e) => handleEngineConfigUpdate("smtpServer", e.target.value, "notifications")}
+                               id="he-notification-server-input"
                         />
                         {errorMsgs.smtpServer && <span className="help-block">{errorMsgs.smtpServer}</span>}
                     </div>
@@ -81,6 +83,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                                className="form-control"
                                value={notificationsConfig.smtpPort.value}
                                onChange={(e) => handleEngineConfigUpdate("smtpPort", e.target.value, "notifications")}
+                               id="he-notification-smtp-port-input"
                         />
                         {errorMsgs.smtpPort && <span className="help-block">{errorMsgs.smtpPort}</span>}
                     </div>
@@ -95,6 +98,7 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                                className="form-control"
                                value={notificationsConfig.sourceEmail.value}
                                onChange={(e) => handleEngineConfigUpdate("sourceEmail", e.target.value, "notifications")}
+                               id="he-sender-email-input"
                         />
                         {errorMsgs.sourceEmail && <span className="help-block">{errorMsgs.sourceEmail}</span>}
                     </div>

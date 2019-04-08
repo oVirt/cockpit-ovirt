@@ -72,7 +72,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
         <div>
             <form className="form-horizontal he-form-container">
                 {errorMsg &&
-                <div className="row">
+                <div className="row" id="he-errors-on-page-err">
                     <div className="alert alert-danger col-sm-11">
                         <span className="pficon pficon-error-circle-o" />
                         <strong>{errorMsg}</strong>
@@ -81,7 +81,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                 }
 
                 {vmConfig.vmMemSizeMB.range.max < 4096 &&
-                <div className="row">
+                <div className="row" id="he-not-enough-memory-warn">
                     <div className="alert alert-warning col-sm-11">
                         <span className="pficon pficon-warning-triangle-o" />
                         <strong>{memWarningMessage}</strong>
@@ -90,7 +90,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                 }
 
                 {warningMsgs.fqdnValidationInProgress &&
-                <div className="row">
+                <div className="row" id="he-validating-fqdn-warn">
                     <div className="alert alert-warning col-sm-11">
                         <span className="pficon pficon-warning-triangle-o" />
                         <strong>{warningMsgs.fqdnValidationInProgress}</strong>
@@ -99,7 +99,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                 }
 
                 {warningMsgs.host_name &&
-                <div className="row">
+                <div className="row" id="he-invalid-host-fqdn-warn">
                     <div className="alert alert-warning col-sm-11">
                         <span className="pficon pficon-warning-triangle-o" />
                         <strong>{warningMsgs.host_name}</strong>
@@ -108,7 +108,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                 }
 
                 {warningMsgs.fqdn &&
-                <div className="row">
+                <div className="row" id="he-invalid-engine-fqdn-warn">
                     <div className="alert alert-warning col-sm-11">
                         <span className="pficon pficon-warning-triangle-o" />
                         <strong>{warningMsgs.fqdn}</strong>
@@ -155,6 +155,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                value={networkConfig.fqdn.value}
                                onChange={(e) => handleVmConfigUpdate("fqdn", e.target.value, "network")}
                                onBlur={() => validateFqdn(fqdnTypes.VM)}
+                               id="he-engine-fqdn-input"
                         />
                         <div className="fqdn-status-container">
                             {fqdnValidationData.vm.state === status.SUCCESS && <span className="fqdn-status-icon pficon pficon-ok"/>}
@@ -164,9 +165,9 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                             <span className="field-validation-spinner-container">
                                 <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
                             </span>
-                            <span className="help-block"> {validatingFQDN} </span>
+                            <span className="help-block" id="he-validating-engine-fqdn-msg"> {validatingFQDN} </span>
                         </span>
-                        {errorMsgs.fqdn && <span className="help-block">{errorMsgs.fqdn}</span>}
+                        {errorMsgs.fqdn && <span className="help-block" id="he-invalid-engine-fqdn-err">{errorMsgs.fqdn}</span>}
                     </div>
                 </div>
 
@@ -180,6 +181,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                className="form-control"
                                value={vmConfig.vmMACAddr.value}
                                onChange={(e) => handleVmConfigUpdate("vmMACAddr", e.target.value, "vm")}
+                               id="he-engine-mac-address-input"
                         />
                         {errorMsgs.vmMACAddr && <span className="help-block">{errorMsgs.vmMACAddr}</span>}
                     </div>
@@ -233,7 +235,9 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                    className="form-control"
                                    value={vmConfig.cloudinitVMStaticCIDR.value}
                                    onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDR", e.target.value, "vm")}
-                                   onBlur={(e) => verifyReverseDns(e.target.value)} />
+                                   onBlur={(e) => verifyReverseDns(e.target.value)}
+                                   id="he-static-ip-address-input" />
+
                             &nbsp;/&nbsp;
                             <span className={cidrPrefixClasses} id="he-wizard-cidr-container">
                                 <input id="he-wizard-cidr"
@@ -241,7 +245,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                        placeholder="24"
                                        className="form-control"
                                        value={vmConfig.cloudinitVMStaticCIDRPrefix.value}
-                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDRPrefix", e.target.value, "vm")} />
+                                       onChange={(e) => handleVmConfigUpdate("cloudinitVMStaticCIDRPrefix", e.target.value, "vm")}
+                                />
                             </span>
                             {(errorMsgs.cloudinitVMStaticCIDRPrefix || errorMsgs.cloudinitVMStaticCIDR) &&
                                 <span className="has-error">
@@ -259,12 +264,13 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                    className="form-control"
                                    value={networkConfig.gateway.value}
                                 // onBlur={(e) => this.checkGatewayPingability(e.target.value)}
-                                   onChange={(e) => handleVmConfigUpdate("gateway", e.target.value, "network")} />
-                            {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
+                                   onChange={(e) => handleVmConfigUpdate("gateway", e.target.value, "network")}
+                                   id="he-static-ip-gateway-input" />
+                            {errorMsgs.gateway && <span className="help-block" id="he-static-ip-invalid-gateway">{errorMsgs.gateway}</span>}
                             {gatewayPingPending &&
                             <div className="gateway-message-container">
                                 <span><div className="spinner" /></span>
-                                <span className="gateway-message">Verifying IP address...</span>
+                                <span className="gateway-message" id="he-static-ip-verifying-gateway">Verifying IP address...</span>
                             </div>
                             }
                         </div>
@@ -305,7 +311,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                     <label className="col-md-3 control-label">Root Password</label>
                     <div className="col-md-3">
                         <UnmaskablePasswordContainer value={vmConfig.cloudinitRootPwd.value}
-                                                     onChangeHandler={handleRootPwdUpdate}/>
+                                                     onChangeHandler={handleRootPwdUpdate}
+                                                     id="he-cloudinit-root-pwd-input"/>
                         {errorMsgs.cloudinitRootPwd && <span className="help-block">{errorMsgs.cloudinitRootPwd}</span>}
                     </div>
                 </div>
@@ -331,6 +338,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                className="form-control"
                                value={vmConfig.vmVCpus.value}
                                onChange={(e) => handleVmConfigUpdate("vmVCpus", e.target.value, "vm")}
+                               id="he-vcpus-number-input"
                         />
                         {errorMsgs.vmVCpus && <span className="help-block">{errorMsgs.vmVCpus}</span>}
                     </div>
@@ -347,6 +355,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                className="form-control he-mem-input"
                                value={vmConfig.vmMemSizeMB.value}
                                onChange={(e) => handleVmConfigUpdate("vmMemSizeMB", e.target.value, "vm")}
+                               id="he-memory-size-input"
                         />
                         <span className="info-block">{vmConfig.vmMemSizeMB.range.max.toLocaleString()}MB available</span>
                         {errorMsgs.vmMemSizeMB && <span className="help-block">{errorMsgs.vmMemSizeMB}</span>}
@@ -398,7 +407,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                             <span className={advancedSectionIconClasses} />
                             <h3 className="he-wizard-collapsible-section-header">
                                 <a className="he-wizard-collapse-section-link"
-                                   onClick={(e) => handleCollapsibleSectionChange("advanced")}>
+                                   onClick={(e) => handleCollapsibleSectionChange("advanced")}
+                                   id="he-advanced-menu">
                                     Advanced
                                 </a>
                             </h3>
@@ -413,6 +423,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                               rows={"2"}
                                               value={vmConfig.rootSshPubkey.value}
                                               onChange={(e) => handleVmConfigUpdate("rootSshPubkey", e.target.value, "vm")}
+                                              id="he-ssh-pubkey-input"
                                     />
                                 {errorMsgs.rootSshPubkey && <span className="help-block">{errorMsgs.rootSshPubkey}</span>}
                             </div>
@@ -429,6 +440,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                 <input type="checkbox"
                                        checked={vmConfig.cloudinitVMETCHOSTS.value}
                                        onChange={(e) => handleVmConfigUpdate("cloudinitVMETCHOSTS", e.target.checked, "vm")}
+                                       id="he-edit-etc-hosts-chkbox"
                                 />
                             </div>
                         </div>
@@ -440,7 +452,8 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                    title="Enter the bridge name."
                                    className="form-control"
                                    value={networkConfig.bridgeName.value}
-                                   onChange={(e) => handleVmConfigUpdate("bridgeName", e.target.value, "network")} />
+                                   onChange={(e) => handleVmConfigUpdate("bridgeName", e.target.value, "network")}
+                                   id="he-bridge-name-input"/>
                                 {errorMsgs.bridgeName && <span className="help-block">{errorMsgs.bridgeName}</span>}
                             </div>
                         </div>
@@ -453,12 +466,13 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                        className="form-control"
                                        value={networkConfig.gateway.value}
                                     // onBlur={(e) => this.checkGatewayPingability(e.target.value)}
-                                       onChange={(e) => handleVmConfigUpdate("gateway", e.target.value, "network")} />
-                                {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
+                                       onChange={(e) => handleVmConfigUpdate("gateway", e.target.value, "network")}
+                                       id="he-default-gateway-input" />
+                                {errorMsgs.gateway && <span className="help-block" id="he-invalid-default-gateway-err">{errorMsgs.gateway}</span>}
                                 {gatewayPingPending &&
                                    <div className="gateway-message-container">
                                        <span><div className="spinner" /></span>
-                                       <span className="gateway-message">Verifying IP address...</span>
+                                       <span className="gateway-message" id="he-verifying-default-gateway-msg">Verifying IP address...</span>
                                    </div>
                                 }
                             </div>
@@ -505,18 +519,19 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                        value={networkConfig.host_name.value}
                                        onChange={(e) => handleVmConfigUpdate("host_name", e.target.value, "network")}
                                        onBlur={() => validateFqdn(fqdnTypes.HOST)}
+                                       id="he-host-fqdn-input"
                                 />
                                 <div className="fqdn-status-container">
                                     {fqdnValidationData.host.state === status.SUCCESS && <span className="fqdn-status-icon pficon pficon-ok"/>}
                                     {fqdnValidationData.host.state === status.FAILURE && <span className="fqdn-status-icon pficon pficon-error-circle-o"/>}
                                 </div>
-                                <span className={fqdnValidationData.host.state === status.POLLING ? "" : "hidden"}>
+                                <span className={fqdnValidationData.host.state === status.POLLING ? "" : "hidden"} id="he-validating-host-fqdn-msg">
                                     <span className="field-validation-spinner-container">
                                         <div className="spinner spinner-sm blank-slate-pf-icon field-validation-spinner" />
                                     </span>
                                     <span className="help-block"> {validatingFQDN} </span>
                                 </span>
-                                {errorMsgs.host_name && <span className="help-block">{errorMsgs.host_name}</span>}
+                                {errorMsgs.host_name && <span className="help-block" id="he-invalid-host-fqdn-err">{errorMsgs.host_name}</span>}
                             </div>
                         </div>
                     </span>

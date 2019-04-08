@@ -40,6 +40,7 @@ class Sidebar extends Component {
       links.push(
         <SidebarItemWithRouter
           key={link.name}
+          id={link.id}
           name={link.name}
           item={link}
         />
@@ -70,7 +71,7 @@ class SidebarItem extends Component {
     return (
       <li className={isActive ? "active" : ""}>
         <Link to={this.props.item.path}>
-          <span className={itemClasses} />
+          <span className={itemClasses} id={this.props.id}/>
           <br />
           {this.props.name}
         </Link>

@@ -27,7 +27,7 @@ const Selectbox = ({optionList, selectedOption = null, callBack, ansibleWizardTy
             options.push(
                 <li value={option.key} key={option.key}
                     onClick={() => callBack(option.key)}>
-                    <a>
+                    <a id={option.key}>
                       {option.title}
                     </a>
                 </li>
