@@ -1,33 +1,13 @@
-- name: Setup Bricks
+---
+
+# Gluster deployment start here
+- name: Setup backend
   hosts: hc_nodes
   remote_user: root
   gather_facts: yes
   any_errors_fatal: true
   max_fail_percentage: 0
 
-  vars:
-    gluster_features_hci_packages: []
-    gluster_features_hci_cluster: "{{ groups['hc_nodes'] }}"
-    gluster_infra_lv_thinpoolname: gluster_thinpool
-  pre_tasks:
-    - name: Install ansible dependencies
-      package:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - policycoreutils-python
   roles:
-    - gluster.infra
-  tags:
-    - wizard_bricks
-
-
-- name: Deploy HCI
-  hosts: hc_nodes
-  vars:
-
-    gluster_features_hci_cluster: "{{ groups['hc_nodes'] }}"
-  roles:
-    - gluster.features
-  tags:
-    - wizard_volumes
+     - gluster.infra
+     - gluster.features
