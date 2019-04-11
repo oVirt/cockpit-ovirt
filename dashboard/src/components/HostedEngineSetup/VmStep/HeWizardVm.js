@@ -534,6 +534,20 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                 {errorMsgs.host_name && <span className="help-block" id="he-invalid-host-fqdn-err">{errorMsgs.host_name}</span>}
                             </div>
                         </div>
+                        <div className="form-group">
+                            <label className="col-md-3 control-label">Apply OpenSCAP profile
+                                <i className="pficon pficon-info he-wizard-info-icon" rel="tooltip" id="hosts_file"
+                                   title="Apply a default OpenSCAP security profile on the engine VM"
+                                />
+                            </label>
+                            <div className="col-md-5">
+                                <input type="checkbox"
+                                       checked={vmConfig.applyOpenSCAP.value}
+                                       onChange={(e) => handleVmConfigUpdate("applyOpenSCAP", e.target.checked, "vm")}
+                                       id="he-apply-openscap-chkbox"
+                                />
+                            </div>
+                        </div>
                     </span>
                 </div>
             </form>
