@@ -809,6 +809,18 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: false
                 },
+                applyOpenSCAP: {
+                    name: "applyOpenSCAP",
+                    ansibleVarName: "he_apply_openscap_profile",
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
+                    description: "Apply OpenSCAP profile",
+                    value: false,
+                    type: types.BOOLEAN,
+                    showInReview: true,
+                    uiStage: "VM",
+                    useInAnswerFile: true,
+                    required: false
+                },
                 cdromUUID: {
                     name: "cdromUUID",
                     ansibleVarName: "he_cdrom_uuid",
