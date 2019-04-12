@@ -8,7 +8,8 @@ export const configValues = {
     APPLIANCE_PATH_PREFIX: "/usr/share/ovirt-engine-appliance/",
     ANSIBLE_VAR_FILE_PATH_PREFIX: "/var/lib/ovirt-hosted-engine-setup/cockpit/",
     ANSIBLE_OUTPUT_DIR: "/var/tmp/ovirt-hosted-engine-setup/cockpit/",
-    ANSIBLE_LOG_DIR: "/var/log/ovirt-hosted-engine-setup/"
+    ANSIBLE_LOG_DIR: "/var/log/ovirt-hosted-engine-setup/",
+    NETWORK_TEST_TIMEOUT: 2
 };
 
 export const ansiblePhases = {
@@ -132,6 +133,8 @@ export const messages = {
     GENERAL_ERROR_MSG: "Please correct errors before moving to the next step.",
     PASSWORD_MISMATCH: "Passwords do not match",
     IP_NOT_PINGABLE: "Unable to ping address. Please enter a pingable address.",
+    DNS_RESOLVE_FAILED: "Unable to resolve via DNS.",
+    TCP_CONNECT_FAILED: "Unable to connect via TCP",
     // Displayed when detected CPU model isn't recognized
     DETECTED_CPU_NOT_FOUND: "Unable to determine CPU level. Please select the CPU model the host CPU can properly emulate.",
     // Displayed when detected CPU model is known, but not supported by ovirt-hosted-engine-setup
