@@ -315,6 +315,10 @@ export class DefaultValueProvider {
         return ipData !== null ? ipData["gateway"] : "";
     }
 
+    getDefaultNetworkTest() {
+        return "dns";
+    }
+
     getIpDataDefaultRoute() {
         let ipData = null;
         const ansibleFacts = this.getTaskData("Gathering Facts")["ansible_facts"];

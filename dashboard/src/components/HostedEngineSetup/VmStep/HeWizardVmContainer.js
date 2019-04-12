@@ -7,7 +7,7 @@ import {
     messages, resourceConstants, status
 } from '../constants'
 import HeWizardVm from './HeWizardVm'
-import { pingGateway } from '../../../helpers/HostedEngineSetupUtil'
+import { checkRootDns, checkTcpConnect, pingGateway } from '../../../helpers/HostedEngineSetupUtil'
 
 const defaultAppliances = [
     { key: "Manually Select", title: "Manually Select" }
@@ -27,6 +27,7 @@ class HeWizardVmContainer extends Component {
             appliances: defaultAppliances,
             cpuArch: {},
             gatewayState: status.EMPTY,
+            networkTestState: status.EMPTY,
             interfaces: defaultInterfaces,
             errorMsg: "",
             errorMsgs: {},
@@ -41,6 +42,9 @@ class HeWizardVmContainer extends Component {
         };
 
         this.lastGatewayAddress = "";
+        this.lastNetworkTest = "";
+        this.lastTcpTAddress = "";
+        this.lastTcpTPort = "";
 
         this.handleDnsAddressDelete = this.handleDnsAddressDelete.bind(this);
         this.handleDnsAddressUpdate = this.handleDnsAddressUpdate.bind(this);
@@ -61,6 +65,7 @@ class HeWizardVmContainer extends Component {
         this.getCidrErrorMsg = this.getCidrErrorMsg.bind(this);
         this.validateVmCidr = this.validateVmCidr.bind(this);
         this.validateFqdn = this.validateFqdn.bind(this);
+        this.validateNetworkTest = this.validateNetworkTest.bind(this);
         this.validateCpuModelSelection = this.validateCpuModelSelection.bind(this);
         this.validateAllInputs = this.validateAllInputs.bind(this);
         this.fqdnValidationInProgress = this.fqdnValidationInProgress.bind(this);
@@ -120,6 +125,7 @@ class HeWizardVmContainer extends Component {
         heSetupModel.network.bridgeIf.showInReview = networkInterfaces > 1;
         this.handleVmConfigUpdate("bridgeIf", defaultsProvider.getDefaultInterface(), "network");
         this.handleVmConfigUpdate("gateway", defaultsProvider.getDefaultGateway(), "network");
+        this.handleVmConfigUpdate("network_test", defaultsProvider.getDefaultNetworkTest(), "network");
 
         const cpuArch = defaultsProvider.getCpuArchitecture();
         this.setCpuModel(cpuArch, heSetupModel);
@@ -298,6 +304,74 @@ class HeWizardVmContainer extends Component {
             });
     }
 
+    validateNetworkTest(networkConfig, address="") {
+        let errorMsg = this.state.errorMsg;
+        errorMsg = "";
+
+        let errorMsgs = this.state.errorMsgs;
+        delete errorMsgs.network_test;
+
+        let networkTestState = this.state.networkTestState;
+        networkTestState = status.POLLING;
+
+        this.setState({ networkTestState, errorMsg, errorMsgs });
+
+        let networkTest = networkConfig.network_test.value;
+        let tcpTAddress = networkConfig.tcp_t_address.value;
+        let tcpTPort = networkConfig.tcp_t_port.value;
+
+        this.lastNetworkTest = networkTest;
+        this.lastTcpTAddress = tcpTAddress;
+        this.lastTcpTPort = tcpTPort;
+
+        let self = this;
+
+        if (networkConfig.network_test.value === "dns") {
+            checkRootDns()
+                .done(function() {
+                    if (networkTest === self.lastNetworkTest) {
+                        networkTestState = status.SUCCESS;
+                        self.setState({errorMsg, networkTestState});
+                    }
+                })
+                .fail(function() {
+                    if (address === self.lastGatewayAddress) {
+                        errorMsg = messages.GENERAL_ERROR_MSG;
+                        errorMsgs.network_test = messages.DNS_RESOLVE_FAILED;
+                        networkTestState = status.FAILURE;
+                        self.setState({errorMsg, errorMsgs, networkTestState});
+                    }
+                });
+        } else if (networkConfig.network_test.value === "tcp") {
+            checkTcpConnect(tcpTAddress, tcpTPort)
+                .done(function() {
+                    if (networkTest === self.lastNetworkTest &&
+                        tcpTAddress ==  self.lastTcpTAddress &&
+                        tcpTPort == self.lastTcpTPort) {
+                        networkTestState = status.SUCCESS;
+                        self.setState({errorMsg, networkTestState});
+                    }
+                })
+                .fail(function() {
+                    if (networkTest === self.lastNetworkTest &&
+                        tcpTAddress ==  self.lastTcpTAddress &&
+                        tcpTPort == self.lastTcpTPort) {
+                        errorMsg = messages.GENERAL_ERROR_MSG;
+                        errorMsgs.network_test = messages.TCP_CONNECT_FAILED;
+                        networkTestState = status.FAILURE;
+                        self.setState({errorMsg, errorMsgs, networkTestState});
+                    }
+                });
+        } else if (networkConfig.network_test.value === "ping") {
+            self.checkGatewayPingability(networkConfig.gateway.value)
+            networkTestState = status.SUCCESS;
+            self.setState({errorMsg, networkTestState});
+        } else {
+            networkTestState = status.SUCCESS;
+            self.setState({errorMsg, networkTestState});
+        }
+    }
+
     getCidrErrorMsg() {
         const prefixErrorMsg = this.state.errorMsgs.cloudinitVMStaticCIDRPrefix;
         const ipErrorMsg = this.state.errorMsgs.cloudinitVMStaticCIDR;
@@ -330,8 +404,16 @@ class HeWizardVmContainer extends Component {
             this.validateCpuModelSelection(errorMsgs);
         }
 
-        if (propName === "gateway" && propErrorMsg === "") {
+        if (propName === "gateway" && propErrorMsg === "" && config.network_test.value == "ping") {
             this.checkGatewayPingability(prop.value);
+        }
+
+        if (propName == "network_test" || propName == "tcp_t_address" || propName == "tcp_t_port") {
+            if (propName == "tcp_t_address" || propName == "tcp_t_port") {
+                this.validateNetworkTest(config, config["tcp_t_address"].value)
+            } else {
+                this.validateNetworkTest(config)
+            }
         }
 
         if (propName === "cloudinitVMStaticCIDR" || propName === "cloudinitVMStaticCIDRPrefix") {
@@ -495,7 +577,7 @@ class HeWizardVmContainer extends Component {
 
         const propsAreValid = validatePropsForUiStage("VM", this.state.heSetupModel, errorMsgs) &&
             this.state.gatewayState !== status.FAILURE && !hostFqdnInvalid &&
-            Object.keys(errorMsgs).length === 0;
+             Object.keys(errorMsgs).length === 0 && this.state.networkTestState !== status.FAILURE;
 
         let errorMsg = "";
         if (!propsAreValid) {
@@ -535,6 +617,7 @@ class HeWizardVmContainer extends Component {
                 errorMsgs={this.state.errorMsgs}
                 fqdnValidationData={this.state.fqdnValidationData}
                 gatewayState={this.state.gatewayState}
+                networkTestState={this.state.networkTestState}
                 getCidrErrorMsg={this.getCidrErrorMsg}
                 interfaces={this.state.interfaces}
                 handleDnsAddressUpdate={this.handleDnsAddressUpdate}

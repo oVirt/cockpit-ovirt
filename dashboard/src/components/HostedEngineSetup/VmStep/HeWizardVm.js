@@ -23,6 +23,13 @@ const networkConfigTypes = [
     { key: "static", title: "Static" }
 ];
 
+const networkTestTypes = [
+    { key: "dns", title: "DNS" },
+    { key: "ping", title: "Ping" },
+    { key: "tcp", title: "TCP" },
+    { key: "none", title: "None" }
+];
+
 const cloudInitOptions = [
     { key: "generate", "title": "Generate" },
     { key: "existing", "title": "Use Existing" }
@@ -35,7 +42,7 @@ const rootSshAccessOptions = [
 ];
 
 const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch, deploymentType, errorMsg, errorMsgs,
-                        fqdnValidationData, getCidrErrorMsg, gatewayState, interfaces, handleDnsAddressUpdate,
+                        fqdnValidationData, getCidrErrorMsg, gatewayState, networkTestState, interfaces, handleDnsAddressUpdate,
                         handleDnsAddressDelete, handleRootPwdUpdate, handleImportApplianceUpdate, handleVmConfigUpdate,
                         handleCollapsibleSectionChange, heSetupModel, importAppliance, showApplPath, verifyDns,
                         verifyReverseDns, warningMsgs, validateFqdn}) => {
@@ -50,6 +57,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
     const isAnsibleDeployment = deploymentType === deploymentTypes.ANSIBLE_DEPLOYMENT;
     const showCloudInitFields = isAnsibleDeployment || (isOtopiDeployment && vmConfig.cloudInitCustomize.value);
     const gatewayPingPending = gatewayState === status.POLLING;
+    const networkTestPending = networkTestState === status.POLLING;
 
     let advancedSectionIconClasses = "pficon fa he-wizard-collapsible-section-icon ";
     advancedSectionIconClasses += collapsibleSections["advanced"] ? "fa-angle-right" : "fa-angle-down";
@@ -268,9 +276,9 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                    id="he-static-ip-gateway-input" />
                             {errorMsgs.gateway && <span className="help-block" id="he-static-ip-invalid-gateway">{errorMsgs.gateway}</span>}
                             {gatewayPingPending &&
-                            <div className="gateway-message-container">
+                            <div className="validation-message-container">
                                 <span><div className="spinner" /></span>
-                                <span className="gateway-message" id="he-static-ip-verifying-gateway">Verifying IP address...</span>
+                                <span className="validation-message" id="he-static-ip-verifying-gateway">Verifying IP address...</span>
                             </div>
                             }
                         </div>
@@ -470,9 +478,9 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                        id="he-default-gateway-input" />
                                 {errorMsgs.gateway && <span className="help-block" id="he-invalid-default-gateway-err">{errorMsgs.gateway}</span>}
                                 {gatewayPingPending &&
-                                   <div className="gateway-message-container">
+                                   <div className="validation-message-container">
                                        <span><div className="spinner" /></span>
-                                       <span className="gateway-message" id="he-verifying-default-gateway-msg">Verifying IP address...</span>
+                                       <span className="validation-message" id="he-verifying-default-gateway-msg">Verifying IP address...</span>
                                    </div>
                                 }
                             </div>
@@ -548,6 +556,49 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                 />
                             </div>
                         </div>
+                         <div className={getClassNames("network_test", errorMsgs)}>
+                            <label className="col-md-3 control-label">Network Test</label>
+                            <div className="col-md-3">
+                                <Selectbox optionList={networkTestTypes}
+                                       selectedOption={networkConfig.network_test.value}
+                                       callBack={(e) => handleVmConfigUpdate("network_test", e, "network")}
+                                />
+                                {errorMsgs.network_test && <span className="help-block" id="he-invalid-network-test-err">{errorMsgs.network_test}</span>}
+                                    {networkTestPending &&
+                                    <div className="validation-message-container">
+                                        <span className="validation-message">Verifying Network Test...</span>
+                                    </div>
+                                }
+                            </div>
+                         </div>
+                          <div style={networkConfig.network_test.value === "tcp" ? {} : {display: 'none'}}>
+                          <div className="form-group">
+                                <label className="col-md-3 control-label">Address to connect</label>
+                                <div className="col-md-3">
+                                    <input type="text"
+                                           placeholder="1.2.3.4 or example.com"
+                                           title="Enter the desired destination address of the TCP connection test."
+                                           className="form-control"
+                                           value={networkConfig.tcp_t_address.value}
+                                           onChange={(e) => handleVmConfigUpdate("tcp_t_address", e.target.value, "network")}
+                                           id="he-tcp-t-address-input" />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="col-md-3 control-label">Port to connect</label>
+                                <div className="col-md-2">
+                                    <input type="number"
+                                           placeholder="443"
+                                           min="1"
+                                           max="65535"
+                                           title="Enter the desired destination TCP port of the TCP connection test."
+                                           className="form-control"
+                                           value={networkConfig.tcp_t_port.value}
+                                           onChange={(e) => handleVmConfigUpdate("tcp_t_port", e.target.value, "network")}
+                                           id="he-tcp-t-port-input" />
+                                </div>
+                                </div>
+                          </div>
                     </span>
                 </div>
             </form>

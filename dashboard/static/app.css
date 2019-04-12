@@ -421,13 +421,13 @@ div.multi-row-text-box-input {
     width: calc(100% - 70px);
 }
 
-.gateway-message-container {
+.validation-message-container {
     display: table;
     border-collapse: separate;
     border-spacing: 5px;
 }
 
-.gateway-message {
+.validation-message {
     display: table-cell;
     vertical-align: middle
 }

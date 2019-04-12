@@ -75,9 +75,9 @@ const HeWizardNetwork = ({deploymentType, errorMsg, errorMsgs, gatewayState, int
                         />
                         {errorMsgs.gateway && <span className="help-block">{errorMsgs.gateway}</span>}
                         {gatewayPingPending &&
-                        <div className="gateway-message-container">
+                        <div className="validation-message-container">
                             <span><div className="spinner" /></span>
-                            <span className="gateway-message">Verifying IP address...</span>
+                            <span className="validation-message">Verifying IP address...</span>
                         </div>
                         }
                     </div>

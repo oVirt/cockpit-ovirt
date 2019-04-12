@@ -466,6 +466,45 @@ export class HeSetupModel {
                     regex: Validation.ipAddress,
                     errorMsg: "Invalid format for IP address"
                 },
+                network_test: {
+                    name: "network_test",
+                    ansibleVarName: "he_network_test",
+                    ansiblePhasesUsed: [phases.INITIAL_CLEAN, phases.TARGET_VM],
+                    description: "Network Connectivity Check",
+                    value: "dns",
+                    type: types.STRING,
+                    showInReview: true,
+                    reviewOrder: 50,
+                    uiStage: "Network",
+                    useInAnswerFile: true,
+                    required: false,
+                },
+                tcp_t_address: {
+                    name: "tcp_t_address",
+                    ansibleVarName: "he_tcp_t_address",
+                    ansiblePhasesUsed: [phases.INITIAL_CLEAN, phases.TARGET_VM],
+                    description: "Destination hostname or IP address of the TCP connection test",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: true,
+                    reviewOrder: 51,
+                    uiStage: "Network",
+                    useInAnswerFile: true,
+                    required: false,
+                },
+                tcp_t_port: {
+                    name: "tcp_t_port",
+                    ansibleVarName: "he_tcp_t_port",
+                    ansiblePhasesUsed: [phases.INITIAL_CLEAN, phases.TARGET_VM],
+                    description: "Destination port of the TCP connection test",
+                    value: "",
+                    type: types.STRING,
+                    showInReview: true,
+                    reviewOrder: 52,
+                    uiStage: "Network",
+                    useInAnswerFile: true,
+                    required: false,
+                },
                 fqdn: {
                     name: "fqdn",
                     ansibleVarName: "he_fqdn",
@@ -1334,6 +1373,20 @@ export function checkDns(fqdn) {
 
 export function checkReverseDns(ipAddress) {
     return cockpit.spawn(["dig", "-x", ipAddress, "+short"]);
+}
+
+export function checkRootDns(ipAddress) {
+    return cockpit.spawn(["dig", "+tries=1", "+time=" + configValues.NETWORK_TEST_TIMEOUT])
+         .fail(function(result) {
+            console.log("Error: " + result);
+        });
+}
+
+export function checkTcpConnect(tcp_t_address, tcp_t_port) {
+    return cockpit.spawn(["nc", "-w", configValues.NETWORK_TEST_TIMEOUT, "-z", tcp_t_address, tcp_t_port])
+        .fail(function(result) {
+            console.log("Error: " + result);
+        });
 }
 
 export function getClassNames(propertyName, errorMsgs) {
