@@ -2,7 +2,6 @@ autoconf
 automake
 gcc-c++
 git
-python
 rpm-build
 dnf-utils
 dnf

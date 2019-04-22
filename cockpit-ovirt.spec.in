@@ -24,8 +24,6 @@ BuildRequires: nodejs-packaging
 ExclusiveArch: %{nodejs_arches} noarch
 %endif
 
-#This is a hack for copr, but why is it needed?
-BuildRequires: python
 BuildRequires: ovirt-engine-nodejs
 BuildRequires: ovirt-engine-nodejs-modules
 BuildRequires: ovirt-engine-yarn
