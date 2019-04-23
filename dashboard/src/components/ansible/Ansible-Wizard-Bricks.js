@@ -288,8 +288,6 @@ class WizardBricksStep extends Component {
                     currentBrick[property] = value
                     if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported) {
                       brick.thinp = true
-                    } else if(that.props.ansibleWizardType != "setup" && !brick.is_vdo_supported) {
-                      brick.thinp = true
                     }
                   }
                 })
@@ -297,9 +295,7 @@ class WizardBricksStep extends Component {
               else if (brick['device'] == eachBrick.host_bricks[index]['device']) {
                     brick[property] = value
                     if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && brick.is_vdo_supported) {
-                      brick.thinp = false
-                    } else if(that.props.ansibleWizardType != "setup" && brick.is_vdo_supported) {
-                      brick.thinp = false
+                      brick.thinp = true
                     }
                 }
             })
@@ -326,11 +322,6 @@ class WizardBricksStep extends Component {
                         return (brickIndex != index && brick["device"] == device &&  brick["is_vdo_supported"])
                     })
                     bricksList[i].host_bricks[index]["is_vdo_supported"] = isDeviceVdoEnabled
-                    if(isDeviceVdoEnabled) {
-                      bricksList[i].host_bricks[index]["thinp"] = false
-                    } else if(index != 0) {
-                      bricksList[i].host_bricks[index]["thinp"] = true
-                    }
                 }
             }
         }
