@@ -27,3 +27,8 @@ autom4te.cache
 install-sh
 tmp.repos
 *node_modules
+vagrant/localvms.xml
+vagrant/vagrant.env
+dashboard/dist
+dashboard/package-lock.json
+vagrant/.vscode/tasks.json
