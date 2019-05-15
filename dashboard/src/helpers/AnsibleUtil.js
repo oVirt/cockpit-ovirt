@@ -102,6 +102,7 @@ var AnsibleUtil = {
      groupVars.gluster_infra_fw_state = "enabled"
      groupVars.gluster_infra_fw_zone = "public"
      groupVars.gluster_infra_fw_services = ["glusterfs"]
+     groupVars.gluster_features_force_varlogsizecheck = false
 
       let hostLength = 1
       if(!isSingleNode) {
