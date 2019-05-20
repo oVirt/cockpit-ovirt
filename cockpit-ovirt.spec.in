@@ -83,14 +83,14 @@ make
 make install DESTDIR=%{buildroot}
 
 # Create /var/lib/ovirt-hosted-engine-setup/cockpit
-mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
+install -dm 700 %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 
 %files dashboard
 %doc README.md
 %license LICENSE
 %{_plugindir}/ovirt-dashboard
-%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
+%dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
 * Tue May 14 2019 Ido Rosenzwig <irosenzw@redhat.com> - 0.12.9-1
