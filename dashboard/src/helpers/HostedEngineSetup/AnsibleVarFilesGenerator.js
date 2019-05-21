@@ -49,8 +49,9 @@ class AnsibleVarFilesGenerator {
         return cleanedValue;
     }
 
-    getAnswerFileStringForPhase(phase) {
+    getAnswerFileStringForPhase(phase, sensitive = false) {
         let varString = "";
+        let sensitiveVars = {};
         const separator = ": ";
         const sectionNames = Object.getOwnPropertyNames(this.model);
 
@@ -66,11 +67,23 @@ class AnsibleVarFilesGenerator {
 
                         if (prop.hasOwnProperty("ansibleVarName") && prop.hasOwnProperty("ansiblePhasesUsed")) {
                             if (prop.ansiblePhasesUsed.includes(phase)) {
-                                varString += prop.ansibleVarName + separator + self.formatValue(propName, prop.value) + '\n';
+                                if  (!prop.hasOwnProperty("sensitive")) {
+                                    varString += prop.ansibleVarName + separator + self.formatValue(propName, prop.value) + '\n';
+                                } else {
+                                    sensitiveVars[prop.ansibleVarName] = prop.value;
+                                }
                             }
                         }
                     }, this)
             }, this);
+
+        if (sensitive) {
+            if (Object.keys(sensitiveVars).length > 0) {
+                return JSON.stringify(sensitiveVars);
+            } else {
+                return "";
+            }
+        }
 
         return varString;
     }
