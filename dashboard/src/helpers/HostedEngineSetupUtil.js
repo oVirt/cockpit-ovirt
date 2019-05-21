@@ -296,7 +296,8 @@ export class HeSetupModel {
                     showInReview: false,
                     uiStage: "Storage",
                     useInAnswerFile: false,
-                    required: false
+                    required: false,
+                    sensitive: true
                 },
                 iSCSIDiscoverUser: {
                     name: "iSCSIDiscoverUser",
@@ -320,7 +321,8 @@ export class HeSetupModel {
                     showInReview: false,
                     uiStage: "Storage",
                     useInAnswerFile: false,
-                    required: false
+                    required: false,
+                    sensitive: true
                 },
                 iSCSIPortalIPAddress: {
                     name: "iSCSIPortalIPAddress",
@@ -807,7 +809,8 @@ export class HeSetupModel {
                     reviewOrder: 70,
                     uiStage: "VM",
                     useInAnswerFile: false,
-                    required: true
+                    required: true,
+                    sensitive: true
                 },
                 rootSshPubkey: {
                     name: "rootSshPubkey",
@@ -984,7 +987,8 @@ export class HeSetupModel {
                     reviewOrder: 0,
                     uiStage: "Engine",
                     useInAnswerFile: false,
-                    required: true
+                    required: true,
+                    sensitive: true
                 },
                 enableLibgfapi: {
                     name: "enableLibgfapi",

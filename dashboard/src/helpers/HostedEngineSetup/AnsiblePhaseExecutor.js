@@ -4,6 +4,7 @@ import {
 } from "../../components/HostedEngineSetup/constants";
 import AnsibleVarFilesGenerator from "./AnsibleVarFilesGenerator"
 import { getAnsibleLogPath } from "../HostedEngineSetupUtil"
+import PlaybookUtil from "./PlaybookUtil";
 
 class AnsiblePhaseExecutor {
     constructor(abortCallback, heSetupModel) {
@@ -146,11 +147,12 @@ class AnsiblePhaseExecutor {
         });
     }
 
-    getPlaybookCommand(phase, varFilePath) {
+    getPlaybookCommand(phase, varFilePath, securePipe = "") {
         const varFileParam = "@" + varFilePath;
         const tagParam = ansibleRoleTags[phase];
         const skipTagParam = ansibleRoleTags.SKIP_FULL_EXECUTION;
         const playbookParam = playbookPaths.HE_ROLE;
+        const pipe = ["-e", "@" + securePipe];
 
         let cmd = ['ansible-playbook', '-e', varFileParam, playbookParam,
             '--module-path=/usr/share/ovirt-hosted-engine-setup/ansible',
@@ -159,16 +161,36 @@ class AnsiblePhaseExecutor {
             '--skip-tags=' + skipTagParam,
             ];
 
+        if (securePipe){
+            cmd = cmd.concat(pipe);
+        }
+
         return cmd;
     }
 
-    // TODO Refactor to use PlaybookUtil
     executePlaybook(phase, varFilePath) {
+        const playbookUtil = new PlaybookUtil();
         this.lastLineSeen = -1;
         this.varFilePaths.push(varFilePath);
         this.result = null;
+        var sensitiveData = this.varFileGenerator.getAnswerFileStringForPhase(phase, true);
+        var pipe = "";
+
+        if (sensitiveData) {
+            pipe = playbookUtil.getSecurePipe(phase);
+            this.varFilePaths.push(pipe);
+
+            // transfering the sensitive data to stdin like this so it won't appear in the logs
+            this.executeBashCommand("cp /dev/stdin " + pipe + " <<< '" + sensitiveData + "'");
+        }
+
         return new Promise((resolve, reject) => {
-            const cmd = this.getPlaybookCommand(phase, varFilePath);
+            if (sensitiveData) {
+                var cmd = this.getPlaybookCommand(phase, varFilePath, pipe);
+            } else {
+                var cmd = this.getPlaybookCommand(phase, varFilePath);
+            }
+
             const env = [
                 `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
                 "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
@@ -330,6 +352,10 @@ class AnsiblePhaseExecutor {
         });
 
         this._outputCallback(returnValue);
+    }
+
+    executeBashCommand(cmd){
+        cockpit.spawn(["/bin/bash","-c",cmd]);
     }
 }
 

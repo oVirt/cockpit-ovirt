@@ -13,6 +13,7 @@ class PlaybookUtil {
         this.getResultsData = this.getResultsData.bind(this);
         this.getTimeStamp = this.getTimeStamp.bind(this);
         this.createOutputFileDir = this.createOutputFileDir.bind(this);
+        this.getSecurePipe = this.getSecurePipe.bind(this);
     }
 
     runPlaybook(playbookPath, outputPath, options = "", tags = "", skipTags = "") {
@@ -180,6 +181,14 @@ class PlaybookUtil {
             d.getMinutes(),
             d.getSeconds()
         ].join("");
+    }
+
+    getSecurePipe(baseName) {
+        const playbookName = baseName.toLowerCase();
+        const timeStamp = this.getTimeStamp();
+        const pipe = `${configValues.ANSIBLE_OUTPUT_DIR}${playbookName}-${timeStamp}-${generateRandomString()}.pipe`;
+        cockpit.spawn(["mkfifo","-m","0600",pipe]);
+        return pipe;
     }
 }
 
