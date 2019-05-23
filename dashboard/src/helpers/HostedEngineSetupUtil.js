@@ -140,7 +140,12 @@ export class HeSetupModel {
                         "APPLIANCE_PASSWORD",
                         "ISCSI_PASSWORD",
                         "ISCSI_DISCOVER_PASSWORD",
-                        "ROOTPWD"
+                        "ROOTPWD",
+                        "he_appliance_password",
+                        "he_admin_password",
+                        "he_iscsi_password",
+                        "he_iscsi_discover_password",
+                        "ansible_ssh_pass"
                     ],
                     type: types.STRING,
                     showInReview: false,
