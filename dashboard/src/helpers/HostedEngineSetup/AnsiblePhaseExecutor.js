@@ -180,8 +180,11 @@ class AnsiblePhaseExecutor {
             pipe = playbookUtil.getSecurePipe(phase);
             this.varFilePaths.push(pipe);
 
-            // transfering the sensitive data to stdin like this so it won't appear in the logs
-            this.executeBashCommand("cp /dev/stdin " + pipe + " <<< '" + sensitiveData + "'");
+            // Transfering the sensitive data to stdin
+            this.executeBashCommand("cp /dev/stdin " + pipe)
+            .input(sensitiveData)
+            .done()
+            .fail(function(e){ console.log(e)})
         }
 
         return new Promise((resolve, reject) => {
@@ -355,7 +358,7 @@ class AnsiblePhaseExecutor {
     }
 
     executeBashCommand(cmd){
-        cockpit.spawn(["/bin/bash","-c",cmd]);
+         return cockpit.spawn(["/bin/bash","-c",cmd]);
     }
 }
 
