@@ -89,6 +89,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Mon Jun 03 2019 Ido Rosenzwig <irosenzw@redhat.com> - 0.11.40-1
+- Fix minor UI issues
+
 * Fri Feb 15 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.39-1
 - Gdeploy Config file creation conditions Changes under bricks tab were not
   reflected into the config file because of missing conditions.
