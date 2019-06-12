@@ -49,7 +49,13 @@ class WizardPreviewStep extends Component {
     readAnsibleConfig() {
         const that = this
         this.setState({ ansibleConfig: "Loading Ansible configuration..." })
-        cockpit.file(CONFIG_FILES.ansibleInventoryFile).read()
+        let filePath = CONFIG_FILES.ansibleInventoryFile
+        if(this.props.ansibleWizardType == "expand_volume") {
+          filePath = CONFIG_FILES.ansibleExpandVolumeInventoryFile
+        } else {
+          filePath = CONFIG_FILES.ansibleInventoryFile
+        }
+        cockpit.file(filePath).read()
         .done(function(ansibleConfig) {
             that.setState({ ansibleConfig })
         })
@@ -89,6 +95,8 @@ class WizardPreviewStep extends Component {
                 }
               }
             }
+        } else if(nextProps.ansibleWizardType === "expand_volume" && nextProps.activeStep !== 3) {
+          this.setState({ ansibleFileGenerated: false})
         }
       }
       if(!this.state.ansibleFileGenerated && (!this.state.isChanged || !this.props.isDeploymentStarted)) {
@@ -129,6 +137,9 @@ class WizardPreviewStep extends Component {
                 }
               }
             }
+        } else if(nextProps.ansibleWizardType === "expand_volume" && nextProps.activeStep == 3) {
+          this.createAnsibleConfig()
+          this.setState({ ansibleFileGenerated: true })
         }
       }
     }
@@ -145,7 +156,13 @@ class WizardPreviewStep extends Component {
     }
     handleSave() {
         this.setState({ isEditing: false })
-        AnsibleUtil.writeConfigFile(CONFIG_FILES.ansibleInventoryFile, this.state.ansibleConfig, function (result) {
+        let filePath = CONFIG_FILES.ansibleInventoryFile
+        if(this.props.ansibleWizardType == "expand_volume") {
+          filePath = CONFIG_FILES.ansibleExpandVolumeInventoryFile
+        } else {
+          filePath = CONFIG_FILES.ansibleInventoryFile
+        }
+        AnsibleUtil.writeConfigFile(filePath, this.state.ansibleConfig, function (result) {
             console.log("Result after editing and saving config file: ", result)
         })
     }
@@ -179,9 +196,14 @@ class WizardPreviewStep extends Component {
                     <div className="panel panel-default">
                         <div className="panel-heading">
                             <span className="pficon-settings"></span>
-                            <span>
+                            {this.props.ansibleWizardType == "expand_volume" && <span>
+                                Generated Ansible inventory : {CONFIG_FILES.ansibleExpandVolumeInventoryFile}
+                              </span>
+                            }
+                            {this.props.ansibleWizardType !== "expand_volume" && <span>
                                 Generated Ansible inventory : {CONFIG_FILES.ansibleInventoryFile}
-                            </span>
+                              </span>
+                            }
                             <div className="pull-right">
                                 {this.state.isEditing &&
                                     <button className="btn btn-default"

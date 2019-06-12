@@ -10,6 +10,7 @@ class WizardHostStep extends Component {
         super(props);
         this.state = {
             hosts: props.glusterModel.hosts,
+            expandVolumeHosts: props.glusterModel.expandVolumeHosts,
             hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
             errorMsgs: {},
@@ -19,10 +20,17 @@ class WizardHostStep extends Component {
         this.updateHost = this.updateHost.bind(this);
         this.getHostList = this.getHostList.bind(this);
         this.handleSelectedHostUpdate = this.handleSelectedHostUpdate.bind(this);
+        this.handleExpandVolumeUpdate = this.handleExpandVolumeUpdate.bind(this);
         props.glusterModel.isSingleNode = props.isSingleNode
     }
     updateHost(index, hostaddress) {
         const hosts = this.state.hosts;
+        if(this.props.ansibleWizardType === "expand_volume") {
+          if(this.state.expandVolumeHosts && this.state.expandVolumeHosts.length > 0) {
+            this.handleExpandVolumeUpdate(index, hosts[index], false)
+            this.handleExpandVolumeUpdate(index, hostaddress, true)
+          }
+        }
         hosts[index] = hostaddress
         const errorMsgs= this.state.errorMsgs
         if(hostaddress.length > 0){
@@ -65,7 +73,7 @@ class WizardHostStep extends Component {
             })
             this.setState({ errorMsg, errorMsgs })
             return valid
-        } else if(this.props.ansibleWizardType === "create_volume" && this.state.hostTypes.length === 1) {
+        } else if((this.props.ansibleWizardType === "create_volume" || this.props.ansibleWizardType === "expand_volume") && this.state.hostTypes.length === 1) {
             let errorMsg = ""
             const errorMsgs= {}
             let valid = true
@@ -76,6 +84,19 @@ class WizardHostStep extends Component {
               }
             }
             this.setState({ errorMsg, errorMsgs })
+            return valid
+        } else if(this.props.ansibleWizardType === "expand_volume"){
+            const errorMsgs = {}
+            let valid = true
+            if(this.state.expandVolumeHosts.length%3 !== 0 || this.state.expandVolumeHosts.length === 0) {
+              this.state.hosts.forEach(function(value, index) {
+                errorMsgs[index] = "Select hosts in a multiple of 3"
+              })
+              if(valid) {
+                valid = false;
+              }
+            }
+            this.setState({ errorMsgs })
             return valid
         } else {
             let errorMsg = ""
@@ -120,6 +141,15 @@ class WizardHostStep extends Component {
                   }
                   that.setState({ hostTypes, hosts })
             })
+        } else if(this.props.ansibleWizardType === "expand_volume") {
+            let that = this
+            this.getHostList(function (hostList) {
+                  let hosts = that.state.hosts
+                  for (var i = 0; i < hostList.hosts.length; i++) {
+                      hosts[i] = hostList.hosts[i].hostname
+                  }
+                  that.setState({ hosts })
+            })
         }
         let that = this
         ansibleUtil.isGlusterAnsibleAvailable(function (boolVal) {
@@ -132,6 +162,17 @@ class WizardHostStep extends Component {
               that.setState({ errorMsg })
             }
         })
+    }
+    componentWillReceiveProps(nextProps) {
+      if(nextProps.ansibleWizardType === "expand_volume") {
+        let hostTypes = this.state.hostTypes
+        hostTypes = []
+        this.state.expandVolumeHosts.forEach(function(value, index) {
+          let hostType = { key: value, title: value }
+          hostTypes.push(hostType)
+        })
+        this.setState({ hostTypes })
+      }
     }
     getHostList(callback){
       cockpit.spawn(
@@ -182,6 +223,15 @@ class WizardHostStep extends Component {
         this.setState({ hostTypes })
         this.setState({ hosts })
     }
+    handleExpandVolumeUpdate(index, value, check){
+      let expandVolumeHosts = this.state.expandVolumeHosts
+      if(check) {
+        expandVolumeHosts.push(value)
+      } else {
+        expandVolumeHosts.splice(expandVolumeHosts.indexOf(value), 1)
+      }
+      this.setState({ expandVolumeHosts })
+    }
     render() {
         const hostRows = [];
         const that = this
@@ -217,8 +267,7 @@ class WizardHostStep extends Component {
                       changeCallBack={(e) => this.updateHost(index, e.target.value)}
                     />
                   )
-              }
-              else {
+              } else if (this.props.ansibleWizardType === "create_volume"){
                   hostRows.push(
                     <HostRow host={host} key={index} hostNo={index + 1}
                       ansibleWizardType={that.props.ansibleWizardType}
@@ -226,6 +275,17 @@ class WizardHostStep extends Component {
                       errorMsg = {that.state.errorMsgs[index]}
                       deleteCallBack={() => this.handleDelete(index)}
                       changeCallBack={(e) => this.handleSelectedHostUpdate(index, e)}
+                    />
+                  )
+              } else if (this.props.ansibleWizardType === "expand_volume"){
+                  hostRows.push(
+                    <HostRow host={host} key={index} hostNo={index + 1}
+                      ansibleWizardType={that.props.ansibleWizardType}
+                      hostTypes={that.state.hostTypes}
+                      errorMsg = {that.state.errorMsgs[index]}
+                      deleteCallBack={() => this.handleDelete(index)}
+                      changeCallBack={(e) => this.updateHost(index, e.target.value)}
+                      changeExpandVolumeCallBack={(e) => this.handleExpandVolumeUpdate(index, e.target.value, e.target.checked)}
                     />
                   )
               }
@@ -259,7 +319,7 @@ WizardHostStep.propTypes = {
     stepName: PropTypes.string.isRequired
 }
 
-const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, errorMsg, changeCallBack, deleteCallBack}) => {
+const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, errorMsg, changeCallBack, changeExpandVolumeCallBack, deleteCallBack}) => {
     const hostClass = classNames(
         "form-group",
         { "has-error": errorMsg && errorMsg.length > 0 }
@@ -287,6 +347,21 @@ const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, errorMsg, changeCa
                         callBack={(e) => changeCallBack(e)}
                         ansibleWizardType={ansibleWizardType}
                         />
+                    }
+                    {ansibleWizardType === "expand_volume" && <div className="row">
+                        <div className="col-md-10">
+                          <input type="text" placeholder="Gluster network address"
+                            title="Enter the address of gluster network which will be used for gluster data traffic."
+                            className="form-control"
+                            value={host}
+                            onChange={changeCallBack}
+                            />
+                        </div>
+                        <div className="col-md-2">
+                          <input type="checkbox" value={host} name={host} className="form-control ansible-wizard-thinp-checkbox"
+                          onChange={changeExpandVolumeCallBack}/>
+                        </div>
+                      </div>
                     }
                     {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
                 </div>

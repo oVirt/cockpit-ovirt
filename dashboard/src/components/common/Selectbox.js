@@ -1,8 +1,9 @@
 import React from 'react'
 
-const Selectbox = ({optionList, selectedOption = null, callBack, ansibleWizardType = "none"}) => {
+const Selectbox = ({optionList, selectedOption = null, callBack, ansibleWizardType = "none", tab = "none"}) => {
     const options = [];
     let selected = selectedOption;
+    let expand_volume_component = []
     if (selected === null) {
         selected = optionList[0];
     }
@@ -21,27 +22,27 @@ const Selectbox = ({optionList, selectedOption = null, callBack, ansibleWizardTy
                     {option.key}
                   </textarea>
               </li>
-          );
-        } else {
-          if(option.title !== null && option.title.length > 0) {
-            options.push(
-                <li value={option.key} key={option.key}
-                    onClick={() => callBack(option.key)}>
-                    <a id={option.key}>
-                      {option.title}
-                    </a>
-                </li>
             );
+          } else {
+              if(option.title !== null && option.title.length > 0) {
+                options.push(
+                    <li value={option.key} key={option.key}
+                        onClick={() => callBack(option.key)}>
+                        <a id={option.key}>
+                          {option.title}
+                        </a>
+                    </li>
+                );
+              }
           }
-        }
-        if (option.key === selectedOption) {
-            selected = option
-        }
+          if (option.key === selectedOption) {
+              selected = option
+          }
     }, this);
     return (
       <div className="btn-group bootstrap-select dropdown form-control">
           <button className="btn btn-default dropdown-toggle selectbox-option" type="button"
-              data-toggle="dropdown" aria-expanded="false">
+              data-toggle="dropdown" aria-expanded="false" disabled={ansibleWizardType==="expand_volume" ? true:false}>
               <span className="pull-left selectbox-text">{selected.title}</span>
               <span className="caret" />
           </button>

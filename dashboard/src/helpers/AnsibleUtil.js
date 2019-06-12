@@ -16,6 +16,7 @@ var AnsibleUtil = {
     getDefaultAnsibleModel() {
         return {
             hosts: ['', '', ''],
+            expandVolumeHosts: [],
             fqdns: ['', ''],
             subscription: {
                 username: "", password: "", poolId: "", yumUpdate: false,
@@ -74,8 +75,259 @@ var AnsibleUtil = {
       } else {
         this.saveGlusterInventory(glusterModel);
       }
+      if(ansibleWizardType === "expand_volume") {
+        this.createAnsibleConfigForExpandVolume(glusterModel, constants.ansibleExpandVolumeInventoryFile, ansibleWizardType, isSingleNode, callback)
+      } else {
+        let groups = {};
+        let { hosts, volumes, bricks, raidConfig, lvCacheConfig } = glusterModel;
+        hosts = hosts.filter(function (e) {
+          return e
+        })
+        groups.hc_nodes = {};
+        groups.hc_nodes.hosts = {};
+        let groupVars = {}
+        if(raidConfig.raidType === "JBOD") {
+          groupVars.gluster_infra_disktype = raidConfig.raidType;
+        } else {
+          groupVars.gluster_infra_disktype = raidConfig.raidType;
+          groupVars.gluster_infra_stripe_unit_size = parseInt(raidConfig.stripeSize);
+          groupVars.gluster_infra_diskcount = parseInt(raidConfig.diskCount);
+        }
+        groupVars.gluster_set_selinux_labels = true
+        groupVars.gluster_infra_fw_ports = [
+         "2049/tcp",
+         "54321/tcp",
+         "5900/tcp",
+         "5900-6923/tcp",
+         "5666/tcp",
+         "16514/tcp"
+       ]
+       groupVars.gluster_infra_fw_permanent = true
+       groupVars.gluster_infra_fw_state = "enabled"
+       groupVars.gluster_infra_fw_zone = "public"
+       groupVars.gluster_infra_fw_services = ["glusterfs"]
+       groupVars.gluster_features_force_varlogsizecheck = false
+
+        let hostLength = 1
+        if(!isSingleNode) {
+          hostLength = hosts.length
+        }
+        for (let hostIndex = 0; hostIndex < hostLength;hostIndex++){
+          let hostVars = {};
+          hostVars.gluster_infra_volume_groups = [];
+          hostVars.gluster_infra_mount_devices = [];
+          let processedDevs = {}; // VG and VDO is processed once per device processedVG implies processedVDO
+          let hostBricks = bricks[hostIndex]["host_bricks"];
+          let hostCacheConfig = lvCacheConfig[hostIndex];
+          hostVars.gluster_infra_vdo = [];
+          let groupedBricks = _.groupBy(hostBricks, "device");
+
+          for (let brick of hostBricks){
+            let devName = brick.device.split("/").pop();
+            let pvName = brick.device;
+            let vgName = VG_NAME+`${devName}`;
+            let thinpoolName = POOL_NAME+`${vgName}`;
+            let lvName = LV_NAME+`${brick.name}`;
+            let isDevProcessed = Object.keys(processedDevs).indexOf(devName) > -1;
+            let isThinpoolCreated = false;
+            if(isDevProcessed){
+              isThinpoolCreated = processedDevs[devName]['thinpool'];
+            }
+            let isVDO = brick.is_vdo_supported == true && brick.logicalSize;
+            //TODO: cache more than one device.
+            if(hostCacheConfig.lvCache && hostVars.gluster_infra_cache_vars == undefined){
+              hostVars.gluster_infra_cache_vars = [{
+                vgname: vgName,
+                cachedisk: hostCacheConfig.ssd,
+                cachelvname: `cachelv_${thinpoolName}`,
+                cachethinpoolname: thinpoolName,
+                cachelvsize: `${hostCacheConfig.lvCacheSize - (hostCacheConfig.lvCacheSize/10)}G`,
+                cachemetalvsize: `${hostCacheConfig.lvCacheSize/10}G`,
+                cachemetalvname: `cache_${thinpoolName}`,
+                cachemode: hostCacheConfig.cacheMode
+              }];
+            }
+            if(brick.is_vdo_supported){
+              let vdoName = `vdo_${devName}`;
+              let slabsize = (brick.logicalSize <= 1000) ? "2G": "32G";
+              let logicalsize = `${brick.logicalSize}G`;
+              pvName = "/dev/mapper/"+vdoName;
+              if(hostVars.gluster_infra_vdo.length > 0){
+                hostVars.gluster_infra_vdo.forEach(function(inBrick, index){
+                  if(brick.device !== inBrick.device) {
+                    hostVars.gluster_infra_vdo.push({
+                      name: vdoName,
+                      device: brick.device,
+                      slabsize: slabsize,
+                      logicalsize: logicalsize,
+                      blockmapcachesize: "128M",
+                      readcache: "enabled",
+                      readcachesize: "20M",
+                      emulate512: "on",
+                      writepolicy: "auto"
+                    });
+                  } else {
+                      let logicalsizes = parseInt(hostVars.gluster_infra_vdo[index].logicalsize.replace(/G/g,"G")) + parseInt(brick.logicalSize)
+                      hostVars.gluster_infra_vdo[index].logicalsize = logicalsizes + "G"
+                      hostVars.gluster_infra_vdo[index].slabsize = (logicalsizes <= 1000) ? "2G": "32G";
+                  }
+                })
+              } else {
+                hostVars.gluster_infra_vdo.push({
+                  name: vdoName,
+                  device: brick.device,
+                  slabsize: slabsize,
+                  logicalsize: logicalsize,
+                  blockmapcachesize: "128M",
+                  readcache: "enabled",
+                  readcachesize: "20M",
+                  emulate512: "on",
+                  writepolicy: "auto"
+                });
+              }
+            }
+
+            if(!isDevProcessed){
+              //create vg
+              hostVars.gluster_infra_volume_groups.push({
+                vgname: vgName,
+                pvname: pvName
+              });
+            }
+            if(brick.thinp){
+              if(hostVars.gluster_infra_thinpools == undefined){
+                hostVars.gluster_infra_thinpools = [];
+              }
+              let poolMetadataSize = this.getPoolMetadataSize(brick.size)
+              if(hostVars.gluster_infra_thinpools.length > 0){
+                let count = 0
+                hostVars.gluster_infra_thinpools.forEach(function(inThinp, index){
+                  if(thinpoolName === inThinp.thinpoolname) {
+                    count++
+                  }
+                  if(thinpoolName === inThinp.thinpoolname && parseInt(poolMetadataSize.slice(0, -1)) > parseInt(inThinp.poolmetadatasize.slice(0, -1))) {
+                    hostVars.gluster_infra_thinpools[index]['poolmetadatasize'] = poolMetadataSize
+                  }
+                });
+                if(count == 0){
+                  hostVars.gluster_infra_thinpools.push({
+                    vgname: vgName,
+                    thinpoolname: thinpoolName,
+                    poolmetadatasize: poolMetadataSize
+                  });
+                }
+              } else {
+                hostVars.gluster_infra_thinpools.push({
+                  vgname: vgName,
+                  thinpoolname: thinpoolName,
+                  poolmetadatasize: poolMetadataSize
+                });
+              }
+
+              isThinpoolCreated = true;
+            }
+
+            if(brick.thinp){
+              if(hostVars.gluster_infra_lv_logicalvols == undefined){
+                hostVars.gluster_infra_lv_logicalvols = [];
+              }
+              hostVars.gluster_infra_lv_logicalvols.push({
+                vgname: vgName,
+                thinpool: thinpoolName,
+                lvname: lvName,
+                lvsize: `${brick.size}G`
+              });
+            }
+            if(!brick.thinp){
+              if(hostVars.gluster_infra_thick_lvs == undefined){
+                hostVars.gluster_infra_thick_lvs = [];
+              }
+              let lvSize = ""
+              if(brick.is_vdo_supported) {
+                let count = 0
+                let brickNo = groupedBricks[brick.device].length
+                for(let aBrick of groupedBricks[brick.device]) {
+                  count++
+                  if(brickNo === count){
+                    lvSize = "100%FREE"
+                  } else {
+                    lvSize = `${aBrick.logicalSize}G`
+                  }
+                  let hasDuplicate = false
+                  hostVars.gluster_infra_thick_lvs.map(v => v.lvname).sort().sort((a, b) => {
+                    if (a === b) hasDuplicate = true
+                  })
+
+                  if(!hasDuplicate) {
+                    hostVars.gluster_infra_thick_lvs.push({
+                      vgname: vgName,
+                      lvname: LV_NAME+`${aBrick.name}`,
+                      size: lvSize
+                    });
+                  }
+                }
+              } else {
+                lvSize = `${brick.size}G`
+                hostVars.gluster_infra_thick_lvs.push({
+                  vgname: vgName,
+                  lvname: lvName,
+                  size: lvSize
+                });
+              }
+              hostVars.gluster_infra_thick_lvs = hostVars.gluster_infra_thick_lvs.filter((obj, pos, arr) => {
+                return arr.map(mapObj =>
+                  mapObj['lvname']).indexOf(obj['lvname']) === pos;
+                });
+            }
+            hostVars.gluster_infra_mount_devices.push({
+              path: brick.brick_dir,
+              lvname: lvName,
+              vgname: vgName
+            });
+            processedDevs[devName] = {thinpool: isThinpoolCreated}
+          }
+          if(hostVars.gluster_infra_vdo.length === 0) {
+            delete hostVars["gluster_infra_vdo"]
+          } else {
+            hostVars.gluster_infra_vdo = hostVars.gluster_infra_vdo.filter((obj, pos, arr) => {
+              return arr.map(mapObj =>
+                mapObj['device']).indexOf(obj['device']) === pos;
+            });
+            hostVars.gluster_infra_vdo = Array.from(new Set(hostVars.gluster_infra_vdo.map(JSON.stringify))).map(JSON.parse);
+          }
+          groups.hc_nodes.hosts[hosts[hostIndex]] = hostVars;
+        }
+
+        groupVars.cluster_nodes = hosts
+        groupVars.gluster_features_hci_cluster = "{{ cluster_nodes }}"
+        groupVars.gluster_features_hci_volumes = [];
+        if(glusterModel.isSingleNode || hosts.length === 1) {
+          groupVars.gluster_features_hci_volume_options = constants.distVolumeOptions
+        }
+        for(let volumeIndex = 0; volumeIndex < volumes.length;volumeIndex++){
+          let volume = volumes[volumeIndex];
+          if(volume.is_arbiter) {
+            volume.is_arbiter = 1
+          }
+          groupVars.gluster_features_hci_volumes.push({
+            volname: volume.name,
+            brick: volume.brick_dir,
+            arbiter: volume.is_arbiter
+          });
+        }
+        groups.hc_nodes.vars = groupVars;
+
+        const configString = yaml.dump(groups)
+        this.handleDirAndFileCreation(filePath, configString, function(result){
+          callback(true)
+        })
+        const that = this
+      }
+    },
+    createAnsibleConfigForExpandVolume(glusterModel, filePath, ansibleWizardType, isSingleNode, callback) {
       let groups = {};
       let { hosts, volumes, bricks, raidConfig, lvCacheConfig } = glusterModel;
+      hosts = glusterModel.expandVolumeHosts
       hosts = hosts.filter(function (e) {
         return e
       })
@@ -89,19 +341,6 @@ var AnsibleUtil = {
         groupVars.gluster_infra_stripe_unit_size = parseInt(raidConfig.stripeSize);
         groupVars.gluster_infra_diskcount = parseInt(raidConfig.diskCount);
       }
-      groupVars.gluster_set_selinux_labels = true
-      groupVars.gluster_infra_fw_ports = [
-       "2049/tcp",
-       "54321/tcp",
-       "5900/tcp",
-       "5900-6923/tcp",
-       "5666/tcp",
-       "16514/tcp"
-     ]
-     groupVars.gluster_infra_fw_permanent = true
-     groupVars.gluster_infra_fw_state = "enabled"
-     groupVars.gluster_infra_fw_zone = "public"
-     groupVars.gluster_infra_fw_services = ["glusterfs"]
      groupVars.gluster_features_force_varlogsizecheck = false
 
       let hostLength = 1
@@ -297,9 +536,6 @@ var AnsibleUtil = {
       groupVars.cluster_nodes = hosts
       groupVars.gluster_features_hci_cluster = "{{ cluster_nodes }}"
       groupVars.gluster_features_hci_volumes = [];
-      if(glusterModel.isSingleNode || hosts.length === 1) {
-        groupVars.gluster_features_hci_volume_options = constants.distVolumeOptions
-      }
       for(let volumeIndex = 0; volumeIndex < volumes.length;volumeIndex++){
         let volume = volumes[volumeIndex];
         if(volume.is_arbiter) {
