@@ -32,7 +32,6 @@ class WizardBricksStep extends Component {
             errorMsgs: {}
         }
         this.handleDelete = this.handleDelete.bind(this)
-        this.handleAdd = this.handleAdd.bind(this)
         this.handleUpdate = this.handleUpdate.bind(this)
         this.handleRaidConfigUpdate = this.handleRaidConfigUpdate.bind(this)
         this.handleLvCacheConfig = this.handleLvCacheConfig.bind(this)
@@ -92,6 +91,23 @@ class WizardBricksStep extends Component {
         that.state.thinpoolOptions.push({key: "--select--", title: "--select--"}, {key: "sdb", title: "sdb"})
     }
     componentWillReceiveProps(nextProps){
+        if(this.props.ansibleWizardType === "expand_volume") {
+            let hostTypes = this.state.hostTypes
+            hostTypes = []
+            let hosts = this.state.hosts
+            hosts = []
+            let expandVolumeHosts = this.props.expandVolumeHosts
+            if(expandVolumeHosts.length > 0 && expandVolumeHosts.length%3 === 0) {
+                expandVolumeHosts.forEach(function(value, index) {
+                    let host = value
+                    let hostType = {key: value, title: value}
+                    hosts.push(host)
+                    hostTypes.push(hostType)
+                })
+                this.setState({ hosts, hostTypes })
+            }
+        }
+
         // Checking if hosts have changed
         let hostsHaveChanged = false
         if(nextProps.hosts.length !== this.state.hostTypes.length) {
@@ -107,29 +123,55 @@ class WizardBricksStep extends Component {
 
         // Updating hostTypes, bricksList and lvCacheConfig if hosts have changed
         if(hostsHaveChanged){
-            this.updateBrickHosts(nextProps.hosts)
+            if(this.props.ansibleWizardType === "expand_volume" && this.props.expandVolumeHosts.length > 0 && this.props.expandVolumeHosts.length%3 === 0) {
+              this.updateBrickHosts(this.props.expandVolumeHosts)
+            } else {
+              this.updateBrickHosts(nextProps.hosts)
+            }
         }
 
         // Modify bricks according to volume details
         let new_volumes = []
         let new_brick_dirs = []
-        nextProps.glusterModel.volumes.forEach(function (volume, index) {
-          new_volumes.push(volume.name)
-
-          // Get volume brick_dir in the form of bricksList brick_dir
-          let brick_dir = ""
-          let brick_dir_split = volume.brick_dir.split('/')
-          let length = brick_dir_split.length
-          let lastIndex = volume.brick_dir.lastIndexOf('/')
-          brick_dir = volume.brick_dir.slice(0, lastIndex)
-          new_brick_dirs.push(brick_dir)
-        })
         let old_volumes = []
         let old_brick_dirs = []
-        this.state.bricksList[0].host_bricks.forEach(function (brick, index) {
-          old_volumes.push(brick.name)
-          old_brick_dirs.push(brick.brick_dir)
-        })
+        
+        if(this.props.ansibleWizardType === "expand_volume") {
+          // Modify bricks according to volume details
+          nextProps.glusterModel.volumes.forEach(function (volume, index) {
+
+            // Get volume brick_dir in the form of bricksList brick_dir
+            let brick_dir = ""
+            let brick_dir_split = volume.brick_dir.split('/')
+            let length = brick_dir_split.length
+            let lastIndex = volume.brick_dir.lastIndexOf('/')
+            brick_dir = volume.brick_dir.slice(0, lastIndex)
+            new_volumes.push(volume.brick_dir.split('/')[3])
+            new_brick_dirs.push(brick_dir)
+          })
+          this.state.bricksList[0].host_bricks.forEach(function (brick, index) {
+            old_volumes.push(brick.name)
+            old_brick_dirs.push(brick.brick_dir)
+          })
+        } else {
+          // Modify bricks according to volume details
+          nextProps.glusterModel.volumes.forEach(function (volume, index) {
+            new_volumes.push(volume.name)
+
+            // Get volume brick_dir in the form of bricksList brick_dir
+            let brick_dir = ""
+            let brick_dir_split = volume.brick_dir.split('/')
+            let length = brick_dir_split.length
+            let lastIndex = volume.brick_dir.lastIndexOf('/')
+            brick_dir = volume.brick_dir.slice(0, lastIndex)
+            new_brick_dirs.push(brick_dir)
+          })
+          this.state.bricksList[0].host_bricks.forEach(function (brick, index) {
+            old_volumes.push(brick.name)
+            old_brick_dirs.push(brick.brick_dir)
+          })
+        }
+
         if (old_volumes.join() != new_volumes.join() ||
             old_brick_dirs.join() != new_brick_dirs.join()) {
                 this.updateBrickDetails(nextProps.glusterModel.volumes)
@@ -167,23 +209,35 @@ class WizardBricksStep extends Component {
         let newHostBricks = []
         let brickTemplate = this.getEmptyRow()
         newVolumes.forEach(function (volume, index) {
-            brickTemplate.name = volume.name
-            brickTemplate.device = "/dev/sdb"
-            let brick_dir_split = volume.brick_dir.split('/')
-            let length = brick_dir_split.length
-            let lastIndex = volume.brick_dir.lastIndexOf('/')
-            brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
-            if (that.props.ansibleWizardType === "setup" && volume.name === "engine") {
-                brickTemplate.size = "100"
-                brickTemplate.thinp = false
-                brickTemplate.logicalSize = "1000"
-            }
-            else {
-                brickTemplate.size = "500"
-                brickTemplate.thinp = true
-                brickTemplate.logicalSize = "5000"
-            }
-            newHostBricks.push(JSON.parse(JSON.stringify(brickTemplate)))
+          if(that.props.ansibleWizardType === "expand_volume") {
+              let brick_dir_split = volume.brick_dir.split('/')
+              let length = brick_dir_split.length
+              let lastIndex = volume.brick_dir.lastIndexOf('/')
+              brickTemplate.name = brick_dir_split[3]
+              brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
+              brickTemplate.device = "/dev/sdb"
+          } else {
+              brickTemplate.name = volume.name
+              let brick_dir_split = volume.brick_dir.split('/')
+              let length = brick_dir_split.length
+              let lastIndex = volume.brick_dir.lastIndexOf('/')
+              brickTemplate.brick_dir = volume.brick_dir.slice(0, lastIndex)
+              brickTemplate.device = "/dev/sdb"
+          }
+          if (that.props.ansibleWizardType === "setup" && volume.name === "engine") {
+              brickTemplate.size = "100"
+              brickTemplate.thinp = false
+              brickTemplate.logicalSize = "1000"
+          } else if(that.props.ansibleWizardType === "expand_volume") {
+              brickTemplate.size = "500"
+              brickTemplate.thinp = true
+              brickTemplate.logicalSize = "5000"
+          } else {
+              brickTemplate.size = "500"
+              brickTemplate.thinp = true
+              brickTemplate.logicalSize = "5000"
+          }
+          newHostBricks.push(JSON.parse(JSON.stringify(brickTemplate)))
         })
 
         let bricksList = this.state.bricksList
@@ -229,17 +283,6 @@ class WizardBricksStep extends Component {
         let isVdoSupported = this.state.isVdoSupported
         return { name: "", device: "", brick_dir: "", thinp: true, size:"1", is_vdo_supported: false, logicalSize: "0", isVdoSupported: isVdoSupported }
     }
-    handleAdd() {
-        let bricksList = this.state.bricksList
-        let newBricksList = []
-        let newBrickRow = this.getEmptyRow()
-        bricksList.forEach(function (brickHost, i) {
-            let newBrickHost = JSON.parse(JSON.stringify(brickHost))
-            newBrickHost.host_bricks.push(newBrickRow)
-            newBricksList.push(newBrickHost)
-        })
-        this.setState({bricksList: newBricksList})
-    }
     handleRaidConfigUpdate(property, value) {
         const raidConfig = this.state.raidConfig
         raidConfig[property] = value
@@ -272,7 +315,7 @@ class WizardBricksStep extends Component {
             }
         })
         let enabledFields = Object.keys(this.state.bricksList[0].host_bricks[0])
-        if (this.props.ansibleWizardType === "setup") {
+        if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_volume") {
           enabledFields = ['device', 'size']
         } else {
           enabledFields = ['name', 'device', 'brick_dir', 'size']
@@ -297,72 +340,91 @@ class WizardBricksStep extends Component {
         this.setState({selectedHost, enabledFields, hostArbiterVolumes})
     }
     handleUpdate(index, property, value, selectedBrick) {
-      let thinpName = "";
-      const thinpoolOptions = [];
-      let selectedHost = this.state.selectedHost
+        let thinpName = "";
+        const thinpoolOptions = [];
+        let selectedHost = this.state.selectedHost
         let bricksList = this.state.bricksList
         const errorMsgs= this.state.errorMsgs
         let that = this
         that.state.thinpoolOptions = [{key: "--select--", title: "--select--"}]
-        if (property == "is_vdo_supported") {
+        if(this.props.ansibleWizardType === "expand_volume") {
+          bricksList.forEach(function(brick) {
+              brick.host_bricks[index][property] = value
+          })
           bricksList.forEach(function (eachBrick) {
-            eachBrick.host_bricks.forEach(function (brick, brickIndex) {
-              if(!value) {
-                bricksList[selectedHost.hostIndex].host_bricks.forEach(function (currentBrick) {
-                  if(selectedBrick['device'] === currentBrick['device']) {
-                    currentBrick[property] = value
-                    if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported) {
-                      brick.thinp = true
-                    }
-                  }
-                })
-              }
-              else if (brick['device'] == eachBrick.host_bricks[index]['device']) {
-                    brick[property] = value
-                    if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && brick.is_vdo_supported) {
-                      brick.thinp = true
-                    }
+            eachBrick.host_bricks.forEach(function (brick) {
+              if(brick['thinp']) {
+                thinpName = brick['device'].split("/").pop();
+                if(thinpoolOptions.indexOf(thinpName) == -1) {
+                  thinpoolOptions.push(thinpName);
+                  that.state.thinpoolOptions.push({key: thinpName, title: thinpName})
                 }
+              }
             })
           })
-        }
-        else if (property == "logicalSize") {
-            bricksList[selectedHost.hostIndex].host_bricks[index][property] = value
-        }
-        else {
-            for(var i = 2; i >= selectedHost.hostIndex; i--){
-                if(selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
-                    const arbiterValue = AnsibleUtil.getArbiterBrickSize(parseInt(value))
-                    bricksList[i].host_bricks[index][property] = JSON.stringify(arbiterValue)
+          this.setState({ bricksList, errorMsgs })
+          this.validateBrick(bricksList, index, errorMsgs)
+        } else {
+          if (property == "is_vdo_supported") {
+            bricksList.forEach(function (eachBrick) {
+              eachBrick.host_bricks.forEach(function (brick, brickIndex) {
+                if(!value) {
+                  bricksList[selectedHost.hostIndex].host_bricks.forEach(function (currentBrick) {
+                    if(selectedBrick['device'] === currentBrick['device']) {
+                      currentBrick[property] = value
+                      if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && !brick.is_vdo_supported) {
+                        brick.thinp = true
+                      }
+                    }
+                  })
                 }
-                else {
-                    bricksList[i].host_bricks[index][property] = value
-                }
-                if(property == "size") {
-                    bricksList[i].host_bricks[index]['logicalSize'] = JSON.stringify(bricksList[i].host_bricks[index][property] * 10)
-                }
-                if (property == "device") {
-                    let device = bricksList[i].host_bricks[index][property]
-                    let isDeviceVdoEnabled = bricksList[i].host_bricks.some((brick, brickIndex) => {
-                        return (brickIndex != index && brick["device"] == device &&  brick["is_vdo_supported"])
-                    })
-                    bricksList[i].host_bricks[index]["is_vdo_supported"] = isDeviceVdoEnabled
-                }
-            }
-        }
-        bricksList.forEach(function (eachBrick) {
-          eachBrick.host_bricks.forEach(function (brick) {
-            if(brick['thinp']) {
-              thinpName = brick['device'].split("/").pop();
-              if(thinpoolOptions.indexOf(thinpName) == -1) {
-                thinpoolOptions.push(thinpName);
-                that.state.thinpoolOptions.push({key: thinpName, title: thinpName})
+                else if (brick['device'] == eachBrick.host_bricks[index]['device']) {
+                      brick[property] = value
+                      if(that.props.ansibleWizardType == "setup" && eachBrick.host_bricks[0].name != brick.name && brick.is_vdo_supported) {
+                        brick.thinp = true
+                      }
+                  }
+              })
+            })
+          }
+          else if (property == "logicalSize") {
+              bricksList[selectedHost.hostIndex].host_bricks[index][property] = value
+          }
+          else {
+              for(var i = 2; i >= selectedHost.hostIndex; i--){
+                  if(selectedHost.hostIndex != 2 && this.props.glusterModel.volumes[index].is_arbiter && i == 2 && property == 'size'){
+                      const arbiterValue = AnsibleUtil.getArbiterBrickSize(parseInt(value))
+                      bricksList[i].host_bricks[index][property] = JSON.stringify(arbiterValue)
+                  }
+                  else {
+                      bricksList[i].host_bricks[index][property] = value
+                  }
+                  if(property == "size") {
+                      bricksList[i].host_bricks[index]['logicalSize'] = JSON.stringify(bricksList[i].host_bricks[index][property] * 10)
+                  }
+                  if (property == "device") {
+                      let device = bricksList[i].host_bricks[index][property]
+                      let isDeviceVdoEnabled = bricksList[i].host_bricks.some((brick, brickIndex) => {
+                          return (brickIndex != index && brick["device"] == device &&  brick["is_vdo_supported"])
+                      })
+                      bricksList[i].host_bricks[index]["is_vdo_supported"] = isDeviceVdoEnabled
+                  }
               }
-            }
+          }
+          bricksList.forEach(function (eachBrick) {
+            eachBrick.host_bricks.forEach(function (brick) {
+              if(brick['thinp']) {
+                thinpName = brick['device'].split("/").pop();
+                if(thinpoolOptions.indexOf(thinpName) == -1) {
+                  thinpoolOptions.push(thinpName);
+                  that.state.thinpoolOptions.push({key: thinpName, title: thinpName})
+                }
+              }
+            })
           })
-        })
-        this.validateBrick(bricksList[selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
-        this.setState({ bricksList, errorMsgs })
+          this.validateBrick(bricksList[selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
+          this.setState({ bricksList, errorMsgs })
+        }
     }
     validateRaidConfig(raidConfig, errorMsgs){
         let valid = true
@@ -486,31 +548,63 @@ class WizardBricksStep extends Component {
     validateBrick(brick, index, errorMsgs){
         let valid  = true
         errorMsgs[index] = {}
-        if(brick.name.trim().length <1){
-            valid = false
-            errorMsgs[index].name = "LV name cannot be empty"
-        }
-        if(brick.device.trim().length<3){
-            errorMsgs[index].device = "Enter correct device name for brick"
-            valid = false
-        }
-        if(brick.size.trim().length<1){
-            errorMsgs[index].size = "Brick size cannot be empty"
-            valid = false;
-        }
-        if(brick.brick_dir.trim().length <1){
-            errorMsgs[index].brick_dir = "Mount point cannot be empty"
-            valid = false;
-        }
-        if(brick.is_vdo_supported && brick.logicalSize.trim().length<1){
-            errorMsgs[index].logicalSize = "Logical size cannot be empty"
-            valid = false;
-        }else{
-            const logicalSize = Number(brick.logicalSize)
-            const brickSize = Number(brick.size)
-            if(brick.is_vdo_supported && logicalSize < brickSize){
-                errorMsgs[index].logicalSize = "Logical size should be greater or equals to brick size"
+        if(this.props.ansibleWizardType == "expand_volume" && Array.isArray(brick)) {
+            brick.forEach(function(eachBrick) {
+              if(eachBrick.host_bricks[index].name.trim().length <1){
+                  valid = false
+                  errorMsgs[index].name = "LV name cannot be empty"
+              }
+              if(eachBrick.host_bricks[index].device.trim().length<3){
+                  errorMsgs[index].device = "Enter correct device name for brick"
+                  valid = false
+              }
+              if(eachBrick.host_bricks[index].size.trim().length<1){
+                  errorMsgs[index].size = "Brick size cannot be empty"
+                  valid = false;
+              }
+              if(eachBrick.host_bricks[index].brick_dir.trim().length <1){
+                  errorMsgs[index].brick_dir = "Mount point cannot be empty"
+                  valid = false;
+              }
+              if(eachBrick.host_bricks[index].is_vdo_supported && eachBrick.host_bricks[index].logicalSize.trim().length<1){
+                  errorMsgs[index].logicalSize = "Logical size cannot be empty"
+                  valid = false;
+              }else{
+                  const logicalSize = Number(eachBrick.host_bricks[index].logicalSize)
+                  const brickSize = Number(eachBrick.host_bricks[index].size)
+                  if(eachBrick.host_bricks[index].is_vdo_supported && logicalSize < brickSize){
+                      errorMsgs[index].logicalSize = "Logical size should be greater or equals to brick size"
+                      valid = false
+                  }
+              }
+            })
+        } else {
+            if(brick.name.trim().length <1){
                 valid = false
+                errorMsgs[index].name = "LV name cannot be empty"
+            }
+            if(brick.device.trim().length<3){
+                errorMsgs[index].device = "Enter correct device name for brick"
+                valid = false
+            }
+            if(brick.size.trim().length<1){
+                errorMsgs[index].size = "Brick size cannot be empty"
+                valid = false;
+            }
+            if(brick.brick_dir.trim().length <1){
+                errorMsgs[index].brick_dir = "Mount point cannot be empty"
+                valid = false;
+            }
+            if(brick.is_vdo_supported && brick.logicalSize.trim().length<1){
+                errorMsgs[index].logicalSize = "Logical size cannot be empty"
+                valid = false;
+            }else{
+                const logicalSize = Number(brick.logicalSize)
+                const brickSize = Number(brick.size)
+                if(brick.is_vdo_supported && logicalSize < brickSize){
+                    errorMsgs[index].logicalSize = "Logical size should be greater or equals to brick size"
+                    valid = false
+                }
             }
         }
         return valid
@@ -700,13 +794,6 @@ class WizardBricksStep extends Component {
                     </div>
                 }
                 </form>
-                {this.props.ansibleWizardType !== "setup" &&
-                    <a onClick={this.handleAdd} className="col-md-offset-4">
-                        <span className="pficon pficon-add-circle-o">
-                            <strong> Add Bricks</strong>
-                        </span>
-                    </a>
-                }
                 <form className="form-horizontal">
                     <div id="lv-cache-toggle">
                         <input type="checkbox"
@@ -788,6 +875,10 @@ WizardBricksStep.propTypes = {
 }
 
 const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack, ansibleWizardType}) => {
+    let deleteButton = true;
+    if(ansibleWizardType === "setup" || ansibleWizardType === "expand_volume") {
+      deleteButton = false
+    }
     const name = classNames(
         { "has-error": errorMsgs && errorMsgs.name }
     )
@@ -870,7 +961,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                 </div>
             </td>
             <td className="col-sm-1 ansible-wizard-bricks-delete">
-                {ansibleWizardType !== "setup" &&
+                {deleteButton &&
                     <a onClick={deleteCallBack}>
                         <span className="pficon pficon-delete ansible-wizard-delete-icon">
                         </span>

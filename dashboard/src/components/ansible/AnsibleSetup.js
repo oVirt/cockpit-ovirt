@@ -51,6 +51,8 @@ class AnsibleSetup extends Component {
           tempTitle = "Expand Cluster"
       } else if (ansibleWizardType === "create_volume") {
         tempTitle = "Create Volume"
+      } else if (ansibleWizardType === "expand_volume") {
+        tempTitle = "Expand Volume " + this.props.volumeName
       } else {
         tempTitle="Gluster Deployment"
       }
@@ -80,14 +82,18 @@ class AnsibleSetup extends Component {
         wizardChildren.push(<WizardVolumesStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
             stepName="Volumes"
             volumes={this.state.glusterModel.volumes}
+            volumeName={this.props.volumeName}
             isSingleNode={this.props.isSingleNode}
             />)
         wizardChildren.push(<WizardBricksStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
             stepName="Bricks"
             glusterModel={this.state.glusterModel}
+            hosts={this.state.glusterModel.hosts}
+            expandVolumeHosts={this.state.glusterModel.expandVolumeHosts}
+            volumes={this.state.glusterModel.volumes}
+            volumeName={this.props.volumeName}
             bricks={this.state.glusterModel.bricks}
             raidConfig={this.state.glusterModel.raidConfig}
-            hosts={this.state.glusterModel.hosts}
             lvCacheConfig={this.state.glusterModel.lvCacheConfig}
             />)
         wizardChildren.push(<WizardPreviewStep key={index++} ansibleWizardType={this.props.ansibleWizardType}

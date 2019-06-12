@@ -4,6 +4,7 @@ import Dashboard from '../components/Dashboard'
 import HostedEngine from '../components/HostedEngine'
 import CreateGlusterVolume from '../components/ansible/CreateGlusterVolume'
 import ExpandCluster from '../components/ansible/ExpandCluster'
+import ExpandVolume from '../components/ansible/ExpandVolume'
 import GlusterManagement from '../components/GlusterManagement'
 
 const defaultRoute = [
@@ -37,6 +38,11 @@ const nonSidebarRoutes = [
     name: "Expand Cluster",
     icon: "fa-cubes",
     component: ExpandCluster
+  },
+  { path: "/expand_volume",
+    name: "Expand Volume",
+    icon: "fa-cubes",
+    component: ExpandVolume
   },
   { path: "/gluster-management",
     name: "Gluster Management",

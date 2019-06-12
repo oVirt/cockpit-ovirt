@@ -42,8 +42,14 @@ class WizardExecutionStep extends Component {
       that.setState({ ansibleLog: that.state.ansibleLog + "Please check "+ CONFIG_FILES.glusterDeploymentLog +" for more informations." })
     }
     runAnsiblePlaybook() {
-        const that = this
-      AnsibleUtil.runAnsiblePlaybook(that.props.isVerbosityEnabled, CONFIG_FILES.ansibleInventoryFile, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
+      const that = this
+      let filePath = CONFIG_FILES.ansibleInventoryFile
+      if(this.props.ansibleWizardType == "expand_volume") {
+        filePath = CONFIG_FILES.ansibleExpandVolumeInventoryFile
+      } else {
+        filePath = CONFIG_FILES.ansibleInventoryFile
+      }
+      AnsibleUtil.runAnsiblePlaybook(that.props.isVerbosityEnabled, filePath, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
         that.setState({ ansibleStatus: 1 })
         if(response === true){
           that.ansibleDone()
@@ -156,6 +162,8 @@ const SuccessPanel = ({ callBack, ansibleWizardType }) => {
         message = "Successfully deployed Gluster"
     } else if (ansibleWizardType === "expand_cluster") {
         message = "Successfully expanded cluster"
+    } else if (ansibleWizardType === "expand_volume") {
+        message = "Successfully expanded volume"
     } else {
         message = "Successfully created volume"
     }
@@ -174,6 +182,10 @@ const SuccessPanel = ({ callBack, ansibleWizardType }) => {
             <h5 className="blank-slate-pf-main-action">
                 {message}
             </h5>
+            { ansibleWizardType === "expand_volume" && <h5 className="blank-slate-pf-main-action">
+                  Please run rebalance on the volume expanded.
+                </h5>
+            }
             <button type="button" className="btn btn-lg btn-primary"
                 onClick={callBack}>
                 {buttonLabel}

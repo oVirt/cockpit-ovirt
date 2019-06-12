@@ -5,6 +5,7 @@ export const CONFIG_FILES = {
     ansibleStatus: '/usr/share/cockpit/ovirt-dashboard/ansible/ansibleStatus.conf',
     ansibleConfigExample: '/usr/share/cockpit/ovirt-dashboard/ansible/hc_wizard_example_inventory.yml',
     ansibleInventoryFile: '/etc/ansible/hc_wizard_inventory.yml',
+    ansibleExpandVolumeInventoryFile: '/etc/ansible/hc_expand_volume_inventory.yml',
     glusterInventory: '/usr/share/ovirt-hosted-engine-setup/gdeploy-inventory.yml',
     distVolumeOptions: {"storage.owner-uid": "36", "storage.owner-gid": "36", "features.shard": "on",
     "performance.low-prio-threads": "32", "performance.strict-o-direct": "on","network.remote-dio": "off", "network.ping-timeout": "30",

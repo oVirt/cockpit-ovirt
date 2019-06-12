@@ -19,13 +19,19 @@ class GlusterManagement extends Component {
     this.updateHostInfo = this.updateHostInfo.bind(this);
     this.getHostInfo = this.getHostInfo.bind(this);
     this.getVolumeInfo = this.getVolumeInfo.bind(this);
-    this.getVolumeStatus= this.getVolumeStatus.bind(this);
-    this.handleVolumeRowClick= this.handleVolumeRowClick.bind(this);
+    this.getVolumeStatus = this.getVolumeStatus.bind(this);
+    this.handleVolumeRowClick = this.handleVolumeRowClick.bind(this);
+    this.handleExpandVolume = this.handleExpandVolume.bind(this);
   }
 
   componentDidMount(){
     this.updateHostInfo();
     this.updateVolumeInfo();
+  }
+
+  handleExpandVolume(volumeName) {
+    let url = '/ovirt-dashboard#/expand_volume/' + volumeName
+    cockpit.jump(url)
   }
 
   updateHostInfo(){
@@ -149,11 +155,13 @@ class GlusterManagement extends Component {
             <div className="col-12">
               {
                 this.state.volumeInfo !== null &&
-                <VolumeTable volumeInfo={this.state.volumeInfo}
+                <VolumeTable hostList={this.state.hostList}
+                  volumeInfo={this.state.volumeInfo}
                   selectedVolumes={this.state.selectedVolumes}
                   volumeStatus={this.state.volumeStatus}
                   handleRefresh={this.updateVolumeInfo}
-                  handleVolumeRowClick={this.handleVolumeRowClick}/>
+                  handleVolumeRowClick={this.handleVolumeRowClick}
+                  handleExpandVolume={this.handleExpandVolume}/>
               }
               {
                 this.state.hostList == null &&
@@ -281,10 +289,13 @@ class VolumeTable extends Component{
   constructor(props){
     super(props);
   }
-
   generateTable(){
     this.volumeTableRows = [];
     this.moreInfoModals=[];
+    this.expandVolumeButton = false;
+    if(this.props.hostList && this.props.hostList.length !== 1) {
+      this.expandVolumeButton = true
+    }
     for(let volumeName in this.props.volumeInfo){
       let volume = this.props.volumeInfo[volumeName];
       let expanded = this.props.selectedVolumes.hasOwnProperty(volumeName) && this.props.volumeStatus !== null && this.props.volumeStatus[volumeName] !== null && this.props.volumeStatus[volumeName] !== undefined;
@@ -298,6 +309,16 @@ class VolumeTable extends Component{
               {volume.volumeStatus}
             </td>
             <td><ObjectModalButton modalId={volume.uuid}/></td>
+            <td>
+              {this.expandVolumeButton &&
+                <span className="pull-right">
+                  <button className="btn btn-default action-btn"
+                    onClick={()=>{this.props.handleExpandVolume(volumeName)}}>
+                    Expand Volume
+                  </button>
+                </span>
+              }
+            </td>
           </tr>
       );
       this.moreInfoModals.push(
