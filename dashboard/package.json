@@ -41,7 +41,7 @@
     "bower": "^1.7.7",
     "clean-webpack-plugin": "^0.1.8",
     "copy-webpack-plugin": "^4.0.1",
-    "css-loader": "^0.26.1",
+    "css-loader": "^2.1.1",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-config-standard-jsx": "^5.0.0",
@@ -54,8 +54,7 @@
     "file-loader": "^0.10.0",
     "patternfly": "^3.48.1",
     "style-loader": "^0.13.0",
-    "uglify": "^0.1.5",
-    "url-loader": "^0.5.7",
+    "url-loader": "^1.1.2",
     "vinyl-source-stream": "^1.1.0",
     "webpack": "^2.2.1"
   },
