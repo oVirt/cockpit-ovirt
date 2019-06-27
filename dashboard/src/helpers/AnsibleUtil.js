@@ -35,7 +35,7 @@ var AnsibleUtil = {
                     brick_dir: "/gluster_bricks/data/data"
                 },
                 { name: "vmstore", type: "replicate",
-                    is_arbiter: 0,
+                    is_arbiter: 1,
                     brick_dir: "/gluster_bricks/vmstore/vmstore"
                 },
             ],
@@ -63,7 +63,7 @@ var AnsibleUtil = {
                 ]
             }],
             lvCacheConfig: [{
-                host: "", lvCache: false, ssd: "", lvCacheSize: "1", cacheMode: "writethrough"
+                host: "", lvCache: false, ssd: "", lvCacheSize: "1", cacheMode: "writethrough", thinpoolName: "--select--"
             }],
             isSingleNode: false
         }
@@ -132,14 +132,16 @@ var AnsibleUtil = {
           let isVDO = brick.is_vdo_supported == true && brick.logicalSize;
           //TODO: cache more than one device.
           if(hostCacheConfig.lvCache && hostVars.gluster_infra_cache_vars == undefined){
+            let selectedThinpName = "gluster_thinpool_gluster_vg_" + hostCacheConfig.thinpoolName
+            let cachedisk = "/dev/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
             hostVars.gluster_infra_cache_vars = [{
-              vgname: vgName,
-              cachedisk: hostCacheConfig.ssd,
-              cachelvname: `cachelv_${thinpoolName}`,
-              cachethinpoolname: thinpoolName,
+              vgname: "gluster_vg_"+ hostCacheConfig.thinpoolName,
+              cachedisk: cachedisk,
+              cachelvname: `cachelv_${selectedThinpName}`,
+              cachethinpoolname: selectedThinpName,
               cachelvsize: `${hostCacheConfig.lvCacheSize - (hostCacheConfig.lvCacheSize/10)}G`,
               cachemetalvsize: `${hostCacheConfig.lvCacheSize/10}G`,
-              cachemetalvname: `cache_${thinpoolName}`,
+              cachemetalvname: `cache_${selectedThinpName}`,
               cachemode: hostCacheConfig.cacheMode
             }];
           }

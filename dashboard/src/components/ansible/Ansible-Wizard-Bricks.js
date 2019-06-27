@@ -26,6 +26,8 @@ class WizardBricksStep extends Component {
             cacheMode: "writethrough",
             cacheModeOptions: [{ key: "writethrough", title: "writethrough" }, { key: "writeback", title: "writeback" }],
             glusterModel: props.glusterModel,
+            thinpoolName: "",
+            thinpoolOptions: [],
             errorMsg: "",
             errorMsgs: {}
         }
@@ -39,9 +41,9 @@ class WizardBricksStep extends Component {
         this.updateBrickDetails = this.updateBrickDetails.bind(this)
         this.updateArbiterHostBricks = this.updateArbiterHostBricks.bind(this)
         this.handleCacheModeChange = this.handleCacheModeChange.bind(this)
+        this.handleThinPoolChange = this.handleThinPoolChange.bind(this)
     }
     componentDidMount(){
-
         let bricksList = this.state.bricksList
         while (bricksList.length < this.props.glusterModel.hosts.length){
           bricksList.push(JSON.parse(JSON.stringify(bricksList[0])));
@@ -87,6 +89,7 @@ class WizardBricksStep extends Component {
             })
             that.setState({bricksList, lvCacheConfig, arbiterVolumes, isVdoSupported})
         });
+        that.state.thinpoolOptions.push({key: "--select--", title: "--select--"}, {key: "sdb", title: "sdb"})
     }
     componentWillReceiveProps(nextProps){
         // Checking if hosts have changed
@@ -272,13 +275,33 @@ class WizardBricksStep extends Component {
         } else {
           enabledFields = ['name', 'device', 'brick_dir', 'size']
         }
+        let thinpName = "";
+        const that = this;
+        const thinpoolOptions = [];
+        that.state.thinpoolOptions = [{key: "--select--", title: "--select--"}]
+        that.state.bricksList.forEach(function(eachBrick){
+          if(eachBrick.host === value){
+            eachBrick.host_bricks.forEach(function(brick) {
+              if(brick['thinp']) {
+                thinpName = brick['device'].split("/").pop();
+                if(thinpoolOptions.indexOf(thinpName) == -1) {
+                  thinpoolOptions.push(thinpName);
+                  that.state.thinpoolOptions.push({key: thinpName, title: thinpName})
+                }
+              }
+            })
+          }
+        })
         this.setState({selectedHost, enabledFields, hostArbiterVolumes})
     }
     handleUpdate(index, property, value, selectedBrick) {
+      let thinpName = "";
+      const thinpoolOptions = [];
       let selectedHost = this.state.selectedHost
         let bricksList = this.state.bricksList
         const errorMsgs= this.state.errorMsgs
         let that = this
+        that.state.thinpoolOptions = [{key: "--select--", title: "--select--"}]
         if (property == "is_vdo_supported") {
           bricksList.forEach(function (eachBrick) {
             eachBrick.host_bricks.forEach(function (brick, brickIndex) {
@@ -325,6 +348,17 @@ class WizardBricksStep extends Component {
                 }
             }
         }
+        bricksList.forEach(function (eachBrick) {
+          eachBrick.host_bricks.forEach(function (brick) {
+            if(brick['thinp']) {
+              thinpName = brick['device'].split("/").pop();
+              if(thinpoolOptions.indexOf(thinpName) == -1) {
+                thinpoolOptions.push(thinpName);
+                that.state.thinpoolOptions.push({key: thinpName, title: thinpName})
+              }
+            }
+          })
+        })
         this.validateBrick(bricksList[selectedHost.hostIndex].host_bricks[index], index, errorMsgs)
         this.setState({ bricksList, errorMsgs })
     }
@@ -366,7 +400,7 @@ class WizardBricksStep extends Component {
         if(that.state.glusterModel.isSingleNode) {
           that.state.lvCacheConfig[0].lvCache = true
           lvCacheConfig.push(that.state.lvCacheConfig[0])
-        } else if(property === "ssd") {
+        } else if(property === "ssd" || property === "thinpoolName") {
           if(lvCacheConfigIndex == 0) {
             that.state.lvCacheConfig.forEach(function(eachConfig) {
               eachConfig[property] = value
@@ -402,6 +436,10 @@ class WizardBricksStep extends Component {
       this.handleLvCacheConfig( "cacheMode", value)
     }
 
+    handleThinPoolChange(value) {
+      this.handleLvCacheConfig( "thinpoolName", value)
+    }
+
     validateLvCacheConfig(lvCacheConfig, errorMsgs){
       let valid = true
       if(lvCacheConfig != null && lvCacheConfig.lvCache){
@@ -422,6 +460,10 @@ class WizardBricksStep extends Component {
         }
         if(lvCacheConfig.cacheMode.trim().length < 1){
             errorMsgs.lvCacheConfig.cacheMode = "Enter cache mode"
+            valid = false
+        }
+        if(lvCacheConfig.thinpoolName.trim() === "--select--" || lvCacheConfig.thinpoolName.trim() === ""){
+            errorMsgs.lvCacheConfig.thinpoolName = "Please select thinpool device"
             valid = false
         }
       }
@@ -560,6 +602,7 @@ class WizardBricksStep extends Component {
         const ssdMsg = this.state.errorMsgs.lvCacheConfig ? this.state.errorMsgs.lvCacheConfig.ssd : ""
         const lvCacheSizeMsg = this.state.errorMsgs.lvCacheConfig ? this.state.errorMsgs.lvCacheConfig.lvCacheSize : ""
         const cacheModeMsg = this.state.errorMsgs.lvCacheConfig ? this.state.errorMsgs.lvCacheConfig.cacheMode : ""
+        const thinpoolMsg = this.state.errorMsgs.lvCacheConfig ? this.state.errorMsgs.lvCacheConfig.thinpoolName : ""
         const ssd = classNames(
             "form-group",
             { "has-error": ssdMsg}
@@ -571,6 +614,10 @@ class WizardBricksStep extends Component {
         const cacheMode = classNames(
             "form-group",
             { "has-error": cacheModeMsg}
+        )
+        const thinpoolName = classNames(
+            "form-group",
+            { "has-error": thinpoolMsg}
         )
         return (
             <div>
@@ -670,11 +717,22 @@ class WizardBricksStep extends Component {
                       style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
                         <label className="col-md-3 control-label">SSD</label>
                         <div className="col-md-3">
-                        <input type="text" className="form-control"
+                        <input type="text" className="form-control" placeholder="/dev/sde"
                             value={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].ssd}
                             onChange={(e) => this.handleLvCacheConfig("ssd", e.target.value)}
                             />
                             <span className="help-block">{ssdMsg}</span>
+                        </div>
+                    </div>
+                    <div className={thinpoolName}
+                      style={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].lvCache ? {} : { display: 'none' }}>
+                        <label className="col-md-3 control-label"> Thinpool device </label>
+                        <div className="col-md-4">
+                        <Selectbox optionList={this.state.thinpoolOptions}
+                          selectedOption={this.state.lvCacheConfig[this.state.selectedHost.hostIndex].thinpoolName}
+                          callBack={(e) => this.handleThinPoolChange(e)}
+                          />
+                            <span className="help-block">{thinpoolMsg}</span>
                         </div>
                     </div>
                     <div className={lvCacheSize}
