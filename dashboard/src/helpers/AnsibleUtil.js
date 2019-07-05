@@ -379,6 +379,28 @@ var AnsibleUtil = {
           })
           .stream(stdoutCallback);
     },
+    runAnsibleCleanupPlaybook(stdoutCallback, successCallback, failCallback, callBack) {
+          const options = { "environ": ["ANSIBLE_INVENTORY_UNPARSED_FAILED=true"] };
+          let cmd = ["/root/../usr/bin/ansible-playbook",
+             constants.glusterCleanupPlayBook,
+             "-i",
+             constants.ansibleInventoryFile
+           ];
+           cockpit.spawn(cmd, options)
+           .done(function(successCallback){
+             console.log("Cleanup Playbook executed successfully. ",successCallback);
+             if(typeof callBack === 'function'){
+               callBack(true)
+             }
+           })
+           .fail(function(failCallback){
+             console.log("Cleanup Playbook execution failed. ",failCallback);
+             if(typeof callBack === 'function'){
+               callBack(failCallback)
+             }
+           })
+           .stream(stdoutCallback);
+    },
     isRhelSystem(callBack){
         let proc = cockpit.spawn(
             ["grep",

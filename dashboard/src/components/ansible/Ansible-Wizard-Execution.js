@@ -16,6 +16,7 @@ class WizardExecutionStep extends Component {
         this.ansibleFail = this.ansibleFail.bind(this)
         this.runAnsiblePlaybook = this.runAnsiblePlaybook.bind(this)
         this.callBack = this.callBack.bind(this)
+        this.runCleanUpPlaybook = this.runCleanUpPlaybook.bind(this)
     }
     componentDidMount() {
         this.runAnsiblePlaybook()
@@ -51,6 +52,16 @@ class WizardExecutionStep extends Component {
         }
       })
     }
+    runCleanUpPlaybook(){
+      const that = this;
+      this.state.ansibleLog = ""
+      AnsibleUtil.runAnsibleCleanupPlaybook(this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
+        console.log("Cleanup playbook executed.");
+        that.setState({ ansibleLog: that.state.ansibleLog + "Please check "+ CONFIG_FILES.glusterDeploymentCleanUpLog +" for more informations." })
+        that.saveDeploymentLog(CONFIG_FILES.glusterDeploymentCleanUpLog, that.state.ansibleLog, 2)
+      })
+    }
+
     callBack() {
         if (this.props.ansibleWizardType === "setup") {
             this.props.onSuccess(
@@ -90,9 +101,7 @@ class WizardExecutionStep extends Component {
         return (
             <div className="col-sm-12">
                 <div className="panel panel-default">
-                    <div className="panel-heading">
-                        <Status status={this.state.ansibleStatus} reDeployCallback={this.props.reDeployCallback}/>
-                    </div>
+                        <Status status={this.state.ansibleStatus} reDeployCallback={this.props.reDeployCallback} runCleanUpPlaybook={this.runCleanUpPlaybook}/>
                     <div className="list-group">
                         <div className="list-group-item">
                             <textarea className="ansible-wizard-config-preview"
@@ -112,7 +121,7 @@ WizardExecutionStep.propTypes = {
     reDeployCallback: PropTypes.func.isRequired
 }
 
-const Status = ({ status, reDeployCallback }) => {
+const Status = ({ status, reDeployCallback, runCleanUpPlaybook}) => {
     let msg = "Deployment in progress"
     let statusIcon = <div className="spinner spinner-lg blank-slate-pf-icon"></div>
     if (status === -1) {
@@ -120,15 +129,20 @@ const Status = ({ status, reDeployCallback }) => {
         statusIcon = <span className="pficon-error-circle-o"></span>
     }
     return (
-        <div>
+        <div className="panel-heading">
             {statusIcon}
             <span>{msg}</span>
             <div className="pull-right">
                 {status === -1 &&
-                    <button className="btn btn-primary" onClick={reDeployCallback}>
+                  <div>
+                     <button className="btn btn-primary" onClick={runCleanUpPlaybook}>
+                        CleanUp
+                     </button> &nbsp;
+                     <button className="btn btn-primary" onClick={reDeployCallback}>
                         <span className="pficon pficon-restart">&nbsp;</span>
                         Redeploy
                      </button>
+                  </div>
                 }
             </div>
         </div>

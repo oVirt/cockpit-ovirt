@@ -5,7 +5,7 @@ import HeSetupWizardContainer from './HostedEngineSetup/HeSetupWizard/HeSetupWiz
 import AnsibleSetup from './ansible/AnsibleSetup'
 import AnsibleUtil from '../helpers/AnsibleUtil'
 import {heSetupState, deploymentOption, deploymentTypes, messages} from './HostedEngineSetup/constants'
-import { CONFIG_FILES as constants } from '../components/ansible/constants'
+import { CONFIG_FILES as constants} from '../components/ansible/constants'
 import Selectbox from './common/Selectbox'
 import logoUrl from '../../static/branding/ovirt/ovirt-logo-highres.png'
 import HeSetupFooter from './HeSetupFooter'
@@ -16,6 +16,7 @@ class HostedEngineSetup extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      ansibleLog: "",
       cancelled: false,
       deploymentOption: deploymentOption.REGULAR,
       deploymentType: deploymentTypes.ANSIBLE_DEPLOYMENT,
@@ -344,8 +345,21 @@ class ExistingGlusterConfigDialog extends Component  {
   constructor(props) {
     super(props);
     this.state = {
-      showUseExistingConfOption: false
+      showUseExistingConfOption: false,
+      ansibleInventoryFileFound: false,
+      cleanUpConfigPreview: false
     }
+    this.glusterCleanup = this.glusterCleanup.bind(this)
+    this.ansibleDone = this.ansibleDone.bind(this)
+    this.ansibleStdout = this.ansibleStdout.bind(this)
+    this.ansibleFail = this.ansibleFail.bind(this)
+    this.closeCleanUpConfigpreview = this.closeCleanUpConfigpreview.bind(this)
+    let that = this
+    AnsibleUtil.checkIfFileExist(constants.ansibleInventoryFile, function(isExist) {
+      if(isExist){
+        that.setState({ ansibleInventoryFileFound: true })
+      }
+    })
   }
 
   componentDidMount() {
@@ -362,8 +376,63 @@ class ExistingGlusterConfigDialog extends Component  {
       });
   }
 
+  componentDidUpdate(){
+      this.scrollToBottom()
+  }
+
+  scrollToBottom(){
+    if(this.ansibleLogText != null) {
+      const scrollHeight = this.ansibleLogText.scrollHeight;
+      const height = this.ansibleLogText.clientHeight;
+      const maxScrollTop = scrollHeight - height;
+      ReactDOM.findDOMNode(this.ansibleLogText).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+    }
+  }
+
   componentWillUnmount() {
       $(ReactDOM.findDOMNode(this)).modal('hide')
+  }
+
+  ansibleDone() {
+    const that= this;
+    this.setState({ ansibleLog: that.state.ansibleLog + "\nCleanup Successful!\nPlease check "+ constants.glusterDeploymentCleanUpLog + "for more informations."})
+    that.saveLog(constants.glusterDeploymentCleanUpLog, that.state.ansibleLog)
+  }
+
+  ansibleStdout(data) {
+      this.setState({ ansibleLog: this.state.ansibleLog + data })
+  }
+
+  ansibleFail(response) {
+    const that= this;
+    if(response.exit_status === 1) {
+      this.ansibleStdout("ERROR! No inventory was parsed, please check your configuration and options. Could be problem in inventory file.")
+    }
+    this.setState({ ansibleLog: that.state.ansibleLog + "\nCleanup Failed!\nPlease check "+ constants.glusterDeploymentCleanUpLog + "for more informations."})
+    that.saveLog(constants.glusterDeploymentCleanUpLog, that.state.ansibleLog)
+  }
+
+  closeCleanUpConfigpreview() {
+    this.setState({cleanUpConfigPreview: false})
+  }
+
+  glusterCleanup() {
+    const that = this
+    that.setState({cleanUpConfigPreview: true})
+    this.state.ansibleLog = ""
+    AnsibleUtil.runAnsibleCleanupPlaybook(this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
+      if(response === true){
+        that.ansibleDone()
+      } else {
+        that.ansibleFail(response)
+      }
+    })
+  }
+  saveLog(filePath, fileContent) {
+    const that = this;
+    AnsibleUtil.handleDirAndFileCreation(filePath, fileContent, function (result) {
+        console.log("Status File: ", result)
+    })
   }
 
   checkFlagForButton() {
@@ -372,11 +441,41 @@ class ExistingGlusterConfigDialog extends Component  {
     this.divClasses = "row popup-dialog-btn-row"
     this.modalSize = "modal-content"
     this.thirdOptionClass = ""
+    this.cleanUpConfigPreview = ""
+    const that = this
+    if(that.state.ansibleInventoryFileFound){
+      if(that.state.cleanUpConfigPreview){
+        this.cleanUpConfigPreview = <div className="list-group">
+            <div className="list-group-item">
+                <textarea className="cleanup-config-preview"
+                    ref={(input) => { this.ansibleLogText = input }}
+                    value={this.state.ansibleLog}>
+                </textarea>
+                <button type="button" className="pull-left btn btn-primary wizard-pf-close wizard-pf-dismiss"
+                  onClick={this.closeCleanUpConfigpreview} aria-hidden="true">
+                    Close
+                </button>
+            </div>
+        </div>
+      }
+      that.ansibleInventory = []
+      that.ansibleInventory.push(
+        <div className="col-sm-1 col-sm-offset-1" style={{float: 'left'}}>
+          <button type="button"
+                  className="btn btn-default"
+                  aria-label="Run gluster wizard"
+                  style={that.state.ansibleInventoryFileFound ? {} : { display: 'none' }}
+                  onClick={that.glusterCleanup}>
+            Cleanup
+          </button>{that.cleanUpConfigPreview}
+        </div>
+      )
+    }
     if(this.state.showUseExistingConfOption) {
-      this.divClasses+=" col-sm-12"
+      this.divClasses+=" col-sm-14"
       this.thirdOptionClass+=" col-sm-4"
       this.useExistingConfiguration.push(
-        <div className="col-sm-3 col-sm-offset-1">
+        <div className="col-sm-1 col-sm-offset-1">
           <button type="button"
                   className="btn btn-default"
                   aria-label="Use existing configuration"
@@ -428,8 +527,9 @@ class ExistingGlusterConfigDialog extends Component  {
                   <div>
                     {this.useExistingConfigurationMessage}
                     <div className={this.divClasses}>
+                      {this.ansibleInventory}
                       {this.useExistingConfiguration}
-                      <div className="col-sm-3 col-sm-offset-1" style={{float: 'left'}}>
+                      <div className="col-sm-offset-1" style={{float: 'left'}}>
                         <button type="button"
                                 className="btn btn-default"
                                 aria-label="Run gluster wizard"

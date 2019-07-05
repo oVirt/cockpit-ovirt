@@ -911,6 +911,11 @@ button.fqdn-validation-btn {
     width: 65px;
 }
 
+.cleanup-config-preview{
+    width: 480px;
+    height: 300px;
+}
+
 .verbosity {
   margin-left: 0px;
 }
