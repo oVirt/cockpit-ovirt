@@ -13,13 +13,15 @@ class WizardPreviewStep extends Component {
             ansibleConfig: "",
             isEditing: false,
             isChanged: false,
-            ansibleFileGenerated: false
+            ansibleFileGenerated: false,
+            isVerbosityEnabled: false
         }
         this.handleConfigChange = this.handleConfigChange.bind(this)
         this.handleEdit = this.handleEdit.bind(this)
         this.handleSave = this.handleSave.bind(this)
         this.readAnsibleConfig = this.readAnsibleConfig.bind(this)
-        this.createAnsibleConfig = this.createAnsibleConfig.bind(this)
+
+        this.handleVerbosity = this.handleVerbosity.bind(this)
     }
     createAnsibleConfig() {
         if (this.props.glusterModel.volumes.length > 0 && this.props.glusterModel.hosts.length > 0) {
@@ -147,6 +149,17 @@ class WizardPreviewStep extends Component {
             console.log("Result after editing and saving config file: ", result)
         })
     }
+    handleVerbosity(value) {
+      if(value) {
+        this.setState({
+          isVerbosityEnabled: true
+        })
+      } else {
+        this.setState({
+          isVerbosityEnabled: false
+        })
+      }
+    }
     render() {
         if (this.props.isDeploymentStarted) {
             return (
@@ -157,6 +170,7 @@ class WizardPreviewStep extends Component {
                     reDeployCallback={this.props.reDeployCallback}
                     ansibleWizardType={this.props.ansibleWizardType}
                     expandClusterConfigFilePath={this.props.expandClusterConfigFilePath}
+                    isVerbosityEnabled={this.state.isVerbosityEnabled}
                     />
             )
         } else {
@@ -193,6 +207,13 @@ class WizardPreviewStep extends Component {
                         <textarea className="ansible-wizard-config-preview"
                             value={this.state.ansibleConfig} onChange={this.handleConfigChange} readOnly={!this.state.isEditing}>
                         </textarea>
+                    </div>
+                    <div id="debug-toggle" className="verbosity">
+                        <input type="checkbox" title= "Ansible playbook will be executed with -vv option."
+                            checked={this.state.isVerbosityEnabled}
+                            onChange={(e) => this.handleVerbosity(e.target.checked)}
+                            />
+                        <label className="control-label">Enable Debug Logging</label>
                     </div>
                 </div>
             )
