@@ -352,23 +352,32 @@ var AnsibleUtil = {
           callback(true)
         })
     },
-    runAnsiblePlaybook(configFile, stdoutCallback, successCallback, failCallback, callBack) {
+    runAnsiblePlaybook(isVerbosityEnabled, configFile, stdoutCallback, successCallback, failCallback, callBack) {
           const options = { "environ": ["ANSIBLE_INVENTORY_UNPARSED_FAILED=true"] };
-          let cmd = ["/root/../usr/bin/ansible-playbook",
-             "/root/../usr/share/cockpit/ovirt-dashboard/ansible/hc_wizard.yml",
-             "-i",
-             configFile
-           ];
-           cockpit.spawn(cmd, options)
-           .done(function(successCallback){
-             console.log("Playbook executed successfully. ",successCallback);
-             callBack(true);
-           })
-           .fail(function(failCallback){
-             console.log("Playbook execution failed. ",failCallback);
-             callBack(failCallback)
-           })
-           .stream(stdoutCallback);
+          let cmd = [];
+          if(isVerbosityEnabled) {
+            cmd = ["/root/../usr/bin/ansible-playbook",
+               "/root/../usr/share/cockpit/ovirt-dashboard/ansible/hc_wizard.yml",
+               "-i",
+               configFile, "-vv"
+             ];
+          } else {
+            cmd = ["/root/../usr/bin/ansible-playbook",
+               "/root/../usr/share/cockpit/ovirt-dashboard/ansible/hc_wizard.yml",
+               "-i",
+               configFile
+             ];
+          }
+          cockpit.spawn(cmd, options)
+          .done(function(successCallback){
+            console.log("Playbook executed successfully. ",successCallback);
+            callBack(true);
+          })
+          .fail(function(failCallback){
+            console.log("Playbook execution failed. ",failCallback);
+            callBack(failCallback)
+          })
+          .stream(stdoutCallback);
     },
     isRhelSystem(callBack){
         let proc = cockpit.spawn(
@@ -402,7 +411,7 @@ var AnsibleUtil = {
       // pick only directory path
       const dirPath = filePath.substring(0, filePath.lastIndexOf("/"))
        cockpit.spawn(
-        [ "mkdir", dirPath ], { "superuser":"require" }
+        [ "mkdir", "-p", dirPath ], { "superuser":"require" }
       ).done(function(code){
         console.log("Directory " + dirPath + " created successfully.");
         callback(code)
@@ -417,7 +426,7 @@ var AnsibleUtil = {
       // pick only file name, omiting .yml
       const fileName = filePath.split("/").pop().split(".")[0]
       // Complete file path containing timestamp.
-      const backupPath = dirPath + "/" + fileName + "-" + new Date().getTime() + ".yml"
+      const backupPath = dirPath + "/" + fileName + "-" + new Date().getTime() + "." + filePath.split(".")[1]
        cockpit.spawn(
         [ "mv", filePath, backupPath ], { "superuser":"require" }
       ).done(function(code){

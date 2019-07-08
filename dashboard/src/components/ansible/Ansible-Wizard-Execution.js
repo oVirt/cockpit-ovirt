@@ -23,26 +23,26 @@ class WizardExecutionStep extends Component {
     ansibleDone() {
         this.setState({ ansibleStatus: 0 })
         let filePath = CONFIG_FILES.ansibleStatus
-        AnsibleUtil.handleDirAndFileCreation(filePath, String(this.state.ansibleStatus), function (result) {
-            console.log("Status File: ", result)
-        })
+        let fileContent = String(this.state.ansibleStatus)
+        this.saveDeploymentLog(filePath, fileContent, 1)
     }
     ansibleStdout(data) {
         this.setState({ ansibleLog: this.state.ansibleLog + data })
     }
     ansibleFail(response) {
       this.setState({ ansibleStatus: -1 })
+      const that = this;
       if(response.exit_status === 1) {
         this.ansibleStdout("ERROR! No inventory was parsed, please check your configuration and options. Could be problem in inventory file.")
       }
       let filePath = CONFIG_FILES.ansibleStatus
-      AnsibleUtil.handleDirAndFileCreation(filePath, String(this.state.ansibleStatus), function (result) {
-          console.log("Status File: ", result)
-      })
+      let fileContent = String(this.state.ansibleStatus)
+      this.saveDeploymentLog(filePath, fileContent, 1)
+      that.setState({ ansibleLog: that.state.ansibleLog + "Please check "+ CONFIG_FILES.glusterDeploymentLog +" for more informations." })
     }
     runAnsiblePlaybook() {
         const that = this
-      AnsibleUtil.runAnsiblePlaybook(CONFIG_FILES.ansibleInventoryFile, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
+      AnsibleUtil.runAnsiblePlaybook(that.props.isVerbosityEnabled, CONFIG_FILES.ansibleInventoryFile, this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
         that.setState({ ansibleStatus: 1 })
         if(response === true){
           that.ansibleDone()
@@ -72,6 +72,15 @@ class WizardExecutionStep extends Component {
         const height = this.ansibleLogText.clientHeight;
         const maxScrollTop = scrollHeight - height;
         ReactDOM.findDOMNode(this.ansibleLogText).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+      }
+    }
+    saveDeploymentLog(filePath, fileContent, n) {
+      const that = this;
+      if (n <= 2) {
+        AnsibleUtil.handleDirAndFileCreation(filePath, fileContent, function (result) {
+            console.log("Status File: ", result)
+            that.saveDeploymentLog(CONFIG_FILES.glusterDeploymentLog, that.state.ansibleLog, n+1)
+        })
       }
     }
     render() {

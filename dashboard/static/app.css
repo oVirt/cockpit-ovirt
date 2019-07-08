@@ -910,3 +910,7 @@ span.fqdn-status-icon {
 button.fqdn-validation-btn {
     width: 65px;
 }
+
+.verbosity {
+  margin-left: 0px;
+}
