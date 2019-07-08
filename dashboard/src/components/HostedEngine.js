@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import HostedEngineSetup from './HostedEngineSetup'
 import GlusterManagement from './GlusterManagement'
-import {checkDeployed, checkInstalled, getMetrics, getHostname, setMaintenance}
+import {checkDeployed, checkInstalled, getHostid, getMetrics, getHostname, setMaintenance}
   from '../helpers/HostedEngineStatus'
 var classNames = require('classnames')
 
@@ -78,12 +78,14 @@ class Status extends Component {
     super(props)
     this.state = {
       status: null,
+      host_id: null,
       globalMaintenance: false,
-      is_single_host: false,
+      is_running_engine_vm: false,
       vm: null
     }
     this.updateStatus = this.updateStatus.bind(this)
     this.onClick = this.onClick.bind(this)
+    this.hostidCallback = this.hostidCallback.bind(this)
   }
   onClick() {
     this.setState({expanded: !this.state.expanded})
@@ -93,7 +95,6 @@ class Status extends Component {
     delete status.global_maintenance
 
     this.setState({status: status})
-    this.setState({is_single_host: Object.keys(status).length == 1})
 
     let found_running = false
     let running_host = {}
@@ -101,12 +102,21 @@ class Status extends Component {
       if (status[key]["engine-status"]["vm"] === "up") {
         running_host = {hostname: status[key]["hostname"]}
         found_running = true
+        if (this.state.host_id !== null && this.state.host_id === key) {
+            this.setState({is_running_engine_vm: true})
+        } else {
+            this.setState({is_running_engine_vm: false})
+        }
       }
     }
     this.setState({vm: found_running ? running_host : false})
   }
+  hostidCallback(value) {
+    this.setState({host_id: value})
+  }
   componentWillMount() {
     var self = this
+    getHostid(self.hostidCallback)
     var interval = setInterval(function() {
       getMetrics(self.updateStatus)
     }, 1000)
@@ -144,7 +154,7 @@ class Status extends Component {
           <Engine
             status={this.state.vm}
           />
-        <Buttons single_host={this.state.is_single_host} />
+        <Buttons running_engine_vm={this.state.is_running_engine_vm} />
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">
@@ -190,17 +200,18 @@ class Buttons extends Component {
       "Remove this host from maintenance": "none",
       "Put this cluster into global maintenance": "global",
     }
-    if (!this.props.single_host) {
+    if (!this.props.running_engine_vm) {
       actions["Put this host into local maintenance"] = "local"
     }
     let buttons = []
     let i = 0
     for (let action in actions) {
-      let disabled = (actions[action] == "local" && this.props.single_host) ? true : false
+      let disabled = (actions[action] == "local" && this.props.running_engine_vm) ? true : false
       if (disabled) {
           buttons.push(
               <div className="alert alert-warning">
-                Local maintenance cannot be enabled with a single host
+                Local maintenance cannot be set when running the engine VM,
+                please migrate it from the engine first if needed.
               </div>
          )
       }
