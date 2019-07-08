@@ -43,6 +43,29 @@ export function getMetrics(callback) {
   })
 }
 
+export function getHostid(callback) {
+  let proc = cockpit.spawn(
+    ["/bin/grep",
+     'host_id',
+     "/etc/ovirt-hosted-engine/hosted-engine.conf"]
+  )
+  .done(function(host_id) {
+    var res = host_id.split("=");
+    if (res.length > 1) {
+       callback(res[1].trim());
+    } else {
+       console.log(
+         "Failed parsing host_id from /etc/ovirt-hosted-engine/hosted-engine.conf"
+       );
+    }
+  })
+  .fail(function(err) {
+    console.log(
+      "Failed to get hosted-engine host_id even though engine is deployed:" + err
+    );
+  })
+}
+
 export function setMaintenance(mode) {
   let proc = cockpit.spawn(
     ["/usr/sbin/hosted-engine",
