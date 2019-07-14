@@ -23,13 +23,13 @@
     "classnames": "^2.2.3",
     "history": "^3.0.0",
     "ini": "^1.3.4",
+    "js-yaml": "^3.13.1",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-router": "^4.2.0",
     "react-router-config": "^1.0.0-beta.4",
     "react-router-dom": "^4.2.2",
-    "uuid": "^3.1.0",
-    "js-yaml": "^3.12.1"
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -38,7 +38,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "bootstrap": "^3.3.7",
-    "bower": "^1.7.7",
+    "bower": "^1.8.8",
     "clean-webpack-plugin": "^0.1.8",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^2.1.1",
@@ -52,7 +52,7 @@
     "eslint-plugin-react": "^7.8.2",
     "eslint-plugin-standard": "^3.1.0",
     "file-loader": "^0.10.0",
-    "patternfly": "^3.48.1",
+    "patternfly": "^3.59.3",
     "style-loader": "^0.13.0",
     "url-loader": "^1.1.2",
     "vinyl-source-stream": "^1.1.0",
