@@ -16,12 +16,11 @@ class StorageUtil {
     constructor(model) {
         this.model = model;
         this.varFileGen = new AnsibleVarFilesGenerator(model);
+        this.playbookUtil = new PlaybookUtil();
 
         this.getTargetList = this.getTargetList.bind(this);
-        this.runDiscoveryPlaybook = this.runDiscoveryPlaybook.bind(this);
         this.getTargetData = this.getTargetData.bind(this);
         this.getLunList = this.getLunList.bind(this);
-        this.runGetDevicesPlaybook = this.runGetDevicesPlaybook.bind(this);
         this.getLunData = this.getLunData.bind(this);
         this.readOutputFile = this.readOutputFile.bind(this);
         this.getVarFileString = this.getVarFileString.bind(this);
@@ -31,75 +30,29 @@ class StorageUtil {
     }
 
     getFcLunsList() {
-        const self = this;
-        const playbookUtil = new PlaybookUtil();
         const playbookPath = playbookPaths.HE_ROLE;
         const roleTag = ansibleRoleTags.FC_GET_DEVICES;
         const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
         const outputPath = outputPaths.FC_GET_DEVICES;
+        const sensitiveData = this.varFileGen.getAnswerFileStringForPhase(phases.FC_GET_DEVICES, true)
+
         return this.varFileGen.writeVarFileForPhase(phases.FC_GET_DEVICES)
-            .then(varFilePath => {
-                return playbookUtil.runPlaybookWithVarFiles(playbookPath, outputPath, [varFilePath], roleTag, skipTag);
-            })
-            .then(() => playbookUtil.readOutputFile(outputPath))
-            .then(output => playbookUtil.getResultsData(output))
-            .then(results => self.parseLunData(results, "otopi_fc_devices"))
+            .then(varsFilePath => this.playbookUtil.runPlaybookWithVarFiles(playbookPath, outputPath, [varsFilePath], roleTag, skipTag, sensitiveData))
+            .then(() => this.playbookUtil.readOutputFile(outputPath))
+            .then(output => this.playbookUtil.getResultsData(output))
+            .then(results => this.parseLunData(results, "otopi_fc_devices"))
     }
 
     getTargetList() {
-        const self = this;
-        const varFileGen = new AnsibleVarFilesGenerator(this.model);
-        const varFileStr = this.getVarFileString(phases.ISCSI_DISCOVER);
-        return varFileGen.writeVarFile(varFileStr, phases.ISCSI_DISCOVER)
-            .then(varFilePath => self.runDiscoveryPlaybook(varFilePath))
-            .then(() => self.readOutputFile(outputPaths.ISCSI_DISCOVER, phases.ISCSI_DISCOVER));
-    }
+        const playbookPath = playbookPaths.HE_ROLE;
+        const roleTag = ansibleRoleTags.ISCSI_DISCOVER;
+        const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
+        const outputPath = outputPaths.ISCSI_DISCOVER;
+        const sensitiveData = this.varFileGen.getAnswerFileStringForPhase(phases.ISCSI_DISCOVER, true)
 
-    // TODO Refactor to use PlaybookUtil
-    runDiscoveryPlaybook(varFilePath) {
-        const self = this;
-        return new Promise((resolve, reject) => {
-            console.log("iSCSI target discovery started.");
-            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.HE_ROLE + " " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost, " +
-                "--tags=" + ansibleRoleTags.ISCSI_DISCOVER + " --skip-tags=" + ansibleRoleTags.SKIP_FULL_EXECUTION;
-
-            const env = [
-                `${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
-                `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
-                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(ansibleRoleTags.ISCSI_DISCOVER),
-                "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_DISCOVER
-            ];
-
-            this.channel = cockpit.channel({
-                "payload": "stream",
-                "environ": [
-                    "TERM=xterm-256color",
-                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
-                ].concat(env),
-                "spawn": cmd.split(" "),
-                "pty": true,
-                "err": "out",
-                "superuser": "require",
-            });
-
-            $(this.channel).on("close", function(ev, options) {
-                if (!self._manual_close) {
-                    if (options["exit-status"] === 0) {
-                        console.log("iSCSI discovery completed successfully.");
-                        resolve();
-                    } else {
-                        console.log(options);
-                        reject("iSCSI discovery failed to complete.");
-                    }
-                } else {
-                    console.log("Channel closed.");
-                    console.log(options);
-                    resolve();
-                }
-            });
-        });
+        return this.varFileGen.writeVarFileForPhase(phases.ISCSI_DISCOVER)
+            .then(varsFilePath => this.playbookUtil.runPlaybookWithVarFiles(playbookPath, outputPath, [varsFilePath], roleTag, skipTag, sensitiveData))
+            .then(() => this.readOutputFile(outputPaths.ISCSI_DISCOVER, phases.ISCSI_DISCOVER));
     }
 
     getTargetData(file) {
@@ -131,58 +84,15 @@ class StorageUtil {
     }
 
     getLunList() {
-        const self = this;
-        const varFileGen = new AnsibleVarFilesGenerator(this.model);
-        const varFileStr = this.getVarFileString(phases.ISCSI_GET_DEVICES);
-        return varFileGen.writeVarFile(varFileStr, phases.ISCSI_GET_DEVICES)
-            .then(varFilePath => self.runGetDevicesPlaybook(varFilePath))
-            .then(() => self.readOutputFile(outputPaths.ISCSI_GET_DEVICES, phases.ISCSI_GET_DEVICES));
-    }
+        const playbookPath = playbookPaths.HE_ROLE;
+        const roleTag = ansibleRoleTags.ISCSI_GET_DEVICES;
+        const skipTag = ansibleRoleTags.SKIP_FULL_EXECUTION;
+        const outputPath = outputPaths.ISCSI_GET_DEVICES;
+        const sensitiveData = this.varFileGen.getAnswerFileStringForPhase(phases.ISCSI_GET_DEVICES, true)
 
-    // TODO Refactor to use PlaybookUtil
-    runGetDevicesPlaybook(varFilePath) {
-        const self = this;
-        return new Promise((resolve, reject) => {
-            console.log("iSCSI LUN retrieval started.");
-            const cmd = "ansible-playbook -e @" + varFilePath + " " + playbookPaths.HE_ROLE + " " +
-                "--module-path=/usr/share/ovirt-hosted-engine-setup/ansible --inventory=localhost, " +
-                "--tags=" + ansibleRoleTags.ISCSI_GET_DEVICES + " --skip-tags=" + ansibleRoleTags.SKIP_FULL_EXECUTION;
-
-            const env = [
-                `ANSIBLE_CALLBACK_WHITELIST=${configValues.ANSIBLE_CALLBACK_WHITELIST}`,
-                "HE_ANSIBLE_LOG_PATH=" + getAnsibleLogPath(ansibleRoleTags.ISCSI_GET_DEVICES),
-                "ANSIBLE_STDOUT_CALLBACK=1_otopi_json",
-                "OTOPI_CALLBACK_OF=" + outputPaths.ISCSI_GET_DEVICES
-            ];
-
-            this.channel = cockpit.channel({
-                "payload": "stream",
-                "environ": [
-                    "TERM=xterm-256color",
-                    "PATH=/sbin:/bin:/usr/sbin:/usr/bin"
-                ].concat(env),
-                "spawn": cmd.split(" "),
-                "pty": true,
-                "err": "out",
-                "superuser": "require",
-            });
-
-            $(this.channel).on("close", function (ev, options) {
-                if (!self._manual_close) {
-                    if (options["exit-status"] === 0) {
-                        console.log("iSCSI LUN retrieval completed successfully.");
-                        resolve();
-                    } else {
-                        console.log(options);
-                        reject("iSCSI LUN retrieval failed to complete.");
-                    }
-                } else {
-                    console.log("Channel closed.");
-                    console.log(options);
-                    resolve();
-                }
-            });
-        });
+        return this.varFileGen.writeVarFileForPhase(phases.ISCSI_GET_DEVICES)
+            .then(varsFilePath => this.playbookUtil.runPlaybookWithVarFiles(playbookPath, outputPath, [varsFilePath], roleTag, skipTag, sensitiveData))
+            .then(() => this.readOutputFile(outputPaths.ISCSI_GET_DEVICES, phases.ISCSI_GET_DEVICES));
     }
 
     getLunData(file) {
