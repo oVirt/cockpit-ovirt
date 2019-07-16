@@ -8,7 +8,6 @@ class PlaybookUtil {
         this.runPlaybookWithVars = this.runPlaybookWithVars.bind(this);
         this.runPlaybook = this.runPlaybook.bind(this);
         this._runPlaybook = this._runPlaybook.bind(this);
-        this.runPlaybookWithVarFiles = this.runPlaybookWithVarFiles.bind(this);
         this.readOutputFile = this.readOutputFile.bind(this);
         this.getResultsData = this.getResultsData.bind(this);
         this.getTimeStamp = this.getTimeStamp.bind(this);
@@ -80,18 +79,17 @@ class PlaybookUtil {
         });
     }
 
-    runPlaybookWithVarFiles(playbookPath, outputPath, varFiles, tags = "", skipTags = "") {
-        const varFilesArr = [];
-
-        varFiles.forEach(function(varFile) {
-            varFilesArr.push(`@${varFile}`);
-        });
-
+    runPlaybookWithVarFiles(playbookPath, outputPath, varFiles, tags = "", skipTags = "", sensitiveData = "") {
         let options = [];
-        if (varFilesArr.length !== 0) {
-            options.push("-e");
-            options = options.concat(varFilesArr);
+
+        if (sensitiveData) {
+            const pipe = this.getSecurePipe("playbook");
+            options = options.concat(["-e", "@" + pipe])
+            this.writeSensitiveDataToNamedPipe(pipe, sensitiveData)
         }
+        varFiles.forEach((varFile) => {
+            options = options.concat(["-e", "@" + varFile]);
+        });
 
         return this.runPlaybook(playbookPath, outputPath, options, tags, skipTags);
     }
@@ -189,6 +187,14 @@ class PlaybookUtil {
         const pipe = `${configValues.ANSIBLE_OUTPUT_DIR}${playbookName}-${timeStamp}-${generateRandomString()}.pipe`;
         cockpit.spawn(["mkfifo","-m","0600",pipe]);
         return pipe;
+    }
+
+    writeSensitiveDataToNamedPipe(pipe,sensitiveData) {
+        return cockpit.spawn(["/bin/bash","-c","cp /dev/stdin " + pipe])
+            .input(sensitiveData)
+            .done()
+            .fail((e) => { console.log(e)})
+
     }
 }
 
