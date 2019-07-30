@@ -163,7 +163,7 @@ var AnsibleUtil = {
                       blockmapcachesize: "128M",
                       readcache: "enabled",
                       readcachesize: "20M",
-                      emulate512: "on",
+                      emulate512: "off",
                       writepolicy: "auto"
                     });
                   } else {
@@ -181,7 +181,7 @@ var AnsibleUtil = {
                   blockmapcachesize: "128M",
                   readcache: "enabled",
                   readcachesize: "20M",
-                  emulate512: "on",
+                  emulate512: "off",
                   writepolicy: "auto"
                 });
               }
@@ -396,7 +396,7 @@ var AnsibleUtil = {
                     blockmapcachesize: "128M",
                     readcache: "enabled",
                     readcachesize: "20M",
-                    emulate512: "on",
+                    emulate512: "off",
                     writepolicy: "auto"
                   });
                 } else {
@@ -414,7 +414,7 @@ var AnsibleUtil = {
                 blockmapcachesize: "128M",
                 readcache: "enabled",
                 readcachesize: "20M",
-                emulate512: "on",
+                emulate512: "off",
                 writepolicy: "auto"
               });
             }
