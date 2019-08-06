@@ -140,8 +140,6 @@ var AnsibleUtil = {
               cachelvname: `cachelv_${selectedThinpName}`,
               cachethinpoolname: selectedThinpName,
               cachelvsize: `${hostCacheConfig.lvCacheSize - (hostCacheConfig.lvCacheSize/10)}G`,
-              cachemetalvsize: `${hostCacheConfig.lvCacheSize/10}G`,
-              cachemetalvname: `cache_${selectedThinpName}`,
               cachemode: hostCacheConfig.cacheMode
             }];
           }
