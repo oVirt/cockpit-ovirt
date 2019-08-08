@@ -822,6 +822,7 @@ var AnsibleUtil = {
             sdModel.host = firstHostFqdn
             sdModel.address = firstHostFqdn
             sdModel.path = "/" + volume.name
+            sdModel.mount_options = ""
             sdModelList.push(sdModel)
           }
         })
