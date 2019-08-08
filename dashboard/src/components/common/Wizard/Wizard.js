@@ -263,7 +263,7 @@ const WizardSteps = ({steps, activeStep, callBack}) => {
                 key={index} onClick={() => callBack(index)}>
                 <a>
                     <span className="wizard-pf-step-number">{index + 1}</span>
-                    <span className="wizard-pf-step-title">{step.props.stepName}</span>
+                    <span className="wizardTitleSizeClass wizard-pf-step-title">{step.props.stepName}</span>
                 </a>
             </li>
         )

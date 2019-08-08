@@ -919,3 +919,7 @@ button.fqdn-validation-btn {
 .verbosity {
   margin-left: 0px;
 }
+
+.wizardTitleSizeClass {
+  font-size: 15px;
+}

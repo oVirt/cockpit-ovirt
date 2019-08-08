@@ -66,7 +66,7 @@ class AnsibleSetup extends Component {
             />)
         if (this.props.ansibleWizardType === "setup" && this.props.showFqdn && !this.props.isSingleNode) {
             wizardChildren.push(<WizardFqdnStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
-                stepName="FQDNs"
+                stepName="Additional Hosts"
                 hosts={this.state.glusterModel.hosts}
                 fqdns={this.state.glusterModel.fqdns}
                 />)
