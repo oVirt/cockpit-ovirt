@@ -66,7 +66,7 @@ class WizardPreviewStep extends Component {
             that.setState({ ansibleConfig: `Failed to load the config file ${CONFIG_FILES.ansibleInventoryFile} \n ${error}` })
         })
     }
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
       if(this.state.ansibleFileGenerated) {
         if(nextProps.ansibleWizardType === "create_volume" && nextProps.activeStep !== 3) {
           this.setState({ ansibleFileGenerated: false})

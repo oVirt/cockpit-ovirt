@@ -600,7 +600,7 @@ class HeWizardVmContainer extends Component {
         return true;
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.setDefaultValues();
         this.setValidationValues();
     }

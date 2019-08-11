@@ -63,7 +63,7 @@ class HeWizardStorageContainer extends Component {
         this.handleCollapsibleSectionChange = this.handleCollapsibleSectionChange.bind(this);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.setStorageTypeDisplaySettings(this.state.heSetupModel.storage.domainType.value);
     }
 

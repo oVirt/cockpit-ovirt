@@ -21,7 +21,7 @@ class AnsiblePhaseExecutionContainer extends Component {
         this.phaseExecutor = new AnsiblePhaseExecutor(this.props.abortCallBack, this.props.heSetupModel);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.phaseExecutor.startSetup(this.props.phase, this.parseOutput, this.processExit);
     }
 

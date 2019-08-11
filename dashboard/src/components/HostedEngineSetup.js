@@ -45,7 +45,7 @@ class HostedEngineSetup extends Component {
     CheckIfRegistered(this.registeredCallback);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
       checkForGdeployAnsFiles(this.gdeployFileCallback);
   }
 

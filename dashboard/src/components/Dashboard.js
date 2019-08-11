@@ -14,7 +14,7 @@ export default class Dashboard extends Component {
     this.showPermissionWarning = this.showPermissionWarning.bind(this)
     this.checkIfNode = this.checkIfNode.bind(this)
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.checkIfNode()
   }
   showPermissionWarning() {
@@ -140,7 +140,7 @@ class NodeTable extends Component {
     this.updateInfo = this.updateInfo.bind(this)
     this.updateHealth = this.updateHealth.bind(this)
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.checkPermissions()
     this.updateInfo()
     this.updateHealth()
