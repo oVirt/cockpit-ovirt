@@ -74,7 +74,7 @@ class HeSetupContainer extends Component {
             });
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.resetState();
         this.startSetup();
         // this.setState({setup: this.props.setup.start(this.parseOutput,

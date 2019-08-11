@@ -77,7 +77,7 @@ class AnsiblePhasePreviewContainer extends Component {
         }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         let newBtnState = {};
         if (this.state.executionStatus !== status.SUCCESS) {
             newBtnState = {

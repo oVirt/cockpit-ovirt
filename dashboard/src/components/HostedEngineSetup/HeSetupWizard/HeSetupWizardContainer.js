@@ -84,7 +84,7 @@ class HeSetupWizardContainer extends Component {
         this.props.onClose();
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.defaultsProvider = new DefaultValueProvider(this.init);
     }
 

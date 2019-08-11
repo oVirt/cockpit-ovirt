@@ -54,7 +54,7 @@ class HostedEngine extends Component {
       }
     }
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     checkDeployed(this.deployedCallback)
     checkInstalled(this.installedCallback)
   }
@@ -114,7 +114,7 @@ class Status extends Component {
   hostidCallback(value) {
     this.setState({host_id: value})
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     var self = this
     getHostid(self.hostidCallback)
     var interval = setInterval(function() {
@@ -185,7 +185,7 @@ class Buttons extends Component {
       hostname: ""
     }
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     var self = this
     getHostname(function(ret) {
       self.setState({hostname: ret})

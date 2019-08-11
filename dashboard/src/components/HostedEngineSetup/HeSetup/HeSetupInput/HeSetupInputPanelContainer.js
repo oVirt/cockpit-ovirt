@@ -28,7 +28,7 @@ class HeSetupInputPanelContainer extends Component {
         this.props.passInput(this.state.input)
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         const suggested = nextProps.question.suggested;
         this.setState({input: suggested})
     }

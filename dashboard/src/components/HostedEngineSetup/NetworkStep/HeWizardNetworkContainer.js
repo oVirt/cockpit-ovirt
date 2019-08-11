@@ -25,7 +25,7 @@ class HeWizardNetworkContainer extends Component {
         this.validateAllInputs = this.validateAllInputs.bind(this);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.setDefaultValues();
     }
 
