@@ -136,16 +136,16 @@ var AnsibleUtil = {
             let isVDO = brick.is_vdo_supported == true && brick.logicalSize;
             //TODO: cache more than one device.
             if(hostCacheConfig.lvCache && hostVars.gluster_infra_cache_vars == undefined){
-              hostVars.gluster_infra_cache_vars = [{
-                vgname: vgName,
-                cachedisk: hostCacheConfig.ssd,
-                cachelvname: `cachelv_${thinpoolName}`,
-                cachethinpoolname: thinpoolName,
-                cachelvsize: `${hostCacheConfig.lvCacheSize - (hostCacheConfig.lvCacheSize/10)}G`,
-                cachemetalvsize: `${hostCacheConfig.lvCacheSize/10}G`,
-                cachemetalvname: `cache_${thinpoolName}`,
-                cachemode: hostCacheConfig.cacheMode
-              }];
+              let selectedThinpName = "gluster_thinpool_gluster_vg_" + hostCacheConfig.thinpoolName
+            let cachedisk = "/dev/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
+            hostVars.gluster_infra_cache_vars = [{
+              vgname: "gluster_vg_"+ hostCacheConfig.thinpoolName,
+              cachedisk: cachedisk,
+              cachelvname: `cachelv_${selectedThinpName}`,
+              cachethinpoolname: selectedThinpName,
+              cachelvsize: `${hostCacheConfig.lvCacheSize - (hostCacheConfig.lvCacheSize/10)}G`,
+              cachemode: hostCacheConfig.cacheMode
+            }];
             }
             if(brick.is_vdo_supported){
               let vdoName = `vdo_${devName}`;

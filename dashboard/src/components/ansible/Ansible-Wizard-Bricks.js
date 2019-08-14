@@ -135,7 +135,7 @@ class WizardBricksStep extends Component {
         let new_brick_dirs = []
         let old_volumes = []
         let old_brick_dirs = []
-        
+
         if(this.props.ansibleWizardType === "expand_volume") {
           // Modify bricks according to volume details
           nextProps.glusterModel.volumes.forEach(function (volume, index) {
