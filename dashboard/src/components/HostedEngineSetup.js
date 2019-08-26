@@ -440,42 +440,18 @@ class ExistingGlusterConfigDialog extends Component  {
     this.useExistingConfigurationMessage = [];
     this.divClasses = "row popup-dialog-btn-row"
     this.modalSize = "modal-content"
+    this.secondOptionClass = ""
     this.thirdOptionClass = ""
     this.cleanUpConfigPreview = ""
+    this.cleanUpConfiPreviewClass = ""
     const that = this
-    if(that.state.ansibleInventoryFileFound){
-      if(that.state.cleanUpConfigPreview){
-        this.cleanUpConfigPreview = <div className="list-group">
-            <div className="list-group-item">
-                <textarea className="cleanup-config-preview"
-                    ref={(input) => { this.ansibleLogText = input }}
-                    value={this.state.ansibleLog}>
-                </textarea>
-                <button type="button" className="pull-left btn btn-primary wizard-pf-close wizard-pf-dismiss"
-                  onClick={this.closeCleanUpConfigpreview} aria-hidden="true">
-                    Close
-                </button>
-            </div>
-        </div>
-      }
-      that.ansibleInventory = []
-      that.ansibleInventory.push(
-        <div className="col-sm-1 col-sm-offset-1" style={{float: 'left'}}>
-          <button type="button"
-                  className="btn btn-default"
-                  aria-label="Run gluster wizard"
-                  style={that.state.ansibleInventoryFileFound ? {} : { display: 'none' }}
-                  onClick={that.glusterCleanup}>
-            Cleanup
-          </button>{that.cleanUpConfigPreview}
-        </div>
-      )
-    }
     if(this.state.showUseExistingConfOption) {
-      this.divClasses+=" col-sm-14"
+      this.cleanUpConfiPreviewClass="cleanup-config-preview-fourOptions"
+      this.divClasses+=" col-sm-16"
       this.thirdOptionClass+=" col-sm-4"
+      this.secondOptionClass+="col-sm-2 col-sm-offset-1"
       this.useExistingConfiguration.push(
-        <div className="col-sm-1 col-sm-offset-1">
+        <div className="col-sm-2 col-sm-offset-1">
           <button type="button"
                   className="btn btn-default"
                   aria-label="Use existing configuration"
@@ -503,8 +479,39 @@ class ExistingGlusterConfigDialog extends Component  {
         </div>
       )
     } else {
+      this.cleanUpConfiPreviewClass="cleanup-config-preview-threeOptions"
+      this.divClasses+=" col-sm-14"
       this.modalSize+=" gluster_options_class_size"
-      this.thirdOptionClass+="col-sm-6"
+      this.thirdOptionClass+="col-sm-5"
+      this.secondOptionClass+="col-sm-2 col-sm-offset-2"
+    }
+    if(that.state.ansibleInventoryFileFound){
+      if(that.state.cleanUpConfigPreview){
+        this.cleanUpConfigPreview = <div className="list-group">
+            <div className="list-group-item">
+                <textarea className={this.cleanUpConfiPreviewClass}
+                    ref={(input) => { this.ansibleLogText = input }}
+                    value={this.state.ansibleLog}>
+                </textarea>
+                <button type="button" className="pull-left btn btn-primary wizard-pf-close wizard-pf-dismiss"
+                  onClick={this.closeCleanUpConfigpreview} aria-hidden="true">
+                    Close
+                </button>
+            </div>
+        </div>
+      }
+      that.ansibleInventory = []
+      that.ansibleInventory.push(
+        <div className="col-sm-2" style={{float: 'left'}}>
+          <button type="button"
+                  className="btn btn-default"
+                  aria-label="Run gluster wizard"
+                  style={that.state.ansibleInventoryFileFound ? {} : { display: 'none' }}
+                  onClick={that.glusterCleanup}>
+            Clean Existing Gluster Deployment
+          </button>{that.cleanUpConfigPreview}
+        </div>
+      )
     }
   }
 
@@ -529,7 +536,7 @@ class ExistingGlusterConfigDialog extends Component  {
                     <div className={this.divClasses}>
                       {this.ansibleInventory}
                       {this.useExistingConfiguration}
-                      <div className="col-sm-offset-1" style={{float: 'left'}}>
+                      <div className={this.secondOptionClass}>
                         <button type="button"
                                 className="btn btn-default"
                                 aria-label="Run gluster wizard"
