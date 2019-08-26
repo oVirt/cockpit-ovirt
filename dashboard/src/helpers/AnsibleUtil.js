@@ -36,7 +36,7 @@ var AnsibleUtil = {
                     brick_dir: "/gluster_bricks/data/data"
                 },
                 { name: "vmstore", type: "replicate",
-                    is_arbiter: 1,
+                    is_arbiter: 0,
                     brick_dir: "/gluster_bricks/vmstore/vmstore"
                 },
             ],
@@ -303,13 +303,14 @@ var AnsibleUtil = {
         }
         for(let volumeIndex = 0; volumeIndex < volumes.length;volumeIndex++){
           let volume = volumes[volumeIndex];
+          let arbiter = 0
           if(volume.is_arbiter) {
-            volume.is_arbiter = 1
+            arbiter = 1
           }
           groupVars.gluster_features_hci_volumes.push({
             volname: volume.name,
             brick: volume.brick_dir,
-            arbiter: volume.is_arbiter
+            arbiter: arbiter
           });
         }
         groups.hc_nodes.vars = groupVars;
