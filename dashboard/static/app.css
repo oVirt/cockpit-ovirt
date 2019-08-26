@@ -911,8 +911,13 @@ button.fqdn-validation-btn {
     width: 65px;
 }
 
-.cleanup-config-preview{
-    width: 480px;
+.cleanup-config-preview-threeOptions{
+    width: 590px;
+    height: 300px;
+}
+
+.cleanup-config-preview-fourOptions{
+    width: 800px;
     height: 300px;
 }
 
