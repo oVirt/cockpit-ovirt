@@ -231,11 +231,17 @@ var AnsibleUtil = {
               if(hostVars.gluster_infra_lv_logicalvols == undefined){
                 hostVars.gluster_infra_lv_logicalvols = [];
               }
+              let lvSize = ""
+              if(brick.is_vdo_supported) {
+                lvSize = `${brick.logicalSize}G`
+              } else {
+                lvSize = `${brick.size}G`
+              }
               hostVars.gluster_infra_lv_logicalvols.push({
                 vgname: vgName,
                 thinpool: thinpoolName,
                 lvname: lvName,
-                lvsize: `${brick.size}G`
+                lvsize: lvSize
               });
             }
             if(!brick.thinp){
@@ -244,15 +250,7 @@ var AnsibleUtil = {
               }
               let lvSize = ""
               if(brick.is_vdo_supported) {
-                let count = 0
-                let brickNo = groupedBricks[brick.device].length
-                for(let aBrick of groupedBricks[brick.device]) {
-                  count++
-                  if(brickNo === count){
-                    lvSize = "100%FREE"
-                  } else {
-                    lvSize = `${aBrick.logicalSize}G`
-                  }
+                  lvSize = `${brick.logicalSize}G`
                   let hasDuplicate = false
                   hostVars.gluster_infra_thick_lvs.map(v => v.lvname).sort().sort((a, b) => {
                     if (a === b) hasDuplicate = true
@@ -261,11 +259,10 @@ var AnsibleUtil = {
                   if(!hasDuplicate) {
                     hostVars.gluster_infra_thick_lvs.push({
                       vgname: vgName,
-                      lvname: LV_NAME+`${aBrick.name}`,
+                      lvname: LV_NAME+`${brick.name}`,
                       size: lvSize
                     });
                   }
-                }
               } else {
                 lvSize = `${brick.size}G`
                 hostVars.gluster_infra_thick_lvs.push({
@@ -466,11 +463,17 @@ var AnsibleUtil = {
             if(hostVars.gluster_infra_lv_logicalvols == undefined){
               hostVars.gluster_infra_lv_logicalvols = [];
             }
+            let lvSize = ""
+            if(brick.is_vdo_supported) {
+              lvSize = `${brick.logicalSize}G`
+            } else {
+              lvSize = `${brick.size}G`
+            }
             hostVars.gluster_infra_lv_logicalvols.push({
               vgname: vgName,
               thinpool: thinpoolName,
               lvname: lvName,
-              lvsize: `${brick.size}G`
+              lvsize: lvSize
             });
           }
           if(!brick.thinp){
@@ -479,15 +482,7 @@ var AnsibleUtil = {
             }
             let lvSize = ""
             if(brick.is_vdo_supported) {
-              let count = 0
-              let brickNo = groupedBricks[brick.device].length
-              for(let aBrick of groupedBricks[brick.device]) {
-                count++
-                if(brickNo === count){
-                  lvSize = "100%FREE"
-                } else {
-                  lvSize = `${aBrick.logicalSize}G`
-                }
+                lvSize = `${brick.logicalSize}G`
                 let hasDuplicate = false
                 hostVars.gluster_infra_thick_lvs.map(v => v.lvname).sort().sort((a, b) => {
                   if (a === b) hasDuplicate = true
@@ -496,11 +491,10 @@ var AnsibleUtil = {
                 if(!hasDuplicate) {
                   hostVars.gluster_infra_thick_lvs.push({
                     vgname: vgName,
-                    lvname: LV_NAME+`${aBrick.name}`,
+                    lvname: LV_NAME+`${brick.name}`,
                     size: lvSize
                   });
                 }
-              }
             } else {
               lvSize = `${brick.size}G`
               hostVars.gluster_infra_thick_lvs.push({
