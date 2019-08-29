@@ -350,6 +350,9 @@ class WizardBricksStep extends Component {
         if(this.props.ansibleWizardType === "expand_volume") {
           bricksList.forEach(function(brick) {
               brick.host_bricks[index][property] = value
+              if(property == "size") {
+                  brick.host_bricks[index]['logicalSize'] = JSON.stringify(brick.host_bricks[index][property] * 10)
+              }
           })
           bricksList.forEach(function (eachBrick) {
             eachBrick.host_bricks.forEach(function (brick) {
