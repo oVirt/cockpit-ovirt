@@ -144,11 +144,19 @@ class WizardHostStep extends Component {
         } else if(this.props.ansibleWizardType === "expand_volume") {
             let that = this
             this.getHostList(function (hostList) {
-                  let hosts = that.state.hosts
+              if(hostList != null && hostList != undefined && hostList.hosts.length > 0) {
+                let hosts = that.state.hosts
+                let expandVolumeHosts = that.state.expandVolumeHosts
+                for (var i = 0; i < hostList.hosts.length; i++) {
+                    hosts[i] = hostList.hosts[i].hostname
+                }
+                if(hostList.hosts.length === 3) {
                   for (var i = 0; i < hostList.hosts.length; i++) {
-                      hosts[i] = hostList.hosts[i].hostname
+                      expandVolumeHosts[i] = hostList.hosts[i].hostname
                   }
-                  that.setState({ hosts })
+                }
+                that.setState({ hosts, expandVolumeHosts })
+              }
             })
         }
         let that = this
@@ -262,6 +270,7 @@ class WizardHostStep extends Component {
                     <HostRow host={host} key={index} hostNo={index + 1}
                       ansibleWizardType={that.props.ansibleWizardType}
                       hostTypes={that.state.hostTypes}
+                      hostLength={this.state.hosts.length}
                       errorMsg = {that.state.errorMsgs[index]}
                       deleteCallBack={() => this.handleDelete(index)}
                       changeCallBack={(e) => this.updateHost(index, e.target.value)}
@@ -272,6 +281,7 @@ class WizardHostStep extends Component {
                     <HostRow host={host} key={index} hostNo={index + 1}
                       ansibleWizardType={that.props.ansibleWizardType}
                       hostTypes={that.state.hostTypes}
+                      hostLength={this.state.hosts.length}
                       errorMsg = {that.state.errorMsgs[index]}
                       deleteCallBack={() => this.handleDelete(index)}
                       changeCallBack={(e) => this.handleSelectedHostUpdate(index, e)}
@@ -282,6 +292,7 @@ class WizardHostStep extends Component {
                     <HostRow host={host} key={index} hostNo={index + 1}
                       ansibleWizardType={that.props.ansibleWizardType}
                       hostTypes={that.state.hostTypes}
+                      hostLength={this.state.hosts.length}
                       errorMsg = {that.state.errorMsgs[index]}
                       deleteCallBack={() => this.handleDelete(index)}
                       changeCallBack={(e) => this.updateHost(index, e.target.value)}
@@ -300,15 +311,24 @@ class WizardHostStep extends Component {
                 }
                 <form className="form-horizontal">
                     {hostRows}
+                    {(this.props.ansibleWizardType === "expand_volume" && this.state.hosts.length !== 3) &&
+                      <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
+                          <span className="pficon pficon-info"></span>
+                          <strong>
+                              Check the hosts on which the volume should be expanded.
+                              Select the hosts in a multiple of 3.
+                          </strong>
+                      </div>
+                    }
                     {!(this.state.hostTypes.length === 1) &&
-                    <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
-                        <span className="pficon pficon-info"></span>
-                        <strong>
-                            Ansible will login to gluster hosts as root user using passwordless ssh connections.
-                            Make sure, passwordless ssh is configured for all gluster hosts from the first host.
-                        </strong>
-                    </div>
-                  }
+                      <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
+                          <span className="pficon pficon-info"></span>
+                          <strong>
+                              Ansible will login to gluster hosts as root user using passwordless ssh connections.
+                              Make sure, passwordless ssh is configured for all gluster hosts from the first host.
+                          </strong>
+                      </div>
+                    }
                 </form>
             </div>
         )
@@ -319,7 +339,7 @@ WizardHostStep.propTypes = {
     stepName: PropTypes.string.isRequired
 }
 
-const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, errorMsg, changeCallBack, changeExpandVolumeCallBack, deleteCallBack}) => {
+const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, hostLength, errorMsg, changeCallBack, changeExpandVolumeCallBack, deleteCallBack}) => {
     const hostClass = classNames(
         "form-group",
         { "has-error": errorMsg && errorMsg.length > 0 }
@@ -357,10 +377,12 @@ const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, errorMsg, changeCa
                             onChange={changeCallBack}
                             />
                         </div>
-                        <div className="col-md-2">
-                          <input type="checkbox" value={host} name={host} className="form-control ansible-wizard-thinp-checkbox"
-                          onChange={changeExpandVolumeCallBack}/>
-                        </div>
+                        {hostLength!==3 && <div className="col-md-2">
+                            <input type="checkbox" value={host} name={host}
+                            className="form-control ansible-wizard-thinp-checkbox"
+                            onChange={changeExpandVolumeCallBack}/>
+                          </div>
+                        }
                       </div>
                     }
                     {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
