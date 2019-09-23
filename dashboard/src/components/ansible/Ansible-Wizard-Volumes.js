@@ -188,7 +188,7 @@ class WizardVolumesStep extends Component {
                 }
                 {!(this.props.ansibleWizardType === "expand_volume") &&
                   <a onClick={this.handleAdd} className="col-md-offset-4">
-                      <span className="pficon pficon-add-circle-o">
+                      <span id="addVolumeButton" className="pficon pficon-add-circle-o">
                           <strong> Add Volume</strong>
                       </span>
                   </a>
@@ -212,6 +212,8 @@ WizardVolumesStep.propTypes = {
 }
 
 const VolumeRow = ({volume, ansibleWizardType, isSingleNode, index, errorMsgs, changeCallBack, deleteCallBack}) => {
+    let volumeNameId = "volumeName" + (index+1)
+    let volumeGlusterBrickDirId = "volumeGlusterBrickDir" + (index+1)
     const volumeTypes = [{key: "", title: ""}]
     if(isSingleNode) {
 
@@ -236,7 +238,9 @@ const VolumeRow = ({volume, ansibleWizardType, isSingleNode, index, errorMsgs, c
         <tr>
             <td  className="col-md-3">
                 <div className={volumeName}>
-                    <input type="text" className="form-control"
+                    <input type="text"
+                        id={volumeNameId}
+                        className="form-control"
                         value={volume.name}
                         onChange={(e) => changeCallBack(index, "name", e.target.value)}
                         disabled={(ansibleWizardType === "expand_volume")?true:false}
@@ -261,7 +265,9 @@ const VolumeRow = ({volume, ansibleWizardType, isSingleNode, index, errorMsgs, c
             </td>
             <td className="col-md-3">
                 <div className={brick_dir}>
-                    <input type="text" className="form-control"
+                    <input type="text"
+                        id={volumeGlusterBrickDirId}
+                        className="form-control"
                         value={volume.brick_dir}
                         onChange={(e) => changeCallBack(index, "brick_dir", e.target.value)}
                         />

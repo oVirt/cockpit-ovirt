@@ -234,14 +234,16 @@ const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, de
               </div>
             </div>
             <div className="he-wizard-deployment-options-container">
-              <DeploymentOptionPanel iconType={"pficon-cluster"}
+              <DeploymentOptionPanel id={"he-wizard-btn"}
+                                     iconType={"pficon-cluster"}
                                      deploymentTypeOption={deploymentOption.REGULAR}
                                      mainText={"Hosted Engine"}
                                      subText={"Deploy oVirt hosted engine on storage that has already been provisioned"}
                                      buttonText={"Start"}
                                      buttonCallback={startButtonHandler} />
 
-              <DeploymentOptionPanel iconType={"fa-database"}
+              <DeploymentOptionPanel id={"glusterDeploymentStart"}
+                                     iconType={"fa-database"}
                                      deploymentTypeOption={deploymentOption.HYPERCONVERGED}
                                      isLastOption
                                      mainText={"Hyperconverged"}
@@ -256,7 +258,7 @@ const Curtains = ({callback, cancelled, deploymentTypeOption, deploymentType, de
   )
 };
 
-const DeploymentOptionPanel = ({iconType, mainText, subText, buttonText, buttonCallback, deploymentTypeOption,
+const DeploymentOptionPanel = ({id, iconType, mainText, subText, buttonText, buttonCallback, deploymentTypeOption,
                                    isLastOption}) => {
   let containerClasses = "deployment-option-panel-container";
   containerClasses += isLastOption ? " last-deployment-option-panel-container" : "";
@@ -273,7 +275,7 @@ const DeploymentOptionPanel = ({iconType, mainText, subText, buttonText, buttonC
      <div className="deployment-option-panel-sub-text">
        <h5>{subText}</h5>
      </div>
-     <button id="he-wizard-btn" className="btn btn-primary" onClick={() => buttonCallback(deploymentTypeOption)}>
+     <button id={id} className="btn btn-primary" onClick={() => buttonCallback(deploymentTypeOption)}>
        {buttonText}
      </button>
    </span>
@@ -453,6 +455,7 @@ class ExistingGlusterConfigDialog extends Component  {
       this.useExistingConfiguration.push(
         <div className="col-sm-2 col-sm-offset-1">
           <button type="button"
+                  id="useExistingConfiguration"
                   className="btn btn-default"
                   aria-label="Use existing configuration"
                   onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.USE_EXISTING_GLUSTER_CONFIG, false)}>
@@ -504,8 +507,9 @@ class ExistingGlusterConfigDialog extends Component  {
       that.ansibleInventory.push(
         <div className="col-sm-2" style={{float: 'left'}}>
           <button type="button"
+                  id="cleanUpGlusterDeployment"
                   className="btn btn-default"
-                  aria-label="Run gluster wizard"
+                  aria-label="Cleanup Existing Gluster Deployment"
                   style={that.state.ansibleInventoryFileFound ? {} : { display: 'none' }}
                   onClick={that.glusterCleanup}>
             Clean Existing Gluster Deployment
@@ -538,6 +542,7 @@ class ExistingGlusterConfigDialog extends Component  {
                       {this.useExistingConfiguration}
                       <div className={this.secondOptionClass}>
                         <button type="button"
+                                id="threeNodeDeploymentButton"
                                 className="btn btn-default"
                                 aria-label="Run gluster wizard"
                                 onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED, false)}>
@@ -546,6 +551,7 @@ class ExistingGlusterConfigDialog extends Component  {
                       </div>
                       <div className={this.thirdOptionClass} style={{float: 'right'}}>
                         <button type="button"
+                                id="singleNodeDeploymentButton"
                                 className="btn btn-default"
                                 aria-label="Run gluster wizard for single node"
                                 onClick={(e) => this.props.glusterConfigSelectionHandler(deploymentOption.HYPERCONVERGED, true)}>

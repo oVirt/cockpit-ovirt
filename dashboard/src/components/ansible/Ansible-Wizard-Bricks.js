@@ -726,7 +726,7 @@ class WizardBricksStep extends Component {
                 </div>
                 }
                 <form className="form-horizontal">
-                    <div className="panel-heading ansible-wizard-section-title">
+                    <div id="raidInformation" className="panel-heading ansible-wizard-section-title">
                         <h3 className="panel-title">Raid Information <span className="fa fa-lg fa-info-circle"
                             title="Enter your hardware RAID configuration details. This information will be used to align brick's LVM configuration with underlying RAID configuration for better I/O performance"></span>
                         </h3>
@@ -734,7 +734,7 @@ class WizardBricksStep extends Component {
                     <div className="form-group">
                         <label className="col-md-3 control-label">Raid Type</label>
                         <div className="col-md-2">
-                            <Selectbox optionList={raidTypes}
+                            <Selectbox id="raidType" optionList={raidTypes}
                                 selectedOption={this.state.raidConfig.raidType}
                                 callBack={(e) => this.handleRaidConfigUpdate("raidType", e)}
                                 />
@@ -878,6 +878,9 @@ WizardBricksStep.propTypes = {
 }
 
 const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, errorMsgs, changeCallBack, deleteCallBack, ansibleWizardType}) => {
+    let deviceId = "device" + (index + 1)
+    let sizeId = "size" + (index + 1)
+    let logicalSizeId = "logicalSizeId" + (index + 1)
     let deleteButton = true;
     if(ansibleWizardType === "setup" || ansibleWizardType === "expand_volume") {
       deleteButton = false
@@ -911,7 +914,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
             </td>
             <td className="col-md-1">
                 <div className={device}>
-                    <input type="text" placeholder="device name"
+                    <input id={deviceId} type="text" placeholder="device name"
                         title="Name of the storage device (e.g sdb) which will be used to create brick"
                         className="form-control"
                         value={brick.device}
@@ -923,7 +926,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
             </td>
             <td className="col-md-1">
                 <div className={size}>
-                    <input type="number" className="form-control"
+                    <input id={sizeId} type="number" className="form-control"
                         value={brick.size}
                         onChange={(e) => changeCallBack(index, "size", e.target.value)}
                         disabled={(enabledFields.indexOf('size') >= 0 || hostArbiterVolumes.indexOf(brick.name) >= 0 ) ? false : true}
@@ -949,14 +952,14 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                 </div>
             </td>
             <td className="col-md-1" className="col-md-1" style={brick.isVdoSupported ? {} : { display: 'none' }}>
-                <input type="checkbox" className="ansible-wizard-thinp-checkbox" title="Configure dedupe & compression using VDO."
+                <input id="vdoCheckBox" type="checkbox" className="ansible-wizard-thinp-checkbox" title="Configure dedupe & compression using VDO."
                     checked={brick.is_vdo_supported}
                     onChange={(e) => changeCallBack(index, "is_vdo_supported", e.target.checked, brick)}
                     />
             </td>
             <td className="col-md-1" style={brick.is_vdo_supported ? {} : { display: 'none' }}>
                 <div className={logicalSize}>
-                    <input type="number" className="form-control" title="Default logical size will be ten times of brick size."
+                    <input id={logicalSizeId} type="number" className="form-control" title="Default logical size will be ten times of brick size."
                         value={brick.logicalSize}
                         onChange={(e) => changeCallBack(index, "logicalSize", e.target.value)}
                         />

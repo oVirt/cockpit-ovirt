@@ -344,6 +344,7 @@ const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, hostLength, errorM
         "form-group",
         { "has-error": errorMsg && errorMsg.length > 0 }
     )
+    let id = "host"+hostNo
     return (
         <div>
             <div className={hostClass}>
@@ -355,7 +356,8 @@ const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, hostLength, errorM
                 }
                 </label>
                 <div className="col-md-6">
-                    {(ansibleWizardType === "setup" || ansibleWizardType === "expand_cluster") && <input type="text" placeholder="Gluster network address"
+                    {(ansibleWizardType === "setup" || ansibleWizardType === "expand_cluster") && <input id={id} type="text"
+                        placeholder="Gluster network address"
                         title="Enter the address of gluster network which will be used for gluster data traffic."
                         className="form-control"
                         value={host}
@@ -370,7 +372,7 @@ const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, hostLength, errorM
                     }
                     {ansibleWizardType === "expand_volume" && <div className="row">
                         <div className="col-md-10">
-                          <input type="text" placeholder="Gluster network address"
+                          <input id={id} type="text" placeholder="Gluster network address"
                             title="Enter the address of gluster network which will be used for gluster data traffic."
                             className="form-control"
                             value={host}

@@ -165,13 +165,14 @@ const FqdnRow = ({fqdn, fqdnNo, ansibleWizardType, errorMsg, changeCallBack, del
         "form-group",
         { "has-error": errorMsg && errorMsg.length > 0 }
     )
+    let id = "fqdn"+fqdnNo
     return (
         <div>
             <div className={fqdnClass}>
                 <label className="col-md-2 control-label">Host{fqdnNo + 1}
                 </label>
                 <div className="col-md-6">
-                    {(ansibleWizardType === "setup") && <input type="text" id="fqdn" placeholder="FQDN or IP address"
+                    {(ansibleWizardType === "setup") && <input type="text" id={id} placeholder="FQDN or IP address"
                         title="Enter the FQDN or IP address to use for hosts."
                         className="form-control"
                         value={fqdn}
