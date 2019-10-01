@@ -511,7 +511,7 @@ class ExistingGlusterConfigDialog extends Component  {
                   className="btn btn-default"
                   aria-label="Cleanup Existing Gluster Deployment"
                   style={that.state.ansibleInventoryFileFound ? {} : { display: 'none' }}
-                  onClick={that.glusterCleanup}>
+                  onClick={e => window.confirm('Are you sure that you want to clean the existing gluster deployment?') && this.glusterCleanup()}>
             Clean Existing Gluster Deployment
           </button>{that.cleanUpConfigPreview}
         </div>

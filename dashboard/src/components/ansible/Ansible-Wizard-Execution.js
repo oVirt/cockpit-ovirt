@@ -152,7 +152,8 @@ const Status = ({ status, reDeployCallback, runCleanUpPlaybook}) => {
             <div className="pull-right">
                 {status === -1 &&
                   <div>
-                     <button className="btn btn-primary" onClick={runCleanUpPlaybook}>
+                     <button className="btn btn-primary"
+                        onClick={e => window.confirm('Are you sure that you want to clean the existing gluster deployment?') && runCleanUpPlaybook()}>
                         CleanUp
                      </button> &nbsp;
                      <button className="btn btn-primary" onClick={reDeployCallback}>
