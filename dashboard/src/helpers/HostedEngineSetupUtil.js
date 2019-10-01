@@ -833,7 +833,7 @@ export class HeSetupModel {
                 rootSshAccess: {
                     name: "rootSshAccess",
                     ansibleVarName: "he_root_ssh_access",
-                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM, phases.TARGET_VM],
                     description: "Root User SSH Access",
                     value: "yes",
                     type: types.STRING,
