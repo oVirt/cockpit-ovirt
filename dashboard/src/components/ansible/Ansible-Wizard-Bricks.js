@@ -257,13 +257,8 @@ class WizardBricksStep extends Component {
                     bricksList[2].host_bricks[index].logicalSize = JSON.stringify(arbiterBrickSize * 10)
                 }
                 else{
-                    if (this.props.ansibleWizardType === "setup" && bricksList[2].host_bricks[index].name === "engine") {
-                        bricksList[2].host_bricks[index].size = "100"
-                        bricksList[2].host_bricks[index].logicalSize = "1000"
-                    } else {
-                        bricksList[2].host_bricks[index].size = "500"
-                        bricksList[2].host_bricks[index].logicalSize = "5000"
-                    }
+                    bricksList[2].host_bricks[index].size = (bricksList[0].host_bricks[index].size).toString(10)
+                    bricksList[2].host_bricks[index].logicalSize = (bricksList[0].host_bricks[index].size * 10).toString(10)
                 }
                 bricksHaveChanged = true
             }
