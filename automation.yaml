@@ -1,0 +1,8 @@
+---
+archs:
+  - x86_64:
+      distro: [el7, fc29]
+
+release_branches:
+  master:
+    - ovirt-master
