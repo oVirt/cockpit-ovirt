@@ -1,3 +1,2 @@
-ovirt-engine-nodejs_master,http://jenkins.ovirt.org/job/ovirt-engine-nodejs_master_build-artifacts-$distro-x86_64/lastSuccessfulBuild/artifact/exported-artifacts/
-ovirt-engine-nodejs-modules_master,https://resources.ovirt.org/repos/ovirt/tested/master/rpm/$distro/
-ovirt-engine-yarn_master,http://jenkins.ovirt.org/job/ovirt-engine-yarn_master_build-artifacts-$distro-x86_64/lastSuccessfulBuild/artifact/exported-artifacts/
+# Provides ovirt-engine-nodejs, ovirt-engine-nodejs-modules, ovirt-engine-yarn
+ovirt-master-tested,https://resources.ovirt.org/repos/ovirt/tested/master/rpm/$distro

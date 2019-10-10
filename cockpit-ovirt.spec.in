@@ -24,9 +24,19 @@ BuildRequires: nodejs-packaging
 ExclusiveArch: %{nodejs_arches} noarch
 %endif
 
+%if 0%{?rhel} >= 8
+BuildRequires: nodejs
+%else
 BuildRequires: ovirt-engine-nodejs
+%endif
 BuildRequires: ovirt-engine-nodejs-modules
 BuildRequires: ovirt-engine-yarn
+
+%if 0%{?enable_autotools}
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	gettext-devel
+%endif
 
 %package dashboard
 Summary:        Dashboard for Cockpit based on %{product}
@@ -51,10 +61,12 @@ This package provides a Cockpit dashboard for use with %{product}.
 This package provides a Cockpit dashboard for use with %{product}.
 
 %prep
-%setup -q -n"%{source_basename}"
+%setup -q -n %{source_basename}
 
+%if ! 0%{?rhel} >= 8
 # Use the ovirt-engine nodejs installation
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
+%endif
 for d in dashboard ; do
   pushd .
   cd ${d}
@@ -67,7 +79,15 @@ ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules"
 ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/node_modules
 
 %build
+%if 0%{?enable_autotools}
+autoreconf -ivf
+%endif
+
+%if ! 0%{?rhel} >= 8
+# Use the ovirt-engine nodejs installation
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
+%endif
+
 %if 0%{?use_rhev}
 %configure --with-rhev
 %else
@@ -91,6 +111,32 @@ install -dm 700 %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed Sep 04 2019 Gal Zaidman <gzaidman@redhat.com> - 0.13.8-1
+- he fixes
+
+* Tue Aug 27 2019 Gal Zaidman <gzaidman@redhat.com> - 0.13.7-1
+- he fixes
+
+* Sun Aug 25 2019 Gal Zaidman <gzaidman@redhat.com> - 0.13.6-2
+- he and Gdeploy fixes
+
+* Sun Aug 25 2019 Gal Zaidman <gzaidman@redhat.com> - 0.13.6-1
+- he and Gdeploy fixes
+
+* Sun Jul 14 2019 Ido Rosenzwig <irosenzw@redhat.com> - 0.13.4-1
+- he and Gdeploy fixes
+
+* Mon Mar 04 2019 Ido Rosenzwig <irosenzw@redhat.com> - 0.12.4-1
+- he and Gdeploy fixes
+
+* Mon Feb 25 2019 Ido Rosenzwig <irosenzw@redhat.com> - 0.12.3-1
+- Fix gateway validation on HE wizard
+- Removed localhost from inventory
+- Validating whether gluster-ansible-roles install or not before deployment
+
+* Fri Feb 15 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.12.2-1
+- Rebase on 0.12.2
+
 * Tue Jan 22 2019 Simone Tiraboschi <stirabos@redhat.com> - 0.12.1-1
 - he fixes
 
@@ -99,6 +145,155 @@ install -dm 700 %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 * Tue Nov 20 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.12.0-0.0.beta1
 - Rebase on 0.12.0_beta1
+
+* Wed Oct 03 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.35-1
+- Adjusting Create Volume and Expand Cluster for Single Node Under a single node deployment.
+
+* Mon Sep 17 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.34-1
+- The thinp option is read-only now. And by default it is checked.
+- Truncated text for the hostname field under the bricks section
+- The packages tab has been made visible only in cases where RHVH is not being used.
+- Adding :/ in auto created SD path
+- Validation for reusing the existing gluster configuration
+- Replicating changes made by editing gdeployConfigFile
+
+* Fri Aug 10 2018 Ryan Barry <rbarry@redhat.com> - 0.11.33-1
+- Validate FQDNs on startup and on-demand
+- Refactor PlaybookUtil
+- Resolve an error with gluster deployments once finished
+
+* Mon Aug 06 2018 Ryan Barry <rbarry@redhat.com> - 0.11.32-1
+- Correct gluster brick mount points
+- Support single node gluster deployment from cockpit
+- Remove the packages tab from the Gdeploy wizard
+- Refactor playbookutil
+- Update dependencies (new react, new react-router)
+
+* Fri Jul 20 2018 Ryan Barry <rbarry@redhat.com> - 0.11.31-1
+- Disabling Thinpool when compression and deduplication is enabled on a device
+
+* Mon Jul 09 2018 Ryan Barry <rbarry@redhat.com> - 0.11.30-1
+- Add a Gluster management dashboard
+- Correct footer links for RHEV
+- Allow selection of dedupe and compression per host level
+- Make the writedown dropback reflect changed selections
+
+* Thu Jun 28 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.29-1
+- Removal of unwanted sections in Gdeploy Conf file for create_volume
+- Configure LV Cache section disables on empty fields
+- Config changes made in multiple tabs not persistent in gdeployConf file
+- wizard: Align "Configure LV Cache" to reflect UI heirarchy
+- wizard: Add replica message for gluster deployments
+- gdeploy: Fix gdeploy version verification issue
+- wizard: Don't exit wizard when Escape is pressed
+- wizard: Fix footer in Chrome
+- wizard: Add placeholder for "Mount Options" field
+- wizard: Fix confirm close dialog prompt
+
+* Wed Jun 06 2018 Ryan Barry <rbarry@redhat.com> - 0.11.28-1
+- Allow non-VDO devices in gluster brick creation
+
+* Thu May 31 2018 Ryan Barry <rbarry@redhat.com> - 0.11.27-1
+- Revert gdeploy cancel button
+
+* Wed May 30 2018 Ryan Barry <rbarry@redhat.com> - 0.11.26-1
+- Continuing HE fixes
+- Prompt to exit the wizard if it's running
+
+* Wed May 23 2018 Ryan Barry <rbarry@redhat.com> - 0.11.25-1
+- More gdeploy fixes
+
+* Wed May 02 2018 Ryan Barry <rbarry@redhat.com> - 0.11.24-1
+- Don't rely on gdeploy to start the wizard
+
+* Wed Apr 25 2018 Ryan Barry <rbarry@redhat.com> - 0.11.23-1
+- Gdeploy and hosted engine fixes
+
+* Wed Apr 18 2018 Ryan Barry <rbarry@redhat.com> - 0.11.22-1
+- Hosted engine fixes
+
+* Wed Apr 11 2018 Ryan Barry <rbarry@redhat.com> - 0.11.21-1
+- Lost of hosted engine fixes
+
+* Tue Apr 03 2018 Ryan Barry <rbarry@redhat.com> - 0.11.20-1
+- Fix FC LUN discovery
+
+* Thu Mar 22 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.19-1
+- iSCSI related fixes for hosted engine
+
+* Wed Mar 21 2018 Ryan Barry <rbarry@redhat.com> - 0.11.18-1
+- Even more hosted engines fixes and improvements for ansible
+
+* Wed Mar 14 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.17-1
+- More hosted engine wizard fixes and improvements
+- Gluster Management fixes
+
+* Wed Mar 14 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.16-1
+- More hosted engine wizard fixes and improvements
+- Gluster Management fixes
+
+* Fri Mar 09 2018 Ryan Barry <rbarry@redhat.com> - 0.11.15-0.1
+- More hosted engine fixes
+
+* Thu Mar 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.14-0.1
+- Fix hosted engine otopi deployments
+
+* Thu Mar 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.13-0.1
+- gdeploy enhancements for multiple bricks
+- Fix hosted engine otopi deployments
+
+* Tue Feb 20 2018 Ryan Barry <rbarry@redhat.com> - 0.11.12-0.1
+- wizard: Lots of otopi bug fixes
+- Better ansible parsing
+
+* Mon Feb 05 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.11-0.1
+- wizard: Replace empty strings with none:None
+
+* Fri Feb 02 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.10-0.1
+- iscsi: pass None on empty values
+
+* Thu Feb 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.9-0.1
+- Hide iSCSI target discovery for the iSCSI flow
+
+* Thu Feb 01 2018 Ryan Barry <rbarry@redhat.com> - 0.11.8-0.1
+- Move the default to otopi deployment
+
+* Wed Jan 31 2018 Ryan Barry <rbarry@redhat.com> - 0.11.7-0.1
+- Correct the domain type for vintage deployments
+
+* Fri Jan 26 2018 Ryan Barry <rbarry@redhat.com> - 0.11.6-0.1
+- Continue using otopi flow in the HE wizard for now
+
+* Wed Jan 24 2018 Ryan Barry <rbarry@redhat.com> - 0.11.5-0.1
+- Continue modernizing the hosted engine wizard
+- Move to ansible
+
+* Wed Dec 13 2017 Ryan Barry <rbarry@redhat.com> - 0.11.4-0.1
+- Continue modernizing the hosted engine wizard
+
+* Wed Dec 13 2017 Ryan Barry <rbarry@redhat.com> - 0.11.3-0.1
+- Correct some problems with the HE answerfile
+
+* Wed Dec 13 2017 Ryan Barry <rbarry@redhat.com> - 0.11.2-0.1
+- Rework tarball naming
+
+* Wed Dec 13 2017 Ryan Barry <rbarry@redhat.com> - 0.11.1-0.7
+- Hosted engine fixes
+
+* Thu Nov  30 2017 Ryan Barry <rbarry@redhat.com> - 0.11.1-0.6
+- Even more hosted engine fixes
+
+* Tue Nov  28 2017 Ryan Barry <rbarry@redhat.com> - 0.11.1-0.5
+- Even more hosted engine fixes
+
+* Tue Nov  14 2017 Ryan Barry <rbarry@redhat.com> - 0.11.1-0.4
+- More hosted engine fixes
+
+* Tue Nov  07 2017 Ryan Barry <rbarry@redhat.com> - 0.11.1-0.3
+- Hosted engine fixes
+
+* Tue Oct  24 2017 Ryan Barry <rbarry@redhat.com> - 0.11.0-1.1
+- Use new hosted engine wizard
 
 * Fri Sep  1 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 0.11.0-1
 - Rebase on upstream 0.11.0
