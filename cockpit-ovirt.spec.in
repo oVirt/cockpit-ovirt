@@ -24,7 +24,11 @@ BuildRequires: nodejs-packaging
 ExclusiveArch: %{nodejs_arches} noarch
 %endif
 
-%if 0%{?rhel} >= 8
+%if 0%{?fedora} >= 30
+# On Fedora npm is not required anymore from nodejs
+BuildRequires: npm
+%endif
+%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
 BuildRequires: nodejs
 %else
 BuildRequires: ovirt-engine-nodejs
@@ -63,7 +67,9 @@ This package provides a Cockpit dashboard for use with %{product}.
 %prep
 %setup -q -n %{source_basename}
 
-%if ! 0%{?rhel} >= 8
+%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
+# Use system nodejs
+%else
 # Use the ovirt-engine nodejs installation
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
 %endif
@@ -83,7 +89,9 @@ ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/
 autoreconf -ivf
 %endif
 
-%if ! 0%{?rhel} >= 8
+%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
+# Use system nodejs
+%else
 # Use the ovirt-engine nodejs installation
 export PATH="%{_datadir}/ovirt-engine-nodejs/bin:${PATH}"
 %endif
