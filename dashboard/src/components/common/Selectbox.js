@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Selectbox = ({id="", optionList, selectedOption = null, callBack, ansibleWizardType = "none", tab = "none"}) => {
+const Selectbox = ({id="", optionList, selectedOption = null, callBack, ansibleWizardType = "none", tab = "none", disabled=false}) => {
     const options = [];
     let selected = selectedOption;
     let expand_volume_component = []
@@ -42,7 +42,7 @@ const Selectbox = ({id="", optionList, selectedOption = null, callBack, ansibleW
     return (
       <div className="btn-group bootstrap-select dropdown form-control">
           <button id={id} className="btn btn-default dropdown-toggle selectbox-option" type="button"
-              data-toggle="dropdown" aria-expanded="false" disabled={ansibleWizardType==="expand_volume" ? true:false}>
+              data-toggle="dropdown" aria-expanded="false" disabled={disabled}>
               <span className="pull-left selectbox-text">{selected.title}</span>
               <span className="caret" />
           </button>

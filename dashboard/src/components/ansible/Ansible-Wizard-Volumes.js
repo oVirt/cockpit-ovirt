@@ -254,14 +254,22 @@ const VolumeRow = ({volume, ansibleWizardType, isSingleNode, index, errorMsgs, c
                     callBack={(e) => changeCallBack(index, "type", e)}
                     ansibleWizardType={ansibleWizardType}
                     tab="volume"
+                    disabled="true"
                     />
             </td>
             <td className="col-md-1">
-                <input type="checkbox" className="form-control" title="Third host in the host list will be used for creating arbiter bricks"
+                { isSingleNode && <input type="checkbox" className="form-control" title="Arbiter volumes not available in Single Node"
                     checked={volume.is_arbiter}
                     onChange={(e) => changeCallBack(index, "is_arbiter", e.target.checked)}
                     disabled={(isSingleNode || ansibleWizardType === "expand_volume") ? true : false}
                     />
+                }
+                { !isSingleNode && <input type="checkbox" className="form-control" title="Third host in the host list will be used for creating arbiter bricks"
+                    checked={volume.is_arbiter}
+                    onChange={(e) => changeCallBack(index, "is_arbiter", e.target.checked)}
+                    disabled={(isSingleNode || ansibleWizardType === "expand_volume") ? true : false}
+                    />
+                }
             </td>
             <td className="col-md-3">
                 <div className={brick_dir}>

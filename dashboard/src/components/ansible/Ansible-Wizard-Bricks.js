@@ -666,7 +666,6 @@ class WizardBricksStep extends Component {
         const that = this
         let isVdoSupported = false
         let is_same_device = this.isAllDeviceSame()
-
         this.state.bricksList[this.state.selectedHost.hostIndex].host_bricks.forEach(function (brick, index) {
             if(brick.is_vdo_supported){
               isVdoSupported = true
@@ -763,11 +762,17 @@ class WizardBricksStep extends Component {
                         <div className="form-group">
                           <label className="col-md-2 control-label">Select Host</label>
                           <div className="col-md-4">
-                            {
-                              (this.state.hostTypes.length <= 0) ? null :
+                            { (this.state.hostTypes.length > 0 && !this.state.glusterModel.isSingleNode) &&
                               <Selectbox optionList={this.state.hostTypes}
                                 selectedOption={this.state.selectedHost.hostName}
                                 callBack={(e) => this.handleSelectedHostUpdate(e)}
+                                />
+                            }
+                            { (this.state.hostTypes.length > 0 && this.state.glusterModel.isSingleNode) &&
+                              <Selectbox optionList={this.state.hostTypes}
+                                selectedOption={this.state.selectedHost.hostName}
+                                callBack={(e) => this.handleSelectedHostUpdate(e)}
+                                disabled="true"
                                 />
                             }
                           </div>
