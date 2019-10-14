@@ -957,6 +957,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                     <input id={logicalSizeId} type="number" className="form-control" title="Default logical size will be ten times of brick size."
                         value={brick.logicalSize}
                         onChange={(e) => changeCallBack(index, "logicalSize", e.target.value)}
+                        disabled="true"
                         />
                     {errorMsgs && errorMsgs.logicalSize && <span className="help-block">{errorMsgs.logicalSize}</span>}
                 </div>
