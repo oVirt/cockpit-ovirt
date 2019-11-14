@@ -72,7 +72,7 @@ var AnsibleUtil = {
     },
     createAnsibleConfig(glusterModel, filePath, ansibleWizardType = "none", isSingleNode, callback) {
       if(isSingleNode) {
-        this.saveGlusterInventoryForSingleNode(glusterModel)
+        this.saveGlusterInventoryForSD(glusterModel)
       } else {
         this.saveGlusterInventory(glusterModel);
       }
@@ -808,16 +808,19 @@ var AnsibleUtil = {
           .fail(function(error) {
             console.log("Failed to create " + dirPath + "directory: ", error);
           })
+        } else {
+          // When Additional Hosts not selected, allow only SD creation
+          this.saveGlusterInventoryForSD(glusterModel)
         }
     },
     // Creates file required to add storage domain
-    // to the engine after successful HE deployment for Single Node Deployment
-    saveGlusterInventoryForSingleNode(glusterModel) {
-      if(glusterModel.isSingleNode) {
+    saveGlusterInventoryForSD(glusterModel) {
+      if(glusterModel.isSingleNode || glusterModel.fqdns[0] === "") {
         let inventoryModel = {
           "gluster": {}
         }
         let sdModelList = []
+        let hostList = []
         let firstHostFqdn = glusterModel.hosts[0]
         inventoryModel.gluster.hosts = [firstHostFqdn]
         glusterModel.volumes.forEach(function(volume, index) {
@@ -827,9 +830,15 @@ var AnsibleUtil = {
             sdModel.host = firstHostFqdn
             sdModel.address = firstHostFqdn
             sdModel.path = "/" + volume.name
-            if(glusterModel.ipv6Deployment){
+            if(glusterModel.fqdns[0] === "" && !glusterModel.isSingleNode) {
+              hostList = [glusterModel.hosts[1], glusterModel.hosts[2]]
+              sdModel.mount_options = "backup-volfile-servers=" + hostList.join(":")
+            } else if(glusterModel.fqdns[0] === "" && !glusterModel.isSingleNode && glusterModel.ipv6Deployment){
+              sdModel.mount_options = "backup-volfile-servers=" + hostList.join(":") + ', xlator-option="transport.address-family=inet6"'
+            }
+            if(glusterModel.ipv6Deployment && glusterModel.isSingleNode){
               sdModel.mount_options = 'xlator-option="transport.address-family=inet6"'
-            } else {
+            } else if(!glusterModel.ipv6Deployment && glusterModel.isSingleNode){
               sdModel.mount_options = ""
             }
             sdModelList.push(sdModel)
