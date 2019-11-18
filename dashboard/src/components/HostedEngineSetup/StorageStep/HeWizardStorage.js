@@ -16,7 +16,9 @@ const nfsVersions = [
     { key: "auto", title: "Auto" },
     { key: "v3", title: "v3" },
     { key: "v4", title: "v4" },
-    { key: "v4_1", title: "v4.1" }
+    { key: "v4_0", title: "v4.0" },
+    { key: "v4_1", title: "v4.1" },
+    { key: "v4_2", title: "v4.2" }
 ];
 
 const HeWizardStorage = ({collapsibleSections, deploymentType, errorMsg, errorMsgs, handleCollapsibleSectionChange,
