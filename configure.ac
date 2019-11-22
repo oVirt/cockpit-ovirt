@@ -17,15 +17,15 @@ dnl
 AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
-define([VERSION_MINOR], [13])
+define([VERSION_MINOR], [14])
 define([VERSION_FIX], [0])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_RELEASE], [0.0])
-define([VERSION_SUFFIX],[_master])
+define([VERSION_RELEASE], [1])
+define([VERSION_SUFFIX],[])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER[]VERSION_SUFFIX, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
-PACKAGE_RPM_RELEASE="VERSION_RELEASE.$(echo VERSION_SUFFIX | sed 's/^_//')"
+PACKAGE_RPM_RELEASE="VERSION_RELEASE"
 AC_SUBST([VERSION_NUMBER])
 AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
@@ -47,8 +47,8 @@ if test -z "$with_rhev"; then
     MORE_INFO_LINK_TEXT="oVirt Homepage"
 else
     RHEV=""
-    INSTALL_GUIDE_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.3-beta/html/self-hosted_engine_guide/"
-    MORE_INFO_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.3-beta/"
+    INSTALL_GUIDE_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.3/html/self-hosted_engine_guide/"
+    MORE_INFO_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.3/"
     MORE_INFO_LINK_TEXT="RHV Documentation"
 fi
 
