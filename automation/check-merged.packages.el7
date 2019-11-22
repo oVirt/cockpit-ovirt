@@ -1,7 +1,0 @@
-autoconf
-automake
-gcc-c++
-git
-rpm-build
-yum-utils
-yum
