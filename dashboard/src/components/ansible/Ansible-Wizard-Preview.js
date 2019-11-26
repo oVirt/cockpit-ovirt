@@ -41,8 +41,7 @@ class WizardPreviewStep extends Component {
               console.log(`Ansible configuration saved successfully to ${CONFIG_FILES.ansibleInventoryFile}`)
               that.readAnsibleConfig()
             })
-            AnsibleUtil.createHEAnswerFileForGlusterStorage(this.props.glusterModel.volumes[0].name,
-                this.props.glusterModel.hosts,
+            AnsibleUtil.createHEAnswerFileForGlusterStorage(this.props.glusterModel,
                 this.props.heAnsweFilePath,
             function(returnValue){
               console.log(`Hosted Engine configuration saved successfully to ${that.props.heAnsweFilePath}`)

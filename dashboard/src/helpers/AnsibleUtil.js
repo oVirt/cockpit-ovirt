@@ -575,11 +575,18 @@ var AnsibleUtil = {
     getPoolMetadataSize(poolSize){
         return Math.min(DEFAULT_POOL_METADATA_SIZE_GB, Math.ceil(poolSize * POOL_METADATA_SIZE_PERCENT)) + 'G'
     },
-    createHEAnswerFileForGlusterStorage(volumeName, glusterServers, filePath, callback) {
+    createHEAnswerFileForGlusterStorage(glusterModel, filePath, callback) {
+        let volumeName = glusterModel.volumes[0].name
+        let glusterServers = glusterModel.hosts
         let configString = "[environment:default]"
         configString = this.appendLine(configString, `OVEHOSTED_STORAGE/storageDomainConnection=str:${glusterServers[0]}:/${volumeName}`)
-        if (glusterServers.indexOf("") === -1) {
+        if (glusterServers.indexOf("") === -1 && !glusterModel.ipv6Deployment) {
             configString = this.appendLine(configString, `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}`)
+        } else if(glusterServers.indexOf("") === -1 && glusterModel.ipv6Deployment) {
+          let newString = `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}` + ',xlator-option="transport.address-family=inet6"'
+          configString = this.appendLine(configString, newString)
+        } else if(glusterServers.indexOf("") !== -1 && glusterModel.ipv6Deployment){
+          configString = this.appendLine(configString, "OVEHOSTED_STORAGE/mntOptions=xlator-option=" + '"transport.address-family=inet6"')
         }
         this.handleDirAndFileCreation(filePath, configString, function(result){
           callback(true)
@@ -818,7 +825,11 @@ var AnsibleUtil = {
             sdModel.host = firstHostFqdn
             sdModel.address = firstHostFqdn
             sdModel.path = "/" + volume.name
-            sdModel.mount_options = ""
+            if(glusterModel.ipv6Deployment){
+              sdModel.mount_options = 'xlator-option="transport.address-family=inet6"'
+            } else {
+              sdModel.mount_options = ""
+            }
             sdModelList.push(sdModel)
           }
         })
