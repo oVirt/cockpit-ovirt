@@ -108,7 +108,9 @@ var AnsibleUtil = {
        groupVars.gluster_infra_fw_zone = "public"
        groupVars.gluster_infra_fw_services = ["glusterfs"]
        groupVars.gluster_features_force_varlogsizecheck = false
-
+       if(glusterModel.ipv6Deployment) {
+         groupVars.gluster_features_enable_ipv6 = true
+       }
         let hostLength = 1
         if(!isSingleNode) {
           hostLength = hosts.length
