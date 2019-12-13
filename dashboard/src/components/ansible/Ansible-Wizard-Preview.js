@@ -88,11 +88,11 @@ class WizardPreviewStep extends Component {
               }
             } else if(!this.props.isSingleNode) {
               if(this.props.isRhvhSystem) {
-                if(nextProps.activeStep !== 4) {
+                if(nextProps.activeStep !== 3) {
                   this.setState({ ansibleFileGenerated: false})
                 }
               } else if(!this.props.isRhvhSystem) {
-                if(nextProps.activeStep !== 5) {
+                if(nextProps.activeStep !== 4) {
                   this.setState({ ansibleFileGenerated: false})
                 }
               }
@@ -128,12 +128,12 @@ class WizardPreviewStep extends Component {
               }
             } else if(!this.props.isSingleNode) {
               if(this.props.isRhvhSystem) {
-                if(nextProps.activeStep == 4) {
+                if(nextProps.activeStep == 3) {
                   this.createAnsibleConfig()
                   this.setState({ ansibleFileGenerated: true})
                 }
               } else if(!this.props.isRhvhSystem) {
-                if(nextProps.activeStep == 5) {
+                if(nextProps.activeStep == 4) {
                   this.createAnsibleConfig()
                   this.setState({ ansibleFileGenerated: true})
                 }

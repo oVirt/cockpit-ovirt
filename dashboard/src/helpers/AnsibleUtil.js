@@ -17,7 +17,7 @@ var AnsibleUtil = {
         return {
             hosts: ['', '', ''],
             expandVolumeHosts: [],
-            fqdns: ['', ''],
+            fqdns: ['', '', ''],
             subscription: {
                 username: "", password: "", poolId: "", yumUpdate: false,
                 rpms: "",
@@ -771,13 +771,13 @@ var AnsibleUtil = {
     // Creates file required to add the 2nd and 3rd hosts and storage domain
     // to the engine after successful HE deployment
     saveGlusterInventory(glusterModel) {
-      if(glusterModel.fqdns[0].length > 0 && glusterModel.fqdns[1].length > 0) {
+      if(glusterModel.fqdns[1].length > 0 && glusterModel.fqdns[2].length > 0) {
         let inventoryModel = {
           "gluster": {}
         }
         let sdModelList = []
         let hostList = [glusterModel.hosts[1], glusterModel.hosts[2]]
-        let firstHostFqdn = glusterModel.hosts[0]
+        let firstHostFqdn = glusterModel.fqdns[0]
         inventoryModel.gluster.hosts = hostList
         let mntOptions = "backup-volfile-servers=" + hostList.join(":")
         glusterModel.volumes.forEach(function(volume, index) {
@@ -791,7 +791,7 @@ var AnsibleUtil = {
             sdModelList.push(sdModel)
           }
         })
-        let glusterInventory = "gluster:\n hosts:\n  " + glusterModel.fqdns[0] + ":\n  " + glusterModel.fqdns[1]
+        let glusterInventory = "gluster:\n hosts:\n  " + glusterModel.fqdns[1] + ":\n  " + glusterModel.fqdns[2]
                               + ":\n vars:\n  storage_domains: " + JSON.stringify(sdModelList)
         let filePath = constants.glusterInventory
         const that = this
@@ -863,7 +863,7 @@ var AnsibleUtil = {
           })
         }
     },
-    isPingable(address, ipv6Deployment, callBack) {
+    isPingable(address, ipv6Deployment = false, callBack) {
       let cmd = []
       if(ipv6Deployment) {
         cmd = ["ping", "-6", "-w", "1", address ]
@@ -892,6 +892,34 @@ var AnsibleUtil = {
       .fail(function(code) {
           callBack(false)
       })
+    },
+    checkDns(address, ipv6Deployment = false, callBack) {
+      let cmd = []
+      if(ipv6Deployment) {
+        cmd = ["dig", "AAAA", address, "+short"]
+      } else {
+        cmd = ["dig", address, "+short"]
+      }
+      let proc = cockpit.spawn(
+          cmd
+      )
+      .done(function(code) {
+          callBack(code)
+      })
+    },
+    checkTcpConnect(address, ipv6Deployment = false, callBack) {
+        let cmd = []
+        if(ipv6Deployment) {
+          cmd = ["nc", "-w", "1", "-z", "-6", address, "22"]
+        } else {
+          cmd = ["nc", "-w", "1", "-z", address, "22"]
+        }
+        let proc = cockpit.spawn(
+          cmd
+        )
+        .fail(function(result) {
+            callBack(false)
+        });
     },
     isGlusterAnsibleAvailable(callback) {
       cockpit.spawn(

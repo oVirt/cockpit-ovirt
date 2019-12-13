@@ -66,14 +66,6 @@ class AnsibleSetup extends Component {
             glusterModel={this.state.glusterModel}
             isSingleNode={this.props.isSingleNode}
             />)
-        if (this.props.ansibleWizardType === "setup" && this.props.showFqdn && !this.props.isSingleNode) {
-            wizardChildren.push(<WizardFqdnStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
-                stepName="Additional Hosts"
-                hosts={this.state.glusterModel.hosts}
-                fqdns={this.state.glusterModel.fqdns}
-                glusterModel={this.state.glusterModel}
-                />)
-        }
         if ((this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") && this.state.isRhvhSystem === false) {
             wizardChildren.push(<WizardPackageStep key={index++} ansibleWizardType={this.props.ansibleWizardType}
                 stepName="Packages"

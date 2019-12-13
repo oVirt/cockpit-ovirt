@@ -10,20 +10,51 @@ class WizardHostStep extends Component {
         super(props);
         this.state = {
             hosts: props.glusterModel.hosts,
+            fqdns: props.glusterModel.fqdns,
             expandVolumeHosts: props.glusterModel.expandVolumeHosts,
             hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
             errorMsgs: {},
             isSingleNode: props.isSingleNode,
             isGlusterAnsibleAvailableOnHost: false,
-            glusterModel: props.glusterModel
+            glusterModel: props.glusterModel,
+            valid: true,
+            validHostsAndFqdns: [true, true, true]
         }
+        this.updateFqdn = this.updateFqdn.bind(this);
         this.updateHost = this.updateHost.bind(this);
         this.getHostList = this.getHostList.bind(this);
         this.handleSelectedHostUpdate = this.handleSelectedHostUpdate.bind(this);
         this.handleExpandVolumeUpdate = this.handleExpandVolumeUpdate.bind(this);
+        this.handleSameFqdnAsHost = this.handleSameFqdnAsHost.bind(this);
+        this.validateHostAndFqdn = this.validateHostAndFqdn.bind(this);
         props.glusterModel.isSingleNode = props.isSingleNode
         this.handleIPV6 = this.handleIPV6.bind(this);
+    }
+    handleSameFqdnAsHost() {
+      var checkbox = document.getElementById('handleSameFqdnAsHost')
+      var fqdnsInput = document.querySelectorAll("[id='fqdn']")
+      var hosts = this.state.hosts
+      var fqdns = this.state.fqdns
+      const that = this
+      if(checkbox.checked) {
+          fqdnsInput.forEach(function (key, index) {
+              key.setAttribute("disabled", "true")
+              key.value=hosts[index]
+              fqdns[index]=hosts[index]
+              that.validate(fqdns)
+          })
+      } else {
+          fqdnsInput.forEach(function (key, index) {
+              key.removeAttribute("disabled")
+              key.value=""
+              fqdns[index]=""
+          })
+      }
+      this.setState(fqdns)
+      hosts.forEach(function(host, index) {
+        that.validateHostAndFqdn(index, host)
+      })
     }
     updateHost(index, hostaddress) {
         const hosts = this.state.hosts;
@@ -56,6 +87,30 @@ class WizardHostStep extends Component {
           return { glusterModel: prevState.glusterModel }
         })
       }
+      let handleSameFqdnAsHostCheckbox = document.getElementById("handleSameFqdnAsHost")
+      let hosts = this.state.hosts
+      let that = this
+      hosts.forEach(function (host, index) {
+        that.validateHostAndFqdn(index, host)
+      })
+      if(!handleSameFqdnAsHostCheckbox.checked) {
+        let fqdns = that.state.fqdns
+        fqdns.forEach(function (fqdn, index) {
+          that.validateHostAndFqdn(index, fqdn)
+        })
+      }
+    }
+
+    updateFqdn(index, fqdnaddress) {
+        const fqdns = this.state.fqdns;
+        fqdns[index] = fqdnaddress
+        const errorMsgs= this.state.errorMsgs
+        if(fqdnaddress.length > 0){
+            errorMsgs[index] =""
+        }else{
+            errorMsgs[index] ="Host address cannot be empty"
+        }
+        this.setState({ fqdns, errorMsgs })
     }
 
     // Trim "Host1","Host2" and "Host3" values
@@ -67,7 +122,56 @@ class WizardHostStep extends Component {
         }
       }
     }
+    validateHostAndFqdn(index, value) {
+      let validHostsAndFqdns = this.state.validHostsAndFqdns
+      let errorMsgs = this.state.errorMsgs
+      let that = this
+      if(value.length > 0) {
+        ansibleUtil.isHostAddedInKnownHosts(value, function(isAdded) {
+          if(!isAdded) {
+            errorMsgs[index] = "Host is not added in known_hosts"
+            validHostsAndFqdns[index] = false
+            that.setState({ validHostsAndFqdns, errorMsgs })
+          } else {
+            ansibleUtil.isPingable(value, that.state.glusterModel.ipv6Deployment, function (pingStatus) {
+              if(!pingStatus) {
+                ansibleUtil.checkDns(value, that.state.glusterModel.ipv6Deployment, function (dnsStatus) {
+                  if(dnsStatus.length === 0) {
+                    ansibleUtil.checkTcpConnect(value, that.state.glusterModel.ipv6Deployment, function (tcpStatus) {
+                      if(!tcpStatus) {
+                        validHostsAndFqdns[index] = false
+                        errorMsgs[index] = "Host is not reachable"
+                        that.setState({ validHostsAndFqdns, errorMsgs })
+                      } else {
+                        validHostsAndFqdns[index] = true
+                        errorMsgs[index] = ""
+                        that.setState({ validHostsAndFqdns, errorMsgs })
+                      }
+                    })
+                  } else {
+                    validHostsAndFqdns[index] = true
+                    errorMsgs[index] = ""
+                    that.setState({ validHostsAndFqdns, errorMsgs })
+                  }
+                })
+              } else {
+                validHostsAndFqdns[index] = true
+                errorMsgs[index] = ""
+                that.setState({ validHostsAndFqdns, errorMsgs })
+              }
+            })
+          }
+        })
+      }
+    }
     validate(){
+        let valid = this.state.valid
+        let validHostsAndFqdns = this.state.validHostsAndFqdns
+        if(validHostsAndFqdns.includes(false)){
+          valid = false
+        } else {
+          valid = true
+        }
         if(this.state.isSingleNode && this.state.hosts[0].length > 0) {
           this.trimHostProperties()
           return true
@@ -76,10 +180,20 @@ class WizardHostStep extends Component {
             this.trimHostProperties()
             let errorMsg = ""
             const errorMsgs= {}
-            let valid = true
+            let fqdns = this.state.fqdns
+            let count = 0
+            let errorIndex = 0
             if (this.state.hosts.length != 3) {
               errorMsg = "Three hosts are required to deploy Gluster."
-              valid = false
+              valid = false;
+            }
+            for(let i=0; i < this.state.hosts.length; i++) {
+              for(let j=this.state.hosts.length-1; j >= 0; j--) {
+                if(i !== j && this.state.hosts[i] !== null && (this.state.hosts[i] === this.state.hosts[j])) {
+                  errorMsgs[i] = "Duplicate hosts address"
+                  valid = false;
+                }
+              }
             }
             this.state.hosts.forEach(function (host, index) {
               if (host.trim().length == 0) {
@@ -89,12 +203,31 @@ class WizardHostStep extends Component {
                 }
               }
             })
+            fqdns.forEach(function(fqdn, index) {
+              if(fqdn.length > 0){
+                count++
+              } else {
+                errorIndex = index
+              }
+            })
+            if(count == 1 || count == 2) {
+              errorMsgs[errorIndex] = "Public Network missing. Either mention all or none."
+              valid = false;
+            } else if (count == 3) {
+              for(let i=0; i < this.state.fqdns.length; i++) {
+                for(let j=this.state.fqdns.length-1; j >= 0; j--) {
+                  if(i !== j && this.state.fqdns[i] !== null && (this.state.fqdns[i] === this.state.fqdns[j])) {
+                    errorMsgs[i] = "Duplicate hosts address"
+                    valid = false;
+                  }
+                }
+              }
+            }
             this.setState({ errorMsg, errorMsgs })
             return valid
         } else if((this.props.ansibleWizardType === "create_volume" || this.props.ansibleWizardType === "expand_volume") && this.state.hostTypes.length === 1) {
             let errorMsg = ""
             const errorMsgs= {}
-            let valid = true
             if(this.state.hostTypes[0].title.length == 0) {
               errorMsgs[0] = "Host address cannot be empty"
               if(valid){
@@ -105,7 +238,6 @@ class WizardHostStep extends Component {
             return valid
         } else if(this.props.ansibleWizardType === "expand_volume"){
             const errorMsgs = {}
-            let valid = true
             if(this.state.expandVolumeHosts.length%3 !== 0 || this.state.expandVolumeHosts.length === 0) {
               this.state.hosts.forEach(function(value, index) {
                 errorMsgs[index] = "Select hosts in a multiple of 3"
@@ -119,7 +251,6 @@ class WizardHostStep extends Component {
         } else {
             let errorMsg = ""
             const errorMsgs= {}
-            let valid = true
             let that = this
             this.state.hosts.forEach(function (host, index) {
               let nextIndex = that.state.hosts.indexOf(host, index + 1)
@@ -132,7 +263,7 @@ class WizardHostStep extends Component {
                 nextIndex = that.state.hosts.indexOf(host, nextIndex + 1)
               }
             })
-            this.setState({ errorMsg, errorMsgs })
+            this.setState({ valid, errorMsg, errorMsgs })
             return valid
         }
     }
@@ -285,13 +416,17 @@ class WizardHostStep extends Component {
           this.state.hosts.forEach(function (host, index) {
               if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") {
                   hostRows.push(
-                    <HostRow host={host} key={index} hostNo={index + 1}
+                    <HostRow host={host} fqdn={this.state.fqdns[index]} key={index} hostNo={index + 1}
                       ansibleWizardType={that.props.ansibleWizardType}
                       hostTypes={that.state.hostTypes}
                       hostLength={this.state.hosts.length}
                       errorMsg = {that.state.errorMsgs[index]}
                       deleteCallBack={() => this.handleDelete(index)}
                       changeCallBack={(e) => this.updateHost(index, e.target.value)}
+                      changeFqdnCallBack={(e) => this.updateFqdn(index, e.target.value)}
+                      handleSameFqdnAsHost={(e) => this.handleSameFqdnAsHost()}
+                      validateHostAndFqdn={(e) => this.validateHostAndFqdn(index, e.target.value)}
+                      handleIPV6={(e) => this.handleIPV6()}
                     />
                   )
               } else if (this.props.ansibleWizardType === "create_volume"){
@@ -322,19 +457,15 @@ class WizardHostStep extends Component {
         }
         return (
             <div>
-                <div className="col-md-offset-2">
-                <input type="checkbox" id="handleIPV6" onChange={(e) => this.handleIPV6()}/>
-                <strong className="fqdnCheckboxTextInfo">
-                      Select if hosts are using IPv6 (Default will be IPv4)
-                </strong>
-            </div>
                 {this.state.errorMsg && <div className="alert alert-danger">
                     <span className="pficon pficon-error-circle-o"></span>
                     <strong>{this.state.errorMsg}</strong>
                 </div>
                 }
                 <form className="form-horizontal">
-                    {hostRows}
+                    <ul>
+                      {hostRows}
+                    </ul>
                     {(this.props.ansibleWizardType === "expand_volume" && this.state.hosts.length !== 3) &&
                       <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                           <span className="pficon pficon-info"></span>
@@ -363,14 +494,33 @@ WizardHostStep.propTypes = {
     stepName: PropTypes.string.isRequired
 }
 
-const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, hostLength, errorMsg, changeCallBack, changeExpandVolumeCallBack, deleteCallBack}) => {
+const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, errorMsg, changeCallBack, changeExpandVolumeCallBack, deleteCallBack, changeFqdnCallBack, handleSameFqdnAsHost, validateHostAndFqdn, handleIPV6}) => {
     const hostClass = classNames(
         "form-group",
         { "has-error": errorMsg && errorMsg.length > 0 }
     )
-    let id = "host"+hostNo
+    let hostId = "host"+hostNo
+    let fqdnId = "fqdn"+hostNo
     return (
-        <div>
+        <li className="hostInput">
+            { hostNo == 1 && hostLength == 3 && ansibleWizardType == "setup" && <div>
+                <label className="col-md-2 control-label"></label>
+                <div>
+                  <input type="checkbox" id="handleSameFqdnAsHost" onChange={handleSameFqdnAsHost}/>
+                  <strong>
+                        Use same hostname for Storage and Public Network
+                  </strong>
+                </div>
+                <label className="col-md-2 control-label"></label>
+                <div>
+                  <input type="checkbox" id="handleIPV6" onChange={handleIPV6}/>
+                  <strong className="fqdnCheckboxTextInfo">
+                        Select if hosts are using IPv6 (Default will be IPv4)
+                  </strong>
+                </div>
+              </div>
+            }
+            &nbsp;
             <div className={hostClass}>
                 <label className="col-md-2 control-label">Host{hostNo} {hostNo == 3 && <a tabIndex="0" role="button" data-toggle="popover"
                         data-trigger="focus" data-html="true" title="" data-placement="right"
@@ -380,13 +530,26 @@ const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, hostLength, errorM
                 }
                 </label>
                 <div className="col-md-6">
-                    {(ansibleWizardType === "setup" || ansibleWizardType === "expand_cluster") && <input id={id} type="text"
-                        placeholder="Gluster network address"
-                        title="Enter the address of gluster network which will be used for gluster data traffic."
-                        className="form-control"
-                        value={host}
-                        onChange={changeCallBack}
-                        />
+                    {(ansibleWizardType === "setup" || ansibleWizardType === "expand_cluster") && <div>
+                        <div>
+                          <input id={hostId} type="text" placeholder="Storage Network"
+                              title="Enter the address of gluster network which will be used for gluster data traffic."
+                              className="form-control"
+                              value={host}
+                              onChange={changeCallBack}
+                              onBlur={validateHostAndFqdn}
+                              />
+                        </div>
+                        { fqdn!="indexIs0" && <div>
+                          <input id={fqdnId} type="text" id="fqdn" placeholder="Public Network"
+                              title="Enter the address of public network which will be used for ovirt-engine data traffic."
+                              className="form-control"
+                              value={fqdn}
+                              onChange={changeFqdnCallBack}
+                              onBlur={validateHostAndFqdn}
+                              />
+                        </div> }
+                      </div>
                     }
                     {ansibleWizardType === "create_volume" && hostTypes.length > 0 && <Selectbox optionList={hostTypes}
                         selectedOption={host}
@@ -414,7 +577,7 @@ const HostRow = ({host, hostNo, ansibleWizardType, hostTypes, hostLength, errorM
                     {errorMsg && errorMsg.length > 0 && <span className="help-block">{errorMsg}</span>}
                 </div>
             </div>
-        </div>
+        </li>
     )
 }
 export default WizardHostStep

@@ -783,13 +783,6 @@ i.password-mask-icon {
   text-overflow: ellipsis;
 }
 
-.fqdnCheckboxDiv {
-    margin-bottom: 15px;
-}
-
-.fqdnCheckboxTextInfo {
-    margin-left: 15px;
-}
 /*Gluster Management Dashboard*/
 div.gluster-management .table > thead > tr > th,
 div.gluster-management .table > tbody > tr > th,
@@ -927,4 +920,8 @@ button.fqdn-validation-btn {
 
 .wizardTitleSizeClass {
   font-size: 15px;
+}
+
+.hostInput {
+  list-style-type: none
 }
