@@ -566,6 +566,13 @@ class WizardBricksStep extends Component {
     validateBrick(brick, index, errorMsgs){
         let valid  = true
         errorMsgs[index] = {}
+        var checkbox = document.getElementById('multiPathCheckBox')
+        if(!checkbox.checked) {
+            if(!brick.device.includes('/mapper/')) {
+                valid=false
+                errorMsgs[index].device = "Device name format should be /dev/mapper/<device_uuid>"
+            }
+        }
         if(this.props.ansibleWizardType == "expand_volume" && Array.isArray(brick)) {
             brick.forEach(function(eachBrick) {
               if(eachBrick.host_bricks[index].name.trim().length <1){

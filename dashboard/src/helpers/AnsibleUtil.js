@@ -174,15 +174,18 @@ var AnsibleUtil = {
             //TODO: cache more than one device.
             if(hostCacheConfig.lvCache && hostVars.gluster_infra_cache_vars == undefined){
               let selectedThinpName = "gluster_thinpool_gluster_vg_" + hostCacheConfig.thinpoolName
-            let cachedisk = "/dev/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
-            hostVars.gluster_infra_cache_vars = [{
-              vgname: "gluster_vg_"+ hostCacheConfig.thinpoolName,
-              cachedisk: cachedisk,
-              cachelvname: `cachelv_${selectedThinpName}`,
-              cachethinpoolname: selectedThinpName,
-              cachelvsize: `${hostCacheConfig.lvCacheSize}G`,
-              cachemode: hostCacheConfig.cacheMode
-            }];
+              let cachedisk = "/dev/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
+              if(brick.is_vdo_supported == true && devName === hostCacheConfig.thinpoolName) {
+                  cachedisk = "/dev/mapper/vdo_" + hostCacheConfig.thinpoolName+ "," + hostCacheConfig.ssd
+              }
+              hostVars.gluster_infra_cache_vars = [{
+                vgname: "gluster_vg_"+ hostCacheConfig.thinpoolName,
+                cachedisk: cachedisk,
+                cachelvname: `cachelv_${selectedThinpName}`,
+                cachethinpoolname: selectedThinpName,
+                cachelvsize: `${hostCacheConfig.lvCacheSize}G`,
+                cachemode: hostCacheConfig.cacheMode
+              }];
             }
             if(brick.is_vdo_supported){
               let vdoName = `vdo_${devName}`;
@@ -410,6 +413,9 @@ var AnsibleUtil = {
           if(hostCacheConfig.lvCache && hostVars.gluster_infra_cache_vars == undefined){
             let selectedThinpName = "gluster_thinpool_gluster_vg_" + hostCacheConfig.thinpoolName
             let cachedisk = "/dev/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
+            if(brick.is_vdo_supported == true && devName === hostCacheConfig.thinpoolName) {
+                cachedisk = "/dev/mapper/vdo_" + hostCacheConfig.thinpoolName+ "," + hostCacheConfig.ssd
+            }
             hostVars.gluster_infra_cache_vars = [{
               vgname: "gluster_vg_"+ hostCacheConfig.thinpoolName,
               cachedisk: cachedisk,
