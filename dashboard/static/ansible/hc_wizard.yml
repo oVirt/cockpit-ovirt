@@ -30,7 +30,7 @@
       assert:
         that:
           - "result.results[0]['rc'] == 0"
-          - "result.results[0]['stdout_lines'] > 0"
+          - "result.results[0]['stdout_lines'] | length > 0"
         fail_msg: "The given hostname is not valid FQDN"
       when: gluster_features_fqdn_check | default(true)
 
