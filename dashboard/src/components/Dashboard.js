@@ -12,20 +12,28 @@ export default class Dashboard extends Component {
       showWarning: false
     }
     this.showPermissionWarning = this.showPermissionWarning.bind(this)
-    this.checkIfNode = this.checkIfNode.bind(this)
+    this.checkIfNodeAndRoot = this.checkIfNodeAndRoot.bind(this)
   }
   UNSAFE_componentWillMount() {
-    this.checkIfNode()
+    this.checkIfNodeAndRoot()
   }
   showPermissionWarning() {
     this.setState({showWarning: true})
   }
-  checkIfNode() {
+  checkIfNodeAndRoot() {
     let self = this
-    CheckIfNode(function(result) {
-      self.setState({node: result})
+    cockpit.user().then(usr => {
+      if(usr.id == 0){
+        CheckIfNode(function(result) {
+          self.setState({node: result})
+        })
+      }else{
+        console.log("Logged in as non root user, disabling node functionality")
+        self.setState({node: false})
+      }
     })
   }
+
   render() {
     return (
       <div>
