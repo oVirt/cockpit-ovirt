@@ -93,6 +93,9 @@ install -dm 700 %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed Feb 19 2020 Gal Zaidman <gzaidman@redhat.com> - 0.13.10-1
+- HE and Gdeploy fixes
+
 * Wed Dec 04 2019 Gal Zaidman <gzaidman@redhat.com> - 0.13.9-1
 - HE and Gdeploy fixes
 
