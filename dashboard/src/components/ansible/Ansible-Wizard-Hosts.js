@@ -93,11 +93,13 @@ class WizardHostStep extends Component {
       hosts.forEach(function (host, index) {
         that.validateHostAndFqdn(index, host)
       })
-      if(!handleSameFqdnAsHostCheckbox.checked) {
-        let fqdns = that.state.fqdns
-        fqdns.forEach(function (fqdn, index) {
-          that.validateHostAndFqdn(index, fqdn)
-        })
+      if(!this.state.isSingleNode) {
+        if(!handleSameFqdnAsHostCheckbox.checked) {
+          let fqdns = that.state.fqdns
+          fqdns.forEach(function (fqdn, index) {
+            that.validateHostAndFqdn(index, fqdn)
+          })
+        }
       }
     }
 
@@ -397,9 +399,12 @@ class WizardHostStep extends Component {
             <HostRow host={this.state.hosts[0]} key={0} hostNo={1 }
               ansibleWizardType={that.props.ansibleWizardType}
               hostTypes={that.state.hostTypes}
+              hostLength={1}
               errorMsg = {that.state.errorMsgs[0]}
               deleteCallBack={() => this.handleDelete(0)}
               changeCallBack={(e) => this.updateHost(0, e.target.value)}
+              validateHostAndFqdn={(e) => this.validateHostAndFqdn(0, e.target.value)}
+              handleIPV6={(e) => this.handleIPV6()}
             />
           )
         } else if(this.props.ansibleWizardType === "create_volume" && this.state.hostTypes.length === 1) {
@@ -511,6 +516,9 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                         Use same hostname for Storage and Public Network
                   </strong>
                 </div>
+              </div>
+            }
+            { hostNo == 1 && ansibleWizardType == "setup" && <div>
                 <label className="col-md-2 control-label"></label>
                 <div>
                   <input type="checkbox" id="handleIPV6" onChange={handleIPV6}/>
@@ -540,7 +548,7 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                               onBlur={validateHostAndFqdn}
                               />
                         </div>
-                        { fqdn!="indexIs0" && <div>
+                        { fqdn!="indexIs0" && hostLength != 1 && <div>
                           <input id={fqdnId} type="text" id="fqdn" placeholder="Public Network"
                               title="Enter the address of public network which will be used for ovirt-engine data traffic."
                               className="form-control"

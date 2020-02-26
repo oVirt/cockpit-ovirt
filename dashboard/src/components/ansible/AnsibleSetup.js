@@ -83,6 +83,7 @@ class AnsibleSetup extends Component {
             glusterModel={this.state.glusterModel}
             hosts={this.state.glusterModel.hosts}
             expandVolumeHosts={this.state.glusterModel.expandVolumeHosts}
+            multiPathCheck={this.state.glusterModel.multiPathCheck}
             volumes={this.state.glusterModel.volumes}
             volumeName={this.props.volumeName}
             bricks={this.state.glusterModel.bricks}

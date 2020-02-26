@@ -16,6 +16,7 @@ class WizardBricksStep extends Component {
         this.state = {
             bricks: props.bricks,
             bricksList: props.bricks,
+            multiPathCheck: props.multiPathCheck,
             raidConfig: props.raidConfig,
             hostTypes: [],
             selectedHost: {hostName: "", hostIndex: 0},
@@ -41,6 +42,7 @@ class WizardBricksStep extends Component {
         this.updateArbiterHostBricks = this.updateArbiterHostBricks.bind(this)
         this.handleCacheModeChange = this.handleCacheModeChange.bind(this)
         this.handleThinPoolChange = this.handleThinPoolChange.bind(this)
+        this.handleMultiPathCheck = this.handleMultiPathCheck.bind(this)
     }
     componentDidMount(){
         let bricksList = this.state.bricksList
@@ -189,6 +191,24 @@ class WizardBricksStep extends Component {
         }
         this.handleSelectedHostUpdate(nextProps.hosts[0])
     }
+
+    handleMultiPathCheck() {
+      var checkbox = document.getElementById('multiPathCheckBox')
+      const that = this
+      let multiPathCheck = that.state.multiPathCheck
+      if(checkbox.checked) {
+        this.setState((prevState)=>{
+          prevState.glusterModel.multiPathCheck = true
+          return { glusterModel: prevState.glusterModel }
+        })
+      } else {
+        this.setState((prevState)=>{
+          prevState.glusterModel.multiPathCheck = false
+          return { glusterModel: prevState.glusterModel }
+        })
+      }
+    }
+
     updateBrickHosts(hosts){
         let hostTypes = []
         let bricksList = []
@@ -640,6 +660,7 @@ class WizardBricksStep extends Component {
         this.setState({ errorMsg, errorMsgs })
         return valid
     }
+
     isAllDeviceSame(){
       var deviceList = []
       this.state.bricks.forEach(function (brick, index) {
@@ -754,6 +775,19 @@ class WizardBricksStep extends Component {
                             <span className="help-block">{diskCountMsg}</span>
                         </div>
                     </div>}
+                    <div id="multipath" className="panel-heading ansible-wizard-section-title">
+                        <h3 className="panel-title">Multipath Configuration <span className="fa fa-lg fa-info-circle"
+                            title="Check this option for blacklisting storage devices(disks) for gluster bricks"></span>
+                        </h3>
+                    </div>
+                    <div className="form-group">
+                        <label className="col-md-3 control-label">Blacklist Gluster Devices</label>
+                        <div className="col-md-2">
+                            <input id="multiPathCheckBox" className="formCheckBox-control" type="checkbox"
+                                onChange={(e) => this.handleMultiPathCheck()}
+                                />
+                        </div>
+                    </div>
                 {bricksRow.length > 0 &&
                     <div>
                         <div className="panel-heading ansible-wizard-section-title">

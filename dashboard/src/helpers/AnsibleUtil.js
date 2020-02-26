@@ -26,6 +26,10 @@ var AnsibleUtil = {
             raidConfig: {
                 raidType: "RAID6", stripeSize: "256", diskCount: "12"
             },
+            multiPathConfig: [{
+                host: "",
+                blacklistDevices: []
+            }],
             volumes: [
                 { name: "engine", type: "replicate",
                     is_arbiter: 0,
@@ -67,10 +71,34 @@ var AnsibleUtil = {
                 host: "", lvCache: false, ssd: "", lvCacheSize: "1", cacheMode: "writethrough", thinpoolName: "--select--"
             }],
             isSingleNode: false,
-            ipv6Deployment: false
+            ipv6Deployment: false,
+            multiPathCheck: false
         }
     },
     createAnsibleConfig(glusterModel, filePath, ansibleWizardType = "none", isSingleNode, callback) {
+      if(glusterModel.multiPathCheck) {
+          if(glusterModel.multiPathConfig.length > 1) {
+            glusterModel.multiPathConfig = [{
+                host: "",
+                blacklistDevices: []
+            }]
+          }
+          for(let i = 0; i < glusterModel.hosts.length - 1; i++) {
+            glusterModel.multiPathConfig.push({
+                host: "",
+                blacklistDevices: []
+            })
+          }
+          glusterModel.bricks.forEach(function(brick, outsideIndex) {
+            glusterModel.multiPathConfig[outsideIndex].host = brick.host
+            brick.host_bricks.forEach(function(brickDetails, insideIndex) {
+              let devName = brickDetails.device.split("/").pop();
+              if(!glusterModel.multiPathConfig[outsideIndex].blacklistDevices.includes(devName)) {
+                glusterModel.multiPathConfig[outsideIndex].blacklistDevices.push(devName)
+              }
+            })
+          })
+      }
       if(isSingleNode) {
         this.saveGlusterInventoryForSD(glusterModel)
       } else {
@@ -125,6 +153,12 @@ var AnsibleUtil = {
           hostVars.gluster_infra_vdo = [];
           let groupedBricks = _.groupBy(hostBricks, "device");
 
+          if(glusterModel.multiPathCheck) {
+            hostVars.blacklist_mpath_devices = [];
+            glusterModel.multiPathConfig[hostIndex].blacklistDevices.forEach(function(device, index) {
+              hostVars.blacklist_mpath_devices.push(device)
+            })
+          }
           for (let brick of hostBricks){
             let devName = brick.device.split("/").pop();
             let pvName = brick.device;
@@ -354,6 +388,12 @@ var AnsibleUtil = {
         hostVars.gluster_infra_vdo = [];
         let groupedBricks = _.groupBy(hostBricks, "device");
 
+        if(glusterModel.multiPathCheck) {
+          hostVars.blacklist_mpath_devices = [];
+          glusterModel.multiPathConfig[hostIndex].blacklistDevices.forEach(function(device, index) {
+            hostVars.blacklist_mpath_devices.push(device)
+          })
+        }
         for (let brick of hostBricks){
           let devName = brick.device.split("/").pop();
           let pvName = brick.device;
