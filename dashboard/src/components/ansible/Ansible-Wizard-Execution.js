@@ -72,8 +72,11 @@ class WizardExecutionStep extends Component {
     runCleanUpPlaybook(){
       const that = this;
       this.state.ansibleLog = ""
+      that.setState({ ansibleStatus: -2 })
       AnsibleUtil.runAnsibleCleanupPlaybook(this.ansibleStdout, this.ansibleDone, this.ansibleFail, function(response) {
-        console.log("Cleanup playbook executed.");
+        if(response) {
+          that.setState({ ansibleStatus : 2 })
+        }
         that.setState({ ansibleLog: that.state.ansibleLog + "Please check "+ CONFIG_FILES.glusterDeploymentCleanUpLog +" for more informations." })
         that.saveDeploymentLog(CONFIG_FILES.glusterDeploymentCleanUpLog, that.state.ansibleLog, 2)
       })
@@ -144,13 +147,19 @@ const Status = ({ status, reDeployCallback, runCleanUpPlaybook}) => {
     if (status === -1) {
         msg = "Deployment failed"
         statusIcon = <span className="pficon-error-circle-o"></span>
+    } else if (status === -2) {
+        msg = "Cleaning Failed Deployment"
+        statusIcon = <div className="spinner spinner-lg blank-slate-pf-icon"></div>
+    } else if (status === 2) {
+        msg = "Cleanup successful."
+        statusIcon = <div className="glyphicon glyphicon-ok-circle"></div>
     }
     return (
         <div className="panel-heading">
             {statusIcon}
             <span>{msg}</span>
             <div className="pull-right">
-                {status === -1 &&
+                {(status === -1 || status === 2) &&
                   <div>
                      <button className="btn btn-primary"
                         onClick={e => window.confirm('Are you sure that you want to clean the existing gluster deployment?') && runCleanUpPlaybook()}>
