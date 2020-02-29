@@ -164,8 +164,6 @@ var AnsibleUtil = {
                       slabsize: slabsize,
                       logicalsize: logicalsize,
                       blockmapcachesize: "128M",
-                      readcache: "enabled",
-                      readcachesize: "20M",
                       emulate512: "off",
                       writepolicy: "auto"
                     });
@@ -182,8 +180,6 @@ var AnsibleUtil = {
                   slabsize: slabsize,
                   logicalsize: logicalsize,
                   blockmapcachesize: "128M",
-                  readcache: "enabled",
-                  readcachesize: "20M",
                   emulate512: "off",
                   writepolicy: "auto"
                 });
@@ -397,8 +393,6 @@ var AnsibleUtil = {
                     slabsize: slabsize,
                     logicalsize: logicalsize,
                     blockmapcachesize: "128M",
-                    readcache: "enabled",
-                    readcachesize: "20M",
                     emulate512: "off",
                     writepolicy: "auto"
                   });
@@ -415,8 +409,6 @@ var AnsibleUtil = {
                 slabsize: slabsize,
                 logicalsize: logicalsize,
                 blockmapcachesize: "128M",
-                readcache: "enabled",
-                readcachesize: "20M",
                 emulate512: "off",
                 writepolicy: "auto"
               });
