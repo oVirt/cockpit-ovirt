@@ -1,2 +1,2 @@
-# Provides ovirt-engine-nodejs, ovirt-engine-nodejs-modules, ovirt-engine-yarn
+# Provides ovirt-engine-nodejs, ovirt-engine-nodejs-modules
 ovirt-master-tested,https://resources.ovirt.org/repos/ovirt/tested/master/rpm/$distro

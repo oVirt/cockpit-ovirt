@@ -33,8 +33,9 @@ BuildRequires: nodejs
 %else
 BuildRequires: ovirt-engine-nodejs
 %endif
-BuildRequires: ovirt-engine-nodejs-modules
-BuildRequires: ovirt-engine-yarn
+
+# ovirt-engine-nodejs-modules >= 2.0.19 includes yarn.
+BuildRequires: ovirt-engine-nodejs-modules >= 2.0.19
 
 %if 0%{?enable_autotools}
 BuildRequires:	autoconf
