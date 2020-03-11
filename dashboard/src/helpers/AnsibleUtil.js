@@ -202,7 +202,8 @@ var AnsibleUtil = {
                       logicalsize: logicalsize,
                       blockmapcachesize: "128M",
                       emulate512: "off",
-                      writepolicy: "auto"
+                      writepolicy: "auto",
+                      maxDiscardSize: 4096
                     });
                   } else {
                       let logicalsizes = parseInt(hostVars.gluster_infra_vdo[index].logicalsize.replace(/G/g,"G")) + parseInt(brick.logicalSize)
@@ -218,7 +219,8 @@ var AnsibleUtil = {
                   logicalsize: logicalsize,
                   blockmapcachesize: "128M",
                   emulate512: "off",
-                  writepolicy: "auto"
+                  writepolicy: "auto",
+                  maxDiscardSize: 4096
                 });
               }
             }
@@ -440,7 +442,8 @@ var AnsibleUtil = {
                     logicalsize: logicalsize,
                     blockmapcachesize: "128M",
                     emulate512: "off",
-                    writepolicy: "auto"
+                    writepolicy: "auto",
+                    maxDiscardSize: 4096
                   });
                 } else {
                     let logicalsizes = parseInt(hostVars.gluster_infra_vdo[index].logicalsize.replace(/G/g,"G")) + parseInt(brick.logicalSize)
@@ -456,7 +459,8 @@ var AnsibleUtil = {
                 logicalsize: logicalsize,
                 blockmapcachesize: "128M",
                 emulate512: "off",
-                writepolicy: "auto"
+                writepolicy: "auto",
+                maxDiscardSize: 4096
               });
             }
           }
