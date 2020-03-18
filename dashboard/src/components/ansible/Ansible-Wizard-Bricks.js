@@ -830,10 +830,10 @@ class WizardBricksStep extends Component {
                                     <th>Device Name</th>
                                     <th>LV Size(GB) <span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
                                         title="NOTE: LV for brick will be created to match the logical size of vdo volume."></span></th>
-                                    <th>Thinp</th>
-                                    <th>Mount Point</th>
+                                    <th style={{display:"none"}}>Thinp</th>
+                                    <th style={{display:"none"}}>Mount Point</th>
                                     <th style={this.state.isVdoSupported ? {} : { display: 'none' }}>Enable Dedupe & Compression</th>
-                                    <th style={isVdoSupported ? {} : { display: 'none' }}>Expanded Disk Size(GB)<span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
+                                    <th style={{display:"none"}}>Expanded Disk Size(GB)<span className="fa fa-lg fa-info-circle" style={isVdoSupported ? {} : { display: 'none' }}
                                         title="NOTE: This is the effective size of the disk after enabling dedupe and compression"></span></th>
                                 </tr>
                                 {bricksRow}
@@ -979,14 +979,14 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                     {errorMsgs && errorMsgs.size && <span className="help-block">{errorMsgs.size}</span>}
                 </div>
             </td>
-            <td className="col-md-1">
+            <td style={{display:"none"}} className="col-md-1">
                 <input type="checkbox" className="ansible-wizard-thinp-checkbox"
                     checked={brick.thinp}
                     onChange={(e) => changeCallBack(index, "thinp", e.target.checked)}
                     disabled={(enabledFields.indexOf('thinp') >= 0) ? false : true}
                     />
             </td>
-            <td className="col-md-2">
+            <td style={{display:"none"}} className="col-md-2">
                 <div className={brick_dir}>
                     <input type="text" className="form-control"
                         value={brick.brick_dir}
@@ -1002,7 +1002,7 @@ const BrickRow = ({hostIndex, enabledFields, hostArbiterVolumes, brick, index, e
                     onChange={(e) => changeCallBack(index, "is_vdo_supported", e.target.checked, brick)}
                     />
             </td>
-            <td className="col-md-1" style={brick.is_vdo_supported ? {} : { display: 'none' }}>
+            <td className="col-md-1" style={{display:"none"}}>
                 <div className={logicalSize}>
                     <input id={logicalSizeId} type="number" className="form-control" title="Default logical size will be ten times of brick size."
                         value={brick.logicalSize}
