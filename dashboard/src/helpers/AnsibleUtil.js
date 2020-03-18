@@ -24,7 +24,7 @@ var AnsibleUtil = {
                 repos: ""
             },
             raidConfig: {
-                raidType: "RAID6", stripeSize: "256", diskCount: "12"
+                raidType: "RAID6", stripeSize: "256", diskCount: "10"
             },
             multiPathConfig: [{
                 host: "",
@@ -72,7 +72,7 @@ var AnsibleUtil = {
             }],
             isSingleNode: false,
             ipv6Deployment: false,
-            multiPathCheck: false
+            multiPathCheck: true
         }
     },
     createAnsibleConfig(glusterModel, filePath, ansibleWizardType = "none", isSingleNode, callback) {

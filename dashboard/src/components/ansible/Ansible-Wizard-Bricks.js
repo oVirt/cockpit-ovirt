@@ -197,11 +197,13 @@ class WizardBricksStep extends Component {
       const that = this
       let multiPathCheck = that.state.multiPathCheck
       if(checkbox.checked) {
+        this.setState({ multiPathCheck: true })
         this.setState((prevState)=>{
           prevState.glusterModel.multiPathCheck = true
           return { glusterModel: prevState.glusterModel }
         })
       } else {
+        this.setState({ multiPathCheck: false })
         this.setState((prevState)=>{
           prevState.glusterModel.multiPathCheck = false
           return { glusterModel: prevState.glusterModel }
@@ -307,7 +309,7 @@ class WizardBricksStep extends Component {
           raidConfig["diskCount"] = ""
         } else if (value == "RAID5" || value == "RAID6"){
           raidConfig["stripeSize"] = "256"
-          raidConfig["diskCount"] = "12"
+          raidConfig["diskCount"] = "10"
         }
         this.validateRaidConfig(raidConfig, errorMsgs)
         this.setState({ raidConfig, errorMsgs })
@@ -790,7 +792,9 @@ class WizardBricksStep extends Component {
                     <div className="form-group">
                         <label className="col-md-3 control-label">Blacklist Gluster Devices</label>
                         <div className="col-md-2">
-                            <input id="multiPathCheckBox" className="formCheckBox-control" type="checkbox"
+                            <input id="multiPathCheckBox"
+                                checked={this.state.multiPathCheck}
+                                className="formCheckBox-control" type="checkbox"
                                 onChange={(e) => this.handleMultiPathCheck()}
                                 />
                         </div>
