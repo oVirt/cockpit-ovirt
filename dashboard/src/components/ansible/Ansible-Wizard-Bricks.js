@@ -572,7 +572,7 @@ class WizardBricksStep extends Component {
         if(!checkbox.checked) {
             if(!brick.device.includes('/mapper/')) {
                 valid=false
-                errorMsgs[index].device = "Device name format should be /dev/mapper/<device_uuid>"
+                errorMsgs[index].device = "Device name format should be /dev/mapper/<WWID>"
             }
         }
         if(this.props.ansibleWizardType == "expand_volume" && Array.isArray(brick)) {
