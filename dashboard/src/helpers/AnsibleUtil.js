@@ -910,6 +910,23 @@ var AnsibleUtil = {
           })
         }
     },
+    isHostReachable(address, ipv6Deployment = false, callBack) {
+      let cmd = []
+      if(ipv6Deployment) {
+        cmd = ["ssh", "-6", "-o", "BatchMode=yes", address, "exit"]
+      } else {
+        cmd = ["ssh", "-4", "-o", "BatchMode=yes", address, "exit"]
+      }
+      let proc = cockpit.spawn(
+        cmd
+      )
+      .done(function(code) {
+          callBack(true)
+      })
+      .fail(function(code) {
+          callBack(false)
+      })
+    },
     isPingable(address, ipv6Deployment = false, callBack) {
       let cmd = []
       if(ipv6Deployment) {
@@ -939,34 +956,6 @@ var AnsibleUtil = {
       .fail(function(code) {
           callBack(false)
       })
-    },
-    checkDns(address, ipv6Deployment = false, callBack) {
-      let cmd = []
-      if(ipv6Deployment) {
-        cmd = ["dig", "AAAA", address, "+short"]
-      } else {
-        cmd = ["dig", address, "+short"]
-      }
-      let proc = cockpit.spawn(
-          cmd
-      )
-      .done(function(code) {
-          callBack(code)
-      })
-    },
-    checkTcpConnect(address, ipv6Deployment = false, callBack) {
-        let cmd = []
-        if(ipv6Deployment) {
-          cmd = ["nc", "-w", "1", "-z", "-6", address, "22"]
-        } else {
-          cmd = ["nc", "-w", "1", "-z", address, "22"]
-        }
-        let proc = cockpit.spawn(
-          cmd
-        )
-        .fail(function(result) {
-            callBack(false)
-        });
     },
     isGlusterAnsibleAvailable(callback) {
       cockpit.spawn(

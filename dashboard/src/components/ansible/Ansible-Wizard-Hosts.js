@@ -18,7 +18,6 @@ class WizardHostStep extends Component {
             isSingleNode: props.isSingleNode,
             isGlusterAnsibleAvailableOnHost: false,
             glusterModel: props.glusterModel,
-            valid: true,
             validHostsAndFqdns: [true, true, true]
         }
         this.updateFqdn = this.updateFqdn.bind(this);
@@ -32,12 +31,11 @@ class WizardHostStep extends Component {
         this.handleIPV6 = this.handleIPV6.bind(this);
     }
     handleSameFqdnAsHost() {
-      var checkbox = document.getElementById('handleSameFqdnAsHost')
       var fqdnsInput = document.querySelectorAll("[id='fqdn']")
       var hosts = this.state.hosts
       var fqdns = this.state.fqdns
       const that = this
-      if(checkbox.checked) {
+      if(document.getElementById('handleSameFqdnAsHost').checked) {
           fqdnsInput.forEach(function (key, index) {
               key.setAttribute("disabled", "true")
               key.value=hosts[index]
@@ -65,6 +63,9 @@ class WizardHostStep extends Component {
           }
         }
         hosts[index] = hostaddress
+        if(document.getElementById('handleSameFqdnAsHost').checked) {
+          this.updateFqdn(index, hostaddress)
+        }
         const errorMsgs= this.state.errorMsgs
         if(hostaddress.length > 0){
             errorMsgs[index] =""
@@ -75,8 +76,7 @@ class WizardHostStep extends Component {
     }
 
     handleIPV6() {
-      var checkbox = document.getElementById('handleIPV6')
-      if(checkbox.checked) {
+      if(document.getElementById('handleIPV6').checked) {
         this.setState((prevState)=>{
           prevState.glusterModel.ipv6Deployment = true
           return { glusterModel: prevState.glusterModel }
@@ -94,12 +94,10 @@ class WizardHostStep extends Component {
         that.validateHostAndFqdn(index, host)
       })
       if(!this.state.isSingleNode) {
-        if(!handleSameFqdnAsHostCheckbox.checked) {
-          let fqdns = that.state.fqdns
-          fqdns.forEach(function (fqdn, index) {
-            that.validateHostAndFqdn(index, fqdn)
-          })
-        }
+        let fqdns = that.state.fqdns
+        fqdns.forEach(function (fqdn, index) {
+          that.validateHostAndFqdn(index, fqdn)
+        })
       }
     }
 
@@ -129,51 +127,21 @@ class WizardHostStep extends Component {
       let errorMsgs = this.state.errorMsgs
       let that = this
       if(value.length > 0) {
-        ansibleUtil.isHostAddedInKnownHosts(value, function(isAdded) {
-          if(!isAdded) {
-            errorMsgs[index] = "Host is not added in known_hosts"
-            validHostsAndFqdns[index] = false
-            that.setState({ validHostsAndFqdns, errorMsgs })
-          } else {
-            ansibleUtil.isPingable(value, that.state.glusterModel.ipv6Deployment, function (pingStatus) {
-              if(!pingStatus) {
-                ansibleUtil.checkDns(value, that.state.glusterModel.ipv6Deployment, function (dnsStatus) {
-                  if(dnsStatus.length === 0) {
-                    ansibleUtil.checkTcpConnect(value, that.state.glusterModel.ipv6Deployment, function (tcpStatus) {
-                      if(!tcpStatus) {
-                        validHostsAndFqdns[index] = false
-                        errorMsgs[index] = "Host is not reachable"
-                        that.setState({ validHostsAndFqdns, errorMsgs })
-                      } else {
-                        validHostsAndFqdns[index] = true
-                        errorMsgs[index] = ""
-                        that.setState({ validHostsAndFqdns, errorMsgs })
-                      }
-                    })
-                  } else {
-                    validHostsAndFqdns[index] = true
-                    errorMsgs[index] = ""
-                    that.setState({ validHostsAndFqdns, errorMsgs })
-                  }
-                })
-              } else {
-                validHostsAndFqdns[index] = true
-                errorMsgs[index] = ""
-                that.setState({ validHostsAndFqdns, errorMsgs })
-              }
-            })
-          }
+        ansibleUtil.isHostReachable(value, document.getElementById('handleIPV6').checked, function(isHostReachable) {
+            if(!isHostReachable){
+              validHostsAndFqdns[index] = false
+              errorMsgs[index] = "FQDN is not reachable"
+              that.setState({ validHostsAndFqdns, errorMsgs })
+            } else {
+              validHostsAndFqdns[index] = true
+              errorMsgs[index] = ""
+              that.setState({ validHostsAndFqdns, errorMsgs })
+            }
         })
       }
     }
     validate(){
-        let valid = this.state.valid
-        let validHostsAndFqdns = this.state.validHostsAndFqdns
-        if(validHostsAndFqdns.includes(false)){
-          valid = false
-        } else {
-          valid = true
-        }
+        let valid = true
         if(this.state.isSingleNode && this.state.hosts[0].length > 0) {
           this.trimHostProperties()
           return true
@@ -185,45 +153,56 @@ class WizardHostStep extends Component {
             let fqdns = this.state.fqdns
             let count = 0
             let errorIndex = 0
+            let that = this
             if (this.state.hosts.length != 3) {
-              errorMsg = "Three hosts are required to deploy Gluster."
+              errorMsg = "Three Storage Network FQDNs are required to deploy Gluster."
+              valid = false;
+            } else if (this.state.fqdns.length != 3) {
+              errorMsg = "Three Public Network FQDNs are required to deploy Gluster. Please input 3 FQDNs or use the same Public and Storage Network FQNDs"
               valid = false;
             }
             for(let i=0; i < this.state.hosts.length; i++) {
               for(let j=this.state.hosts.length-1; j >= 0; j--) {
                 if(i !== j && this.state.hosts[i] !== null && (this.state.hosts[i] === this.state.hosts[j])) {
-                  errorMsgs[i] = "Duplicate hosts address"
+                  errorMsgs[i] = "Duplicate Storage Network FQDN"
+                  valid = false;
+                }
+              }
+            }
+            for(let i=0; i < this.state.fqdns.length; i++) {
+              for(let j=this.state.fqdns.length-1; j >= 0; j--) {
+                if(i !== j && this.state.fqdns[i] !== null && (this.state.fqdns[i] === this.state.fqdns[j])) {
+                  errorMsgs[i] = "Duplicate Public Network FQDN"
                   valid = false;
                 }
               }
             }
             this.state.hosts.forEach(function (host, index) {
               if (host.trim().length == 0) {
-                errorMsgs[index] = "Host address cannot be empty"
+                errorMsgs[index] = "Storage Network FQDN cannot be empty"
                 if(valid){
                   valid = false;
                 }
               }
-            })
-            fqdns.forEach(function(fqdn, index) {
-              if(fqdn.length > 0){
-                count++
-              } else {
-                errorIndex = index
-              }
-            })
-            if(count == 1 || count == 2) {
-              errorMsgs[errorIndex] = "Public Network missing. Either mention all or none."
-              valid = false;
-            } else if (count == 3) {
-              for(let i=0; i < this.state.fqdns.length; i++) {
-                for(let j=this.state.fqdns.length-1; j >= 0; j--) {
-                  if(i !== j && this.state.fqdns[i] !== null && (this.state.fqdns[i] === this.state.fqdns[j])) {
-                    errorMsgs[i] = "Duplicate hosts address"
-                    valid = false;
-                  }
+              if(host.includes(':')) {
+                errorMsgs[index] = "Invalid FQDN"
+                if(valid){
+                  valid = false;
                 }
               }
+              that.validateHostAndFqdn(index, host)
+            })
+            this.state.fqdns.forEach(function (fqdn, index) {
+              if (fqdn.length == 0) {
+                errorMsgs[index] = "Public Network FQDN cannot be empty"
+                if(valid){
+                  valid = false;
+                }
+              }
+              that.validateHostAndFqdn(index, fqdn)
+            })
+            if(this.state.validHostsAndFqdns.includes(false)){
+              valid = false
             }
             this.setState({ errorMsg, errorMsgs })
             return valid
@@ -265,7 +244,7 @@ class WizardHostStep extends Component {
                 nextIndex = that.state.hosts.indexOf(host, nextIndex + 1)
               }
             })
-            this.setState({ valid, errorMsg, errorMsgs })
+            this.setState({ errorMsg, errorMsgs })
             return valid
         }
     }
@@ -540,21 +519,19 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                 <div className="col-md-6">
                     {(ansibleWizardType === "setup" || ansibleWizardType === "expand_cluster") && <div>
                         <div>
-                          <input id={hostId} type="text" placeholder="Storage Network"
+                          <input id={hostId} type="text" placeholder="Storage Network FQDN"
                               title="Enter the address of gluster network which will be used for gluster data traffic."
                               className="form-control"
                               value={host}
                               onChange={changeCallBack}
-                              onBlur={validateHostAndFqdn}
                               />
                         </div>
                         { fqdn!="indexIs0" && hostLength != 1 && <div>
-                          <input id={fqdnId} type="text" id="fqdn" placeholder="Public Network"
+                          <input id={fqdnId} type="text" id="fqdn" placeholder="Public Network FQDN"
                               title="Enter the address of public network which will be used for ovirt-engine data traffic."
                               className="form-control"
                               value={fqdn}
                               onChange={changeFqdnCallBack}
-                              onBlur={validateHostAndFqdn}
                               />
                         </div> }
                       </div>
