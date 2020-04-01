@@ -532,6 +532,10 @@ class WizardBricksStep extends Component {
             errorMsgs.lvCacheConfig.ssd = "Enter SSD"
             valid = false
         }
+        if(!document.getElementById('multiPathCheckBox').checked && lvCacheConfig.ssd.trim().length > 0 && !lvCacheConfig.ssd.includes('/mapper/')) {
+            valid=false
+            errorMsgs.lvCacheConfig.ssd = "Device name format should be /dev/mapper/<WWID>"
+        }
         if(lvCacheConfig.lvCacheSize.trim().length < 1){
             errorMsgs.lvCacheConfig.lvCacheSize = "Enter lv cache size"
             valid = false
