@@ -46,7 +46,7 @@ BuildArch:      noarch
 
 Requires:       cockpit
 Requires:       cockpit-storaged
-Requires:       ovirt-hosted-engine-setup >= 2.4.3
+Requires:       ovirt-hosted-engine-setup >= 2.4.4
 Requires:       otopi >= 1.9.0
 
 Requires:       ansible
@@ -100,6 +100,12 @@ install -dm 700 %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Wed Apr 08 2020 Sandro Bonazzola <sbonazzo@redhat.com> - 0.14.4-1
+- Gluster storage deployment fixes
+
+* Fri Mar 20 2020 Sandro Bonazzola <sbonazzo@redhat.com> - 0.14.3-1
+- Gluster storage deployment fixes
+
 * Wed Mar 04 2020 Gal Zaidman <gzaidman@redhat.com> - 0.14.2-1
 - Gluster storage deployment fixes
 
