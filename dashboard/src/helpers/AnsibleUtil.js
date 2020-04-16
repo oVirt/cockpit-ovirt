@@ -93,14 +93,14 @@ var AnsibleUtil = {
             glusterModel.multiPathConfig[outsideIndex].host = brick.host
             brick.host_bricks.forEach(function(brickDetails, insideIndex) {
               let devName = brickDetails.device.split("/").pop();
-              if(!glusterModel.multiPathConfig[outsideIndex].blacklistDevices.includes(devName)) {
+              if(!glusterModel.multiPathConfig[outsideIndex].blacklistDevices.includes(devName) && !brickDetails.device.includes("/mapper/")) {
                 glusterModel.multiPathConfig[outsideIndex].blacklistDevices.push(devName)
               }
             })
           })
           glusterModel.lvCacheConfig.forEach(function(host, index) {
             let devName = host.ssd.split("/").pop();
-            if(!glusterModel.multiPathConfig[index].blacklistDevices.includes(devName)) {
+            if(!glusterModel.multiPathConfig[index].blacklistDevices.includes(devName) && !host.ssd.includes("/mapper/")) {
               glusterModel.multiPathConfig[index].blacklistDevices.push(devName)
             }
           })
@@ -159,7 +159,7 @@ var AnsibleUtil = {
           hostVars.gluster_infra_vdo = [];
           let groupedBricks = _.groupBy(hostBricks, "device");
 
-          if(glusterModel.multiPathCheck) {
+          if(glusterModel.multiPathCheck && glusterModel.multiPathConfig[hostIndex].blacklistDevices.length > 0) {
             hostVars.blacklist_mpath_devices = [];
             glusterModel.multiPathConfig[hostIndex].blacklistDevices.forEach(function(device, index) {
               hostVars.blacklist_mpath_devices.push(device)
