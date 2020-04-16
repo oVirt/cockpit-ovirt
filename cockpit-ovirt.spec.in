@@ -92,10 +92,17 @@ make install DESTDIR=%{buildroot}
 # Create /var/lib/ovirt-hosted-engine-setup/cockpit
 install -dm 700 %{buildroot}%{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
+# Create cockpit conf file to disable inactivity timeout
+mkdir -p %{buildroot}/etc/cockpit/
+cat <<__EOF__ >%{buildroot}/etc/cockpit/cockpit.conf
+[Session]
+IdleTimeout=0
+__EOF__
 
 %files dashboard
 %doc README.md
 %license LICENSE
+%config /etc/cockpit/cockpit.conf
 %{_plugindir}/ovirt-dashboard
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
