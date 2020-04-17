@@ -14,8 +14,8 @@ if git describe --tags --match "cockpit-ovirt*"|cut -f4- -d\-| grep -q '-'; then
 fi
 
 dependencies="$(sed -e '/^[ \t]*$/d' -e '/^#/d' automation/packages.force)"
-dnf clean metadata || yum clean metadata
-dnf -y install ${dependencies} || yum -y install ${dependencies}
+dnf clean metadata 
+dnf -y install ${dependencies}
 
 # cleanup
 rm -Rf \
@@ -30,7 +30,7 @@ export PATH=/usr/share/ovirt-engine-nodejs/bin:${PATH}
 ./autogen.sh
 
 # create rpm
-yum-builddep cockpit-ovirt.spec
+dnf builddep cockpit-ovirt.spec
 make rpm
 cp *.tar.gz tmp.repos/
 
