@@ -13,6 +13,18 @@ if git describe --tags --match "cockpit-ovirt*"|cut -f4- -d\-| grep -q '-'; then
     export RELEASE_SUFFIX=".$(date --utc +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
 fi
 
+# mock environment is screwed up, resetting to a sane environment
+rm -f /etc/yum.conf
+dnf reinstall -y system-release dnf
+dnf -y reinstall dnf-conf
+sed -i -re 's#^(reposdir *= *).*$#\1/etc/yum.repos.d#' '/etc/dnf/dnf.conf'
+echo "deltarpm=False" >> /etc/dnf/dnf.conf
+dnf install -y https://resources.ovirt.org/pub/yum-repo/ovirt-release-master.rpm
+rm -f /etc/yum/yum.conf
+dnf repolist enabled
+dnf clean all
+
+
 dependencies="$(sed -e '/^[ \t]*$/d' -e '/^#/d' automation/packages.force)"
 dnf clean metadata 
 dnf -y install ${dependencies}
