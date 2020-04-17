@@ -107,6 +107,10 @@ __EOF__
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Fri Apr 17 2020 Sandro Bonazzola <sbonazzo@redhat.com> - 0.14.5-1
+- Gluster storage deployment fixes
+- Cockpit timeout configuration fixes
+
 * Wed Apr 08 2020 Sandro Bonazzola <sbonazzo@redhat.com> - 0.14.4-1
 - Gluster storage deployment fixes
 
