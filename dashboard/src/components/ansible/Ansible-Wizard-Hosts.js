@@ -18,7 +18,7 @@ class WizardHostStep extends Component {
             isSingleNode: props.isSingleNode,
             isGlusterAnsibleAvailableOnHost: false,
             glusterModel: props.glusterModel,
-            validHostsAndFqdns: [true, true, true]
+            validHostsAndFqdns: [false, true, true]
         }
         this.updateFqdn = this.updateFqdn.bind(this);
         this.updateHost = this.updateHost.bind(this);
@@ -63,7 +63,7 @@ class WizardHostStep extends Component {
           }
         }
         hosts[index] = hostaddress
-        if(document.getElementById('handleSameFqdnAsHost').checked) {
+        if(!this.state.isSingleNode && document.getElementById('handleSameFqdnAsHost').checked) {
           this.updateFqdn(index, hostaddress)
         }
         const errorMsgs= this.state.errorMsgs
@@ -87,16 +87,23 @@ class WizardHostStep extends Component {
           return { glusterModel: prevState.glusterModel }
         })
       }
-      let handleSameFqdnAsHostCheckbox = document.getElementById("handleSameFqdnAsHost")
-      let hosts = this.state.hosts
-      let that = this
-      hosts.forEach(function (host, index) {
-        that.validateHostAndFqdn(index, host)
-      })
       if(!this.state.isSingleNode) {
-        let fqdns = that.state.fqdns
-        fqdns.forEach(function (fqdn, index) {
-          that.validateHostAndFqdn(index, fqdn)
+        let hosts = this.state.hosts
+        let fqdns = this.state.fqdns
+        let that = this
+        hosts.forEach(function (host, index) {
+          that.validateHostAndFqdn(index, host)
+        })
+        if(!document.getElementById("handleSameFqdnAsHost").checked) {
+          fqdns.forEach(function (fqdn, index) {
+            that.validateHostAndFqdn(index, fqdn)
+          })
+        }
+      } else if(this.state.isSingleNode) {
+        let hosts = this.state.hosts
+        let that = this
+        hosts.forEach(function (host, index) {
+          that.validateHostAndFqdn(index, host)
         })
       }
     }
@@ -127,26 +134,54 @@ class WizardHostStep extends Component {
       let errorMsgs = this.state.errorMsgs
       let that = this
       if(value.length > 0) {
-        ansibleUtil.isHostReachable(value, document.getElementById('handleIPV6').checked, function(isHostReachable) {
-            if(!isHostReachable){
-              validHostsAndFqdns[index] = false
-              errorMsgs[index] = "FQDN is not reachable"
-              that.setState({ validHostsAndFqdns, errorMsgs })
-            } else {
-              validHostsAndFqdns[index] = true
-              errorMsgs[index] = ""
-              that.setState({ validHostsAndFqdns, errorMsgs })
-            }
+        ansibleUtil.isHostAddedInKnownHosts(value, function(isAdded) {
+          if(!isAdded) {
+            errorMsgs[index] = "Host is not added in known_hosts"
+            validHostsAndFqdns[index] = false
+            that.setState({ validHostsAndFqdns, errorMsgs })
+          } else {
+            ansibleUtil.isHostReachable(value, document.getElementById('handleIPV6').checked, function(isHostReachable) {
+                if(!isHostReachable){
+                  validHostsAndFqdns[index] = false
+                  errorMsgs[index] = "FQDN is not reachable"
+                  that.setState({ validHostsAndFqdns, errorMsgs })
+                } else {
+                  validHostsAndFqdns[index] = true
+                  errorMsgs[index] = ""
+                  that.setState({ validHostsAndFqdns, errorMsgs })
+                }
+            })
+          }
         })
       }
     }
     validate(){
         let valid = true
-        if(this.state.isSingleNode && this.state.hosts[0].length > 0) {
-          this.trimHostProperties()
-          return true
-        }
-        if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") {
+        if(this.state.isSingleNode) {
+          let errorMsg = ""
+          const errorMsgs= {}
+          let count = 0
+          let errorIndex = 0
+          let that = this
+          if (this.state.hosts[0].trim().length == 0) {
+            errorMsgs[0] = "Storage Network FQDN cannot be empty"
+            if(valid){
+              valid = false;
+            }
+          }
+          if(this.state.hosts[0].includes(':')) {
+            errorMsgs[0] = "Invalid FQDN"
+            if(valid){
+              valid = false;
+            }
+          }
+          this.validateHostAndFqdn(0, this.state.hosts[0])
+          if(this.state.validHostsAndFqdns.includes(false)){
+            valid = false
+          }
+          this.setState({ errorMsg, errorMsgs })
+          return valid
+        } else if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") {
             this.trimHostProperties()
             let errorMsg = ""
             const errorMsgs= {}
@@ -229,27 +264,10 @@ class WizardHostStep extends Component {
             }
             this.setState({ errorMsgs })
             return valid
-        } else {
-            let errorMsg = ""
-            const errorMsgs= {}
-            let that = this
-            this.state.hosts.forEach(function (host, index) {
-              let nextIndex = that.state.hosts.indexOf(host, index + 1)
-              while (nextIndex != -1) {
-                errorMsgs[index] = "No two hosts can be the same"
-                errorMsgs[nextIndex] = "No two hosts can be the same"
-                if(valid){
-                  valid = false;
-                }
-                nextIndex = that.state.hosts.indexOf(host, nextIndex + 1)
-              }
-            })
-            this.setState({ errorMsg, errorMsgs })
-            return valid
         }
     }
     shouldComponentUpdate(nextProps, nextState){
-        if(!this.props.validating && nextProps.validating){
+        if(!this.props.validating && nextProps.validating) {
             this.props.validationCallBack(this.validate())
           this.props.validationCallBack(this.validate())
         }
@@ -524,6 +542,7 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                               className="form-control"
                               value={host}
                               onChange={changeCallBack}
+                              onKeyUp={validateHostAndFqdn}
                               />
                         </div>
                         { fqdn!="indexIs0" && hostLength != 1 && <div>
@@ -532,6 +551,7 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                               className="form-control"
                               value={fqdn}
                               onChange={changeFqdnCallBack}
+                              onKeyUp={validateHostAndFqdn}
                               />
                         </div> }
                       </div>
