@@ -15,10 +15,13 @@ class WizardHostStep extends Component {
             hostTypes: [{ key: "", title: "" }],
             errorMsg: "",
             errorMsgs: {},
+            errorMsgsHosts: {},
+            errorMsgsFqdns: {},
             isSingleNode: props.isSingleNode,
             isGlusterAnsibleAvailableOnHost: false,
             glusterModel: props.glusterModel,
-            validHostsAndFqdns: [false, true, true]
+            validHosts: [false, true, true],
+            validFqdns: [false, true, true]
         }
         this.updateFqdn = this.updateFqdn.bind(this);
         this.updateHost = this.updateHost.bind(this);
@@ -51,7 +54,7 @@ class WizardHostStep extends Component {
       }
       this.setState(fqdns)
       hosts.forEach(function(host, index) {
-        that.validateHostAndFqdn(index, host)
+        that.validateHostAndFqdn("host", index, host)
       })
     }
     updateHost(index, hostaddress) {
@@ -92,18 +95,18 @@ class WizardHostStep extends Component {
         let fqdns = this.state.fqdns
         let that = this
         hosts.forEach(function (host, index) {
-          that.validateHostAndFqdn(index, host)
+          that.validateHostAndFqdn("host", index, host)
         })
         if(!document.getElementById("handleSameFqdnAsHost").checked) {
           fqdns.forEach(function (fqdn, index) {
-            that.validateHostAndFqdn(index, fqdn)
+            that.validateHostAndFqdn("fqdn", index, fqdn)
           })
         }
       } else if(this.state.isSingleNode) {
         let hosts = this.state.hosts
         let that = this
         hosts.forEach(function (host, index) {
-          that.validateHostAndFqdn(index, host)
+          that.validateHostAndFqdn("host", index, host)
         })
       }
     }
@@ -123,32 +126,54 @@ class WizardHostStep extends Component {
     // Trim "Host1","Host2" and "Host3" values
     trimHostProperties(){
       const inHosts = this.state.hosts
+      const inFqdns =  this.state.fqdns
       if(inHosts.length > 0){
         for(var i =0; i< inHosts.length; i++){
           this.state.hosts[i] = inHosts[i].trim()
+          if(inFqdns.length > 0) {
+            this.state.fqdns[i] = inFqdns[i].trim()
+          }
         }
       }
     }
-    validateHostAndFqdn(index, value) {
-      let validHostsAndFqdns = this.state.validHostsAndFqdns
-      let errorMsgs = this.state.errorMsgs
+    validateHostAndFqdn(inputField, index, value) {
+      let validHosts = this.state.validHosts
+      let validFqdns = this.state.validFqdns
+      let inputFieldValue = inputField.includes("host") ? "host":"fqdn"
+      let errorMsgsHosts = this.state.errorMsgsHosts
+      let errorMsgsFqdns = this.state.errorMsgsFqdns
       let that = this
       if(value.length > 0) {
         ansibleUtil.isHostAddedInKnownHosts(value, function(isAdded) {
           if(!isAdded) {
-            errorMsgs[index] = "Host is not added in known_hosts"
-            validHostsAndFqdns[index] = false
-            that.setState({ validHostsAndFqdns, errorMsgs })
+            if(inputFieldValue == "host") {
+              errorMsgsHosts[index] = "Host is not added in known_hosts"
+              validHosts[index] = false
+            } else {
+              errorMsgsFqdns[index] = "Host is not added in known_hosts"
+              validFqdns[index] = false
+            }
+            that.setState({ validHosts, validFqdns, errorMsgsHosts, errorMsgsFqdns })
           } else {
             ansibleUtil.isHostReachable(value, document.getElementById('handleIPV6').checked, function(isHostReachable) {
                 if(!isHostReachable){
-                  validHostsAndFqdns[index] = false
-                  errorMsgs[index] = "FQDN is not reachable"
-                  that.setState({ validHostsAndFqdns, errorMsgs })
+                  if(inputFieldValue == "host") {
+                    errorMsgsHosts[index] = "FQDN is not reachable"
+                    validHosts[index] = false
+                  } else {
+                    errorMsgsFqdns[index] = "FQDN is not reachable"
+                    validFqdns[index] = false
+                  }
+                  that.setState({ validHosts, validFqdns, errorMsgsHosts, errorMsgsFqdns })
                 } else {
-                  validHostsAndFqdns[index] = true
-                  errorMsgs[index] = ""
-                  that.setState({ validHostsAndFqdns, errorMsgs })
+                  if(inputFieldValue == "host") {
+                    errorMsgsHosts[index] = ""
+                    validHosts[index] = true
+                  } else {
+                    errorMsgsFqdns[index] = ""
+                    validFqdns[index] = true
+                  }
+                  that.setState({ validHosts, validFqdns, errorMsgsHosts, errorMsgsFqdns })
                 }
             })
           }
@@ -156,6 +181,7 @@ class WizardHostStep extends Component {
       }
     }
     validate(){
+        this.trimHostProperties()
         let valid = true
         if(this.state.isSingleNode) {
           let errorMsg = ""
@@ -175,14 +201,14 @@ class WizardHostStep extends Component {
               valid = false;
             }
           }
-          this.validateHostAndFqdn(0, this.state.hosts[0])
-          if(this.state.validHostsAndFqdns.includes(false)){
+          this.validateHostAndFqdn("host1" , 0, this.state.hosts[0])
+          if(this.state.validHosts.includes(false)){
             valid = false
+            errorMsgs[0] = this.state.errorMsgsHosts[0]
           }
           this.setState({ errorMsg, errorMsgs })
           return valid
         } else if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") {
-            this.trimHostProperties()
             let errorMsg = ""
             const errorMsgs= {}
             let fqdns = this.state.fqdns
@@ -225,7 +251,7 @@ class WizardHostStep extends Component {
                   valid = false;
                 }
               }
-              that.validateHostAndFqdn(index, host)
+              that.validateHostAndFqdn("host", index, host)
             })
             this.state.fqdns.forEach(function (fqdn, index) {
               if (fqdn.length == 0) {
@@ -234,9 +260,16 @@ class WizardHostStep extends Component {
                   valid = false;
                 }
               }
-              that.validateHostAndFqdn(index, fqdn)
+              that.validateHostAndFqdn("fqdn", index, fqdn)
             })
-            if(this.state.validHostsAndFqdns.includes(false)){
+            if(this.state.validHosts.includes(false)) {
+              let errorIndex = this.state.validHosts.indexOf(false)
+              errorMsgs[errorIndex] = this.state.errorMsgsHosts[errorIndex]
+              valid = false
+            }
+            if(this.state.validFqdns.includes(false)) {
+              let errorIndex = this.state.validFqdns.indexOf(false)
+              errorMsgs[errorIndex] = this.state.errorMsgsFqdns[errorIndex]
               valid = false
             }
             this.setState({ errorMsg, errorMsgs })
@@ -400,7 +433,7 @@ class WizardHostStep extends Component {
               errorMsg = {that.state.errorMsgs[0]}
               deleteCallBack={() => this.handleDelete(0)}
               changeCallBack={(e) => this.updateHost(0, e.target.value)}
-              validateHostAndFqdn={(e) => this.validateHostAndFqdn(0, e.target.value)}
+              validateHostAndFqdn={(e) => this.validateHostAndFqdn(e.target.id, 0, e.target.value)}
               handleIPV6={(e) => this.handleIPV6()}
             />
           )
@@ -427,7 +460,7 @@ class WizardHostStep extends Component {
                       changeCallBack={(e) => this.updateHost(index, e.target.value)}
                       changeFqdnCallBack={(e) => this.updateFqdn(index, e.target.value)}
                       handleSameFqdnAsHost={(e) => this.handleSameFqdnAsHost()}
-                      validateHostAndFqdn={(e) => this.validateHostAndFqdn(index, e.target.value)}
+                      validateHostAndFqdn={(e) => this.validateHostAndFqdn(e.target.id, index, e.target.value)}
                       handleIPV6={(e) => this.handleIPV6()}
                     />
                   )

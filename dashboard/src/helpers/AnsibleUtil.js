@@ -100,7 +100,7 @@ var AnsibleUtil = {
           })
           glusterModel.lvCacheConfig.forEach(function(host, index) {
             let devName = host.ssd.split("/").pop();
-            if(!glusterModel.multiPathConfig[index].blacklistDevices.includes(devName) && !host.ssd.includes("/mapper/")) {
+            if(host.lvCache && !glusterModel.multiPathConfig[index].blacklistDevices.includes(devName) && !host.ssd.includes("/mapper/")) {
               glusterModel.multiPathConfig[index].blacklistDevices.push(devName)
             }
           })
