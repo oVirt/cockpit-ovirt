@@ -15,7 +15,7 @@ import {
 } from "./HostedEngineSetup/constants";
 import { CONFIG_FILES as constants } from "../components/ansible/constants";
 import Selectbox from "./common/Selectbox";
-import logoUrl from "../../static/branding/ovirt/ovirt-logo-highres.png";
+import logoUrl from "../../static/branding/ovirt/ovirt-logo-highres-black.png";
 import HeSetupFooter from "./HeSetupFooter";
 
 const classNames = require("classnames");
