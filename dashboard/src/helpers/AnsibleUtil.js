@@ -643,10 +643,10 @@ var AnsibleUtil = {
         if (glusterServers.indexOf("") === -1 && !glusterModel.ipv6Deployment) {
             configString = this.appendLine(configString, `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}`)
         } else if(glusterServers.indexOf("") === -1 && glusterModel.ipv6Deployment) {
-          let newString = `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}` + ',xlator-option="transport.address-family=inet6"'
+          let newString = `OVEHOSTED_STORAGE/mntOptions=str:backup-volfile-servers=${glusterServers.slice(1).join(":")}` + ",xlator-option=transport.address-family=inet6"
           configString = this.appendLine(configString, newString)
         } else if(glusterServers.indexOf("") !== -1 && glusterModel.ipv6Deployment){
-          configString = this.appendLine(configString, "OVEHOSTED_STORAGE/mntOptions=xlator-option=" + '"transport.address-family=inet6"')
+          configString = this.appendLine(configString, "OVEHOSTED_STORAGE/mntOptions=xlator-option=transport.address-family=inet6")
         }
         this.handleDirAndFileCreation(filePath, configString, function(result){
           callback(true)
@@ -837,7 +837,12 @@ var AnsibleUtil = {
         let hostList = [glusterModel.hosts[1], glusterModel.hosts[2]]
         let firstHostFqdn = glusterModel.fqdns[0]
         inventoryModel.gluster.hosts = hostList
-        let mntOptions = "backup-volfile-servers=" + hostList.join(":")
+        let mntOptions = ""
+        if(glusterModel.ipv6Deployment){
+          mntOptions = "backup-volfile-servers=" + hostList.join(":") + ",xlator-option=transport.address-family=inet6"
+        } else{
+          mntOptions = "backup-volfile-servers=" + hostList.join(":")
+        }
         glusterModel.volumes.forEach(function(volume, index) {
           if(index !== 0) {
             let sdModel = {}
@@ -892,10 +897,10 @@ var AnsibleUtil = {
               hostList = [glusterModel.hosts[1], glusterModel.hosts[2]]
               sdModel.mount_options = "backup-volfile-servers=" + hostList.join(":")
             } else if(glusterModel.fqdns[0] === "" && !glusterModel.isSingleNode && glusterModel.ipv6Deployment){
-              sdModel.mount_options = "backup-volfile-servers=" + hostList.join(":") + ', xlator-option="transport.address-family=inet6"'
+              sdModel.mount_options = "backup-volfile-servers=" + hostList.join(":") + ",xlator-option=transport.address-family=inet6"
             }
             if(glusterModel.ipv6Deployment && glusterModel.isSingleNode){
-              sdModel.mount_options = 'xlator-option="transport.address-family=inet6"'
+              sdModel.mount_options = "xlator-option=transport.address-family=inet6"
             } else if(!glusterModel.ipv6Deployment && glusterModel.isSingleNode){
               sdModel.mount_options = ""
             }
