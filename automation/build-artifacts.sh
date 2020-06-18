@@ -35,8 +35,8 @@ if [[ "$(rpm --eval "%dist")" == ".el8" ]]; then
     dnf --allowerasing distro-sync -y
     # nodejs:10 module seems broken as of April 17th 2020.
     dnf install -y \
-	http://mirror.centos.org/centos/8/AppStream/x86_64/os/Packages/npm-6.13.4-1.10.19.0.2.module_el8.1.0+296+bef51246.x86_64.rpm \
-    	http://mirror.centos.org/centos/8/AppStream/x86_64/os/Packages/nodejs-10.19.0-2.module_el8.1.0+296+bef51246.x86_64.rpm
+        http://mirror.centos.org/centos/8/AppStream/x86_64/os/Packages/npm-6.13.4-1.10.19.0.2.module_el8.2.0+310+695ca693.x86_64.rpm \
+        http://mirror.centos.org/centos/8/AppStream/x86_64/os/Packages/nodejs-10.19.0-2.module_el8.2.0+310+695ca693.x86_64.rpm
 fi
 
 dnf -y install ${dependencies}
