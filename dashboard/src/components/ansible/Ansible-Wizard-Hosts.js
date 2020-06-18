@@ -66,7 +66,7 @@ class WizardHostStep extends Component {
           }
         }
         hosts[index] = hostaddress
-        if(!this.state.isSingleNode && document.getElementById('handleSameFqdnAsHost').checked) {
+        if(!this.state.isSingleNode && (this.props.ansibleWizardType === "expand_cluster" || this.props.ansibleWizardType === "setup") && document.getElementById('handleSameFqdnAsHost').checked) {
           this.updateFqdn(index, hostaddress)
         }
         const errorMsgs= this.state.errorMsgs
@@ -130,7 +130,7 @@ class WizardHostStep extends Component {
       if(inHosts.length > 0){
         for(var i =0; i< inHosts.length; i++){
           this.state.hosts[i] = inHosts[i].trim()
-          if(inFqdns.length > 0) {
+          if(inFqdns.length > 0 && this.props.ansibleWizardType != "create_volume") {
             this.state.fqdns[i] = inFqdns[i].trim()
           }
         }
@@ -183,7 +183,7 @@ class WizardHostStep extends Component {
     validate(){
         this.trimHostProperties()
         let valid = true
-        if(this.state.isSingleNode) {
+        if(this.state.isSingleNode && (this.props.ansibleWizardType == "setup" || this.props.ansibleWizardType == "expand_cluster")) {
           let errorMsg = ""
           const errorMsgs= {}
           let count = 0
@@ -274,7 +274,7 @@ class WizardHostStep extends Component {
             }
             this.setState({ errorMsg, errorMsgs })
             return valid
-        } else if((this.props.ansibleWizardType === "create_volume" || this.props.ansibleWizardType === "expand_volume") && this.state.hostTypes.length === 1) {
+        } else if(this.props.ansibleWizardType === "create_volume") {
             let errorMsg = ""
             const errorMsgs= {}
             if(this.state.hostTypes[0].title.length == 0) {
@@ -538,7 +538,7 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
     let fqdnId = "fqdn"+hostNo
     return (
         <li className="hostInput">
-            { hostNo == 1 && hostLength == 3 && ansibleWizardType == "setup" && <div>
+            { hostNo == 1 && hostLength == 3 && (ansibleWizardType == "setup" || ansibleWizardType == "expand_cluster") && <div>
                 <label className="col-md-2 control-label"></label>
                 <div>
                   <input type="checkbox" id="handleSameFqdnAsHost" onChange={handleSameFqdnAsHost}/>
@@ -548,7 +548,7 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                 </div>
               </div>
             }
-            { hostNo == 1 && ansibleWizardType == "setup" && <div>
+            { hostNo == 1 && (ansibleWizardType == "setup" || ansibleWizardType == "expand_cluster") && <div>
                 <label className="col-md-2 control-label"></label>
                 <div>
                   <input type="checkbox" id="handleIPV6" onChange={handleIPV6}/>
@@ -597,7 +597,7 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                     }
                     {ansibleWizardType === "expand_volume" && <div className="row">
                         <div className="col-md-10">
-                          <input id={id} type="text" placeholder="Gluster network address"
+                          <input id={hostId} type="text" placeholder="Gluster network address"
                             title="Enter the address of gluster network which will be used for gluster data traffic."
                             className="form-control"
                             value={host}
