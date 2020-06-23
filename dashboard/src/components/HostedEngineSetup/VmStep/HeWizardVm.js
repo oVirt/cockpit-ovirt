@@ -365,7 +365,7 @@ const HeWizardVm = ({appliances, applPathSelection, collapsibleSections, cpuArch
                                onChange={(e) => handleVmConfigUpdate("vmMemSizeMB", e.target.value, "vm")}
                                id="he-memory-size-input"
                         />
-                        <span className="info-block">{vmConfig.vmMemSizeMB.range.max.toLocaleString()}MB available</span>
+                        <span className="info-block">{vmConfig.vmMemSizeMB.range.max.toLocaleString()}MiB available</span>
                         {errorMsgs.vmMemSizeMB && <span className="help-block">{errorMsgs.vmMemSizeMB}</span>}
                     </div>
                 </div>

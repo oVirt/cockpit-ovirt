@@ -229,11 +229,11 @@ export class DefaultValueProvider {
 
     getMaxMemAvailable() {
         const ansibleFacts = this.getTaskData("Gathering Facts")["ansible_facts"];
-        const totalMemMb = ansibleFacts["ansible_memtotal_mb"];
-        const availMemMb = ansibleFacts["ansible_memory_mb"]["nocache"]["free"];
+        const totalMemMib = ansibleFacts["ansible_memtotal_mb"];
+        const availMemMib = ansibleFacts["ansible_memory_mb"]["nocache"]["free"];
 
-        let calc1 = totalMemMb - resourceConstants.VDSM_HOST_OVERHEAD_MB - resourceConstants.VDSM_VM_OVERHEAD_MB;
-        let calc2 = availMemMb - resourceConstants.VDSM_VM_OVERHEAD_MB;
+        let calc1 = totalMemMib - resourceConstants.VDSM_HOST_OVERHEAD_MB - resourceConstants.VDSM_VM_OVERHEAD_MB;
+        let calc2 = availMemMib - resourceConstants.VDSM_VM_OVERHEAD_MB;
 
         return Math.min(calc1, calc2);
     }
