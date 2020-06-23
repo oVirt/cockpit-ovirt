@@ -218,6 +218,13 @@ var AnsibleUtil = {
             if(hostCacheConfig.lvCache){
               let selectedThinpName = "gluster_thinpool_gluster_vg_" + hostCacheConfig.thinpoolName
               let cachedisk = "/dev/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
+              let mapperFlag = false
+              this.mapperFlagCheck(bricks, hostCacheConfig.thinpoolName, function(mapperFlagValue) {
+                mapperFlag = mapperFlagValue
+              })
+              if(mapperFlag) {
+                cachedisk = "/dev/mapper/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
+              }
               if(hostVars.gluster_infra_vdo.length !== 0) {
                 let deviceNames = []
                 hostVars.gluster_infra_vdo.forEach(function(vdoDevice, index) {
@@ -463,6 +470,13 @@ var AnsibleUtil = {
           if(hostCacheConfig.lvCache){
             let selectedThinpName = "gluster_thinpool_gluster_vg_" + hostCacheConfig.thinpoolName
             let cachedisk = "/dev/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
+            let mapperFlag = false
+            this.mapperFlagCheck(bricks, hostCacheConfig.thinpoolName, function(mapperFlagValue) {
+              mapperFlag = mapperFlagValue
+            })
+            if(mapperFlag) {
+              cachedisk = "/dev/mapper/" + hostCacheConfig.thinpoolName + "," + hostCacheConfig.ssd
+            }
             if(hostVars.gluster_infra_vdo.length !== 0) {
               let deviceNames = []
               hostVars.gluster_infra_vdo.forEach(function(vdoDevice, index) {
@@ -611,6 +625,15 @@ var AnsibleUtil = {
         callback(true)
       })
       const that = this
+    },
+    mapperFlagCheck(bricks, thinpoolName, callback) {
+      bricks.forEach(function(brick, index) {
+        brick.host_bricks.forEach(function(brickDetails, index) {
+          if(thinpoolName == brickDetails.device.split('/').pop() && brickDetails.device.includes("/mapper/")) {
+            callback(true)
+          }
+        })
+      })
     },
     appendLine(baseString, newString) {
         return baseString + '\n' + newString
