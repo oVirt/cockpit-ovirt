@@ -1445,13 +1445,13 @@ export function getAnsibleLogPath(playbookTagPath) {
         ) :
         playbookTagPath;
     const d = new Date();
-    const dateFormat = [
+    let dateFormat = [
         d.getFullYear(),
-        d.getMonth(),
-        d.getDate(),
-        d.getHours(),
-        d.getMinutes(),
-        d.getSeconds()
+        ('0' + parseInt(d.getMonth() + 1)).slice(-2),
+        ('0' + d.getDate()).slice(-2),
+        ('0' + d.getHours()).slice(-2),
+        ('0' + d.getMinutes()).slice(-2),
+        ('0' + d.getSeconds()).slice(-2)
     ].join("");
     return `${configValues.ANSIBLE_LOG_DIR}ovirt-hosted-engine-setup-ansible-${playbookTagName}-${dateFormat}-${generateRandomString()}.log`;
 }
