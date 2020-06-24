@@ -216,7 +216,7 @@ export class HeSetupModel {
                     uiStage: "Storage",
                     useInAnswerFile: true,
                     required: true,
-                    range: {min: resourceConstants.VM_DISK_MIN_GB, max: resourceConstants.VM_DISK_MAX_GB}
+                    range: { min: resourceConstants.VM_DISK_MIN_GB, max: resourceConstants.VM_DISK_MAX_GB }
                 },
                 storagePath: {
                     name: "storagePath",
@@ -364,7 +364,7 @@ export class HeSetupModel {
                     uiStage: "Storage",
                     useInAnswerFile: false,
                     required: false,
-                    range: {min: 0, max: 65536},
+                    range: { min: 0, max: 65536 },
                     errorMsg: "Port numbers must be between 0 and 65,536"
                 },
                 iSCSIPortalPort: {
@@ -571,7 +571,7 @@ export class HeSetupModel {
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
-                    range: {min: 1, max: 1}
+                    range: { min: 1, max: 1 }
                 },
                 maxVCpus: {
                     name: "maxVCpus",
@@ -661,7 +661,7 @@ export class HeSetupModel {
                     uiStage: "VM",
                     useInAnswerFile: true,
                     required: true,
-                    range: {min: resourceConstants.VM_MEM_MIN_MB, max: resourceConstants.VM_MEM_MIN_RECOMMENDED_MB}
+                    range: { min: resourceConstants.VM_MEM_MIN_MB, max: resourceConstants.VM_MEM_MIN_RECOMMENDED_MB }
                 },
                 networkConfigType: {
                     name: "networkConfigType",
@@ -700,7 +700,7 @@ export class HeSetupModel {
                     uiStage: "VM",
                     useInAnswerFile: false,
                     required: false,
-                    range: {min: 0, max: 128}
+                    range: { min: 0, max: 128 }
                 },
                 cloudinitVMDNS: {
                     name: "cloudinitVMDNS",
@@ -1109,7 +1109,7 @@ export class HeSetupModel {
                     uiStage: "Engine",
                     useInAnswerFile: true,
                     required: false,
-                    range: {min: 0, max: 65536},
+                    range: { min: 0, max: 65536 },
                     errorMsg: "Port numbers must be between 0 and 65,536"
                 },
                 sourceEmail: {
@@ -1147,7 +1147,7 @@ export class HeSetupModel {
         let file = answerFile.replace("[environment:default]\n", "");
         let lines = file.split('\n');
 
-        lines.map(function(line) {
+        lines.map(function (line) {
             line = line.replace("OVEHOSTED_STORAGE/", "");
             let idx = -1;
 
@@ -1173,11 +1173,11 @@ export class HeSetupModel {
             if (propName === "storageDomainConnection") {
                 var path = value.split(":").pop();
                 var address = value.substring(
-                  0,
-                  value.lastIndexOf(path)-1
+                    0,
+                    value.lastIndexOf(path) - 1
                 );
                 while (path.length > 1 && path.slice(-1) === '/') {
-                  path = path.slice(0, -1);
+                    path = path.slice(0, -1);
                 }
                 storageConfig.storagePath.value = path;
                 storageConfig.storageAddress.value = address;
@@ -1189,13 +1189,13 @@ export class HeSetupModel {
         const self = this;
 
         cockpit.file(gdeployHeAnsFilePath).read()
-            .done(function(gDeployAnswerFile) {
+            .done(function (gDeployAnswerFile) {
                 self.addValuesToModel(gDeployAnswerFile, model);
                 model.storage.domainType.value = "glusterfs";
                 model.storage.enableHcGlusterService.value = true;
                 console.log("Gluster values successfully added.");
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 console.log("Failed to read the gluster answer file. " + error);
             })
     }
@@ -1213,7 +1213,7 @@ export class HeSetupModel {
 
     setBooleanValues(ansFileFields, fieldProps, desiredValue) {
         let self = this;
-        ansFileFields.forEach(function(ansFileField) {
+        ansFileFields.forEach(function (ansFileField) {
             self.setBooleanValue(ansFileField, fieldProps, desiredValue);
         })
     }
@@ -1222,7 +1222,7 @@ export class HeSetupModel {
         let ansFileField = this.getAnsFileProperty(fieldName);
 
         if (ansFileField !== null) {
-            propNames.forEach(function(propName) {
+            propNames.forEach(function (propName) {
                 if (ansFileField.hasOwnProperty(propName)) {
                     ansFileField[propName] = desiredValue;
                 }
@@ -1235,9 +1235,9 @@ export class HeSetupModel {
         let model = this.model;
 
         Object.getOwnPropertyNames(model).some(
-            function(sectionName) {
+            function (sectionName) {
                 let section = model[sectionName];
-                if(section.hasOwnProperty(propName)) {
+                if (section.hasOwnProperty(propName)) {
                     prop = section[propName];
                     return true;
                 }
@@ -1270,12 +1270,12 @@ export class AnswerFileGenerator {
         let sectionNames = Object.getOwnPropertyNames(this.model);
 
         sectionNames.forEach(
-            function(sectionName) {
+            function (sectionName) {
                 let section = this.model[sectionName];
                 let propNames = Object.getOwnPropertyNames(section);
 
                 propNames.forEach(
-                    function(propName) {
+                    function (propName) {
                         const prop = section[propName];
                         const value = this.checkValue(prop);
 
@@ -1330,15 +1330,15 @@ export class AnswerFileGenerator {
 
         return new Promise((resolve, reject) => {
             file.replace(configString)
-                .done(function() {
+                .done(function () {
                     console.log("Answer file successfully written to " + filePath);
                     resolve(filePath);
                 })
-                .fail(function(error) {
+                .fail(function (error) {
                     console.log("Problem writing answer file. Error: " + error);
                     reject(error);
                 })
-                .always(function() {
+                .always(function () {
                     file.close()
                 })
         })
@@ -1346,7 +1346,7 @@ export class AnswerFileGenerator {
 }
 
 const wait_valid = (proxy, callback) => {
-    proxy.wait(function() {
+    proxy.wait(function () {
         if (proxy.valid) {
             callback();
         }
@@ -1362,7 +1362,7 @@ export class TimeZone {
 
     getTimeZone(callback) {
         let proxy = this.proxy;
-        wait_valid(proxy, function() {
+        wait_valid(proxy, function () {
             callback(proxy.Timezone);
         })
     }
@@ -1371,7 +1371,7 @@ export class TimeZone {
 export function pingGateway(gatewayAddress) {
     const ipv = gatewayAddress.indexOf(':') > -1 ? "-6" : "-4";
     return cockpit.spawn(["ping", ipv, "-c", "1", gatewayAddress])
-        .fail(function(result) {
+        .fail(function (result) {
             console.log("Error: " + result);
         });
 }
@@ -1386,14 +1386,14 @@ export function checkReverseDns(ipAddress) {
 
 export function checkRootDns(ipAddress) {
     return cockpit.spawn(["dig", "+tries=1", "+time=" + configValues.NETWORK_TEST_TIMEOUT])
-         .fail(function(result) {
+        .fail(function (result) {
             console.log("Error: " + result);
         });
 }
 
 export function checkTcpConnect(tcp_t_address, tcp_t_port) {
     return cockpit.spawn(["nc", "-w", configValues.NETWORK_TEST_TIMEOUT, "-z", tcp_t_address, tcp_t_port])
-        .fail(function(result) {
+        .fail(function (result) {
             console.log("Error: " + result);
         });
 }
@@ -1413,7 +1413,7 @@ export function getClassNames(propertyName, errorMsgs) {
 export function getTaskData(ansibleData, taskName) {
     let tasks = ansibleData["plays"][0]["tasks"];
     let data = null;
-    tasks.forEach(function(task) {
+    tasks.forEach(function (task) {
         if (task["task"]["name"] === taskName) {
             if (task["hosts"].hasOwnProperty("127.0.0.1")) {
                 data = task["hosts"]["127.0.0.1"];
@@ -1431,7 +1431,7 @@ export function generateRandomString() {
     const strLength = 6;
     const possChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
-    for(let i = 0; i < strLength; i++) {
+    for (let i = 0; i < strLength; i++) {
         str += possChars.charAt(Math.floor(Math.random() * possChars.length));
     }
 
