@@ -171,6 +171,7 @@ class HeWizardStorageContainer extends Component {
             targetRetrievalStatus: status.POLLING,
             iscsiTargetData: null,
             iscsiLunData: null,
+            selectedIscsiTarget: null,
             lunRetrievalStatus: status.EMPTY,
             errorMsg: "",
             errorMsgs: {}
