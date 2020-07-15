@@ -34,7 +34,7 @@ const Lun = ({ handleLunSelection, lun, selectedLun, storageConfig }) => {
                     {disableLun &&
                         <i className="pficon pficon-warning-triangle-o he-warning-icon disabled-lun-warning-icon"
                             rel="tooltip"
-                            title={disabledMsg} />
+                        />
                     }
 
                     <input type="radio"
@@ -45,6 +45,7 @@ const Lun = ({ handleLunSelection, lun, selectedLun, storageConfig }) => {
                         onChange={(e) => handleLunSelection(e.target.value)} />
                     &nbsp;<span className="lun-prop-label">ID:</span> {lun.guid}
                 </div>
+                {disableLun ? <div className="lun-prop"><span className="lun-prop-label">Error:</span> {disabledMsg}</div> : null}
                 <div className="lun-prop"><span className="lun-prop-label">Size (GiB):</span> {lunSizeInGiB.toFixed(2)}</div>
                 <div className="lun-prop"><span className="lun-prop-label">Description:</span> {lun.description}</div>
                 <div className="lun-prop"><span className="lun-prop-label">Status:</span> {lun.status}</div>
