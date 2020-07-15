@@ -6,7 +6,7 @@ const lunStatus = {
     FREE: "free"
 };
 
-const Lun = ({handleLunSelection, lun, selectedLun, storageConfig}) => {
+const Lun = ({ handleLunSelection, lun, selectedLun, storageConfig }) => {
 
     function bytesToGiB(bytes) {
         return bytes / Math.pow(2, 30);
@@ -33,22 +33,22 @@ const Lun = ({handleLunSelection, lun, selectedLun, storageConfig}) => {
                 <div>
                     {disableLun &&
                         <i className="pficon pficon-warning-triangle-o he-warning-icon disabled-lun-warning-icon"
-                           rel="tooltip"
-                           title={ disabledMsg } />
+                            rel="tooltip"
+                            title={disabledMsg} />
                     }
 
                     <input type="radio"
-                           name="lun"
-                           value={ lun.guid }
-                           disabled={ disableLun }
-                           checked={ selectedLun === lun.guid }
-                           onChange={ (e) => handleLunSelection(e.target.value) } />
-                    &nbsp;<span className="lun-prop-label">ID:</span> { lun.guid }
+                        name="lun"
+                        value={lun.guid}
+                        disabled={disableLun}
+                        checked={selectedLun === lun.guid}
+                        onChange={(e) => handleLunSelection(e.target.value)} />
+                    &nbsp;<span className="lun-prop-label">ID:</span> {lun.guid}
                 </div>
-                <div className="lun-prop"><span className="lun-prop-label">Size (GiB):</span> { lunSizeInGiB.toFixed(2) }</div>
-                <div className="lun-prop"><span className="lun-prop-label">Description:</span> { lun.description }</div>
-                <div className="lun-prop"><span className="lun-prop-label">Status:</span> { lun.status }</div>
-                <div className="lun-prop"><span className="lun-prop-label">Number of Paths:</span> { lun.numPaths }</div>
+                <div className="lun-prop"><span className="lun-prop-label">Size (GiB):</span> {lunSizeInGiB.toFixed(2)}</div>
+                <div className="lun-prop"><span className="lun-prop-label">Description:</span> {lun.description}</div>
+                <div className="lun-prop"><span className="lun-prop-label">Status:</span> {lun.status}</div>
+                <div className="lun-prop"><span className="lun-prop-label">Number of Paths:</span> {lun.numPaths}</div>
             </div>
         </div>
     )

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { getErrorMsgForProperty, validatePropsForUiStage } from "../Validation";
-import {deploymentTypes, messages, status} from '../constants';
+import { deploymentTypes, messages, status } from '../constants';
 import HeWizardStorage from './HeWizardStorage'
 import StorageUtil from '../../../helpers/HostedEngineSetup/StorageUtil'
 
@@ -75,11 +75,11 @@ class HeWizardStorageContainer extends Component {
         if (propName === "storageDomainConnection") {
             var path = value.split(":").pop();
             var address = value.substring(
-              0,
-              value.lastIndexOf(path)-1
+                0,
+                value.lastIndexOf(path) - 1
             );
             while (path.length > 1 && path.slice(-1) === '/') {
-              path = path.slice(0, -1);
+                path = path.slice(0, -1);
             }
             storageConfig.storagePath.value = path;
             storageConfig.storageAddress.value = address;
@@ -167,12 +167,13 @@ class HeWizardStorageContainer extends Component {
     }
 
     getIscsiTargetList() {
-        this.setState({ targetRetrievalStatus: status.POLLING,
-                        iscsiTargetData: null,
-                        iscsiLunData: null,
-                        lunRetrievalStatus: status.EMPTY,
-                        errorMsg: "",
-                        errorMsgs: {}
+        this.setState({
+            targetRetrievalStatus: status.POLLING,
+            iscsiTargetData: null,
+            iscsiLunData: null,
+            lunRetrievalStatus: status.EMPTY,
+            errorMsg: "",
+            errorMsgs: {}
         });
         const self = this;
         this.storageUtil.getTargetList()
@@ -211,7 +212,7 @@ class HeWizardStorageContainer extends Component {
 
         const tpgt = tpgts[tpgtArr[0]];
         tpgtData.name = tpgt.name;
-        tpgt.portals.forEach(function(portal) {
+        tpgt.portals.forEach(function (portal) {
             tpgtData.portalAddresses.push(portal.address);
             tpgtData.portalPorts.push(portal.port);
         });
@@ -255,8 +256,8 @@ class HeWizardStorageContainer extends Component {
         this.setState({ config });
     }
 
-    shouldComponentUpdate(nextProps, nextState){
-        if(!this.props.validating && nextProps.validating){
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!this.props.validating && nextProps.validating) {
             this.props.validationCallBack(this.validateAllInputs())
         }
         return true;
