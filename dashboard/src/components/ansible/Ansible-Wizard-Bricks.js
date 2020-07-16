@@ -220,9 +220,11 @@ class WizardBricksStep extends Component {
             let hostType = {key: host, title: host}
             hostTypes.push(hostType)
             let brickHost = that.state.bricksList[i]
-            brickHost.host = host
-            bricksList.push(brickHost)
-            lvCacheConfig[i].host = host
+            if(brickHost !== undefined) {
+              brickHost.host = host
+              bricksList.push(brickHost)
+              lvCacheConfig[i].host = host
+            }
         })
         this.setState({hostTypes, bricksList, lvCacheConfig})
     }
@@ -324,7 +326,9 @@ class WizardBricksStep extends Component {
         let hostIndex = this.getHostIndex(value)
         let selectedHost = this.state.selectedHost
         selectedHost.hostName = value
-        selectedHost.hostIndex = hostIndex
+        if(hostIndex >= 0){
+          selectedHost.hostIndex = hostIndex
+        }
         let hostArbiterVolumes = []
         this.props.glusterModel.volumes.forEach(function(volume, index) {
             if(volume.is_arbiter == true && hostIndex == 2){
@@ -709,22 +713,25 @@ class WizardBricksStep extends Component {
         const that = this
         let isVdoSupported = false
         let is_same_device = this.isAllDeviceSame()
-        this.state.bricksList[this.state.selectedHost.hostIndex].host_bricks.forEach(function (brick, index) {
-            if(brick.is_vdo_supported){
-              isVdoSupported = true
-            }
+        if(this.state.bricksList[this.state.selectedHost.hostIndex] !== undefined){
+          this.state.bricksList[this.state.selectedHost.hostIndex].host_bricks.forEach(function (brick, index) {
+              if(brick.is_vdo_supported){
+                isVdoSupported = true
+              }
 
-            bricksRow.push(
-                <BrickRow hostIndex={this.state.selectedHost.hostIndex}
-                    enabledFields={this.state.enabledFields}
-                    hostArbiterVolumes={this.state.hostArbiterVolumes} brick={brick} key={index} index={index}
-                    errorMsgs = {that.state.errorMsgs[index]}
-                    changeCallBack={this.handleUpdate}
-                    deleteCallBack={() => this.handleDelete(index)}
-                    ansibleWizardType={this.props.ansibleWizardType}
-                    />
-            )
-        }, this)
+              bricksRow.push(
+                  <BrickRow hostIndex={this.state.selectedHost.hostIndex}
+                      enabledFields={this.state.enabledFields}
+                      hostArbiterVolumes={this.state.hostArbiterVolumes} brick={brick} key={index} index={index}
+                      errorMsgs = {that.state.errorMsgs[index]}
+                      changeCallBack={this.handleUpdate}
+                      deleteCallBack={() => this.handleDelete(index)}
+                      ansibleWizardType={this.props.ansibleWizardType}
+                      />
+              )
+          }, this)
+        }
+
         const stripeSizeMsg = this.state.errorMsgs.raidConfig ? this.state.errorMsgs.raidConfig.stripeSize : null
         const diskCountMsg = this.state.errorMsgs.raidConfig ? this.state.errorMsgs.raidConfig.diskCount : null
         const stripeSize = classNames(

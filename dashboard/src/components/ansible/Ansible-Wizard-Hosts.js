@@ -129,8 +129,10 @@ class WizardHostStep extends Component {
       const inFqdns =  this.state.fqdns
       if(inHosts.length > 0){
         for(var i =0; i< inHosts.length; i++){
-          this.state.hosts[i] = inHosts[i].trim()
-          if(inFqdns.length > 0 && this.props.ansibleWizardType != "create_volume") {
+          if(inHosts[i] != undefined){
+            this.state.hosts[i] = inHosts[i].trim()
+          }
+          if(inFqdns.length > 0 && this.props.ansibleWizardType != "create_volume" && inFqdns[i] != undefined) {
             this.state.fqdns[i] = inFqdns[i].trim()
           }
         }

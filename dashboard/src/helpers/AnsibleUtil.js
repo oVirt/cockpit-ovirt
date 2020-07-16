@@ -154,8 +154,15 @@ var AnsibleUtil = {
           hostVars.gluster_infra_volume_groups = [];
           hostVars.gluster_infra_mount_devices = [];
           let processedDevs = {}; // VG and VDO is processed once per device processedVG implies processedVDO
-          let hostBricks = bricks[hostIndex]["host_bricks"];
-          let hostCacheConfig = lvCacheConfig[hostIndex];
+          let hostBricks = [];
+          if(bricks[hostIndex] != undefined){
+            hostBricks = bricks[hostIndex]["host_bricks"];
+          }
+          let hostCacheConfig = {};
+          if(lvCacheConfig[hostIndex] != undefined){
+            hostCacheConfig = lvCacheConfig[hostIndex];
+          }
+
           hostVars.gluster_infra_vdo = [];
           let groupedBricks = _.groupBy(hostBricks, "device");
 
@@ -164,6 +171,9 @@ var AnsibleUtil = {
             glusterModel.multiPathConfig[hostIndex].blacklistDevices.forEach(function(device, index) {
               hostVars.blacklist_mpath_devices.push(device)
             })
+          }
+          if(hostVars.blacklist_mpath_devices !== undefined && hostVars.blacklist_mpath_devices.length === 0){
+            delete hostVars['blacklist_mpath_devices']
           }
           for (let brick of hostBricks){
             let devName = brick.device.split("/").pop();
@@ -406,8 +416,14 @@ var AnsibleUtil = {
         hostVars.gluster_infra_volume_groups = [];
         hostVars.gluster_infra_mount_devices = [];
         let processedDevs = {}; // VG and VDO is processed once per device processedVG implies processedVDO
-        let hostBricks = bricks[hostIndex]["host_bricks"];
-        let hostCacheConfig = lvCacheConfig[hostIndex];
+        let hostBricks = [];
+        if(bricks[hostIndex] != undefined){
+          hostBricks = bricks[hostIndex]["host_bricks"];
+        }
+        let hostCacheConfig = {};
+        if(lvCacheConfig[hostIndex] != undefined){
+          hostCacheConfig = lvCacheConfig[hostIndex];
+        }
         hostVars.gluster_infra_vdo = [];
         let groupedBricks = _.groupBy(hostBricks, "device");
 
@@ -416,6 +432,9 @@ var AnsibleUtil = {
           glusterModel.multiPathConfig[hostIndex].blacklistDevices.forEach(function(device, index) {
             hostVars.blacklist_mpath_devices.push(device)
           })
+        }
+        if(hostVars.blacklist_mpath_devices !== undefined && hostVars.blacklist_mpath_devices.length === 0){
+          delete hostVars['blacklist_mpath_devices']
         }
         for (let brick of hostBricks){
           let devName = brick.device.split("/").pop();

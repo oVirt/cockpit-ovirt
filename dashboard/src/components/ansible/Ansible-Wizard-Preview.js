@@ -24,7 +24,14 @@ class WizardPreviewStep extends Component {
         this.handleVerbosity = this.handleVerbosity.bind(this)
     }
     createAnsibleConfig() {
-        if (this.props.glusterModel.volumes.length > 0 && this.props.glusterModel.hosts.length > 0) {
+        let glusterModel = this.props.glusterModel;
+        let bricks = [];
+        let that = this;
+        that.props.glusterModel.hosts.forEach(function(eachHost){
+          bricks.push({"host": eachHost, "host_bricks": glusterModel.bricks[0].host_bricks});
+        })
+        glusterModel.bricks = bricks;
+        if (glusterModel.volumes.length > 0 && glusterModel.hosts.length > 0) {
             this.setState({
                 ansibleConfig: "Creating Ansible configuration...",
                 isChanged: false
@@ -41,7 +48,7 @@ class WizardPreviewStep extends Component {
               console.log(`Ansible configuration saved successfully to ${CONFIG_FILES.ansibleInventoryFile}`)
               that.readAnsibleConfig()
             })
-            AnsibleUtil.createHEAnswerFileForGlusterStorage(this.props.glusterModel,
+            AnsibleUtil.createHEAnswerFileForGlusterStorage(glusterModel,
                 this.props.heAnsweFilePath,
             function(returnValue){
               console.log(`Hosted Engine configuration saved successfully to ${that.props.heAnsweFilePath}`)
