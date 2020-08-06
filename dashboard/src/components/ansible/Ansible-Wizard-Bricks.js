@@ -488,7 +488,7 @@ class WizardBricksStep extends Component {
         if(that.state.glusterModel.isSingleNode) {
           that.state.lvCacheConfig[0].lvCache = true
           lvCacheConfig.push(that.state.lvCacheConfig[0])
-        } else if(property === "ssd" || property === "thinpoolName") {
+        } else if(property === "ssd" || property === "thinpoolName" || property === "lvCacheSize") {
           if(lvCacheConfigIndex == 0) {
             that.state.lvCacheConfig.forEach(function(eachConfig) {
               eachConfig[property] = value
