@@ -425,7 +425,7 @@ const WizardFooter = ({
 				type="button"
 				className={cancelBtnClasses}
 				onClick={cancel}
-				data-dismiss="modal"
+				data-dismiss=""
 				aria-hidden="true"
 			>
 				Cancel
