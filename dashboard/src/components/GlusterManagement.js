@@ -348,12 +348,12 @@ class VolumeTable extends Component{
             onClick={this.props.handleRefresh}>
             <span className="fa fa-refresh"/>
           </button>
-          <span className="pull-right">
+          {(this.props.hostList && this.props.hostList.length !== 1) && <span className="pull-right">
             <button className="btn btn-default action-btn"
               onClick={()=>{cockpit.jump('/ovirt-dashboard#/create_gluster_volume')}}>
               Create Volume
             </button>
-          </span>
+          </span>}
         </div>
         <table className="table table-hover">
           <thead>

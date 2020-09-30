@@ -59,7 +59,7 @@ class WizardHostStep extends Component {
     }
     updateHost(index, hostaddress) {
         const hosts = this.state.hosts;
-        if(this.props.ansibleWizardType === "expand_volume") {
+        if(this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume") {
           if(this.state.expandVolumeHosts && this.state.expandVolumeHosts.length > 0) {
             this.handleExpandVolumeUpdate(index, hosts[index], false)
             this.handleExpandVolumeUpdate(index, hostaddress, true)
@@ -131,9 +131,6 @@ class WizardHostStep extends Component {
         for(var i =0; i< inHosts.length; i++){
           if(inHosts[i] != undefined){
             this.state.hosts[i] = inHosts[i].trim()
-          }
-          if(inFqdns.length > 0 && this.props.ansibleWizardType != "create_volume" && inFqdns[i] != undefined) {
-            this.state.fqdns[i] = inFqdns[i].trim()
           }
         }
       }
@@ -276,18 +273,7 @@ class WizardHostStep extends Component {
             }
             this.setState({ errorMsg, errorMsgs })
             return valid
-        } else if(this.props.ansibleWizardType === "create_volume") {
-            let errorMsg = ""
-            const errorMsgs= {}
-            if(this.state.hostTypes[0].title.length == 0) {
-              errorMsgs[0] = "Host address cannot be empty"
-              if(valid){
-                valid = false;
-              }
-            }
-            this.setState({ errorMsg, errorMsgs })
-            return valid
-        } else if(this.props.ansibleWizardType === "expand_volume"){
+        } else if(this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume"){
             const errorMsgs = {}
             if(this.state.expandVolumeHosts.length%3 !== 0 || this.state.expandVolumeHosts.length === 0) {
               this.state.hosts.forEach(function(value, index) {
@@ -310,21 +296,7 @@ class WizardHostStep extends Component {
     }
     componentDidMount(){
         $('[data-toggle=popover]').popovers()
-        if (this.props.ansibleWizardType === "create_volume") {
-            let that = this
-            let hostTypes = []
-            this.getHostList(function (hostList) {
-                  hostList.hosts.forEach(function (host) {
-                      let hostType = { key: host.hostname, title: host.hostname }
-                      hostTypes.push(hostType)
-                  })
-                  let hosts = that.state.hosts
-                  for (var i = 0; i < hostList.hosts.length; i++) {
-                      hosts[i] = hostList.hosts[i].hostname
-                  }
-                  that.setState({ hostTypes, hosts })
-            })
-        } else if(this.props.ansibleWizardType === "expand_volume") {
+        if(this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume") {
             let that = this
             this.getHostList(function (hostList) {
               if(hostList != null && hostList != undefined && hostList.hosts.length > 0) {
@@ -355,7 +327,7 @@ class WizardHostStep extends Component {
         })
     }
     componentWillReceiveProps(nextProps) {
-      if(nextProps.ansibleWizardType === "expand_volume") {
+      if(nextProps.ansibleWizardType === "expand_volume" || nextProps.ansibleWizardType === "create_volume") {
         let hostTypes = this.state.hostTypes
         hostTypes = []
         this.state.expandVolumeHosts.forEach(function(value, index) {
@@ -439,17 +411,8 @@ class WizardHostStep extends Component {
               handleIPV6={(e) => this.handleIPV6()}
             />
           )
-        } else if(this.props.ansibleWizardType === "create_volume" && this.state.hostTypes.length === 1) {
-          hostRows.push(
-            <HostRow host={this.state.hosts[0]} key={0} hostNo={1 }
-              ansibleWizardType={that.props.ansibleWizardType}
-              hostTypes={that.state.hostTypes}
-              errorMsg = {that.state.errorMsgs[0]}
-              deleteCallBack={() => this.handleDelete(0)}
-              changeCallBack={(e) => this.updateHost(0, e.target.value)}
-            />
-          )
-        } else {
+        }
+        else {
           this.state.hosts.forEach(function (host, index) {
               if (this.props.ansibleWizardType === "setup" || this.props.ansibleWizardType === "expand_cluster") {
                   hostRows.push(
@@ -466,18 +429,8 @@ class WizardHostStep extends Component {
                       handleIPV6={(e) => this.handleIPV6()}
                     />
                   )
-              } else if (this.props.ansibleWizardType === "create_volume"){
-                  hostRows.push(
-                    <HostRow host={host} key={index} hostNo={index + 1}
-                      ansibleWizardType={that.props.ansibleWizardType}
-                      hostTypes={that.state.hostTypes}
-                      hostLength={this.state.hosts.length}
-                      errorMsg = {that.state.errorMsgs[index]}
-                      deleteCallBack={() => this.handleDelete(index)}
-                      changeCallBack={(e) => this.handleSelectedHostUpdate(index, e)}
-                    />
-                  )
-              } else if (this.props.ansibleWizardType === "expand_volume"){
+              }
+              else if (this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume"){
                   hostRows.push(
                     <HostRow host={host} key={index} hostNo={index + 1}
                       ansibleWizardType={that.props.ansibleWizardType}
@@ -503,7 +456,7 @@ class WizardHostStep extends Component {
                     <ul>
                       {hostRows}
                     </ul>
-                    {(this.props.ansibleWizardType === "expand_volume" && this.state.hosts.length !== 3) &&
+                    {((this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume") && this.state.hosts.length !== 3) &&
                       <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                           <span className="pficon pficon-info"></span>
                           <strong>
@@ -591,13 +544,7 @@ const HostRow = ({host, fqdn, hostNo, ansibleWizardType, hostTypes, hostLength, 
                         </div> }
                       </div>
                     }
-                    {ansibleWizardType === "create_volume" && hostTypes.length > 0 && <Selectbox optionList={hostTypes}
-                        selectedOption={host}
-                        callBack={(e) => changeCallBack(e)}
-                        ansibleWizardType={ansibleWizardType}
-                        />
-                    }
-                    {ansibleWizardType === "expand_volume" && <div className="row">
+                    {(ansibleWizardType === "expand_volume" || ansibleWizardType === "create_volume") && <div className="row">
                         <div className="col-md-10">
                           <input id={hostId} type="text" placeholder="Gluster network address"
                             title="Enter the address of gluster network which will be used for gluster data traffic."

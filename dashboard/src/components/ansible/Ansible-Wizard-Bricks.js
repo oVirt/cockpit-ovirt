@@ -93,7 +93,7 @@ class WizardBricksStep extends Component {
         that.state.thinpoolOptions.push({key: "--select--", title: "--select--"}, {key: "sdb", title: "sdb"})
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(this.props.ansibleWizardType === "expand_volume") {
+        if(this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume") {
             let hostTypes = this.state.hostTypes
             hostTypes = []
             let hosts = this.state.hosts

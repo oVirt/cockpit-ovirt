@@ -115,6 +115,9 @@ var AnsibleUtil = {
       } else {
         let groups = {};
         let { hosts, volumes, bricks, raidConfig, lvCacheConfig } = glusterModel;
+        if(ansibleWizardType === "create_volume") {
+          hosts = glusterModel.expandVolumeHosts
+        }
         hosts = hosts.filter(function (e) {
           return e
         })
