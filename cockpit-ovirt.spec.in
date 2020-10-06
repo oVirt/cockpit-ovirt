@@ -46,7 +46,7 @@ BuildArch:      noarch
 
 Requires:       cockpit
 Requires:       cockpit-storaged
-Requires:       ovirt-hosted-engine-setup >= 2.4.4
+Requires:       ovirt-hosted-engine-setup >= 2.4.7
 Requires:       otopi >= 1.9.0
 
 Requires:       ansible
