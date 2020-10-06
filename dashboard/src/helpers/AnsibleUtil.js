@@ -75,6 +75,34 @@ var AnsibleUtil = {
             multiPathCheck: true
         }
     },
+
+    substrDevNameWWID(brick, processedDevs) {
+      // In case the device name is more than 39 characters, the thinpool name
+      // will be longer than 55 character, this causes an issue with blivet
+      // So in case a user enters a WWID which is a multipath with length
+      // greater than 39. We can take the last 24 characters of the device name
+      // to create a unique vg and thinpool name
+      const brickDeviceMinLength = 39;
+      const brickDeviceWWIDCharSplit = 24;
+      let devName = brick.device.split("/").pop();
+      if(brick.device.includes("/mapper/") && brick.device.length > brickDeviceMinLength) {
+        devName = brick.device.substr(brick.device.length - brickDeviceWWIDCharSplit);
+      } else {
+        devName = brick.device.split("/").pop();
+      }
+      let pvName = brick.device;
+      let vgName = VG_NAME+`${devName}`;
+      let thinpoolName = POOL_NAME+`${vgName}`;
+      let lvName = LV_NAME+`${brick.name}`;
+      let isDevProcessed = Object.keys(processedDevs).indexOf(devName) > -1;
+      let isThinpoolCreated = false;
+      if(isDevProcessed){
+        isThinpoolCreated = processedDevs[devName]['thinpool'];
+      }
+      let isVDO = brick.is_vdo_supported && brick.logicalSize > 0;
+      return [devName, pvName, vgName, thinpoolName, lvName, isDevProcessed, isThinpoolCreated, isVDO]
+    },
+
     createAnsibleConfig(glusterModel, filePath, ansibleWizardType = "none", isSingleNode, callback) {
       if(glusterModel.multiPathCheck) {
           if(glusterModel.multiPathConfig.length > 1) {
@@ -179,17 +207,7 @@ var AnsibleUtil = {
             delete hostVars['blacklist_mpath_devices']
           }
           for (let brick of hostBricks){
-            let devName = brick.device.split("/").pop();
-            let pvName = brick.device;
-            let vgName = VG_NAME+`${devName}`;
-            let thinpoolName = POOL_NAME+`${vgName}`;
-            let lvName = LV_NAME+`${brick.name}`;
-            let isDevProcessed = Object.keys(processedDevs).indexOf(devName) > -1;
-            let isThinpoolCreated = false;
-            if(isDevProcessed){
-              isThinpoolCreated = processedDevs[devName]['thinpool'];
-            }
-            let isVDO = brick.is_vdo_supported == true && brick.logicalSize;
+            let [devName, pvName, vgName, thinpoolName, lvName, isDevProcessed, isThinpoolCreated, isVDO] = this.substrDevNameWWID(brick, processedDevs)
             //TODO: cache more than one device.
             if(brick.is_vdo_supported){
               let vdoName = `vdo_${devName}`;
@@ -440,17 +458,7 @@ var AnsibleUtil = {
           delete hostVars['blacklist_mpath_devices']
         }
         for (let brick of hostBricks){
-          let devName = brick.device.split("/").pop();
-          let pvName = brick.device;
-          let vgName = VG_NAME+`${devName}`;
-          let thinpoolName = POOL_NAME+`${vgName}`;
-          let lvName = LV_NAME+`${brick.name}`;
-          let isDevProcessed = Object.keys(processedDevs).indexOf(devName) > -1;
-          let isThinpoolCreated = false;
-          if(isDevProcessed){
-            isThinpoolCreated = processedDevs[devName]['thinpool'];
-          }
-          let isVDO = brick.is_vdo_supported == true && brick.logicalSize;
+          let [devName, pvName, vgName, thinpoolName, lvName, isDevProcessed, isThinpoolCreated, isVDO] = this.substrDevNameWWID(brick, processedDevs)
           //TODO: cache more than one device.
           if(brick.is_vdo_supported){
             let vdoName = `vdo_${devName}`;
