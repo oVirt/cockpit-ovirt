@@ -27,8 +27,8 @@ class WizardPreviewStep extends Component {
         let glusterModel = this.props.glusterModel;
         let bricks = [];
         let that = this;
-        that.props.glusterModel.hosts.forEach(function(eachHost){
-          bricks.push({"host": eachHost, "host_bricks": glusterModel.bricks[0].host_bricks});
+        that.props.glusterModel.hosts.forEach(function(eachHost, index){
+          bricks.push({"host": eachHost, "host_bricks": glusterModel.bricks[index].host_bricks});
         })
         glusterModel.bricks = bricks;
         if (glusterModel.volumes.length > 0 && glusterModel.hosts.length > 0) {
