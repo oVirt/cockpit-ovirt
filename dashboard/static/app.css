@@ -217,6 +217,10 @@ div.curtains-with-footer {
 	align-items: center;
 }
 
+.modal {
+	overflow: auto !important;
+}
+
 .modal-body .entry {
 	word-wrap: break-word;
 	white-space: normal;
