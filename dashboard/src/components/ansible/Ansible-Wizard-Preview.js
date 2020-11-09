@@ -27,6 +27,9 @@ class WizardPreviewStep extends Component {
         let glusterModel = this.props.glusterModel;
         let bricks = [];
         let that = this;
+        if(that.props.ansibleWizardType === "expand_volume" || that.props.ansibleWizardType === "create_volume") {
+            that.props.glusterModel.hosts = that.props.glusterModel.expandVolumeHosts
+        }
         that.props.glusterModel.hosts.forEach(function(eachHost, index){
           bricks.push({"host": eachHost, "host_bricks": glusterModel.bricks[index].host_bricks});
         })
