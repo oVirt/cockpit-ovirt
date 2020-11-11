@@ -76,12 +76,7 @@ ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/
 autoreconf -ivf
 %endif
 
-
-%if 0%{?use_rhev}
-%configure --with-rhev
-%else
 %configure
-%endif  #END RHEV
 
 export PATH="./node_modules/.bin:${PATH}"
 make
