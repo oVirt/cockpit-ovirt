@@ -47,6 +47,7 @@ class HostedEngineSetup extends Component {
 		this.startSetup = this.startSetup.bind(this);
 		this.startGdeploy = this.startGdeploy.bind(this);
 		this.abortCallback = this.abortCallback.bind(this);
+		this.finishDeploy = this.finishDeploy.bind(this);
 		this.handleCloseSelection = this.handleCloseSelection.bind(this);
 		this.handleOvirtHostedEngineCleanupSelection = this.handleOvirtHostedEngineCleanupSelection.bind(
 			this
@@ -128,6 +129,11 @@ class HostedEngineSetup extends Component {
 			this.setState({ cancelled: true });
 			this.setState({ state: heSetupState.EMPTY });
 		}
+	}
+
+	finishDeploy() {
+		this.setState({ state: heSetupState.CLOSE_RQST_RECEIVED });
+		this.props.isDeployed();
 	}
 
 	handleCloseSelection(closeDialog) {
@@ -213,6 +219,7 @@ class HostedEngineSetup extends Component {
 							onSuccess={this.startSetup}
 							showWizard={!this.state.closeRequestRecvd}
 							onClose={this.abortCallback}
+							onFinishDeploy={this.finishDeploy}
 						/>
 						{this.state.closeRequestRecvd && (
 							<span>

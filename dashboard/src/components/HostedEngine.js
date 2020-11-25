@@ -36,7 +36,11 @@ class HostedEngine extends Component {
 			return <NotInstalled />;
 		} else {
 			if (!this.state.deployed) {
-				return <HostedEngineSetup />;
+				return (
+					<HostedEngineSetup
+						isDeployed={() => checkDeployed(this.deployedCallback)}
+					/>
+				);
 			} else {
 				if (this.state.manageGluster === true) {
 					return <GlusterManagement />;

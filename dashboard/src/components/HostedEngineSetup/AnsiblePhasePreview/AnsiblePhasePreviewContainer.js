@@ -72,7 +72,7 @@ class AnsiblePhasePreviewContainer extends Component {
 		} else if (this.props.isLastStep && executionStatus === status.SUCCESS) {
 			btnState = {
 				buttonText: "Close",
-				buttonCallBack: this.props.abortCallBack,
+				buttonCallBack: this.props.onFinishDeploy,
 				hideBtnsList: [
 					footerButtons.NEXT,
 					footerButtons.FINISH,

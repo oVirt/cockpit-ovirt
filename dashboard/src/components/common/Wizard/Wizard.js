@@ -19,6 +19,7 @@ class Wizard extends Component {
 		this.moveNext = this.moveNext.bind(this);
 		this.moveBack = this.moveBack.bind(this);
 		this.cancel = this.cancel.bind(this);
+		this.close = this.close.bind(this);
 		this.finish = this.finish.bind(this);
 		this.moveToStep = this.moveToStep.bind(this);
 		this.validationCallBack = this.validationCallBack.bind(this);
@@ -39,6 +40,9 @@ class Wizard extends Component {
 	}
 	cancel() {
 		this.props.onClose();
+	}
+	close() {
+		this.props.onFinishDeploy();
 	}
 	moveBack() {
 		if (this.state.activeSubStep > 0) {
@@ -149,6 +153,7 @@ class Wizard extends Component {
 		const steps = [];
 		const subStepLists = [];
 		const self = this;
+		const isLastStep = this.state.activeStep === this.props.children.length - 1;
 
 		this.props.children.forEach(function (step, index) {
 			const isActiveStep = index === activeStep;
@@ -231,7 +236,7 @@ class Wizard extends Component {
 								type="button"
 								className="close wizard-pf-dismiss"
 								aria-label="Close"
-								onClick={this.props.onClose}
+								onClick={isLastStep ? this.close : this.cancel}
 								data-dismiss={dataDismissValue}
 								aria-hidden="true"
 							>
@@ -262,7 +267,7 @@ class Wizard extends Component {
 							moveNext={this.moveNext}
 							cancel={this.cancel}
 							finish={this.finish}
-							close={this.props.onClose}
+							close={this.close}
 							customActionBtnState={customActionBtnState}
 							dataDismissValue={dataDismissValue}
 						/>
@@ -281,6 +286,7 @@ Wizard.propTypes = {
 	children: PropTypes.array.isRequired,
 	isDeploymentStarted: PropTypes.bool.isRequired,
 	suppressDataDismissAttribute: PropTypes.bool,
+	onFinishDeploy: PropTypes.func.isRequired,
 };
 
 const WizardSteps = ({ steps, activeStep, callBack }) => {
@@ -425,7 +431,7 @@ const WizardFooter = ({
 				type="button"
 				className={cancelBtnClasses}
 				onClick={cancel}
-				data-dismiss=""
+				data-dismiss={dataDismissValue}
 				aria-hidden="true"
 			>
 				Cancel

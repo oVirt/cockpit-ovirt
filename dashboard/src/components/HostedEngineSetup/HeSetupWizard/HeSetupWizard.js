@@ -21,6 +21,7 @@ const HeSetupWizard = ({
 	abortCallback,
 	defaultsProvider,
 	deploymentType,
+	finishDeploy,
 	handleFinish,
 	handleRedeploy,
 	heSetupModel,
@@ -55,6 +56,7 @@ const HeSetupWizard = ({
 					<Wizard
 						title="Hosted Engine Deployment"
 						onClose={abortCallback}
+						onFinishDeploy={finishDeploy}
 						onFinish={handleFinish}
 						onStepChange={onStepChange}
 						suppressDataDismissAttribute={showWizard}
@@ -88,6 +90,7 @@ const HeSetupWizard = ({
 						/>
 						<AnsiblePhasePreviewContainer
 							abortCallBack={abortCallback}
+							onFinishDeploy={finishDeploy}
 							isLastStep={true}
 							stepName="Finish"
 							headerText={headers.FINISH_STEP}
@@ -106,6 +109,7 @@ const HeSetupWizard = ({
 						title="Hosted Engine Deployment"
 						onClose={abortCallback}
 						onFinish={handleFinish}
+						onFinishDeploy={finishDeploy}
 						onStepChange={onStepChange}
 						isDeploymentStarted={isDeploymentStarted}
 					>

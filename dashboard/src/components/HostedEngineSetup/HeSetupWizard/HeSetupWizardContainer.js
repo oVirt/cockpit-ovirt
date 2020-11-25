@@ -32,6 +32,7 @@ class HeSetupWizardContainer extends Component {
 		this.sufficientMemAvail = true;
 		this.libvirtRunning = true;
 
+		this.finishDeploy = this.finishDeploy.bind(this);
 		this.handleFinish = this.handleFinish.bind(this);
 		this.onStepChange = this.onStepChange.bind(this);
 		this.handleReDeploy = this.handleReDeploy.bind(this);
@@ -82,6 +83,10 @@ class HeSetupWizardContainer extends Component {
 		});
 	}
 
+	finishDeploy() {
+		this.props.onFinishDeploy();
+	}
+
 	handleFinish() {
 		this.setState({ isDeploymentStarted: true });
 	}
@@ -120,6 +125,7 @@ class HeSetupWizardContainer extends Component {
 				abortCallback={this.abortCallback}
 				defaultsProvider={this.defaultsProvider}
 				handleFinish={this.handleFinish}
+				finishDeploy={this.finishDeploy}
 				handleRedeploy={this.handleReDeploy}
 				heSetupModel={this.state.heSetupModel}
 				isDeploymentStarted={this.state.isDeploymentStarted}
@@ -145,6 +151,7 @@ HeSetupWizardContainer.propTypes = {
 	gDeployAnswerFilePaths: PropTypes.array,
 	onClose: PropTypes.func.isRequired,
 	onSuccess: PropTypes.func.isRequired,
+	onFinishDeploy: PropTypes.func.isRequired,
 };
 
 export default HeSetupWizardContainer;
