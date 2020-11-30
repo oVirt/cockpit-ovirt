@@ -273,11 +273,23 @@ class WizardHostStep extends Component {
             }
             this.setState({ errorMsg, errorMsgs })
             return valid
-        } else if(this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume"){
+        } else if(this.props.ansibleWizardType === "expand_volume"){
             const errorMsgs = {}
             if(this.state.expandVolumeHosts.length%3 !== 0 || this.state.expandVolumeHosts.length === 0) {
               this.state.hosts.forEach(function(value, index) {
                 errorMsgs[index] = "Select hosts in a multiple of 3"
+              })
+              if(valid) {
+                valid = false;
+              }
+            }
+            this.setState({ errorMsgs })
+            return valid
+        } else if(this.props.ansibleWizardType === "create_volume"){
+            const errorMsgs = {}
+            if(this.state.expandVolumeHosts.length !== 3) {
+              this.state.hosts.forEach(function(value, index) {
+                errorMsgs[index] = "Select exactly 3 hosts"
               })
               if(valid) {
                 valid = false;
@@ -456,12 +468,21 @@ class WizardHostStep extends Component {
                     <ul>
                       {hostRows}
                     </ul>
-                    {((this.props.ansibleWizardType === "expand_volume" || this.props.ansibleWizardType === "create_volume") && this.state.hosts.length !== 3) &&
+                    {((this.props.ansibleWizardType === "expand_volume") && this.state.hosts.length !== 3) &&
                       <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                           <span className="pficon pficon-info"></span>
                           <strong>
                               Check the hosts on which the volume should be expanded.
                               Select the hosts in a multiple of 3.
+                          </strong>
+                      </div>
+                    }
+                    {((this.props.ansibleWizardType === "create_volume") && this.state.hosts.length !== 3) &&
+                      <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
+                          <span className="pficon pficon-info"></span>
+                          <strong>
+                              Check the hosts on which the bricks for the volume are to be created.
+                              Select exactly 3 hosts.
                           </strong>
                       </div>
                     }
