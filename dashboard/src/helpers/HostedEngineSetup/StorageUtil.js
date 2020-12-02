@@ -101,7 +101,7 @@ class StorageUtil {
     }
 
     parseLunData(data, devTypeKey) {
-        const lunObjList = data[devTypeKey].ansible_facts.ovirt_host_storages;
+        const lunObjList = data[devTypeKey].ovirt_host_storages;
         const luns = [];
         lunObjList.forEach(function(lun) {
             const units = lun.logical_units;
