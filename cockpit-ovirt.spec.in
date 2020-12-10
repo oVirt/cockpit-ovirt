@@ -102,7 +102,10 @@ __EOF__
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
-* Thu Nov 12 2020 Aviv Turgeman <aturgema@redhat.com> - 0.14.15-1
+* Thu Dec 10 2020 Aviv Turgeman <aturgema@redhat.com> - 0.14.16-1
+- Gluster storage deployment fixes
+
+* Sun Nov 29 2020 Aviv Turgeman <aturgema@redhat.com> - 0.14.15-1
 - Gluster storage deployment fixes
 
 * Thu Nov 12 2020 Aviv Turgeman <aturgema@redhat.com> - 0.14.14-1
