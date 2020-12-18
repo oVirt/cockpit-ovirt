@@ -42,8 +42,8 @@ AC_ARG_WITH([rhev],
 
 if test -z "$with_rhev"; then
     RHEV="oVirt"
-    INSTALL_GUIDE_LINK="https://ovirt.org/documentation/self-hosted/Self-Hosted_Engine_Guide/"
-    MORE_INFO_LINK="http://www.ovirt.org/"
+    INSTALL_GUIDE_LINK="https://ovirt.org/documentation/installing_ovirt_as_a_self-hosted_engine_using_the_cockpit_web_interface/"
+    MORE_INFO_LINK="https://www.ovirt.org/"
     MORE_INFO_LINK_TEXT="oVirt Homepage"
 else
     RHEV=""
