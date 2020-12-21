@@ -224,8 +224,18 @@ class WizardBricksStep extends Component {
               brickHost.host = host
               bricksList.push(brickHost)
               lvCacheConfig[i].host = host
+            } else {
+              brickHost = {}
+              brickHost.host = host
+              brickHost.host_bricks = that.state.bricksList[0].host_bricks
+              bricksList.push(brickHost)
+              if(lvCacheConfig.length !== hosts.length) {
+                lvCacheConfig.push(lvCacheConfig[0])
+                lvCacheConfig[i].host = host
+              }
             }
         })
+        that.props.glusterModel.bricks = bricksList
         this.setState({hostTypes, bricksList, lvCacheConfig})
     }
     updateBrickDetails(newVolumes){

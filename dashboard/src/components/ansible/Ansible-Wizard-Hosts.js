@@ -468,7 +468,7 @@ class WizardHostStep extends Component {
                     <ul>
                       {hostRows}
                     </ul>
-                    {((this.props.ansibleWizardType === "expand_volume") && this.state.hosts.length !== 3) &&
+                    {((this.props.ansibleWizardType === "expand_volume") && this.state.hosts.length > 3) &&
                       <div className="col-md-offset-2 col-md-8 alert alert-info ansible-wizard-host-ssh-info">
                           <span className="pficon pficon-info"></span>
                           <strong>
