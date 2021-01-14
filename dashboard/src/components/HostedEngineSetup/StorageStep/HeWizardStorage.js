@@ -1,7 +1,13 @@
 import React from "react";
 import Selectbox from "../../common/Selectbox";
 import { getClassNames } from "../../../helpers/HostedEngineSetupUtil";
-import { deploymentTypes, headers, messages, status } from "../constants";
+import {
+	deploymentTypes,
+	headers,
+	messages,
+	status,
+	resourceConstants,
+} from "../constants";
 import TargetListContainer from "./iSCSI/TargetList/TargetListContainer";
 import LunListContainer from "./iSCSI/LunList/LunListContainer";
 
@@ -475,9 +481,37 @@ const HeWizardStorage = ({
 								title="Enter the disk size for the VM."
 								className="form-control"
 								value={storageConfig.imgSizeGB.value}
-								onChange={(e) =>
-									handleStorageConfigUpdate("imgSizeGB", e.target.value)
-								}
+								onChange={(e) => {
+									handleStorageConfigUpdate(
+										"imgSizeGB",
+										parseInt(e.target.value)
+									);
+									if (selectedLun != "") {
+										const selectedLunData = iscsiLunData.find(
+											(lun) => lun.guid === selectedLun
+										);
+										const lunSizeInGib = selectedLunData.size / Math.pow(2, 30);
+										const minLunSizeInGib =
+											resourceConstants.LUN_STORAGE_OVERHEAD_GIB +
+											parseInt(e.target.value);
+										if (minLunSizeInGib > lunSizeInGib) {
+											handleLunSelection("");
+										}
+									}
+									if (selectedFcLun != "") {
+										const selectedFcLunData = fcLunData.find(
+											(lun) => lun.guid === selectedFcLun
+										);
+										const lunSizeInGib =
+											selectedFcLunData.size / Math.pow(2, 30);
+										const minLunSizeInGib =
+											resourceConstants.LUN_STORAGE_OVERHEAD_GIB +
+											parseInt(e.target.value);
+										if (minLunSizeInGib > lunSizeInGib) {
+											handleFcLunSelection("");
+										}
+									}
+								}}
 							/>
 							{errorMsgs.imgSizeGB && (
 								<span className="help-block">{errorMsgs.imgSizeGB}</span>

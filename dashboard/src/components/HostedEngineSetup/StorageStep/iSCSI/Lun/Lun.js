@@ -18,15 +18,6 @@ const Lun = ({ handleLunSelection, lun, selectedLun, storageConfig }) => {
 	const lunDirty = lun.status === lunStatus.USED;
 	const disableLun = lunTooSmall || lunDirty;
 
-	const disabledMsgArr = [];
-	if (lunTooSmall) {
-		disabledMsgArr.push(messages.LUN_IS_TOO_SMALL);
-	}
-	if (lunDirty) {
-		disabledMsgArr.push(messages.LUN_IS_DIRTY);
-	}
-	const disabledMsg = disabledMsgArr.join("\n\n");
-
 	return (
 		<div className="form-group">
 			<div className="col-md-12 lun">
@@ -42,14 +33,21 @@ const Lun = ({ handleLunSelection, lun, selectedLun, storageConfig }) => {
 						name="lun"
 						value={lun.guid}
 						disabled={disableLun}
-						checked={selectedLun === lun.guid}
+						checked={disableLun ? false : selectedLun === lun.guid}
 						onChange={(e) => handleLunSelection(e.target.value)}
 					/>
 					&nbsp;<span className="lun-prop-label">ID:</span> {lun.guid}
 				</div>
-				{disableLun ? (
+				{lunTooSmall ? (
 					<div className="lun-prop">
-						<span className="lun-prop-label">Error:</span> {disabledMsg}
+						<span className="lun-prop-label">Error:</span>{" "}
+						{messages.LUN_IS_TOO_SMALL}
+					</div>
+				) : null}
+				{lunDirty ? (
+					<div className="lun-prop">
+						<span className="lun-prop-label">Error:</span>{" "}
+						{messages.LUN_IS_DIRTY}
 					</div>
 				) : null}
 				<div className="lun-prop">
