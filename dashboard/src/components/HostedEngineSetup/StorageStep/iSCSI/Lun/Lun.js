@@ -1,5 +1,6 @@
 import React from "react";
 import { messages, resourceConstants } from "../../../constants";
+import LunProp from "./LunProp/LunProp";
 
 const lunStatus = {
 	USED: "used",
@@ -17,6 +18,12 @@ const Lun = ({ handleLunSelection, lun, selectedLun, storageConfig }) => {
 	const lunTooSmall = lunSizeInGiB < minLunSizeInGiB;
 	const lunDirty = lun.status === lunStatus.USED;
 	const disableLun = lunTooSmall || lunDirty;
+	const lunProps = [
+		{ key: "size", label: "Size (GiB)", info: lunSizeInGiB.toFixed(2) },
+		{ key: "description", label: "Description", info: lun.description },
+		{ key: "status", label: "Status", info: lun.status },
+		{ key: "numPaths", label: "Number of Paths", info: lun.numPaths },
+	];
 
 	return (
 		<div className="form-group">
@@ -39,31 +46,20 @@ const Lun = ({ handleLunSelection, lun, selectedLun, storageConfig }) => {
 					&nbsp;<span className="lun-prop-label">ID:</span> {lun.guid}
 				</div>
 				{lunTooSmall ? (
-					<div className="lun-prop">
-						<span className="lun-prop-label">Error:</span>{" "}
-						{messages.LUN_IS_TOO_SMALL}
-					</div>
+					<LunProp label="Error" info={messages.LUN_IS_TOO_SMALL} />
 				) : null}
 				{lunDirty ? (
-					<div className="lun-prop">
-						<span className="lun-prop-label">Error:</span>{" "}
-						{messages.LUN_IS_DIRTY}
-					</div>
+					<LunProp label="Error" info={messages.LUN_IS_DIRTY} />
 				) : null}
-				<div className="lun-prop">
-					<span className="lun-prop-label">Size (GiB):</span>{" "}
-					{lunSizeInGiB.toFixed(2)}
-				</div>
-				<div className="lun-prop">
-					<span className="lun-prop-label">Description:</span> {lun.description}
-				</div>
-				<div className="lun-prop">
-					<span className="lun-prop-label">Status:</span> {lun.status}
-				</div>
-				<div className="lun-prop">
-					<span className="lun-prop-label">Number of Paths:</span>{" "}
-					{lun.numPaths}
-				</div>
+				{lunProps.map((lunProp) => {
+					return (
+						<LunProp
+							key={lunProp.key}
+							label={lunProp.label}
+							info={lunProp.info}
+						/>
+					);
+				})}
 			</div>
 		</div>
 	);
