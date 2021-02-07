@@ -73,6 +73,18 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: false
                 },
+                pauseHost: {
+                    name: "PAUSE_HOST",
+                    ansibleVarName: "he_pause_host",
+                    ansiblePhasesUsed: [phases.BOOTSTRAP_VM],
+                    description: "Pause host",
+                    value: false,
+                    type: types.BOOLEAN,
+                    showInReview: false,
+                    uiStage: "",
+                    useInAnswerFile: false,
+                    required: false
+                },
                 localVmDirPath: {
                     name: "LOCAL_VM_DIR_PATH",
                     ansibleVarName: "he_local_vm_dir_path",

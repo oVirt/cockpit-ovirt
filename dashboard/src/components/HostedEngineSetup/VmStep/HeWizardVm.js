@@ -71,6 +71,7 @@ const HeWizardVm = ({
 	const vmConfig = heSetupModel.vm;
 	const vdsmConfig = heSetupModel.vdsm;
 	const networkConfig = heSetupModel.network;
+	const coreConfig = heSetupModel.core;
 
 	const maxAvailMem = vmConfig.vmMemSizeMB.range.max.toLocaleString();
 	const memWarningMessage =
@@ -99,18 +100,17 @@ const HeWizardVm = ({
 		? "form-group has-error"
 		: "form-group nested-input";
 
-	const vmFqdnClassNames =
-		fqdnValidationData.vm.state !== status.EMPTY ||
-		heSetupModel.network.fqdn.value === ""
-			? "fqdn-validation-btn btn btn-default disabled"
-			: "fqdn-validation-btn btn btn-default";
-	const hostFqdnClassNames =
-		fqdnValidationData.host.state !== status.EMPTY ||
-		heSetupModel.network.host_name.value === ""
-			? "fqdn-validation-btn btn btn-default disabled"
-			: "fqdn-validation-btn btn btn-default";
-
 	const validatingFQDN = "Validating FQDN...";
+
+	const infoEditHostsFileMessage =
+		"Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?\n" +
+		"Note: ensuring that this host could resolve the engine VM hostname is still up to you.";
+	const infoPauseHostMessage =
+		"Check this option, if you want to pause installation to make manual adjustments.\n" +
+		"This will pause the deployment after engine setup and create a lock-file in\n" +
+		"'/tmp' directory which ends with '_he_setup_lock' on machine role was executed.\n" +
+		"The Hosted Engine deployment will continue after deleting the lock-file OR\n" +
+		"after 24 hours if lock-file has not been deleted.";
 
 	return (
 		<div>
@@ -615,8 +615,7 @@ const HeWizardVm = ({
 									className="pficon pficon-info he-wizard-info-icon"
 									rel="tooltip"
 									id="hosts_file"
-									title="Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?
-                                              Note: ensuring that this host could resolve the engine VM hostname is still up to you."
+									title={infoEditHostsFileMessage}
 								/>
 							</label>
 							<div className="col-md-5">
@@ -631,6 +630,28 @@ const HeWizardVm = ({
 										)
 									}
 									id="he-edit-etc-hosts-chkbox"
+								/>
+							</div>
+						</div>
+
+						<div className="form-group">
+							<label className="col-md-3 control-label">
+								Pause Host
+								<i
+									className="pficon pficon-info he-wizard-info-icon"
+									rel="tooltip"
+									id="hosts_file"
+									title={infoPauseHostMessage}
+								/>
+							</label>
+							<div className="col-md-5">
+								<input
+									type="checkbox"
+									checked={coreConfig.pauseHost.value}
+									onChange={(e) =>
+										handleVmConfigUpdate("pauseHost", e.target.checked, "core")
+									}
+									id="he-pause-host-chkbox"
 								/>
 							</div>
 						</div>
