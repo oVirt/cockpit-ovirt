@@ -12,6 +12,7 @@ import {
 	status,
 } from "../constants";
 import UnmaskablePasswordContainer from "../UnmaskablePassword";
+import CheckboxWithInfo from "./HeWizardVmComponents/CheckboxWithInfo";
 
 const consoleTypes = [
 	{ key: "vnc", title: "VNC" },
@@ -102,6 +103,15 @@ const HeWizardVm = ({
 
 	const validatingFQDN = "Validating FQDN...";
 
+	const infoNetworkNamingConventionsMessage =
+		"If you are using Bonds or VLANs Use the following naming conventions:\n" +
+		"- VLAN interfaces: physical_device.VLAN_ID (for example, eth0.23, eth1.128, enp3s0.50).\n" +
+		"- Bond interfaces: bond*number* (for example, bond0, bond1).\n" +
+		"- VLANs on bond interfaces: bond*number*.VLAN_ID (for example, bond0.50, bond1.128).\n" +
+		"* Supported bond modes: active-backup, balance-xor, broadcast, 802.3ad.\n" +
+		"* Networking teaming is not supported and will cause errors.\n\n" +
+		"NOTE: devices which is not following these conventions, will not appear during installaion at all.";
+
 	const infoEditHostsFileMessage =
 		"Add lines for the appliance itself and for this host to /etc/hosts on the engine VM?\n" +
 		"Note: ensuring that this host could resolve the engine VM hostname is still up to you.";
@@ -111,6 +121,42 @@ const HeWizardVm = ({
 		"'/tmp' directory which ends with '_he_setup_lock' on machine role was executed.\n" +
 		"The Hosted Engine deployment will continue after deleting the lock-file OR\n" +
 		"after 24 hours if lock-file has not been deleted.";
+
+	const infoOpenscapProfileMessage =
+		"Apply a default OpenSCAP security profile on the engine VM";
+
+	const infoAppliancePathMessage =
+		"Enter the full path to local appliance file, OR leave it empty for default";
+
+	const checkboxWithInfoProps = [
+		{
+			label: "Edit Hosts File",
+			idInfo: "hosts_file",
+			iconTitle: infoEditHostsFileMessage,
+			checked: vmConfig.cloudinitVMETCHOSTS.value,
+			propName: "cloudinitVMETCHOSTS",
+			configType: "vm",
+			idInput: "he-edit-etc-hosts-chkbox",
+		},
+		{
+			label: "Pause Host",
+			idInfo: "pause_host",
+			iconTitle: infoPauseHostMessage,
+			checked: coreConfig.pauseHost.value,
+			propName: "pauseHost",
+			configType: "core",
+			idInput: "he-pause-host-chkbox",
+		},
+		{
+			label: "Apply OpenSCAP profile",
+			idInfo: "openscap_profile",
+			iconTitle: infoOpenscapProfileMessage,
+			checked: vmConfig.applyOpenSCAP.value,
+			propName: "applyOpenSCAP",
+			configType: "vm",
+			idInput: "he-apply-openscap-chkbox",
+		},
+	];
 
 	return (
 		<div>
@@ -159,7 +205,6 @@ const HeWizardVm = ({
 						</div>
 					</div>
 				)}
-
 				{isOtopiDeployment && (
 					<span>
 						<div className="form-group">
@@ -193,7 +238,6 @@ const HeWizardVm = ({
 						<h3>VM Settings</h3>
 					</div>
 				</div>
-
 				<div className={getClassNames("fqdn", errorMsgs)}>
 					<label className="col-md-3 control-label">Engine VM FQDN</label>
 					<div className="col-md-7">
@@ -261,7 +305,6 @@ const HeWizardVm = ({
 						)}
 					</div>
 				</div>
-
 				{isOtopiDeployment && (
 					<span>
 						<div
@@ -299,7 +342,6 @@ const HeWizardVm = ({
 						</div>
 					</span>
 				)}
-
 				<div className="form-group">
 					<label className="col-md-3 control-label">
 						Network Configuration
@@ -427,11 +469,18 @@ const HeWizardVm = ({
 						</div>
 					</div>
 				</div>
-
 				<div className="form-group">
-					<label className="col-md-3 control-label">Bridge Interface</label>
-					<div className="col-md-6">
-						<div style={{ width: "120px" }}>
+					<label className="col-md-3 control-label">
+						Bridge Interface{" "}
+						<i
+							className="pficon pficon-info he-wizard-info-icon"
+							rel="tooltip"
+							id="network_naming_conventions"
+							title={infoNetworkNamingConventionsMessage}
+						/>
+					</label>
+					<div className="col-md-3">
+						<div>
 							<Selectbox
 								optionList={interfaces}
 								selectedOption={networkConfig.bridgeIf.value}
@@ -440,7 +489,6 @@ const HeWizardVm = ({
 						</div>
 					</div>
 				</div>
-
 				<div className={getClassNames("cloudinitRootPwd", errorMsgs)}>
 					<label className="col-md-3 control-label">Root Password</label>
 					<div className="col-md-3">
@@ -454,7 +502,6 @@ const HeWizardVm = ({
 						)}
 					</div>
 				</div>
-
 				<div className="form-group">
 					<label className="col-md-3 control-label">Root SSH Access</label>
 					<div className="col-md-3">
@@ -465,7 +512,6 @@ const HeWizardVm = ({
 						/>
 					</div>
 				</div>
-
 				<div className={getClassNames("vmVCpus", errorMsgs)}>
 					<label className="col-md-3 control-label">
 						Number of Virtual CPUs
@@ -490,7 +536,6 @@ const HeWizardVm = ({
 						)}
 					</div>
 				</div>
-
 				<div className={getClassNames("vmMemSizeMB", errorMsgs)}>
 					<label className="col-md-3 control-label">Memory Size (MiB)</label>
 					<div className="col-md-6 he-text-with-units">
@@ -515,7 +560,6 @@ const HeWizardVm = ({
 						)}
 					</div>
 				</div>
-
 				{isOtopiDeployment && (
 					<div className="form-group">
 						<label className="col-md-3 control-label">Console Type</label>
@@ -528,7 +572,6 @@ const HeWizardVm = ({
 						</div>
 					</div>
 				)}
-
 				{isOtopiDeployment && (
 					<div className="form-group">
 						<label className="col-md-3 control-label">
@@ -554,7 +597,6 @@ const HeWizardVm = ({
 						</div>
 					</div>
 				)}
-
 				<div style={showCloudInitFields ? {} : { display: "none" }}>
 					{isOtopiDeployment && (
 						<div className="form-group">
@@ -605,54 +647,6 @@ const HeWizardVm = ({
 								{errorMsgs.rootSshPubkey && (
 									<span className="help-block">{errorMsgs.rootSshPubkey}</span>
 								)}
-							</div>
-						</div>
-
-						<div className="form-group">
-							<label className="col-md-3 control-label">
-								Edit Hosts File
-								<i
-									className="pficon pficon-info he-wizard-info-icon"
-									rel="tooltip"
-									id="hosts_file"
-									title={infoEditHostsFileMessage}
-								/>
-							</label>
-							<div className="col-md-5">
-								<input
-									type="checkbox"
-									checked={vmConfig.cloudinitVMETCHOSTS.value}
-									onChange={(e) =>
-										handleVmConfigUpdate(
-											"cloudinitVMETCHOSTS",
-											e.target.checked,
-											"vm"
-										)
-									}
-									id="he-edit-etc-hosts-chkbox"
-								/>
-							</div>
-						</div>
-
-						<div className="form-group">
-							<label className="col-md-3 control-label">
-								Pause Host
-								<i
-									className="pficon pficon-info he-wizard-info-icon"
-									rel="tooltip"
-									id="hosts_file"
-									title={infoPauseHostMessage}
-								/>
-							</label>
-							<div className="col-md-5">
-								<input
-									type="checkbox"
-									checked={coreConfig.pauseHost.value}
-									onChange={(e) =>
-										handleVmConfigUpdate("pauseHost", e.target.checked, "core")
-									}
-									id="he-pause-host-chkbox"
-								/>
 							</div>
 						</div>
 
@@ -821,31 +815,23 @@ const HeWizardVm = ({
 								)}
 							</div>
 						</div>
-						<div className="form-group">
-							<label className="col-md-3 control-label">
-								Apply OpenSCAP profile
-								<i
-									className="pficon pficon-info he-wizard-info-icon"
-									rel="tooltip"
-									id="hosts_file"
-									title="Apply a default OpenSCAP security profile on the engine VM"
+
+						{checkboxWithInfoProps.map((prop) => {
+							return (
+								<CheckboxWithInfo
+									key={prop.idInput}
+									label={prop.label}
+									idInfo={prop.idInfo}
+									iconTitle={prop.iconTitle}
+									checked={prop.checked}
+									handleVmConfigUpdate={handleVmConfigUpdate}
+									propName={prop.propName}
+									configType={prop.configType}
+									idInput={prop.idInput}
 								/>
-							</label>
-							<div className="col-md-5">
-								<input
-									type="checkbox"
-									checked={vmConfig.applyOpenSCAP.value}
-									onChange={(e) =>
-										handleVmConfigUpdate(
-											"applyOpenSCAP",
-											e.target.checked,
-											"vm"
-										)
-									}
-									id="he-apply-openscap-chkbox"
-								/>
-							</div>
-						</div>
+							);
+						})}
+
 						<div className={getClassNames("network_test", errorMsgs)}>
 							<label className="col-md-3 control-label">Network Test</label>
 							<div className="col-md-3">
