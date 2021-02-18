@@ -910,6 +910,22 @@ const HeWizardVm = ({
 								</div>
 							</div>
 						</div>
+						<div className={getClassNames("ovfArchive", errorMsgs)}>
+							<label className="col-md-3 control-label">OVA Archive Path</label>
+							<div className="col-md-5">
+								<input
+									type="text"
+									placeholder="/path/to/*.ova"
+									title={infoAppliancePathMessage}
+									className="form-control"
+									value={vmConfig.ovfArchive.value}
+									onChange={(e) =>
+										handleVmConfigUpdate("ovfArchive", e.target.value, "vm")
+									}
+									id="he-ova_archive-path-input"
+								/>
+							</div>
+						</div>
 					</span>
 				</div>
 			</form>
