@@ -80,7 +80,7 @@ export class DefaultValueProvider {
     processResults(results) {
         const retVal = {};
         results.forEach(
-            function(initTask) {
+            function (initTask) {
                 retVal[initTask.task] = initTask.resolved;
             });
         return retVal;
@@ -94,16 +94,16 @@ export class DefaultValueProvider {
         return new Promise((resolve, reject) => {
             console.log("General system data retrieval started.");
             cockpit.spawn(cmd.split(" "), options)
-                .done(function(json) {
+                .done(function (json) {
                     console.log("General system data retrieved successfully.");
                     let data = self.cleanData(json);
                     self.systemData = JSON.parse(data);
-                    resolve({task: tasks.GET_SYSTEM_DATA, error: null});
+                    resolve({ task: tasks.GET_SYSTEM_DATA, error: null });
                 })
-                .fail(function(error) {
+                .fail(function (error) {
                     console.log("General system data retrieval failed.");
                     console.log(error);
-                    reject({task: tasks.GET_SYSTEM_DATA, error: error});
+                    reject({ task: tasks.GET_SYSTEM_DATA, error: error });
                 });
         });
     }
@@ -126,17 +126,23 @@ export class DefaultValueProvider {
         const playbookVars = { he_just_collect_network_interfaces: "True" }
         const self = this;
 
+        console.log()
         return new Promise((resolve, reject) => {
+            console.log("Reading output file: " + outputPath);
             playbookUtil.runPlaybookWithVars(playbookPath, outputPath, playbookVars, roleTag, skipTag)
-                .then(() => playbookUtil.readOutputFile(outputPath))
-                .then(output => self.setNetworkInterfaces(output))
+                .then(() => {
+                    playbookUtil.readOutputFile(outputPath);
+                })
+                .then(output => {
+                    setNetworkInterfaces(output);
+                })
                 .then(() => {
                     console.log("Network interfaces retrieved successfully");
-                    resolve({task: tasks.RETRIEVE_NETWORK_INTERFACES, error: null});
+                    resolve({ task: tasks.RETRIEVE_NETWORK_INTERFACES, error: null });
                 })
                 .catch(error => {
                     console.log("Network interfaces retrieval failed");
-                    reject({task: tasks.RETRIEVE_NETWORK_INTERFACES, error: error});
+                    reject({ task: tasks.RETRIEVE_NETWORK_INTERFACES, error: error });
                 });
         });
     }
@@ -150,7 +156,7 @@ export class DefaultValueProvider {
 
             if (typeof interfaces !== "undefined" && interfaces.length > 0) {
                 interfaces.forEach(function (iface) {
-                    interfacesArray.push({key: iface, title: iface});
+                    interfacesArray.push({ key: iface, title: iface });
                 });
             } else {
                 reject(new Error("Unable to retrieve valid network interfaces data"));
@@ -250,7 +256,7 @@ export class DefaultValueProvider {
 
         if (typeof applList !== 'undefined' && applList.length > 0) {
             applList.forEach(function (appliance) {
-                appliances.push({key: appliance, title: appliance});
+                appliances.push({ key: appliance, title: appliance });
             });
         }
 

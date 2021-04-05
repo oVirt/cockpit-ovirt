@@ -1,6 +1,6 @@
 import { ansibleOutputTypes as outputTypes, configValues }
     from "../../components/HostedEngineSetup/constants"
-import {generateRandomString, getAnsibleLogPath} from "../HostedEngineSetupUtil"
+import { generateRandomString, getAnsibleLogPath } from "../HostedEngineSetupUtil"
 
 class PlaybookUtil {
     constructor() {
@@ -61,7 +61,7 @@ class PlaybookUtil {
                 "superuser": "require",
             });
 
-            $(this.channel).on("close", function(ev, options) {
+            $(this.channel).on("close", function (ev, options) {
                 if (!self._manual_close) {
                     if (options["exit-status"] === 0) {
                         console.log(`Execution of ${playbookPath}${tag_msg} completed successfully`);
@@ -98,7 +98,7 @@ class PlaybookUtil {
         const varsArr = [];
 
         Object.getOwnPropertyNames(vars).forEach(
-            function(varName) {
+            function (varName) {
                 let option = `-e ${varName}=${vars[varName]}`;
                 varsArr.push(option);
             }, this);
@@ -119,11 +119,11 @@ class PlaybookUtil {
                     if (output) {
                         resolve(output);
                     } else {
-                        console.error(`Error: Unable to read file ${path}`);
+                        console.error("Error: Unable to read file " + path);
                         reject("Unable to read file");
                     }
                 })
-                .fail(function(error) {
+                .fail(function (error) {
                     console.error("Error: " + error);
                     reject(error);
                 });
@@ -136,7 +136,7 @@ class PlaybookUtil {
         lines = lines.filter(n => n);
         let results = null;
 
-        lines.forEach(function(line) {
+        lines.forEach(function (line) {
             try {
                 const json = JSON.parse(line);
                 if (json["OVEHOSTED_AC/type"] === outputTypes.RESULT) {
@@ -152,11 +152,11 @@ class PlaybookUtil {
     createOutputFileDir() {
         return new Promise((resolve, reject) => {
             cockpit.spawn(["mkdir", "-p", configValues.ANSIBLE_OUTPUT_DIR], { "superuser": "require" })
-                .done(function() {
+                .done(function () {
                     console.log("Ansible output file directory created successfully.");
                     resolve();
                 })
-                .fail(function(error) {
+                .fail(function (error) {
                     console.log("There was an error while creating the ansible output file directory. Error: " + error);
                     reject(error);
                 })
@@ -185,15 +185,15 @@ class PlaybookUtil {
         const playbookName = baseName.toLowerCase();
         const timeStamp = this.getTimeStamp();
         const pipe = `${configValues.ANSIBLE_OUTPUT_DIR}${playbookName}-${timeStamp}-${generateRandomString()}.pipe`;
-        cockpit.spawn(["mkfifo","-m","0600",pipe]);
+        cockpit.spawn(["mkfifo", "-m", "0600", pipe]);
         return pipe;
     }
 
-    writeSensitiveDataToNamedPipe(pipe,sensitiveData) {
-        return cockpit.spawn(["/bin/bash","-c","cp /dev/stdin " + pipe])
+    writeSensitiveDataToNamedPipe(pipe, sensitiveData) {
+        return cockpit.spawn(["/bin/bash", "-c", "cp /dev/stdin " + pipe])
             .input(sensitiveData)
             .done()
-            .fail((e) => { console.log(e)})
+            .fail((e) => { console.log(e) })
 
     }
 }
