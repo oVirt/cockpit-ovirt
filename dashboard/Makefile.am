@@ -14,39 +14,42 @@
 
 cockpitdir=$(datarootdir)/cockpit
 
-export PATH := /usr/share/ovirt-engine-nodejs/bin:../node_modules/.bin:$(PATH)
-
 EXTRA_DIST = \
-	README.md \
-	.bowerrc \
-	.eslintrc \
 	src \
 	static \
+	.babelrc.js \
+	.eslintrc \
 	package.json \
-	yarn.lock \
-	webpack.config.js
+	README.md \
+	webpack.config.js \
+	yarn.lock
 
 DISTCLEANDIRS = \
 	node_modules \
 	ovirt-dashboard
 
-ovirt-dashboard:
-	sed -i "s/\"version\":.*$$/\"version\": \"${VERSION_NUMBER}\",/" package.json
-	test -z "$(NPMINSTALL)" || $(NPM) i
-	$(NPM) run build
-	mv dist ovirt-dashboard
+DISTCLEANFILES = \
+	Makefile.in
+
+yarn-install:
+	[[ "$(YARNINSTALL)" != "yes" ]] || $(YARN) install
+
+ovirt-dashboard: yarn-install
+	sed -i "s/\"version\":.*$$/\"version\": \"$(VERSION_NUMBER)\",/" package.json
+	$(YARN) run build
 
 install-data-local:
-	$(MKDIR_P) $(DESTDIR)/${cockpitdir}
+	$(MKDIR_P) $(DESTDIR)/$(cockpitdir)
 	cp -rpv ovirt-dashboard $(DESTDIR)$(cockpitdir)
 
 distclean-local:
-	rm -rf ${DISTCLEANDIRS}
+	rm -rf $(DISTCLEANDIRS)
 
-all-local: ovirt-dashboard
+all: ovirt-dashboard
 
-check-local:
-	$(NPM) test
+check-local: yarn-install
+	$(YARN) test
 
+.PHONY: ovirt-dashboard yarn-install
 
 # vim: ts=2

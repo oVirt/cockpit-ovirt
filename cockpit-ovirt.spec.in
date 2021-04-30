@@ -2,7 +2,8 @@
 %global _plugindir %{_datarootdir}/cockpit/
 %global _ovirtenginedir %{_datarootdir}/ovirt-engine
 %global product oVirt
-%global use_rhev %( test -z @RHEV@ && echo 1 || echo 0)
+%global use_rhev %(test -z @RHEV@ && echo 1 || echo 0)
+%global yarn_install @YARNINSTALL@
 %define debug_package %{nil}
 
 
@@ -24,14 +25,8 @@ BuildRequires: nodejs-packaging
 ExclusiveArch: %{nodejs_arches} noarch
 %endif
 
-%if 0%{?fedora} >= 30
-# On Fedora npm is not required anymore from nodejs
-BuildRequires: npm
-%endif
-BuildRequires: nodejs
-
-# ovirt-engine-nodejs-modules >= 2.0.39 includes yarn.
-BuildRequires: ovirt-engine-nodejs-modules >= 2.0.39
+# nodejs-modules embeds yarn and requires nodejs
+BuildRequires: ovirt-engine-nodejs-modules >= 2.0.45
 
 %if 0%{?enable_autotools}
 BuildRequires:	autoconf
@@ -42,7 +37,6 @@ BuildRequires:	gettext-devel
 %package dashboard
 Summary:        Dashboard for Cockpit based on %{product}
 BuildArch:      noarch
-
 
 Requires:       cockpit
 Requires:       cockpit-storaged
@@ -60,25 +54,27 @@ This package provides a Cockpit dashboard for use with %{product}.
 %prep
 %setup -q -n %{source_basename}
 
-for d in dashboard ; do
-  pushd .
-  cd ${d}
-  %{_datadir}/ovirt-engine-nodejs-modules/setup-env.sh
-  popd
-done
-
-# Copy the Node.js dependencies to the local "node_modules" directory
-ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules"
-ln -s "%{_sharedstatedir}/ovirt-engine-nodejs-modules/node_modules" ./dashboard/node_modules
+%if "%{yarn_install}" == "yes"
+%{warn:Building the rpm with a yarn online install is dangerous, use of ovirt-engine-nodejs-modules is highly recommended.}
+%else
+# Setup yarn and the nodejs-modules via ovirt-engine-nodejs-modules
+pushd dashboard
+source %{_datadir}/ovirt-engine-nodejs-modules/setup-env.sh
+popd
+%endif
 
 %build
 %if 0%{?enable_autotools}
 autoreconf -ivf
 %endif
 
-%configure
+export PATH="%{_datadir}/ovirt-engine-nodejs-modules/bin:${PATH}"
 
-export PATH="./node_modules/.bin:${PATH}"
+%if "%{yarn_install}" == "yes"
+%configure --with-yarn-install
+%else
+%configure
+%endif
 make
 
 %install
@@ -132,7 +128,7 @@ __EOF__
 * Tue Aug 18 2020 Aviv Turgeman <aturgema@redhat.com> - 0.14.11-1
 - Gluster storage deployment fixes
 
-* Tue Jun 20 2020 Aviv Turgeman <aturgema@redhat.com> - 0.14.10-1
+* Sat Jun 20 2020 Aviv Turgeman <aturgema@redhat.com> - 0.14.10-1
 - Gluster storage deployment fixes
 
 * Tue Jun 09 2020 Gal Zaidman <gzaidman@redhat.com> - 0.14.9-1

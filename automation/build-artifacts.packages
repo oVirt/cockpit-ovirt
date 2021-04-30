@@ -1,7 +1,1 @@
-autoconf
-automake
-gcc-c++
-git
-rpm-build
-dnf-utils
-dnf
+build.packages

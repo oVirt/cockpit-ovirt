@@ -2,16 +2,23 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>oVirt Node Dashboard</title>
-  <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <% if (webpackConfig.mode === 'development') { %>
+    <!-- enable React Developer Tools when rendered in an iframe -->
+    <script>
+      if (window.parent !== window) {
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__
+      }
+    </script>
+  <% } %>
+
   <link rel="stylesheet" href="../base1/cockpit.css">
-  <link rel="stylesheet" href="app.css">
-  <script type="text/javascript" src="../base1/jquery.js"></script>
   <script type="text/javascript" src="../base1/cockpit.js"></script>
+
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
   <div id="app"></div>
-  <script type="text/javascript" src="app.js"></script>
 </body>
 </html>

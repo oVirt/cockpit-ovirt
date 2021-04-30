@@ -17,10 +17,9 @@ OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 SHELL := /bin/bash
 
 SUBDIRS = \
-	dashboard 
+	dashboard
 
 EXTRA_DIST = \
-	.bowerrc \
 	autogen.sh \
 	cockpit-ovirt.spec \
 	cockpit-ovirt.spec.in \
@@ -31,12 +30,17 @@ DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 	aclocal.m4 \
 	configure \
 	install-sh \
-	missing
+	missing \
+	Makefile.in \
+	.bash_history \
+	mocker-*.cfg
 
 DISTCLEANDIRS = autom4te.cache \
-	node_modules \
 	engine-plugin \
-	tmp.repos
+	tmp.repos \
+	.node-gyp \
+	exported-artifacts \
+	rpmbuild
 
 TMPREPOS = tmp.repos
 RPMBUILD_ARGS :=
@@ -57,8 +61,10 @@ rpm:	srpm
 	@echo "rpm(s) available at '$(TMPREPOS)'"
 	@echo
 
+snapshot-rpm: SNAPSHOT_DATE = $(shell date --utc +%Y%m%d)
+snapshot-rpm: SNAPSHOT_COMMIT ?= $(shell git rev-parse --short HEAD)
 snapshot-rpm:
-	make rpm RELEASE_SUFFIX=".$$(date --utc +%Y%m%d).git$$(git rev-parse --short HEAD)"
+	make rpm RELEASE_SUFFIX=".$(SNAPSHOT_DATE).git$(SNAPSHOT_COMMIT)"
 
 publish:
 	mkdir -p $(OVIRT_CACHE_DIR)
@@ -66,9 +72,8 @@ publish:
 	createrepo $(OVIRT_CACHE_DIR)/ovirt
 
 distclean-local:
-	rm -rf ${DISTCLEANDIRS}
+	rm -rf $(DISTCLEANDIRS)
 
-
-.PHONY: rpms publish srpms
+.PHONY: srpm rpm snapshot-rpm publish
 
 # vim: ts=2

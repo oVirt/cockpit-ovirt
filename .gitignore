@@ -1,4 +1,5 @@
 /.idea
+/.vscode/
 /cockpit-ovirt.iml
 /mailing
 /samples
@@ -32,3 +33,10 @@ vagrant/vagrant.env
 dashboard/dist
 dashboard/package-lock.json
 vagrant/.vscode/tasks.json
+
+# mock_runner generated files
+.bash_history
+.node-gyp/
+exported-artifacts/
+rpmbuild/
+mocker-*.cfg

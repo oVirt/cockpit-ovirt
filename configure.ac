@@ -56,11 +56,13 @@ AC_SUBST(INSTALL_GUIDE_LINK)
 AC_SUBST(MORE_INFO_LINK)
 AC_SUBST(MORE_INFO_LINK_TEXT)
 
-AC_ARG_WITH([npm-install], [AC_HELP_STRING([--with-npm-install],
-            [enable the installation of needed dependencies using npm])],
-            [NPMINSTALL="//"], [NPMINSTALL=""])
+AC_ARG_WITH([yarn-install],
+            [AC_HELP_STRING([--with-yarn-install],
+            [enable the online installation of needed dependencies using yarn])],
+            [YARNINSTALL="yes"],
+            [YARNINSTALL="no"])
 
-AC_SUBST([NPMINSTALL])
+AC_SUBST([YARNINSTALL])
 
 AC_SUBST([RHEV])
 AM_CONDITIONAL([RHEV], [test -z "$RHEV"])
@@ -70,9 +72,9 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 AC_ARG_VAR([RPMBUILD], [path to rpmbuild utility])
 AC_CHECK_PROGS([RPMBUILD], [rpmbuild])
 
-AC_ARG_VAR([NPM], [path to npm utility])
-AC_CHECK_PROGS([NPM], [npm])
-test -z "${NPM}" && AC_MSG_ERROR([NodeJS npm program not found])
+AC_ARG_VAR([YARN], [path to yarn utility])
+AC_CHECK_PROGS([YARN], [yarn])
+test -z "${YARN}" && AC_MSG_ERROR([yarn nodejs package manager not found])
 
 AC_CONFIG_FILES([
 	Makefile
