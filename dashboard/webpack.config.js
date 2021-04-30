@@ -116,10 +116,6 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.ProvidePlugin({
-      jQuery: 'jquery' // Bootstrap's JavaScript implicitly requires jQuery global
-    }),
-
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
       {from: 'README.md'},
