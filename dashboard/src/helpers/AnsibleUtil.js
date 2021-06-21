@@ -1,7 +1,6 @@
 import ini from 'ini'
 import { CONFIG_FILES as constants } from '../components/ansible/constants'
 import yaml from 'js-yaml';
-import _ from 'lodash';
 
 const VG_NAME = "gluster_vg_"
 const POOL_NAME = "gluster_thinpool_"
@@ -195,7 +194,6 @@ var AnsibleUtil = {
           }
 
           hostVars.gluster_infra_vdo = [];
-          let groupedBricks = _.groupBy(hostBricks, "device");
 
           if(glusterModel.multiPathCheck && glusterModel.multiPathConfig[hostIndex].blacklistDevices.length > 0) {
             hostVars.blacklist_mpath_devices = [];
@@ -446,7 +444,6 @@ var AnsibleUtil = {
           hostCacheConfig = lvCacheConfig[hostIndex];
         }
         hostVars.gluster_infra_vdo = [];
-        let groupedBricks = _.groupBy(hostBricks, "device");
 
         if(glusterModel.multiPathCheck) {
           hostVars.blacklist_mpath_devices = [];
