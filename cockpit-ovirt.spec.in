@@ -98,6 +98,8 @@ __EOF__
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Tue Aug 03 2021 Aviv Turgeman <aturgema@redhat.com> - 0.15.1-1
+
 * Tue May 04 2021 Sandro Bonazzola <sbonazzo@redhat.com> - 0.15.0-1
 - Javascript dependencies updates
 - Fixes for cockpit changes in RHEL 8.4
