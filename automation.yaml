@@ -6,3 +6,4 @@ archs:
 release_branches:
   master:
     - ovirt-master
+    - ovirt-4.4
