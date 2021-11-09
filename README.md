@@ -1,5 +1,7 @@
 # cockpit-ovirt: oVirt plugin for Cockpit Project
 
+[![Copr build status](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/cockpit-ovirt/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/cockpit-ovirt/)
+
 Welcome to the oVirt plugin for [Cockpit Project](https://cockpit-project.org/) source repository.
 
 This repository is hosted on [gerrit.ovirt.org:cockpit-ovirt](https://gerrit.ovirt.org/#/admin/projects/cockpit-ovirt)
