@@ -1,14 +1,5 @@
 #!/bin/bash -xe
 
-if [[ "${1:-foo}" != "copr" ]] ; then
-# Force updating nodejs-modules so any pre-seed update to rpm wait is minimized
-PACKAGER=$(command -v dnf >/dev/null 2>&1 && echo 'dnf' || echo 'yum')
-REPOS=$(sed -e '/^#/d' -e '/^[ \t]*$/d' automation/build.repos | cut -f 1 -d ',' | paste -s -d,)
-
-${PACKAGER} --disablerepo='*' --enablerepo="${REPOS}" clean metadata
-${PACKAGER} -y install ovirt-engine-nodejs-modules
-fi
-
 # Is this a release - build from tag?
 # tags are like:     cockpit-ovirt-0.11.17-1
 # non tags are like: cockpit-ovirt-0.11.17-1-3-gf36b431
