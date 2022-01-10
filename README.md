@@ -4,9 +4,6 @@
 
 Welcome to the oVirt plugin for [Cockpit Project](https://cockpit-project.org/) source repository.
 
-This repository is hosted on [gerrit.ovirt.org:cockpit-ovirt](https://gerrit.ovirt.org/#/admin/projects/cockpit-ovirt)
-and a **backup** of it is hosted on [GitHub:cockpit-ovirt](https://github.com/oVirt/cockpit-ovirt)
-
 ## About Cockpit
 [Cockpit](http://cockpit-project.org/) is easy-to-use sysadmin tool with web-based UI.
 
@@ -28,15 +25,7 @@ oVirt deals with:
 
 ### Submitting patches
 
-Patches are welcome!
-
-Please submit patches to [gerrit.ovirt.org:cockpit-ovirt](https://gerrit.ovirt.org/#/admin/projects/cockpit-ovirt).
-If you are not familiar with the review process for Gerrit patches you can read about
-[Working with oVirt Gerrit](https://ovirt.org/develop/dev-process/working-with-gerrit.html)
-on the [oVirt](https://ovirt.org/) website.
-
-**NOTE**: We might not notice pull requests that you create on Github, because we only use Github for backups.
-
+Pull requests on github are welcome!
 
 ### Found a bug or documentation issue?
 To submit a bug or suggest an enhancement for cockpit-ovirt please use
