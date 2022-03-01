@@ -11,19 +11,11 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-      image: quay.io/centos/centos:stream8
+      image: quay.io/ovirt/buildcontainer:el8stream
 
     steps:
-    - name: Import ovirt-master-snapshot key
-      run: rpm --import https://download.copr.fedorainfracloud.org/results/ovirt/ovirt-master-snapshot/pubkey.gpg
-
-    - name: Install ovirt-release-master
-      run: dnf --repofrompath=ovirt-master-snapshot,https://download.copr.fedorainfracloud.org/results/ovirt/ovirt-master-snapshot/centos-stream-8-x86_64/ install -y ovirt-release-master
-
     - name: Install dependencies
-      run: dnf install -y --setopt=tsflags=nodocs autoconf automake createrepo_c dnf dnf-plugins-core dnf-plugin-versionlock dnf-utils gettext-devel git make python3-coverage python3-pycodestyle python3-pyflakes rpm-build gettext python3-devel gcc
-
-    - run: dnf --repofrompath=ovirt-master-snapshot,https://download.copr.fedorainfracloud.org/results/ovirt/ovirt-master-snapshot/fedora-34-x86_64/ install -y ovirt-engine-nodejs-modules
+      run: dnf install -y --setopt=tsflags=nodocs autoconf automake createrepo_c dnf dnf-plugins-core dnf-plugin-versionlock dnf-utils gettext-devel git make python3-coverage python3-pycodestyle python3-pyflakes rpm-build gettext python3-devel gcc ovirt-engine-nodejs-modules
 
     - uses: actions/checkout@v2
       with:
@@ -32,12 +24,7 @@ jobs:
     - run: automation/check-patch.sh
       # TODO: Split to separate steps?
 
-    - name: archive artifacts
-      # https://github.com/actions/upload-artifact#too-many-uploads-resulting-in-429-responses
-      run: tar czf exported-artifacts.tar.gz exported-artifacts
-
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: ovirt/upload-rpms-action@v2
       with:
-        name: artifacts
-        path: exported-artifacts.tar.gz
+        directory: exported-artifacts/
