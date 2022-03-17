@@ -43,7 +43,7 @@ Requires:       cockpit-storaged
 Requires:       ovirt-hosted-engine-setup >= 2.5.0
 Requires:       otopi >= 1.9.0
 
-Requires:       ansible
+Requires:       ansible-core
 
 %description
 This package provides a Cockpit dashboard for use with %{product}.
