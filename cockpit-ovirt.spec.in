@@ -11,7 +11,7 @@
 
 Name:           cockpit-ovirt
 Version:        @PACKAGE_RPM_VERSION@
-Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?checkout}%{?dist}
+Release:        @PACKAGE_RPM_RELEASE@%{?dist}
 Summary:        Dashboard for Cockpit based on %{product}
 License:        ASL 2.0
 URL:            https://gerrit.ovirt.org/gitweb?p=cockpit-ovirt.git;a=summary
@@ -26,7 +26,7 @@ ExclusiveArch: %{nodejs_arches} noarch
 %endif
 
 # nodejs-modules embeds yarn and requires nodejs
-BuildRequires: ovirt-engine-nodejs-modules >= 2.0.45
+BuildRequires: ovirt-engine-nodejs-modules >= 2.2.0
 
 %if 0%{?enable_autotools}
 BuildRequires:	autoconf
@@ -40,8 +40,8 @@ BuildArch:      noarch
 
 Requires:       cockpit
 Requires:       cockpit-storaged
-Requires:       ovirt-hosted-engine-setup >= 2.5.0
-Requires:       otopi >= 1.9.0
+Requires:       ovirt-hosted-engine-setup >= 2.6.1
+Requires:       otopi >= 1.10.0
 
 Requires:       ansible-core
 
@@ -98,7 +98,12 @@ __EOF__
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Mon Mar 21 2022 Sandro Bonazzola <sbonazzo@redhat.com> - 0.16.0-1
+- Updated nodejs build deps
+- Updated deps for oVirt 4.5.0
+
 * Tue Aug 03 2021 Aviv Turgeman <aturgema@redhat.com> - 0.15.1-1
+- Bump to 0.15.1
 
 * Tue May 04 2021 Sandro Bonazzola <sbonazzo@redhat.com> - 0.15.0-1
 - Javascript dependencies updates

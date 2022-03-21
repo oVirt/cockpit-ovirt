@@ -1,5 +1,5 @@
 dnl
-dnl   Copyright 2016-2019 Red Hat Inc.
+dnl   Copyright 2016-2021 Red Hat Inc.
 dnl
 dnl   Licensed under the Apache License, Version 2.0 (the "License");
 dnl   you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@ dnl
 AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
-define([VERSION_MINOR], [15])
-define([VERSION_FIX], [2])
+define([VERSION_MINOR], [16])
+define([VERSION_FIX], [0])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_RELEASE], [0.0])
-define([VERSION_SUFFIX],[_master])
+define([VERSION_RELEASE], [1])
+define([VERSION_SUFFIX],[])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER[]VERSION_SUFFIX, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
-PACKAGE_RPM_RELEASE="VERSION_RELEASE.$(echo VERSION_SUFFIX | sed 's/^_//')"
+PACKAGE_RPM_RELEASE="VERSION_RELEASE"
 AC_SUBST([VERSION_NUMBER])
 AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
