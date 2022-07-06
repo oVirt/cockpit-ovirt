@@ -41,7 +41,7 @@ export const ansibleRoleTags = {
 };
 
 export const playbookPaths = {
-    HE_ROLE: "/usr/share/ovirt-hosted-engine-setup/ansible/trigger_role.yml",
+    HE_ROLE: "/usr/share/ovirt-hosted-engine-setup/he_ansible/trigger_role.yml",
     HE_SETUP_WIZARD_INIT: "/usr/share/cockpit/ovirt-dashboard/hostedEngineAnsibleFiles/heSetup.yml"
 };
 
