@@ -978,6 +978,15 @@ export class HeSetupModel {
                 },
                 adminUsername: {
                     name: "adminUsername",
+                    ansibleVarName: "he_admin_username",
+                    ansiblePhasesUsed: [
+                        phases.BOOTSTRAP_VM,
+                        phases.CREATE_STORAGE,
+                        phases.TARGET_VM,
+                        phases.ISCSI_DISCOVER,
+                        phases.ISCSI_GET_DEVICES,
+                        phases.FC_GET_DEVICES
+                    ],
                     description: "Admin Username",
                     value: "admin@internal",
                     type: types.STRING,
