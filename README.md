@@ -29,7 +29,7 @@ Pull requests on github are welcome!
 
 ### Found a bug or documentation issue?
 To submit a bug or suggest an enhancement for cockpit-ovirt please use
-[oVirt Bugzilla for cockpit-ovirt product](https://bugzilla.redhat.com/enter_bug.cgi?product=cockpit-ovirt).
+[GitHub issues](https://github.com/oVirt/cockpit-ovirt/issues).
 
 If you find a documentation issue on the oVirt website please navigate and click "Report an issue on GitHub" in the page footer.
 
