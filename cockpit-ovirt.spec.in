@@ -44,6 +44,7 @@ Requires:       ovirt-hosted-engine-setup >= 2.6.1
 Requires:       otopi >= 1.10.0
 
 Requires:       ansible-core
+Requires:       gluster-ansible-roles
 
 %description
 This package provides a Cockpit dashboard for use with %{product}.
@@ -98,6 +99,9 @@ __EOF__
 %dir %attr(700, root, root) %{_sharedstatedir}/ovirt-hosted-engine-setup/cockpit
 
 %changelog
+* Thu Dec 08 2022 Shubha Kulkarni <shubha.kulkarni@oracle.com> - 0.16.2-1
+- Updated deps for gluster-ansible-roles
+
 * Mon Aug 08 2022 Asaf Rachmani <arachman@redhat.com> - 0.16.2-1
 - Updated deps
 
