@@ -38,7 +38,34 @@ If you find a documentation issue on the oVirt website please navigate and click
 If you have any other questions, please join [oVirt Users forum / mailing list](https://lists.ovirt.org/admin/lists/users.ovirt.org/) and ask there.
 
 
-## How to build from source
+## How to build from source (the easy way)
+
+The easiest way to build from source is to use the vscode devcontainer as part of this repository as it includes all the required pre-requisite software.
+
+Note: Due to the age of the cockpit-ovirt application, it is necessary to set the following environment variable prior to building the rpm.
+
+```bash
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+
+Now, make sure you're using the supplied yarn
+
+```bash
+ export PATH=/usr/share/ovirt-engine-nodejs-modules/bin:$PATH
+```
+Now, you can run the install/configure sequence
+
+```bash
+autoreconf -ivf
+./configure
+make rpm
+make publish
+```
+
+At this stage you should have an RPM at /root/ovirt-cache/ovirt/RPMS/
+
+
+## How to build from source (the hard way)
 
 ### Prerequisites
   - Have packages `autoconf`, `automake` and `libtool` installed
