@@ -8,10 +8,10 @@
     "lint": "eslint src --ext js,jsx",
     "lint:fix": "eslint src --fix --ext js,jsx",
     "test": "yarn lint",
-    "dev": "NODE_ENV=development webpack --progress",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development webpack --progress",
     "dev:watch": "yarn dev --watch",
     "prebuild": "yarn test",
-    "build": "NODE_ENV=production webpack --progress"
+    "build": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production webpack --progress"
   },
   "repository": {
     "type": "git",
