@@ -5,26 +5,41 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 jobs:
-  build-el8:
-
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: centos-stream-9
+            container-name: el9stream
+          - name: centos-stream-10
+            container-name: el10stream
+
     container:
-      image: quay.io/ovirt/buildcontainer:el8stream
+      image: quay.io/ovirt/buildcontainer:${{ matrix.container-name }}
 
     steps:
+    - name: Trust repository
+      run: git config --global --add safe.directory "$(pwd)"
+    
+    - name: Checkout sources
+      uses: ovirt/checkout-action@main
+
     - name: Install dependencies
-      run: dnf install -y --setopt=tsflags=nodocs autoconf automake createrepo_c dnf dnf-plugins-core dnf-plugin-versionlock dnf-utils gettext-devel git make python3-coverage python3-pycodestyle python3-pyflakes rpm-build gettext python3-devel gcc ovirt-engine-nodejs-modules
+      run: dnf install -y autoconf automake gettext-devel git make rpm-build gettext python3-devel ovirt-engine-nodejs-modules python3-pip
 
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+    - name: Install python packages
+      run: pip install coverage pycodestyle pyflakes
 
-    - run: automation/check-patch.sh
+    - name: Check patch
+      run: automation/check-patch.sh
       # TODO: Split to separate steps?
 
     - name: Upload artifacts
-      uses: ovirt/upload-rpms-action@v2
+      uses: ovirt/upload-rpms-action@main
       with:
         directory: exported-artifacts/
