@@ -32,7 +32,7 @@ AC_SUBST([PACKAGE_RPM_RELEASE])
 AC_SUBST([PLUGINNAME], ['oVirt Cockpit Plugin'])
 
 AC_SUBST([COMMIT],
-         [$( git ls-remote http://gerrit.ovirt.org/cockpit-ovirt.git |
+         [$( git ls-remote https://github.com/oVirt/cockpit-ovirt |
              grep $PACKAGE_TARNAME-$PACKAGE_RPM_VERSION-$PACKAGE_RPM_RELEASE |
              awk '{print $1}' )])
 

@@ -14,7 +14,7 @@ Version:        @PACKAGE_RPM_VERSION@
 Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?checkout}%{?dist}
 Summary:        Dashboard for Cockpit based on %{product}
 License:        ASL 2.0
-URL:            https://gerrit.ovirt.org/gitweb?p=cockpit-ovirt.git;a=summary
+URL:            https://github.com/oVirt/cockpit-ovirt
 Source0:        http://resources.ovirt.org/pub/src/%{name}/%{source_basename}.tar.gz
 
 
