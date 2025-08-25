@@ -38,6 +38,9 @@ BuildRequires:	gettext-devel
 Summary:        Dashboard for Cockpit based on %{product}
 BuildArch:      noarch
 
+BuildRequires:  make
+BuildRequires:  rpm-build
+
 Requires:       cockpit
 Requires:       cockpit-storaged
 Requires:       ovirt-hosted-engine-setup >= 2.6.1
