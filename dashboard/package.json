@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gerrit.ovirt.org/cockpit-ovirt"
+    "url": "https://github.com/oVirt/cockpit-ovirt"
   },
   "keywords": [
     "Cockpit",
