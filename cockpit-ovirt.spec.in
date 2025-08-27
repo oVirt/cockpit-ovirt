@@ -47,7 +47,10 @@ Requires:       ovirt-hosted-engine-setup >= 2.6.1
 Requires:       otopi >= 1.10.0
 
 Requires:       ansible-core
+# Gluster is not available anymore since EL10
+%if 0%{?rhel} < 10
 Requires:       gluster-ansible-roles
+%endif
 
 %description
 This package provides a Cockpit dashboard for use with %{product}.
