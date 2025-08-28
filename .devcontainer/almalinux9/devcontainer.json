@@ -1,0 +1,20 @@
+{
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"runArgs": [],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.makefile-tools"
+			]
+		}
+	},
+	"hostRequirements": {
+		"memory": "4gb"
+	},
+	"mounts": [
+		"type=bind,source=/home/${localEnv:USER}/.ssh,target=/root/.ssh,readonly"
+	],
+	"postCreateCommand": ""
+}
