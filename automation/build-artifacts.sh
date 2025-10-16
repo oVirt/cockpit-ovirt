@@ -29,6 +29,7 @@ export PATH="/usr/share/ovirt-engine-nodejs-modules/bin:${PATH}"
 if [[ "${1:-foo}" != "copr" ]] ; then
 make rpm
 else
+sed "s:%{?release_suffix}:${RELEASE_SUFFIX}:" -i cockpit-ovirt.spec.in
 make srpm
 fi
 
