@@ -18,12 +18,12 @@ AC_PREREQ(2.60)
 
 define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [16])
-define([VERSION_FIX], [3])
+define([VERSION_FIX], [4])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-dnl define([VERSION_RELEASE], [0])
-dnl define([VERSION_SUFFIX],[_master])
-define([VERSION_RELEASE], [1])
-define([VERSION_SUFFIX],[])
+define([VERSION_RELEASE], [0])
+define([VERSION_SUFFIX],[_master])
+dnl define([VERSION_RELEASE], [1])
+dnl define([VERSION_SUFFIX],[])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER[]VERSION_SUFFIX, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
