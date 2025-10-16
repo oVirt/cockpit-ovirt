@@ -45,7 +45,7 @@ DISTCLEANDIRS = autom4te.cache \
 TMPREPOS = tmp.repos
 RPMBUILD_ARGS :=
 RPMBUILD_ARGS += --define="_topdir `pwd`/$(TMPREPOS)"
-RPMBUILD_ARGS += $(if $(RELEASE_SUFFIX), --define="release_suffix $$RELEASE_SUFFIX")
+RPMBUILD_ARGS += $(if $(RELEASE_SUFFIX), --define="release_suffix ${RELEASE_SUFFIX}")
 
 srpm:	dist
 	rm -fr "$(TMPREPOS)"

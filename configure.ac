@@ -20,7 +20,7 @@ define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [16])
 define([VERSION_FIX], [3])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_RELEASE], [0.0])
+define([VERSION_RELEASE], [0])
 define([VERSION_SUFFIX],[_master])
 
 AC_INIT([cockpit-ovirt], VERSION_NUMBER[]VERSION_SUFFIX, [devel@ovirt.org])
@@ -31,26 +31,9 @@ AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
 AC_SUBST([PLUGINNAME], ['oVirt Cockpit Plugin'])
 
-AC_SUBST([COMMIT],
-         [$( git ls-remote https://github.com/oVirt/cockpit-ovirt |
-             grep $PACKAGE_TARNAME-$PACKAGE_RPM_VERSION-$PACKAGE_RPM_RELEASE |
-             awk '{print $1}' )])
-
-AC_ARG_WITH([rhev],
-            [AC_HELP_STRING([--with-rhev],
-            [Build cockpit-ovirt for RHEV])])
-
-if test -z "$with_rhev"; then
-    RHEV="oVirt"
-    INSTALL_GUIDE_LINK="https://ovirt.org/documentation/installing_ovirt_as_a_self-hosted_engine_using_the_cockpit_web_interface/"
-    MORE_INFO_LINK="https://www.ovirt.org/"
-    MORE_INFO_LINK_TEXT="oVirt Homepage"
-else
-    RHEV=""
-    INSTALL_GUIDE_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.4/html/installing_red_hat_virtualization_as_a_self-hosted_engine_using_the_cockpit_web_interface/index"
-    MORE_INFO_LINK="https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.4"
-    MORE_INFO_LINK_TEXT="RHV Documentation"
-fi
+INSTALL_GUIDE_LINK="https://ovirt.org/documentation/installing_ovirt_as_a_self-hosted_engine_using_the_cockpit_web_interface/"
+MORE_INFO_LINK="https://www.ovirt.org/"
+MORE_INFO_LINK_TEXT="oVirt Homepage"
 
 AC_SUBST(INSTALL_GUIDE_LINK)
 AC_SUBST(MORE_INFO_LINK)
@@ -63,9 +46,6 @@ AC_ARG_WITH([yarn-install],
             [YARNINSTALL="no"])
 
 AC_SUBST([YARNINSTALL])
-
-AC_SUBST([RHEV])
-AM_CONDITIONAL([RHEV], [test -z "$RHEV"])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 
