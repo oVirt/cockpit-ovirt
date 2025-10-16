@@ -61,11 +61,6 @@ rpm:	srpm
 	@echo "rpm(s) available at '$(TMPREPOS)'"
 	@echo
 
-snapshot-rpm: SNAPSHOT_DATE = $(shell date --utc +%Y%m%d)
-snapshot-rpm: SNAPSHOT_COMMIT ?= $(shell git rev-parse --short HEAD)
-snapshot-rpm:
-	make rpm RELEASE_SUFFIX=".$(SNAPSHOT_DATE).git$(SNAPSHOT_COMMIT)"
-
 publish:
 	mkdir -p $(OVIRT_CACHE_DIR)
 	rsync -aq $(TMPREPOS)/ $(OVIRT_CACHE_DIR)/ovirt
@@ -74,6 +69,6 @@ publish:
 distclean-local:
 	rm -rf $(DISTCLEANDIRS)
 
-.PHONY: srpm rpm snapshot-rpm publish
+.PHONY: srpm rpm publish
 
 # vim: ts=2

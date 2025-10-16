@@ -8,10 +8,8 @@ if git describe --tags --match "cockpit-ovirt*"|cut -f4- -d\-| grep -q '-'; then
     # newer than all the previous builds using a timestamp,
     # and make it easy to locate the commit from the build
     # with the git commit hash.
-    export PACKAGE_RPM_RELEASE=0
     export RELEASE_SUFFIX=".$(date --utc +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
 else
-    export PACKAGE_RPM_RELEASE=1
     export RELEASE_SUFFIX=""
 fi
 
@@ -29,6 +27,7 @@ export PATH="/usr/share/ovirt-engine-nodejs-modules/bin:${PATH}"
 if [[ "${1:-foo}" != "copr" ]] ; then
 make rpm
 else
+sed "s:%{?release_suffix}:${RELEASE_SUFFIX}:" -i cockpit-ovirt.spec.in
 make srpm
 fi
 
