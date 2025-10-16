@@ -10,6 +10,9 @@ if git describe --tags --match "cockpit-ovirt*"|cut -f4- -d\-| grep -q '-'; then
     # with the git commit hash.
     export PACKAGE_RPM_RELEASE=0
     export RELEASE_SUFFIX=".$(date --utc +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
+else
+    export PACKAGE_RPM_RELEASE=1
+    export RELEASE_SUFFIX=""
 fi
 
 # Clean and then create the artifacts directory:
