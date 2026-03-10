@@ -50,6 +50,10 @@ class HeWizardEngineContainer extends Component {
             heSetupModel.engine.adminPassword.useInAnswerFile = value !== "";
         }
 
+        if (propName === "enableKeycloak") {
+            heSetupModel.engine.adminUsername.value = value ? "admin@ovirt@internal" : "admin@internal";
+        }
+
         this.validateConfigUpdate(propName, heSetupModel[configType]);
         this.setState({ heSetupModel });
     }

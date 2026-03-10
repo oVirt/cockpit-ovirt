@@ -976,6 +976,24 @@ export class HeSetupModel {
                     useInAnswerFile: true,
                     required: true
                 },
+                enableKeycloak: {
+                    name: "enableKeycloak",
+                    ansibleVarName: "he_enable_keycloak",
+                    ansiblePhasesUsed: [
+                        phases.BOOTSTRAP_VM,
+                        phases.CREATE_STORAGE,
+                        phases.TARGET_VM,
+                        phases.ISCSI_DISCOVER,
+                        phases.ISCSI_GET_DEVICES,
+                        phases.FC_GET_DEVICES
+                    ],
+                    description: "Enable Keycloak integration",
+                    value: false,
+                    type: types.BOOLEAN,
+                    uiStage: "Engine",
+                    useInAnswerFile: true,
+                    required: true
+                },
                 adminUsername: {
                     name: "adminUsername",
                     ansibleVarName: "he_admin_username",
