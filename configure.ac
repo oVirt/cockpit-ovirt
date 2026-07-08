@@ -1,5 +1,5 @@
 dnl
-dnl   Copyright 2016-2021 Red Hat Inc.
+dnl   Copyright 2016-2026 oVirt Developers
 dnl
 dnl   Licensed under the Apache License, Version 2.0 (the "License");
 dnl   you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@ define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [16])
 define([VERSION_FIX], [4])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_RELEASE], [0])
-define([VERSION_SUFFIX],[_master])
-dnl define([VERSION_RELEASE], [1])
-dnl define([VERSION_SUFFIX],[])
 
-AC_INIT([cockpit-ovirt], VERSION_NUMBER[]VERSION_SUFFIX, [devel@ovirt.org])
+AC_INIT([cockpit-ovirt], VERSION_NUMBER, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
-PACKAGE_RPM_RELEASE="VERSION_RELEASE"
-test -n "VERSION_SUFFIX" && PACKAGE_RPM_RELEASE="VERSION_RELEASE.$(echo VERSION_SUFFIX | sed 's/^_//')"
+
+AC_ARG_VAR([PACKAGE_RPM_RELEASE],
+    [RPM release field (default: 0.master for development, release number for release builds)])
+AS_IF([test -z "$PACKAGE_RPM_RELEASE"],
+    [PACKAGE_RPM_RELEASE="0.master"])
+
 AC_SUBST([VERSION_NUMBER])
 AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
@@ -43,7 +43,7 @@ AC_SUBST(MORE_INFO_LINK)
 AC_SUBST(MORE_INFO_LINK_TEXT)
 
 AC_ARG_WITH([yarn-install],
-            [AC_HELP_STRING([--with-yarn-install],
+            [AS_HELP_STRING([--with-yarn-install],
             [enable the online installation of needed dependencies using yarn])],
             [YARNINSTALL="yes"],
             [YARNINSTALL="no"])
