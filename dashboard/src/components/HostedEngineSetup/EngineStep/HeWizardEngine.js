@@ -3,12 +3,25 @@ import MultiRowTextBoxContainer from '../MultiRowTextBox/MultiRoxTextBoxContaine
 import { getClassNames } from '../../../helpers/HostedEngineSetupUtil'
 import {deploymentTypes} from "../constants";
 import UnmaskablePasswordContainer from "../UnmaskablePassword";
+import CheckboxWithInfo from "../../common/CheckboxWithInfo";
 
 const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, handleEngineConfigUpdate,
                             handleRecipientAddressUpdate, handleRecipientAddressDelete, handleAdminPortalPwdUpdate}) => {
     const engineConfig = heSetupModel.engine;
     const notificationsConfig = heSetupModel.notifications;
     const isOtopiDeployment = deploymentType === deploymentTypes.OTOPI_DEPLOYMENT;
+    const infoEnableKeycloak = "Check this option to enable Keycloak integration";
+    const checkBoxWithInfoProps = [
+        {
+            label: "Enable Keycloak integration",
+            idInfo: "use_keycloak",
+            iconTitle: infoEnableKeycloak,
+            checked: engineConfig.enableKeycloak.value,
+            propName: "enableKeycloak",
+            configType: "engine",
+            idInput: "he-enable-keycloak-chkbox",
+        },
+    ];
 
     return (
         <div>
@@ -27,7 +40,21 @@ const HeWizardEngine = ({deploymentType, heSetupModel, errorMsg, errorMsgs, hand
                         <h3>Engine Credentials</h3>
                     </div>
                 </div>
-
+                {checkBoxWithInfoProps.map((prop) => {
+                    return (
+                        <CheckboxWithInfo
+                            key={prop.idInput}
+                            label={prop.label}
+                            idInfo={prop.idInfo}
+                            iconTitle={prop.iconTitle}
+                            checked={prop.checked}
+                            handleConfigUpdate={handleEngineConfigUpdate}
+                            propName={prop.propName}
+                            configType={prop.configType}
+                            idInput={prop.idInput}
+                        />
+                    );
+                })}
                 {isOtopiDeployment &&
                     <div className={getClassNames("adminUsername", errorMsgs)}>
                         <label className="col-md-3 control-label">Admin Portal Username</label>
