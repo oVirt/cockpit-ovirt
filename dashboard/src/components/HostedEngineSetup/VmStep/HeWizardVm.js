@@ -12,7 +12,7 @@ import {
 	status,
 } from "../constants";
 import UnmaskablePasswordContainer from "../UnmaskablePassword";
-import CheckboxWithInfo from "./HeWizardVmComponents/CheckboxWithInfo";
+import CheckboxWithInfo from "../../common/CheckboxWithInfo";
 
 const consoleTypes = [
 	{ key: "vnc", title: "VNC" },
@@ -824,7 +824,7 @@ const HeWizardVm = ({
 									idInfo={prop.idInfo}
 									iconTitle={prop.iconTitle}
 									checked={prop.checked}
-									handleVmConfigUpdate={handleVmConfigUpdate}
+									handleConfigUpdate={handleVmConfigUpdate}
 									propName={prop.propName}
 									configType={prop.configType}
 									idInput={prop.idInput}
